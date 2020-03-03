@@ -1,0 +1,29 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:controls="clr-namespace:SwagOverflowWPF.Controls"
+    xmlns:local="clr-namespace:SwagOverflowWPF">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/SwagOverflowWPF;component/Themes/Common.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+    <Style TargetType="controls:SwagWindow" BasedOn="{StaticResource {x:Type metro:MetroWindow}}">
+        <Setter Property="ContextMenu">
+            <Setter.Value>
+                <ContextMenu>
+                    <MenuItem Header="Test1" />
+                    <MenuItem Header="Test2" />
+                </ContextMenu>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Flyouts">
+            <Setter.Value>
+                <metro:FlyoutsControl>
+                    <metro:Flyout Header="Settings" IsOpen="True" Position="Right" Theme="Accent">
+                        <controls:SettingsControl Settings="{Binding Settings, RelativeSource={RelativeSource AncestorType={x:Type controls:SwagWindow}}}" />
+                    </metro:Flyout>
+                </metro:FlyoutsControl>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

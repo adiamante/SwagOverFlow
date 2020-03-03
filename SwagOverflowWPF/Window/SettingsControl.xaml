@@ -1,0 +1,91 @@
+﻿<UserControl x:Class="SwagOverflowWPF.Controls.SettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SwagOverflowWPF.Controls"
+             xmlns:ui="clr-namespace:SwagOverflowWPF.UI"
+             xmlns:vm="clr-namespace:SwagOverflowWPF.ViewModels"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             x:Name="ControlInstance"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/SwagOverflowWPF;component/Themes/Common.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter  x:Key="BooleanToVisibilityConverter"/>
+            <ControlTemplate x:Key="SettingControlTemplate" TargetType="ContentControl">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition SharedSizeGroup="Icon" Width="Auto" />
+                        <ColumnDefinition SharedSizeGroup="Name" Width="Auto" />
+                        <ColumnDefinition SharedSizeGroup="Value" Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ContentControl Grid.Column="0" Height="20" Width="20">
+                        <!--<ContentControl.ContentTemplate>
+                        <MultiBinding Converter="{StaticResource StringToDynamicIconDataTemplateConverterSetting}">
+                            <Binding RelativeSource="{RelativeSource Self}" />
+                            <Binding Path="Value.Icon" />
+                        </MultiBinding>
+                    </ContentControl.ContentTemplate>-->
+                    </ContentControl>
+                    <TextBlock Grid.Column="1" Text="{Binding Display}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                    <ContentPresenter Grid.Column="2" />
+                </Grid>
+            </ControlTemplate>
+            <ui:TemplateCollection x:Key="SettingTemplateCollection">
+                <ui:Template Option="{x:Static vm:SettingType.DropDown}">
+                    <ui:Template.DataTemplate>
+                        <DataTemplate>
+                            <ContentControl Template="{StaticResource SettingControlTemplate}">
+                                <ComboBox ItemsSource="{Binding ItemsSource}" SelectedValue="{Binding Value}" />
+                            </ContentControl>
+                        </DataTemplate>
+                    </ui:Template.DataTemplate>
+                </ui:Template>
+                <ui:Template Option="{x:Static vm:SettingType.SettingGroup}">
+                    <ui:Template.DataTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <DockPanel Grid.Row="0">
+                                    <ToggleButton IsChecked="{Binding IsExpanded}" VerticalAlignment="Center" Visibility="{Binding HasChildren, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <ContentControl DockPanel.Dock="Left" Template="{StaticResource SettingControlTemplate}">
+
+                                        </ContentControl>
+                                    </ToggleButton>
+                                </DockPanel>
+                                <ListView Grid.Row="1" ItemsSource="{Binding ChildrenView}" Grid.IsSharedSizeScope="True" Visibility="{Binding IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                      Focusable="False" ItemTemplateSelector="{DynamicResource WindowSettingTemplateSelector}">
+                                </ListView>
+                            </Grid>
+                        </DataTemplate>
+                    </ui:Template.DataTemplate>
+                </ui:Template>
+                <ui:Template Value="{x:Type sys:String}">
+                    <ui:Template.DataTemplate>
+                        <DataTemplate>
+                            <ContentControl Template="{StaticResource SettingControlTemplate}">
+                                <TextBox Text="{Binding Value, Delay=250, UpdateSourceTrigger=PropertyChanged}" MinWidth="100" />
+                            </ContentControl>
+                        </DataTemplate>
+                    </ui:Template.DataTemplate>
+                </ui:Template>
+            </ui:TemplateCollection>
+            <ui:WindowSettingTemplateSelector x:Key="WindowSettingTemplateSelector" Templates="{StaticResource SettingTemplateCollection}" />
+        </ResourceDictionary>
+        
+    </UserControl.Resources>
+    <Grid>
+        <ListView Grid.Row="1" ItemsSource="{Binding Settings.ChildrenView, RelativeSource={RelativeSource AncestorType={x:Type local:SettingsControl}}}"
+                  Grid.IsSharedSizeScope="True" Focusable="False" ItemTemplateSelector="{StaticResource WindowSettingTemplateSelector}">
+
+        </ListView>
+    </Grid>
+</UserControl>
