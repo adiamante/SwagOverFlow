@@ -9,7 +9,7 @@ namespace SwagOverflowWPF.ViewModels
     public class SwagItemViewModel : ViewModelBase, iSwagItem<SwagItemViewModel>
     {
         #region Private/Protected Members
-        String _group, _key, _display;
+        String _group, _key, _display, _parentGroup, _parentKey;
         Byte[] _data;
         Int32 _id;
         Int32? _parentId;
@@ -39,6 +39,20 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _id, value); }
         }
         #endregion Id
+        #region ParentGroup
+        public String ParentGroup
+        {
+            get { return _parentGroup; }
+            set { SetValue(ref _parentGroup, value); }
+        }
+        #endregion ParentGroup
+        #region ParentKey
+        public String ParentKey
+        {
+            get { return _parentKey; }
+            set { SetValue(ref _parentKey, value); }
+        }
+        #endregion ParentKey
         #region ParentId
         public Int32? ParentId
         {
