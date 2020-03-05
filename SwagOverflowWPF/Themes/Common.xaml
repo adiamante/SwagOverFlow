@@ -10,7 +10,7 @@
     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MahApps.Styles.Button.AccentedSquare}">
         
     </Style>
-    <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MahApps.Styles.ToggleButton.Circle}">
+    <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MahApps.Styles.ToggleButton.WindowCommands}">
 
     </Style>
     <!--<Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
