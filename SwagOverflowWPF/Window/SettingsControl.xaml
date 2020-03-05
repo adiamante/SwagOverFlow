@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="/SwagOverflowWPF;component/Themes/Common.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter  x:Key="BooleanToVisibilityConverter"/>
+            <ui:EnumMatchToVisibilityConverter x:Key="EnumMatchToVisibilityInverseConverter" TrueValue="Collapsed" FalseValue="Visible"/>
             <ControlTemplate x:Key="SettingControlTemplate" TargetType="ContentControl">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -64,6 +65,11 @@
                                 </DockPanel>
                                 <ListView Grid.Row="1" ItemsSource="{Binding ChildrenView}" Grid.IsSharedSizeScope="True" Visibility="{Binding IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"
                                       Focusable="False" ItemTemplateSelector="{DynamicResource WindowSettingTemplateSelector}">
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListViewItem}">
+                                            <Setter Property="Visibility" Value="{Binding SettingType, Converter={StaticResource EnumMatchToVisibilityInverseConverter}, ConverterParameter={x:Static vm:SettingType.Hidden}}" />
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
                                 </ListView>
                             </Grid>
                         </DataTemplate>
@@ -94,7 +100,11 @@
     <Grid>
         <ListView Grid.Row="1" ItemsSource="{Binding Settings.ChildrenView, RelativeSource={RelativeSource AncestorType={x:Type local:SettingsControl}}}"
                   Grid.IsSharedSizeScope="True" Focusable="False" ItemTemplateSelector="{StaticResource WindowSettingTemplateSelector}">
-
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                    <Setter Property="Visibility" Value="{Binding SettingType, Converter={StaticResource EnumMatchToVisibilityInverseConverter}, ConverterParameter={x:Static vm:SettingType.Hidden}}" />
+                </Style>
+            </ListView.ItemContainerStyle>
         </ListView>
     </Grid>
 </UserControl>

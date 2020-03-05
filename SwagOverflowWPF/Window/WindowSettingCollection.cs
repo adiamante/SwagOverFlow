@@ -13,7 +13,7 @@ namespace SwagOverflowWPF.Controls
         public WindowSettingCollection() : base()
         {
             this.Display = "Root";
-            this["SettingsIsOpen"] = new SwagSettingViewModel<Boolean>() { GenericValue = true };
+            this["SettingsIsOpen"] = new SwagSettingViewModel<Boolean>() { GenericValue = true, SettingType = SettingType.Hidden };
             this["General"]["Theme"]["Base"] = new SwagSettingViewModel<String>() { GenericValue = "Light", ItemsSource = new[] { "Light", "Dark" }, SettingType = SettingType.DropDown };
             this["General"]["Theme"]["Accent"] = new SwagSettingViewModel<String>() { GenericValue = "Blue", ItemsSource = new [] { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" }, SettingType = SettingType.DropDown };
 
