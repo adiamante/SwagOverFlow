@@ -7,6 +7,7 @@
              xmlns:ui="clr-namespace:SwagOverflowWPF.UI"
              xmlns:vm="clr-namespace:SwagOverflowWPF.ViewModels"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              x:Name="ControlInstance"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -73,6 +74,15 @@
                         <DataTemplate>
                             <ContentControl Template="{StaticResource SettingControlTemplate}">
                                 <TextBox Text="{Binding Value, Delay=250, UpdateSourceTrigger=PropertyChanged}" MinWidth="100" />
+                            </ContentControl>
+                        </DataTemplate>
+                    </ui:Template.DataTemplate>
+                </ui:Template>
+                <ui:Template Value="{x:Type sys:Boolean}">
+                    <ui:Template.DataTemplate>
+                        <DataTemplate>
+                            <ContentControl Template="{StaticResource SettingControlTemplate}">
+                                <metro:ToggleSwitch IsChecked="{Binding Value}" VerticalAlignment="Center" />
                             </ContentControl>
                         </DataTemplate>
                     </ui:Template.DataTemplate>
