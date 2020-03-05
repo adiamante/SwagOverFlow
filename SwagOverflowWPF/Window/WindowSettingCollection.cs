@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using MahApps.Metro;
-using MahApps.Metro.Controls;
+using SwagOverflowWPF.UI;
 using SwagOverflowWPF.ViewModels;
 
 namespace SwagOverflowWPF.Controls
@@ -21,11 +22,25 @@ namespace SwagOverflowWPF.Controls
 
         private void WindowSettingCollection_ThemePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            String myBase = this["General"]["Theme"]["Base"].Value.ToString();
-            String myAccent = this["General"]["Theme"]["Accent"].Value.ToString();
+            if (e.PropertyName == "Value")
+            {
+                String myBase = this["General"]["Theme"]["Base"].Value.ToString();
+                String myAccent = this["General"]["Theme"]["Accent"].Value.ToString();
 
-            MahApps.Metro.Theme theme = ThemeManager.GetTheme($"{myBase}.{myAccent}");
-            ThemeManager.ChangeTheme(Application.Current.MainWindow, theme);
+                MahApps.Metro.Theme theme = ThemeManager.GetTheme($"{myBase}.{myAccent}");
+                ThemeManager.ChangeTheme(Application.Current.MainWindow.Resources, theme);
+
+                //foreach (var lv in Application.Current.MainWindow.FindLogicalChildren<ListViewItem>())
+                //{
+                //    lv.Resources = Application.Current.MainWindow.Resources;
+                //}
+
+                foreach (var lv in Application.Current.MainWindow.FindVisualChildren<ListViewItem>())
+                {
+                    lv.Resources = Application.Current.MainWindow.Resources;
+                }
+            }
         }
     }
+
 }

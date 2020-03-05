@@ -90,7 +90,6 @@
             </ui:TemplateCollection>
             <ui:WindowSettingTemplateSelector x:Key="WindowSettingTemplateSelector" Templates="{StaticResource SettingTemplateCollection}" />
         </ResourceDictionary>
-        
     </UserControl.Resources>
     <Grid>
         <ListView Grid.Row="1" ItemsSource="{Binding Settings.ChildrenView, RelativeSource={RelativeSource AncestorType={x:Type local:SettingsControl}}}"
