@@ -31,15 +31,15 @@ namespace SwagOverflowWPF.Controls
                 MahApps.Metro.Theme theme = ThemeManager.GetTheme($"{myBase}.{myAccent}");
                 ThemeManager.ChangeTheme(Application.Current.MainWindow.Resources, theme);
 
-                //Might need FindLogicalChildren as well
-                foreach (var lv in Application.Current.MainWindow.FindVisualChildren<ListViewItem>())
-                {
-                    lv.Resources = Application.Current.MainWindow.Resources;
-                }
+                ResourceDictionary resourceDictionary = new ResourceDictionary();
+                resourceDictionary.Source = new Uri($"pack://application:,,,/MahApps.Metro;component/Styles/Themes/{myBase}.{myAccent}.xaml", UriKind.Absolute);
 
-                foreach (var lv in Application.Current.MainWindow.FindVisualChildren<ListView>())
+                //When there are duplicate references to Common.xaml (unavoidable since we are using Custom Controls),
+                //add the theme to the Merged Dictionary 
+                //(inefficient but there is no way to reset the MergedDictionaries without breaking during runtime)
+                foreach (var sc in Application.Current.MainWindow.FindVisualChildren<SettingsControl>())
                 {
-                    lv.Background = (SolidColorBrush)Application.Current.MainWindow.FindResource("MahApps.Brushes.Control.Background");
+                    sc.Resources.MergedDictionaries.Add(resourceDictionary);
                 }
             }
         }
