@@ -18,6 +18,7 @@ namespace SwagOverflowWPF.ViewModels
         CollectionViewSource _childrenCollectionViewSource;
         #endregion Private/Protected Members
 
+        #region Properties
         #region Group
         public String Group
         {
@@ -67,6 +68,13 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _display, value); }
         }
         #endregion Display
+        #region Value
+        public virtual Object Value { get { return null; } set { } }
+        #endregion Value
+        #region ValueType
+        public virtual Type ValueType { get { return null; } }
+        #endregion ValueType
+
         #region Data
         public Byte[] Data
         {
@@ -94,10 +102,13 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _children, value); }
         }
         #endregion Children
+        #endregion Properties
 
+        #region Initialization
         public SwagItemViewModel()
         {
             _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
         }
+        #endregion Initialization
     }
 }

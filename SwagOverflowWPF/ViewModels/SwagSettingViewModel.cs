@@ -36,7 +36,6 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _settingType, value); }
         }
         #endregion SettingType
-
         #region IsExpanded
         public Boolean IsExpanded
         {
@@ -44,21 +43,12 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _isExpanded, value); }
         }
         #endregion IsExpanded
-
         #region HasChildren
         public Boolean HasChildren
         {
             get { return _children.Count > 0; }
         }
         #endregion HasChildren
-
-        #region Value
-        public virtual Object Value { get { return null; } set { } }
-        #endregion Value
-
-        #region ValueType
-        public virtual Type ValueType { get { return null; } }
-        #endregion ValueType
 
         #region Initialization
         public SwagSettingViewModel() : base()

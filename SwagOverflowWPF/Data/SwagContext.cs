@@ -8,6 +8,7 @@ namespace SwagOverflowWPF.Data
     {
         string _dataSource = "localhost";
         public DbSet<SwagItemViewModel> SwagItems { get; set; }
+        public DbSet<SwagSettingViewModel> SwatSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
