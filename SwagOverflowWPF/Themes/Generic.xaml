@@ -3,11 +3,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:controls="clr-namespace:SwagOverflowWPF.Controls"
-    xmlns:local="clr-namespace:SwagOverflowWPF">
+    xmlns:local="clr-namespace:SwagOverflowWPF"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/SwagOverflowWPF;component/Themes/Common.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-    <Style TargetType="controls:SwagWindow" BasedOn="{StaticResource {x:Type metro:MetroWindow}}">
+    <Style TargetType="{x:Type controls:SwagWindow}" BasedOn="{StaticResource {x:Type metro:MetroWindow}}">
+        <Setter Property="DataContext">
+            <Setter.Value>
+                <Binding RelativeSource="{RelativeSource Mode=Self}" />
+            </Setter.Value>
+        </Setter>
         <Setter Property="ContextMenu">
             <Setter.Value>
                 <ContextMenu>
@@ -16,11 +22,26 @@
                 </ContextMenu>
             </Setter.Value>
         </Setter>
+        <Setter Property="RightWindowCommands">
+            <Setter.Value>
+                <metro:WindowCommands>
+                    <ToggleButton IsChecked="{Binding Settings[SettingsIsOpen].Value}">
+                        <iconPacks:MaterialDesign Kind="Settings" />
+                    </ToggleButton>
+                </metro:WindowCommands>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Flyouts">
             <Setter.Value>
                 <metro:FlyoutsControl>
-                    <metro:Flyout Header="Settings" IsOpen="True" Position="Right" Theme="Accent">
-                        <controls:SettingsControl Settings="{Binding Settings, RelativeSource={RelativeSource AncestorType={x:Type controls:SwagWindow}}}" />
+                    <metro:Flyout IsOpen="{Binding Settings[SettingsIsOpen].Value}" Position="Right" Theme="Accent">
+                        <metro:Flyout.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:MaterialDesign Kind="Settings" />
+                                <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" Text="Settings" />
+                            </StackPanel>
+                        </metro:Flyout.Header>
+                        <controls:SettingsControl Settings="{Binding Settings}" />
                     </metro:Flyout>
                 </metro:FlyoutsControl>
             </Setter.Value>
