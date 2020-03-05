@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using MahApps.Metro;
 using SwagOverflowWPF.UI;
 using SwagOverflowWPF.ViewModels;
@@ -30,14 +31,15 @@ namespace SwagOverflowWPF.Controls
                 MahApps.Metro.Theme theme = ThemeManager.GetTheme($"{myBase}.{myAccent}");
                 ThemeManager.ChangeTheme(Application.Current.MainWindow.Resources, theme);
 
-                //foreach (var lv in Application.Current.MainWindow.FindLogicalChildren<ListViewItem>())
-                //{
-                //    lv.Resources = Application.Current.MainWindow.Resources;
-                //}
-
+                //Might need FindLogicalChildren as well
                 foreach (var lv in Application.Current.MainWindow.FindVisualChildren<ListViewItem>())
                 {
                     lv.Resources = Application.Current.MainWindow.Resources;
+                }
+
+                foreach (var lv in Application.Current.MainWindow.FindVisualChildren<ListView>())
+                {
+                    lv.Background = (SolidColorBrush)Application.Current.MainWindow.FindResource("MahApps.Brushes.Control.Background");
                 }
             }
         }
