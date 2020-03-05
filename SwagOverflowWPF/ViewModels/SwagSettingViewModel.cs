@@ -109,6 +109,18 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion Indexer
+
+        #region Methods
+        public T GetValue<T>()
+        {
+            return (T)Value;
+        }
+
+        public void SetValue<T>(T val)
+        {
+            Value = val;
+        }
+        #endregion Methods
     }
 
     public class SwagSettingViewModel<T> : SwagSettingViewModel
@@ -123,12 +135,20 @@ namespace SwagOverflowWPF.ViewModels
         #endregion ValueType
 
         #region Value
-        public override Object Value
+        public override object Value
         {
-            get { return (Object)_value; }
+            get { return (object)_value; }
             set { SetValue<T>(ref _value, (T)value); }
         }
         #endregion Value
+
+        #region GenericValue
+        public T GenericValue
+        {
+            get { return (T)_value; }
+            set { SetValue<T>(ref _value, (T)value); }
+        }
+        #endregion GenericValue
 
         #region ItemsSource
         public T[] ItemsSource
