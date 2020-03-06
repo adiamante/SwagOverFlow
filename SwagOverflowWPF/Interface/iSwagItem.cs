@@ -5,16 +5,20 @@ using System.Text;
 
 namespace SwagOverflowWPF.Interface
 {
-    public interface iSwagItem<THeirarchy>
+    public interface ISwagItem
     {
-        String Group { get; set; }
-        String Key { get; set; }
-        Int32 Id { get; set; }
+        //Int32 GroupId { get; set; }
+        Int32 ItemId { get; set; }
+        String AlternateId { get; set; }
         Int32? ParentId { get; set; }
         String Display { get; set; }
-        Byte [] Data { get; set; }
+        Byte[] Data { get; set; }
+
+    }
+
+    public interface ISwagItem<THeirarchy> : ISwagItem
+    {
         THeirarchy Parent { get; set; }
         ObservableCollection<THeirarchy> Children { get; set; }
-
     }
 }

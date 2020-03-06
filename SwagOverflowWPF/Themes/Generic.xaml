@@ -25,7 +25,7 @@
         <Setter Property="RightWindowCommands">
             <Setter.Value>
                 <metro:WindowCommands>
-                    <ToggleButton IsChecked="{Binding Settings[SettingsIsOpen].Value}">
+                    <ToggleButton IsChecked="{Binding Settings[Settings][IsOpen].Value}">
                         <iconPacks:MaterialDesign Kind="Settings" />
                     </ToggleButton>
                 </metro:WindowCommands>
@@ -34,7 +34,7 @@
         <Setter Property="Flyouts">
             <Setter.Value>
                 <metro:FlyoutsControl>
-                    <metro:Flyout IsOpen="{Binding Settings[SettingsIsOpen].Value}" Position="Right" Theme="Accent">
+                    <metro:Flyout IsOpen="{Binding Settings[Settings][IsOpen].Value}" Position="Right" Theme="Accent">
                         <metro:Flyout.Header>
                             <StackPanel Orientation="Horizontal">
                                 <iconPacks:MaterialDesign Kind="Settings" />

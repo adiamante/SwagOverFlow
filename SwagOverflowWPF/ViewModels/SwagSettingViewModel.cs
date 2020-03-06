@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+
 
 namespace SwagOverflowWPF.ViewModels
 {
@@ -26,9 +28,17 @@ namespace SwagOverflowWPF.ViewModels
         #region Private Members
         Dictionary<String, SwagSettingViewModel> _dict = new Dictionary<string, SwagSettingViewModel>();
         SettingType _settingType;
-        Boolean _isExpanded;
+        String _key;
         #endregion Private Members
 
+        #region Properties        
+        #region Key
+        public String Key
+        {
+            get { return _key; }
+            set { SetValue(ref _key, value); }
+        }
+        #endregion Key
         #region SettingType
         public SettingType SettingType
         {
@@ -36,19 +46,36 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _settingType, value); }
         }
         #endregion SettingType
-        #region IsExpanded
-        public Boolean IsExpanded
-        {
-            get { return _isExpanded; }
-            set { SetValue(ref _isExpanded, value); }
-        }
-        #endregion IsExpanded
         #region HasChildren
         public Boolean HasChildren
         {
             get { return _children.Count > 0; }
         }
         #endregion HasChildren
+        #region Indexer
+        public SwagSettingViewModel this[String key]
+        {
+            get
+            {
+                if (!_dict.ContainsKey(key))
+                {
+                    _children.Add(new SwagSettingViewModel<String>() { Key = key, Display = key, SettingType = SettingType.SettingGroup });
+                }
+                return _dict[key];
+            }
+            set
+            {
+                if (!_dict.ContainsKey(key))
+                {
+                    value.Display = value.Key = key;
+                    _children.Add(value);
+                }
+                _dict[key] = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion Indexer
+        #endregion Properties
 
         #region Initialization
         public SwagSettingViewModel() : base()
@@ -76,30 +103,6 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion Initialization
 
-        #region Indexer
-        public SwagSettingViewModel this[String key]
-        {
-            get
-            {
-                if (!_dict.ContainsKey(key))
-                {
-                    _children.Add(new SwagSettingViewModel<String>() { Key = key, Display = key, SettingType = SettingType.SettingGroup });
-                }
-                return _dict[key];
-            }
-            set
-            {
-                if (!_dict.ContainsKey(key))
-                {
-                    value.Display = value.Key = key;
-                    _children.Add(value);
-                }
-                _dict[key] = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion Indexer
-
         #region Methods
         public T GetValue<T>()
         {
@@ -121,9 +124,8 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Private Members
 
         #region ValueType
-        public override Type ValueType { get { return typeof(T); } }
+        public override Type ValueType { get { return typeof(T); } set { } }
         #endregion ValueType
-
         #region Value
         public override object Value
         {
@@ -131,7 +133,6 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue<T>(ref _value, (T)value); }
         }
         #endregion Value
-
         #region GenericValue
         public T GenericValue
         {
@@ -139,7 +140,17 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue<T>(ref _value, (T)value); }
         }
         #endregion GenericValue
-
+        #region Data
+        public override Byte[] Data
+        {
+            get 
+            {
+                String str = JsonConvert.SerializeObject(GenericValue);
+                return Encoding.ASCII.GetBytes(str); 
+            }
+            set { SetValue<Byte[]>(value); }
+        }
+        #endregion Data
         #region ItemsSource
         public T[] ItemsSource
         {
@@ -147,14 +158,36 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _itemsSource, value); }
         }
         #endregion ItemsSource
+
+        #region Initialization
+        public SwagSettingViewModel() : base()
+        {
+
+        }
+        #endregion Initialization
     }
 
-    public class SwagSettingCollection : SwagSettingViewModel
+    public class SwagSettingGroupViewModel : SwagGroupViewModel<SwagSettingViewModel>
     {
-        public SwagSettingCollection()
+        #region Initialization
+        public SwagSettingGroupViewModel() : base()
         {
-            SettingType = SettingType.SettingGroup;
+            RootGeneric.SettingType = SettingType.SettingGroup;
         }
+
+        #endregion Initialization
+
+        #region Indexer
+        public SwagSettingViewModel this[String key]
+        {
+            get { return RootGeneric[key]; }
+            set
+            {
+                RootGeneric[key] = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion Indexer
     }
 }
 

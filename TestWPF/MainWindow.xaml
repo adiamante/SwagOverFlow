@@ -6,8 +6,7 @@
         xmlns:swag="clr-namespace:SwagOverflowWPF.Controls;assembly=SwagOverflowWPF"
         xmlns:local="clr-namespace:TestWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
-        Settings="{StaticResource Settings}">
+        Title="MainWindow" Height="450" Width="800">
     <swag:SwagWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

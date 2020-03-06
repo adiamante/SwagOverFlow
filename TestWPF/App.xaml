@@ -5,8 +5,5 @@
              xmlns:swag="clr-namespace:SwagOverflowWPF.Controls;assembly=SwagOverflowWPF"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <swag:WindowSettingCollection x:Key="Settings">
-
-        </swag:WindowSettingCollection>
     </Application.Resources>
 </Application>

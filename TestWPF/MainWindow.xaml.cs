@@ -1,19 +1,10 @@
-﻿using MahApps.Metro.Controls;
-using SwagOverflowWPF.Controls;
+﻿using SwagOverflowWPF.Controls;
+using SwagOverflowWPF.Data;
+using SwagOverflowWPF.Repository;
+using SwagOverflowWPF.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Reflection;
 
 namespace TestWPF
 {
@@ -25,6 +16,29 @@ namespace TestWPF
         public MainWindow()
         {
             InitializeComponent();
+
+            String groupName = $"{Assembly.GetEntryAssembly().GetName().Name}";
+
+
+            SwagWindowSettings settings = null;
+            using (var work = new SwagSettingUnitOfWork(new SwagContext()))
+            {
+                SwagSettingGroupViewModel settingGroups = work.SettingGroups.Get(sg => sg.Name == groupName).FirstOrDefault();
+
+                if (settingGroups == null)  //Create settingGroup
+                {
+                    settings = new SwagWindowSettings();
+                    settings.Name = settings.AlternateId = groupName;
+                    work.SettingGroups.Insert(settings);
+                    work.Complete();
+                }
+                else
+                {
+                    settings = new SwagWindowSettings(settingGroups);
+                }
+            }
+
+            this.Settings = settings;
         }
     }
 }
