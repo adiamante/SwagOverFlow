@@ -9,7 +9,8 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              x:Name="ControlInstance"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
+             DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -98,7 +99,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <ListView Grid.Row="1" ItemsSource="{Binding Settings.Root.ChildrenView, RelativeSource={RelativeSource AncestorType={x:Type local:SettingsControl}}}"
+        <ListView Grid.Row="1" ItemsSource="{Binding Settings.Root.ChildrenView}"
                   Grid.IsSharedSizeScope="True" Focusable="False" ItemTemplateSelector="{StaticResource WindowSettingTemplateSelector}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
