@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace SwagOverflowWPF.Interface
 {
@@ -10,15 +8,23 @@ namespace SwagOverflowWPF.Interface
         //Int32 GroupId { get; set; }
         Int32 ItemId { get; set; }
         String AlternateId { get; set; }
+        Int32 Sequence { get; set; }
         Int32? ParentId { get; set; }
         String Display { get; set; }
-        Byte[] Data { get; set; }
 
     }
 
-    public interface ISwagItem<THeirarchy> : ISwagItem
+    public interface ISwagHeirarchy<THeirarchy> : ISwagItem
     {
         THeirarchy Parent { get; set; }
         ObservableCollection<THeirarchy> Children { get; set; }
+    }
+
+    public interface ISwagItemIterator<THeirarchy> where THeirarchy : ISwagHeirarchy<THeirarchy>
+    {
+        THeirarchy First();
+        THeirarchy Next();
+        bool IsDone { get; }
+        THeirarchy CurrentItem { get; }
     }
 }

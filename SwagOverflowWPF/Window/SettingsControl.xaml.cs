@@ -21,11 +21,11 @@ namespace SwagOverflowWPF.Controls
     {
         #region Settings
         private static readonly DependencyProperty SettingsProperty =
-        DependencyProperty.Register("Settings", typeof(SwagWindowSettings), typeof(SettingsControl));
+        DependencyProperty.Register("Settings", typeof(SwagWindowSettingGroup), typeof(SettingsControl));
 
-        public SwagWindowSettings Settings
+        public SwagWindowSettingGroup Settings
         {
-            get { return (SwagWindowSettings)GetValue(SettingsProperty); }
+            get { return (SwagWindowSettingGroup)GetValue(SettingsProperty); }
             set { SetValue(SettingsProperty, value); }
         }
         #endregion Settings

@@ -8,11 +8,11 @@ namespace SwagOverflowWPF.Controls
     {
         #region Settings
         private static readonly DependencyProperty SettingsProperty =
-            DependencyProperty.Register("Settings", typeof(SwagWindowSettings), typeof(SwagWindow));
+            DependencyProperty.Register("Settings", typeof(SwagWindowSettingGroup), typeof(SwagWindow));
 
-        public SwagWindowSettings Settings
+        public SwagWindowSettingGroup Settings
         {
-            get { return (SwagWindowSettings)GetValue(SettingsProperty); }
+            get { return (SwagWindowSettingGroup)GetValue(SettingsProperty); }
             set { SetValue(SettingsProperty, value); }
         }
         #endregion Settings
@@ -24,7 +24,15 @@ namespace SwagOverflowWPF.Controls
 
         public SwagWindow()
         {
-            
+            Loaded += SwagWindow_Loaded;
+        }
+
+        private void SwagWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (Settings != null)
+            {
+                Settings.Initialize();
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ namespace SwagOverflowWPF.Repository
     //https://codewithshadman.com/repository-pattern-csharp/
     public class SwagEFRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        internal SwagContext context;
+        protected SwagContext context;
         internal DbSet<TEntity> dbSet;
 
         public SwagEFRepository(SwagContext context)

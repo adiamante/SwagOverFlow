@@ -38,6 +38,48 @@
     <Compile Remove="Migrations\20200306023656_M6.Designer.cs" />
     <Compile Remove="Migrations\20200306024254_M7.cs" />
     <Compile Remove="Migrations\20200306024254_M7.Designer.cs" />
+    <Compile Remove="Migrations\20200306145006_m0.cs" />
+    <Compile Remove="Migrations\20200306145006_m0.Designer.cs" />
+    <Compile Remove="Migrations\20200306213508_m1.cs" />
+    <Compile Remove="Migrations\20200306213508_m1.Designer.cs" />
+    <Compile Remove="Migrations\20200306215600_m2.cs" />
+    <Compile Remove="Migrations\20200306215600_m2.Designer.cs" />
+    <Compile Remove="Migrations\20200306215658_m2.cs" />
+    <Compile Remove="Migrations\20200306215658_m2.Designer.cs" />
+    <Compile Remove="Migrations\20200306223254_m3.cs" />
+    <Compile Remove="Migrations\20200306223254_m3.Designer.cs" />
+    <Compile Remove="Migrations\20200306223914_m3.cs" />
+    <Compile Remove="Migrations\20200306223914_m3.Designer.cs" />
+    <Compile Remove="Migrations\20200306224344_M0.cs" />
+    <Compile Remove="Migrations\20200306224344_M0.Designer.cs" />
+    <Compile Remove="Migrations\20200306225048_M1.cs" />
+    <Compile Remove="Migrations\20200306225048_M1.Designer.cs" />
+    <Compile Remove="Migrations\20200306230004_M0.cs" />
+    <Compile Remove="Migrations\20200306230004_M0.Designer.cs" />
+    <Compile Remove="Migrations\20200306231032_M1.cs" />
+    <Compile Remove="Migrations\20200306231032_M1.Designer.cs" />
+    <Compile Remove="Migrations\20200306231225_M2.cs" />
+    <Compile Remove="Migrations\20200306231225_M2.Designer.cs" />
+    <Compile Remove="Migrations\20200306231801_M0.cs" />
+    <Compile Remove="Migrations\20200306231801_M0.Designer.cs" />
+    <Compile Remove="Migrations\20200306232557_M1.cs" />
+    <Compile Remove="Migrations\20200306232557_M1.Designer.cs" />
+    <Compile Remove="Migrations\20200306232858_M2.cs" />
+    <Compile Remove="Migrations\20200306232858_M2.Designer.cs" />
+    <Compile Remove="Migrations\20200306233156_M3.cs" />
+    <Compile Remove="Migrations\20200306233156_M3.Designer.cs" />
+    <Compile Remove="Migrations\20200306233742_M4.cs" />
+    <Compile Remove="Migrations\20200306233742_M4.Designer.cs" />
+    <Compile Remove="Migrations\20200307032829_M0.cs" />
+    <Compile Remove="Migrations\20200307032829_M0.Designer.cs" />
+    <Compile Remove="Migrations\20200307035120_M1.cs" />
+    <Compile Remove="Migrations\20200307035120_M1.Designer.cs" />
+    <Compile Remove="Migrations\20200308000131_M0.cs" />
+    <Compile Remove="Migrations\20200308000131_M0.Designer.cs" />
+    <Compile Remove="Migrations\20200308001502_M1.cs" />
+    <Compile Remove="Migrations\20200308001502_M1.Designer.cs" />
+    <Compile Remove="Migrations\20200308021317_M2.cs" />
+    <Compile Remove="Migrations\20200308021317_M2.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,10 +93,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

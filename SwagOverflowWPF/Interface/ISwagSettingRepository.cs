@@ -8,6 +8,6 @@ namespace SwagOverflowWPF.Interface
 {
     public interface ISwagSettingRepository : IRepository<SwagSettingViewModel>
     {
-        //Custom query methods here
+        void RecursiveLoadChildren(SwagSettingViewModel swagSettingViewModel);
     }
 }

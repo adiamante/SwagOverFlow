@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
+using SwagOverflowWPF.Controls;
+using SwagOverflowWPF.Utilities;
 using SwagOverflowWPF.ViewModels;
 using System;
 
@@ -11,13 +14,15 @@ namespace SwagOverflowWPF.Data
         string _dataSource = "localhost";
         public DbSet<SwagGroupViewModel> SwagGroups { get; set; }
         public DbSet<SwagItemViewModel> SwagItems { get; set; }
-        public DbSet<SwagSettingViewModel> SwatSettings { get; set; }
-        public DbSet<SwagSettingGroupViewModel> SwatSettingGroups { get; set; }
+        public DbSet<SwagSettingViewModel> SwagSettings { get; set; }
+        public DbSet<SwagSettingGroupViewModel> SwagSettingGroups { get; set; }
+        public DbSet<SwagWindowSettingGroup> SwagWindowSettingGroups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new SwagGroupEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagItemEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagSettingViewModelEntityConfiguration());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -39,16 +44,19 @@ namespace SwagOverflowWPF.Data
             builder.HasIndex(sg => sg.AlternateId).IsUnique();
 
             //SwagGroupViewModel One to One => SwagItemViewModel
+            //Group and GroupRoot exist in SwagItemViewModel as a workaround for circular references
+            //Item.Group => Group.Root => Item.Group => (multiple Item.Group exist that have references to the same Group.Root) 
+            //vs Item.GroupRoot => Group.Root => (limmited to one Item.GroupRoot)
             builder.HasOne(sg => sg.Root)
                 .WithOne(si => si.GroupRoot)
                 .HasForeignKey<SwagItemViewModel>(si => si.GroupRootId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             //SwagGroupViewModel Many to One => SwagItemViewModel
-            builder.HasMany(sg => sg.Descendants)
-                .WithOne(si => si.Group)
-                .HasForeignKey(si => si.GroupId)
-                .OnDelete(DeleteBehavior.NoAction);
+            //builder.HasMany(sg => sg.Descendants)
+            //    .WithOne(si => si.Group)
+            //    .HasForeignKey(si => si.GroupId)
+            //    .OnDelete(DeleteBehavior.NoAction);
         }
     }
 
@@ -69,14 +77,36 @@ namespace SwagOverflowWPF.Data
                 .HasForeignKey(si => new { si.GroupId, si.ParentId })
                 .OnDelete(DeleteBehavior.NoAction);
 
-            //SwagItemViewModel Value =>  Ignore
-            builder.Ignore(si => si.Value);
-
-            //Instruction SchemaCheck
-            builder.Property(si => si.ValueType)
+            //SwagItemViewModel Value
+            builder.Property(si => si.Value)
                 .HasConversion(
-                    si => JsonConvert.SerializeObject(si),
-                    si => JsonConvert.DeserializeObject<Type>(si));
+                    si => JsonHelper.ToJsonString(si),
+                    si => JsonConvert.DeserializeObject<object>(si));
+
+            //SwagItemViewModel ValueType => Ignore
+            builder.Ignore(si => si.ValueType);
+
+            //SwagItemViewModel One to One => SwagGroupViewModel
+            //builder.HasOne(si => si.GroupRoot)
+            //    .WithOne(sg => sg.Root)
+            //    .HasForeignKey<SwagGroupViewModel>(sg => new { sg.GroupId, sg.RootId })
+            //    .OnDelete(DeleteBehavior.NoAction);
+        }
+    }
+
+    public class SwagSettingViewModelEntityConfiguration : IEntityTypeConfiguration<SwagSettingViewModel>
+    {
+        public void Configure(EntityTypeBuilder<SwagSettingViewModel> builder)
+        {
+            //SwagSettingViewModel SettingType => Convert to String
+            EnumToStringConverter<SettingType> settingTypeconverter = new EnumToStringConverter<SettingType>();
+            builder.Property(ss => ss.SettingType).HasConversion(settingTypeconverter);
+
+            //SwagSettingViewModel ItemsSource => Convert to String
+            builder.Property(ss => ss.ItemsSource)
+                .HasConversion(
+                    ss => JsonHelper.ToJsonString(ss),
+                    ss => JsonConvert.DeserializeObject<object>(ss));
         }
     }
 }
