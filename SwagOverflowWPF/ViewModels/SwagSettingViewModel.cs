@@ -32,11 +32,48 @@ namespace SwagOverflowWPF.ViewModels
     {
         #region Private/Protected Members
         SettingType _settingType;
+        Enum _icon;
         protected Object _itemsSource;
-        protected String _itemsSourceTypeString;
+        protected String _iconString, _iconTypeString, _itemsSourceTypeString;
         #endregion Private/Protected Members
 
-        #region Region
+        #region Properties
+        #region Icon
+        [NotMapped]
+        public Enum Icon
+        {
+            get { return _icon; }
+            set { SetValue(ref _icon, value); }
+        }
+        #endregion Icon
+        #region IconString
+        public String IconString
+        {
+            get 
+            {
+                if (_icon != null)
+                {
+                    return _icon.ToString();
+                }
+                return _iconString; 
+            }
+            set { SetValue(ref _iconString, value); }
+        }
+        #endregion IconString
+        #region IconTypeString
+        public String IconTypeString
+        {
+            get 
+            {
+                if (_icon != null)
+                {
+                    return JsonHelper.ToJsonString(_icon.GetType());
+                }
+                return _iconTypeString;
+            }
+            set { SetValue(ref _iconTypeString, value); }
+        }
+        #endregion IconTypeString
         #region SettingType
         public SettingType SettingType
         {
@@ -62,7 +99,7 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _itemsSourceTypeString, value); }
         }
         #endregion ItemsSourceTypeString
-        #endregion Region
+        #endregion Properties
 
         #region Initialization
         public SwagSettingViewModel() : base()

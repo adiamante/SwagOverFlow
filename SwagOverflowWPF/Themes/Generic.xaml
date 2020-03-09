@@ -4,7 +4,8 @@
     xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:controls="clr-namespace:SwagOverflowWPF.Controls"
     xmlns:local="clr-namespace:SwagOverflowWPF"
-    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks">
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:ui="clr-namespace:SwagOverflowWPF.UI">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/SwagOverflowWPF;component/Themes/Common.xaml"/>
     </ResourceDictionary.MergedDictionaries>
@@ -14,19 +15,11 @@
                 <Binding RelativeSource="{RelativeSource Mode=Self}" />
             </Setter.Value>
         </Setter>
-        <Setter Property="ContextMenu">
-            <Setter.Value>
-                <ContextMenu>
-                    <MenuItem Header="Test1" />
-                    <MenuItem Header="Test2" />
-                </ContextMenu>
-            </Setter.Value>
-        </Setter>
         <Setter Property="RightWindowCommands">
             <Setter.Value>
                 <metro:WindowCommands>
                     <ToggleButton IsChecked="{Binding Settings[Settings][IsOpen].Value}">
-                        <iconPacks:MaterialDesign Kind="Settings" />
+                        <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Settings}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
                     </ToggleButton>
                 </metro:WindowCommands>
             </Setter.Value>
@@ -37,7 +30,9 @@
                     <metro:Flyout IsOpen="{Binding Settings[Settings][IsOpen].Value}" Position="Right" Theme="Accent">
                         <metro:Flyout.Header>
                             <StackPanel Orientation="Horizontal">
-                                <iconPacks:MaterialDesign Kind="Settings" />
+                                <Grid>
+                                    <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Settings}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                </Grid>
                                 <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" Text="Settings" />
                             </StackPanel>
                         </metro:Flyout.Header>

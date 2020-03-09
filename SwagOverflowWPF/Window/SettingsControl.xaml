@@ -26,16 +26,10 @@
                         <ColumnDefinition SharedSizeGroup="Value" Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <ContentControl Grid.Column="0" Height="20" Width="20">
-                        <!--<ContentControl.ContentTemplate>
-                        <MultiBinding Converter="{StaticResource StringToDynamicIconDataTemplateConverterSetting}">
-                            <Binding RelativeSource="{RelativeSource Self}" />
-                            <Binding Path="Value.Icon" />
-                        </MultiBinding>
-                    </ContentControl.ContentTemplate>-->
-                    </ContentControl>
-                    <TextBlock Grid.Column="1" Text="{Binding Display}" VerticalAlignment="Center" Margin="0,0,10,0" />
-                    <ContentPresenter Grid.Column="2" />
+                    <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Height="20" Width="20" ContentTemplate="{Binding Path=Icon, Converter={ui:PackIconKindOrCustomToDataTemplateConverter}}" />
+                    <!--MahApps.Brushes.AccentBase-->
+                    <TextBlock HorizontalAlignment="Left" Margin="0,0,10,0" Grid.Column="1" Text="{Binding Display}" FontWeight="Bold" Foreground="{DynamicResource MahApps.Brushes.AccentBase}" VerticalAlignment="Center" />
+                    <ContentPresenter HorizontalAlignment="Left" Grid.Column="2" />
                 </Grid>
             </ControlTemplate>
             <ui:TemplateCollection x:Key="SettingTemplateCollection">
@@ -67,6 +61,7 @@
                                       Focusable="False" ItemTemplateSelector="{DynamicResource WindowSettingTemplateSelector}">
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="{x:Type ListViewItem}">
+                                            <Setter Property="HorizontalAlignment" Value="Left" />
                                             <Setter Property="Visibility" Value="{Binding SettingType, Converter={StaticResource EnumMatchToVisibilityInverseConverter}, ConverterParameter={x:Static vm:SettingType.Hidden}}" />
                                         </Style>
                                     </ListView.ItemContainerStyle>
@@ -102,6 +97,7 @@
                   Grid.IsSharedSizeScope="True" Focusable="False" ItemTemplateSelector="{StaticResource WindowSettingTemplateSelector}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
                     <Setter Property="Visibility" Value="{Binding SettingType, Converter={StaticResource EnumMatchToVisibilityInverseConverter}, ConverterParameter={x:Static vm:SettingType.Hidden}}" />
                 </Style>
             </ListView.ItemContainerStyle>

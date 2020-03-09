@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using MahApps.Metro;
+using MahApps.Metro.IconPacks;
 using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Repository;
 using SwagOverflowWPF.UI;
@@ -21,10 +22,10 @@ namespace SwagOverflowWPF.Controls
 
             this["Settings"] = new SwagSettingViewModel() { SettingType = SettingType.Hidden, Sequence = 0 };
             this["Settings"]["IsOpen"] = new SwagSettingViewModel<Boolean>() { GenericValue = true, SettingType = SettingType.Hidden, Sequence = 0 };
-            this["General"] = new SwagSettingViewModel() { SettingType = SettingType.SettingGroup, Sequence = 1 };
-            this["General"]["Theme"] = new SwagSettingViewModel() { SettingType = SettingType.SettingGroup };
-            this["General"]["Theme"]["Base"] = new SwagSettingViewModel<String>() { GenericValue = "Light", Sequence = 0, GenericItemsSource = new[] { "Light", "Dark" }, SettingType = SettingType.DropDown };
-            this["General"]["Theme"]["Accent"] = new SwagSettingViewModel<String>() { GenericValue = "Blue", Sequence = 1, GenericItemsSource = new [] { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" }, SettingType = SettingType.DropDown };
+            this["General"] = new SwagSettingViewModel() { SettingType = SettingType.SettingGroup, Sequence = 1, Icon = PackIconMaterialKind.SettingsOutline };
+            this["General"]["Theme"] = new SwagSettingViewModel() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.PaletteOutline };
+            this["General"]["Theme"]["Base"] = new SwagSettingViewModel<String>() { GenericValue = "Light", Sequence = 0, Icon = PackIconMaterialKind.PaletteSwatchOutline, GenericItemsSource = new[] { "Light", "Dark" }, SettingType = SettingType.DropDown };
+            this["General"]["Theme"]["Accent"] = new SwagSettingViewModel<String>() { GenericValue = "Blue", Sequence = 1, Icon = PackIconMaterialKind.Brush, GenericItemsSource = new [] { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" }, SettingType = SettingType.DropDown };
         }
 
         public void Initialize()

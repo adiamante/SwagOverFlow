@@ -30,17 +30,24 @@ namespace SwagOverflowWPF.Controllers
                     SwagItemPreOrderIterator<SwagItemViewModel> iterator = windowSettings.CreateIterator();
                     for (SwagItemViewModel swagItem = iterator.First(); !iterator.IsDone; swagItem = iterator.Next())
                     {
-                        if (!String.IsNullOrEmpty(swagItem.ValueTypeString))
+                        SwagSettingViewModel swagItemOriginal = (SwagSettingViewModel)swagItem;
+                        if (swagItemOriginal.IconString != null)
+                        {
+                            Type iconType = JsonConvert.DeserializeObject<Type>(swagItemOriginal.IconTypeString);
+                            swagItemOriginal.Icon = (Enum)Enum.Parse(iconType, swagItemOriginal.IconString);
+                        }
+
+                        if (!String.IsNullOrEmpty(swagItemOriginal.ValueTypeString))
                         {
                             Type typeGenericTemplate = typeof(SwagSettingViewModel<>);
-                            Type valueType = JsonConvert.DeserializeObject<Type>(swagItem.ValueTypeString);
+                            Type valueType = JsonConvert.DeserializeObject<Type>(swagItemOriginal.ValueTypeString);
                             Type[] typeArgs = { valueType };
                             Type typeGeneric = typeGenericTemplate.MakeGenericType(typeArgs);
-                            windowSettings.Descendants.Remove(swagItem);
-                            work.Settings.Delete((SwagSettingViewModel)swagItem);
+                            windowSettings.Descendants.Remove(swagItemOriginal);
+                            work.Settings.Delete(swagItemOriginal);
 
-                            SwagSettingViewModel newSetting = (SwagSettingViewModel)Activator.CreateInstance(typeGeneric, (SwagSettingViewModel)swagItem);
-                            newSetting.Children = swagItem.Children;
+                            SwagSettingViewModel newSetting = (SwagSettingViewModel)Activator.CreateInstance(typeGeneric, swagItemOriginal);
+                            newSetting.Children = swagItemOriginal.Children;
 
                             if (newSetting.ItemsSource != null)
                             {
@@ -48,20 +55,20 @@ namespace SwagOverflowWPF.Controllers
                                 newSetting.ItemsSource = JsonConvert.DeserializeObject(newSetting.ItemsSource.ToString(), itemsSourceType);
                             }
 
-                            swagItem.Parent.Children.Remove(swagItem);
-                            swagItem.Parent.Children.Add(newSetting);
+                            swagItemOriginal.Parent.Children.Remove(swagItemOriginal);
+                            swagItemOriginal.Parent.Children.Add(newSetting);
 
                             if (valueType == typeof(Boolean))
                             {
-                                newSetting.Value = Boolean.Parse(swagItem.Value.ToString());
+                                newSetting.Value = Boolean.Parse(swagItemOriginal.Value.ToString());
                             }
                             else if (valueType == typeof(String))
                             {
-                                newSetting.Value = swagItem.Value.ToString();
+                                newSetting.Value = swagItemOriginal.Value.ToString();
                             }
                             else
                             {
-                                newSetting.Value = JsonConvert.DeserializeObject(swagItem.Value.ToString(), valueType);
+                                newSetting.Value = JsonConvert.DeserializeObject(swagItemOriginal.Value.ToString(), valueType);
                             }
 
                             work.Settings.Insert(newSetting);
@@ -85,6 +92,8 @@ namespace SwagOverflowWPF.Controllers
                         setting.ValueTypeString = setting.ValueTypeString;
                         setting.ItemsSource = setting.ItemsSource;
                         setting.ItemsSourceTypeString = setting.ItemsSourceTypeString;
+                        setting.IconString = setting.IconString;
+                        setting.IconTypeString = setting.IconTypeString;
                     }
 
                     work.Complete();
