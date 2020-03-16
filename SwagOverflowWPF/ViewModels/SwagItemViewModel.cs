@@ -13,7 +13,7 @@ using System.Windows.Data;
 
 namespace SwagOverflowWPF.ViewModels
 {
-    public class SwagItemViewModel : ViewModelBase, ISwagHeirarchy<SwagItemViewModel>
+    public class SwagItemViewModel : ViewModelBaseExtended, ISwagHeirarchy<SwagItemViewModel>
     {
         #region Private/Protected Members
         String _display, _alternateId;
@@ -142,21 +142,18 @@ namespace SwagOverflowWPF.ViewModels
         #region Initialization
         public SwagItemViewModel()
         {
-            PropertyChanged += SwagItemViewModel_PropertyChanged;
+            PropertyChangedExtended += SwagItemViewModel_PropertyChangedExtended;
             _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
             _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
             _children.CollectionChanged += _children_CollectionChanged;
         }
 
-        private void SwagItemViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void SwagItemViewModel_PropertyChangedExtended(object sender, PropertyChangedExtendedEventArgs e)
         {
-            if (Group != null && e.PropertyName != "Group")
-            {
-                Group.OnSwagItemChanged(this);
-            }
+            Group?.OnSwagItemChanged(this, e);
         }
 
-        private void _children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
             {
@@ -253,6 +250,22 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion Indexer
+        #region Path
+        public String Path
+        {
+            get 
+            {
+                SwagItemViewModel tempNode = this;
+                String path = "";
+                while (tempNode != null)
+                {
+                    path = $"{tempNode.Display}/{path}";
+                    tempNode = tempNode.Parent;
+                }
+                return path.Trim('/'); 
+            }
+        }
+        #endregion Path
         #endregion Properties
 
         #region Initialization
@@ -334,9 +347,10 @@ namespace SwagOverflowWPF.ViewModels
     public class SwagItemChangedEventArgs : EventArgs
     {
         public SwagItemViewModel SwagItem { get; set; }
+        public PropertyChangedExtendedEventArgs PropertyChangedArgs { get; set; }
     }
 
-    public class SwagGroupViewModel : ViewModelBase
+    public class SwagGroupViewModel : ViewModelBaseExtended
     {
         #region Private/Protected Members
         String _name, _display, _alternateId;
@@ -349,9 +363,9 @@ namespace SwagOverflowWPF.ViewModels
         #region Events
         public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
 
-        public virtual void OnSwagItemChanged(SwagItemViewModel swagItem)
+        public virtual void OnSwagItemChanged(SwagItemViewModel swagItem, PropertyChangedExtendedEventArgs e)
         {
-            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem });
+            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
         }
         #endregion Events
 

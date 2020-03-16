@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -24,14 +25,16 @@ namespace SwagOverflowWPF.ViewModels
     }
 
     //https://stackoverflow.com/questions/7677854/notifypropertychanged-event-where-event-args-contain-the-old-value
-    public class PropertyChangedExtendedEventArgs<T> : PropertyChangedEventArgs
+    public class PropertyChangedExtendedEventArgs : PropertyChangedEventArgs
     {
-        public virtual T OldValue { get; private set; }
-        public virtual T NewValue { get; private set; }
+        public virtual object Object { get; private set; }
+        public virtual object OldValue { get; private set; }
+        public virtual object NewValue { get; private set; }
 
-        public PropertyChangedExtendedEventArgs(string propertyName, T oldValue, T newValue)
+        public PropertyChangedExtendedEventArgs(string propertyName, object obj, object oldValue, object newValue)
             : base(propertyName)
         {
+            Object = obj;
             OldValue = oldValue;
             NewValue = newValue;
         }
@@ -39,11 +42,12 @@ namespace SwagOverflowWPF.ViewModels
 
     public abstract class ViewModelBaseExtended : ViewModelBase
     {
-        public event PropertyChangedEventHandler PropertyChangedExtended;
 
-        protected virtual void OnPropertyChangedExtended<T>(T oldValue, T newValue, [CallerMemberName] string propertyName = null)
+        public event EventHandler<PropertyChangedExtendedEventArgs> PropertyChangedExtended;
+
+        protected virtual void OnPropertyChangedExtended(object oldValue, object newValue, [CallerMemberName] string propertyName = null)
         {
-            PropertyChangedExtended?.Invoke(this, new PropertyChangedExtendedEventArgs<T>(propertyName, oldValue, newValue));
+            PropertyChangedExtended?.Invoke(this, new PropertyChangedExtendedEventArgs(propertyName, this, oldValue, newValue));
         }
 
         protected override void SetValue<T>(ref T backingField, T value, [CallerMemberName] string propertyName = null)

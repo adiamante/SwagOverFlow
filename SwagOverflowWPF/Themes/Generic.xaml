@@ -18,6 +18,9 @@
         <Setter Property="RightWindowCommands">
             <Setter.Value>
                 <metro:WindowCommands>
+                    <ToggleButton IsChecked="{Binding Settings[CommandHistory][IsOpen].Value}">
+                        <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.History}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                    </ToggleButton>
                     <ToggleButton IsChecked="{Binding Settings[Settings][IsOpen].Value}">
                         <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Settings}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
                     </ToggleButton>
@@ -27,6 +30,53 @@
         <Setter Property="Flyouts">
             <Setter.Value>
                 <metro:FlyoutsControl>
+                    <metro:Flyout IsOpen="{Binding Settings[CommandHistory][IsOpen].Value}" Position="Right" Theme="Accent">
+                        <metro:Flyout.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <Grid>
+                                    <ContentControl HorizontalAlignment="Right" Margin="0,0,10,0" Grid.Column="0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.History}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                </Grid>
+                                <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" Text="Commands" />
+                            </StackPanel>
+                        </metro:Flyout.Header>
+                        <GroupBox>
+                            <GroupBox.Header>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="History" />
+                                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Command="{Binding CommandManager.UndoCommand}">
+                                            <ContentControl HorizontalAlignment="Right" Grid.Column="0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Undo}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                        </Button>
+                                        <Button Command="{Binding CommandManager.RedoCommand}">
+                                            <ContentControl HorizontalAlignment="Right" Grid.Column="0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Redo}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </GroupBox.Header>
+                            <StackPanel>
+                                <ListView VerticalAlignment="Top" ItemsSource="{Binding CommandManager.CommandHistory}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Value.Display}" />
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                                <Separator />
+                                <ListView VerticalAlignment="Bottom" ItemsSource="{Binding CommandManager.UndoHistory}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Value.Display}" />
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
+
+                        </GroupBox>
+                    </metro:Flyout>
                     <metro:Flyout IsOpen="{Binding Settings[Settings][IsOpen].Value}" Position="Right" Theme="Accent">
                         <metro:Flyout.Header>
                             <StackPanel Orientation="Horizontal">

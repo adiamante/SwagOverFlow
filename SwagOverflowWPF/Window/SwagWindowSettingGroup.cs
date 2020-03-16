@@ -21,7 +21,9 @@ namespace SwagOverflowWPF.Controls
             //this.Name = this.Display = groupName;
 
             this["Settings"] = new SwagSettingViewModel() { SettingType = SettingType.Hidden, Sequence = 0 };
-            this["Settings"]["IsOpen"] = new SwagSettingViewModel<Boolean>() { GenericValue = true, SettingType = SettingType.Hidden, Sequence = 0 };
+            this["Settings"]["IsOpen"] = new SwagSettingViewModel<Boolean>() { GenericValue = false, SettingType = SettingType.Hidden, Sequence = 0 };
+            this["CommandHistory"] = new SwagSettingViewModel() { SettingType = SettingType.Hidden, Sequence = 0 };
+            this["CommandHistory"]["IsOpen"] = new SwagSettingViewModel<Boolean>() { GenericValue = false, SettingType = SettingType.Hidden, Sequence = 0 };
             this["General"] = new SwagSettingViewModel() { SettingType = SettingType.SettingGroup, Sequence = 1, Icon = PackIconMaterialKind.SettingsOutline };
             this["General"]["Theme"] = new SwagSettingViewModel() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.PaletteOutline };
             this["General"]["Theme"]["Base"] = new SwagSettingViewModel<String>() { GenericValue = "Light", Sequence = 0, Icon = PackIconMaterialKind.PaletteSwatchOutline, GenericItemsSource = new[] { "Light", "Dark" }, SettingType = SettingType.DropDown };

@@ -1,6 +1,8 @@
 ﻿using MahApps.Metro.Controls;
+using SwagOverflowWPF.Commands;
 using SwagOverflowWPF.ViewModels;
 using System.Windows;
+using System.Windows.Input;
 
 namespace SwagOverflowWPF.Controls
 {
@@ -17,6 +19,18 @@ namespace SwagOverflowWPF.Controls
         }
         #endregion Settings
 
+        #region CommandManager
+        private static readonly DependencyProperty CommandManagerProperty =
+            DependencyProperty.Register("CommandManager", typeof(SwagCommandManager), typeof(SwagWindow),
+                new PropertyMetadata(new SwagCommandManager()));
+
+        public SwagCommandManager CommandManager
+        {
+            get { return (SwagCommandManager)GetValue(CommandManagerProperty); }
+            set { SetValue(CommandManagerProperty, value); }
+        }
+        #endregion CommandManager
+
         static SwagWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SwagWindow), new FrameworkPropertyMetadata(typeof(SwagWindow)));
@@ -32,6 +46,10 @@ namespace SwagOverflowWPF.Controls
             if (Settings != null)
             {
                 Settings.Initialize();
+                CommandManager.Attach(Settings);
+
+                InputBindings.Add(new KeyBinding() { Modifiers = ModifierKeys.Control, Key = Key.Z, Command = CommandManager.UndoCommand });
+                InputBindings.Add(new KeyBinding() { Modifiers = ModifierKeys.Control, Key = Key.Y, Command = CommandManager.RedoCommand });
             }
         }
     }
