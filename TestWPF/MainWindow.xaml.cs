@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SwagOverflowWPF.Controllers;
+using SwagOverflowWPF.Services;
 using SwagOverflowWPF.Controls;
 using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Iterator;
@@ -21,9 +21,9 @@ namespace TestWPF
         {
             InitializeComponent();
 
-            SwagWindowSettingController controller = new SwagWindowSettingController(new SwagContext());
+            SwagWindowSettingService service = new SwagWindowSettingService(new SwagContext());
             String groupName = $"{Assembly.GetEntryAssembly().GetName().Name}";
-            this.Settings = controller.GetWindowSettingGroupByName(groupName);
+            this.Settings = service.GetWindowSettingGroupByName(groupName);
         }
     }
 }

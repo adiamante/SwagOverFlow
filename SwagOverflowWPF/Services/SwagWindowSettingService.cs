@@ -9,13 +9,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SwagOverflowWPF.Controllers
+namespace SwagOverflowWPF.Services
 {
-    public class SwagWindowSettingController
+    public class SwagWindowSettingService
     {
         private readonly SwagContext context;
 
-        public SwagWindowSettingController(SwagContext context) => this.context = context;
+        public SwagWindowSettingService(SwagContext context) => this.context = context;
 
         public SwagWindowSettingGroup GetWindowSettingGroupByName(String groupName)
         {
