@@ -35,11 +35,11 @@ namespace SwagOverflowWPF.Data
             modelBuilder.ApplyConfiguration(new SwagDataRowEntityConfiguration());
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            SetSqlServerOptions(optionsBuilder);
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+            //SetSqlServerOptions(optionsBuilder);
             //SetSqliteOptions(optionsBuilder);
-        }
+        //}
 
         public static void SetSqlServerOptions(DbContextOptionsBuilder optionsBuilder)
         {

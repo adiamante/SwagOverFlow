@@ -5,17 +5,71 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:swag="clr-namespace:SwagOverflowWPF.Controls;assembly=SwagOverflowWPF"
         xmlns:local="clr-namespace:TestWPF"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:ui="clr-namespace:SwagOverflowWPF.UI;assembly=SwagOverflowWPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <swag:SwagWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/SwagOverflowWPF;component/Themes/Generic.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </swag:SwagWindow.Resources>
-    <Grid>
-        <Button>Test</Button>
-    </Grid>
+    <TabControl>
+        <TabItem Header="Source">
+            <DockPanel>
+                <Grid DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Click="Load_Source_From_Clipboard_Button_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ClipboardText}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                <TextBlock Text="Load From Clipboard" />
+                            </StackPanel>
+                        </Button>
+                        <Button Click="MapSimilar_Button_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Compare}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                <TextBlock Text="Map Similar Descriptions" />
+                            </StackPanel>
+                        </Button>
+                        <Button Click="Export_Mapppings_Button_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Export}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                <TextBlock Text="Export Mappings" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+                <DataGrid x:Name="dgSource" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="True"  VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True" EnableRowVirtualization="True" ItemsSource="{Binding Source.DataTable.DefaultView}" AutoGenerateColumns="False" AllowDrop="True" DragEnter="dg_DragEnter" Drop="dg_Drop">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel IsItemsHost="True"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </DataGrid>
+            </DockPanel>
+        </TabItem>
+        <TabItem Header="Dest">
+            <DockPanel>
+                <Grid DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Click="Load_Dest_From_Clipboard_Button_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ClipboardText}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                <TextBlock Text="Load From Clipboard" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+                <DataGrid x:Name="dgDest" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="True"  VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True" EnableRowVirtualization="True" ItemsSource="{Binding Dest.DataTable.DefaultView}" AutoGenerateColumns="False" AllowDrop="True" DragEnter="dg_DragEnter" Drop="dg_Drop">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel IsItemsHost="True"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </DataGrid>
+            </DockPanel>
+        </TabItem>
+    </TabControl>
 </swag:SwagWindow>
     

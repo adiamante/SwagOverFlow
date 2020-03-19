@@ -1,12 +1,15 @@
 ﻿using MahApps.Metro.Controls;
 using SwagOverflowWPF.Commands;
 using SwagOverflowWPF.ViewModels;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 
 namespace SwagOverflowWPF.Controls
 {
-    public class SwagWindow : MetroWindow
+    public class SwagWindow : MetroWindow, INotifyPropertyChanged
     {
         #region Settings
         private static readonly DependencyProperty SettingsProperty =
@@ -30,6 +33,24 @@ namespace SwagOverflowWPF.Controls
             set { SetValue(CommandManagerProperty, value); }
         }
         #endregion CommandManager
+
+        #region INotifyPropertyChanged
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected virtual void SetValue<T>(ref T backingField, T value, [CallerMemberName] string propertyname = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(backingField, value))
+                return;
+
+            backingField = value;
+            OnPropertyChanged(propertyname);
+        }
+        #endregion INotifyPropertyChanged
 
         static SwagWindow()
         {

@@ -17,4 +17,10 @@
     <ProjectReference Include="..\SwagOverflowWPF\SwagOverflowWPF.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="settings.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
