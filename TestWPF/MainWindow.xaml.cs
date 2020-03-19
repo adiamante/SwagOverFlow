@@ -24,6 +24,7 @@ namespace TestWPF
     {
         private static IServiceProvider serviceProvider;
         SwagDataTable _sdtSource = null, _sdtDest = null;
+        String descriptionField = "FullDescription";
 
         #region Source
         public SwagDataTable Source
@@ -149,7 +150,7 @@ namespace TestWPF
                 //https://stackoverflow.com/questions/9385489/why-errors-when-filters-datatable-with-collectionview
                 FrameworkElementFactory comboBoxFactory = new FrameworkElementFactory(typeof(AutoFilteredComboBox));
                 //comboBoxFactory.SetValue(AutoFilteredComboBox.TextProperty, "");
-                comboBoxFactory.SetValue(AutoFilteredComboBox.DisplayMemberPathProperty, "Description");
+                comboBoxFactory.SetValue(AutoFilteredComboBox.DisplayMemberPathProperty, descriptionField);
                 comboBoxFactory.SetValue(AutoFilteredComboBox.IsEditableProperty, true);
                 comboBoxFactory.SetBinding(AutoFilteredComboBox.ItemsSourceProperty, new Binding("Dest.DataTable.DefaultView") { RelativeSource = new RelativeSource() { AncestorType = typeof(MainWindow) }});
                 //comboBoxFactory.SetValue(AutoFilteredComboBox.ItemsSourceProperty, Dest.DataTable.DefaultView);
@@ -229,8 +230,8 @@ namespace TestWPF
             for (int r = 0; r < Source.DataTable.Rows.Count; r++)
             {
                 DataRow drSource = Source.DataTable.Rows[r];
-                String description = drSource["Description"].ToString();
-                DataRow[] drMatches = Dest.DataTable.Select($"[Description] = '{description.Replace("'", "''")}'");
+                String description = drSource[descriptionField].ToString();
+                DataRow[] drMatches = Dest.DataTable.Select($"[{descriptionField}] = '{description.Replace("'", "''")}'");
 
                 if (drMatches.Length > 0)
                 {
