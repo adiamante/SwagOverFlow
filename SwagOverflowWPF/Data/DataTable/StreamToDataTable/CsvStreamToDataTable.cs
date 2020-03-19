@@ -49,11 +49,20 @@ namespace SwagOverflowWPF.Data
                 #endregion If Record Delimiter is overriden, itterate through all characters and replace them with new line
             }
 
+            //_conf.BadDataFound = cxt =>
+            //{
+            //For debugging (put breakpoints here)
+            //};
+
             _conf.Delimiter = context.FieldDelim.ToString();
+            if (_conf.Delimiter != ",")
+            {
+                _conf.IgnoreQuotes = true;
+            }
             _conf.HasHeaderRecord = context.HasHeaders;
             CsvReader csvReader = new CsvReader(sr, _conf);
             CsvDataReader dataReader = new CsvDataReader(csvReader);
-
+            
             if (!context.HasHeaders)
             {
                 #region If No Headers loop through all records and add columns as columns are found
