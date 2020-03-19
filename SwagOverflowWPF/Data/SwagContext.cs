@@ -2,34 +2,61 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using SwagOverflowWPF.Controls;
 using SwagOverflowWPF.Utilities;
 using SwagOverflowWPF.ViewModels;
 using System;
+using System.Data;
+using System.Reflection;
 
 namespace SwagOverflowWPF.Data
 {
     public class SwagContext : DbContext
     {
-        string _dataSource = "localhost";
+        static string _dataSource = "localhost";
         public DbSet<SwagGroupViewModel> SwagGroups { get; set; }
         public DbSet<SwagItemViewModel> SwagItems { get; set; }
         public DbSet<SwagSettingViewModel> SwagSettings { get; set; }
         public DbSet<SwagSettingGroupViewModel> SwagSettingGroups { get; set; }
         public DbSet<SwagWindowSettingGroup> SwagWindowSettingGroups { get; set; }
+        public DbSet<SwagDataRow> SwagDataRows { get; set; }
+        public DbSet<SwagDataTable> SwagDataTables { get; set; }
+        public SwagContext() : base() { }
+
+        public SwagContext(DbContextOptions<SwagContext> options) : base (options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new SwagGroupEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagItemEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingViewModelEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagDataTableEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagDataRowEntityConfiguration());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            SetSqlServerOptions(optionsBuilder);
+            //SetSqliteOptions(optionsBuilder);
+        }
+
+        public static void SetSqlServerOptions(DbContextOptionsBuilder optionsBuilder)
+        {
             string migrationConnectionString = $"Data Source = { _dataSource }; Initial Catalog = SwagOverflow; Integrated Security = True";
             optionsBuilder.UseSqlServer(migrationConnectionString);
             optionsBuilder.EnableSensitiveDataLogging();
+        }
+
+        public static void SetSqliteOptions(DbContextOptionsBuilder optionsBuilder)
+        {
+            string connectionString = "Data Source=settings.db";
+            optionsBuilder.UseSqlite(connectionString);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
         }
     }
 
@@ -65,22 +92,29 @@ namespace SwagOverflowWPF.Data
         public void Configure(EntityTypeBuilder<SwagItemViewModel> builder)
         {
             //SwagItemViewModel Key + Id (AutoIncrement) => Key
-            builder.HasKey(si => new { si.GroupId, si.ItemId });
+            //Sqlite does not play too well with composite keys
+            //builder.HasKey(si => new { si.GroupId, si.ItemId });
+            builder.HasKey(si => si.ItemId);
             builder.Property(si => si.ItemId).ValueGeneratedOnAdd();
 
             //SwagItemViewModel AlternateId => Unique
             builder.HasIndex(si => si.AlternateId).IsUnique();
 
             //SwagItemViewModel Children =>  One to many
+            //Sqlite does not play too well with composite keys
+            //builder.HasMany(si => si.Children)
+            //    .WithOne(si => si.Parent)
+            //    .HasForeignKey(si => new { si.GroupId, si.ParentId })
+            //    .OnDelete(DeleteBehavior.NoAction);
             builder.HasMany(si => si.Children)
                 .WithOne(si => si.Parent)
-                .HasForeignKey(si => new { si.GroupId, si.ParentId })
+                .HasForeignKey(si => si.ParentId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             //SwagItemViewModel Value
             builder.Property(si => si.Value)
                 .HasConversion(
-                    si => JsonHelper.ToJsonString(si),
+                    si => JsonHelper.ToJsonString(si, ShouldSerializeContractResolver.Instance),
                     si => JsonConvert.DeserializeObject<object>(si));
 
             //SwagItemViewModel ValueType => Ignore
@@ -107,6 +141,43 @@ namespace SwagOverflowWPF.Data
                 .HasConversion(
                     ss => JsonHelper.ToJsonString(ss),
                     ss => JsonConvert.DeserializeObject<object>(ss));
+        }
+    }
+
+
+    public class SwagDataTableEntityConfiguration : IEntityTypeConfiguration<SwagDataTable>
+    {
+        public void Configure(EntityTypeBuilder<SwagDataTable> builder)
+        {
+            //SwagDataTable DataTable => Ignore
+            builder.Ignore(sdt => sdt.DataTable);
+        }
+    }
+
+    public class SwagDataRowEntityConfiguration : IEntityTypeConfiguration<SwagDataRow>
+    {
+        public void Configure(EntityTypeBuilder<SwagDataRow> builder)
+        {
+            //SwagDataRow DataRow => Ignore
+            builder.Ignore(sdr => sdr.DataRow);
+        }
+    }
+
+    public class ShouldSerializeContractResolver : DefaultContractResolver
+    {
+        public new static readonly ShouldSerializeContractResolver Instance = new ShouldSerializeContractResolver();
+
+        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        {
+            JsonProperty property = base.CreateProperty(member, memberSerialization);
+
+            if ((property.DeclaringType == typeof(DataRow) && property.PropertyName == "Table") ||
+                property.DeclaringType == typeof(DataColumn) && property.PropertyName == "Table")
+            {
+                property.ShouldSerialize = i => false;
+            }
+
+            return property;
         }
     }
 }

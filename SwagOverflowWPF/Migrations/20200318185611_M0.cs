@@ -16,7 +16,8 @@ namespace SwagOverflowWPF.Migrations
                     Display = table.Column<string>(nullable: true),
                     AlternateId = table.Column<string>(nullable: true),
                     RootId = table.Column<int>(nullable: true),
-                    Discriminator = table.Column<string>(nullable: false)
+                    Discriminator = table.Column<string>(nullable: false),
+                    ColumnsString = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -27,9 +28,10 @@ namespace SwagOverflowWPF.Migrations
                 name: "SwagItems",
                 columns: table => new
                 {
-                    GroupId = table.Column<int>(nullable: false),
                     ItemId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ValueTypeString = table.Column<string>(nullable: true),
+                    GroupId = table.Column<int>(nullable: false),
                     AlternateId = table.Column<string>(nullable: true),
                     GroupRootId = table.Column<int>(nullable: true),
                     ParentId = table.Column<int>(nullable: true),
@@ -37,16 +39,17 @@ namespace SwagOverflowWPF.Migrations
                     Display = table.Column<string>(nullable: true),
                     IsExpanded = table.Column<bool>(nullable: false),
                     Value = table.Column<string>(nullable: true),
-                    ValueTypeString = table.Column<string>(nullable: true),
                     Discriminator = table.Column<string>(nullable: false),
                     Key = table.Column<string>(nullable: true),
+                    IconString = table.Column<string>(nullable: true),
+                    IconTypeString = table.Column<string>(nullable: true),
                     SettingType = table.Column<string>(nullable: true),
                     ItemsSource = table.Column<string>(nullable: true),
                     ItemsSourceTypeString = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SwagItems", x => new { x.GroupId, x.ItemId });
+                    table.PrimaryKey("PK_SwagItems", x => x.ItemId);
                     table.ForeignKey(
                         name: "FK_SwagItems_SwagGroups_GroupId",
                         column: x => x.GroupId,
@@ -59,10 +62,10 @@ namespace SwagOverflowWPF.Migrations
                         principalTable: "SwagGroups",
                         principalColumn: "GroupId");
                     table.ForeignKey(
-                        name: "FK_SwagItems_SwagItems_GroupId_ParentId",
-                        columns: x => new { x.GroupId, x.ParentId },
+                        name: "FK_SwagItems_SwagItems_ParentId",
+                        column: x => x.ParentId,
                         principalTable: "SwagItems",
-                        principalColumns: new[] { "GroupId", "ItemId" });
+                        principalColumn: "ItemId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -80,6 +83,11 @@ namespace SwagOverflowWPF.Migrations
                 filter: "[AlternateId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SwagItems_GroupId",
+                table: "SwagItems",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SwagItems_GroupRootId",
                 table: "SwagItems",
                 column: "GroupRootId",
@@ -87,9 +95,9 @@ namespace SwagOverflowWPF.Migrations
                 filter: "[GroupRootId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SwagItems_GroupId_ParentId",
+                name: "IX_SwagItems_ParentId",
                 table: "SwagItems",
-                columns: new[] { "GroupId", "ParentId" });
+                column: "ParentId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

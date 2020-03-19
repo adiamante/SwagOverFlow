@@ -71,6 +71,14 @@ namespace SwagOverflowWPF.Iterator
                     _isDone = true;
                 }
             }
+            else if (_current.Children.Count == 0 && _current.Parent == null)
+            {
+                //No parent or children
+                _isDone = true;
+                System.Diagnostics.Debug.WriteLine($"[DONE]");
+                return _current;
+            }
+
             if (_isDone)
             {
                 System.Diagnostics.Debug.WriteLine($"[DONE]");

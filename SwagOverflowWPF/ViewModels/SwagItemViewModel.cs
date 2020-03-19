@@ -184,7 +184,14 @@ namespace SwagOverflowWPF.ViewModels
         [NotMapped]
         public T GenericValue
         {
-            get { return (T)_value; }
+            get 
+            { 
+                if (_value is T)
+                {
+                    return (T)_value;
+                }
+                return default(T);
+            }
             set 
             {
                 T _temp = default(T);

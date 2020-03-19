@@ -15,6 +15,7 @@ namespace SwagOverflowWPF.Controls
 {
     public class SwagWindowSettingGroup : SwagSettingGroupViewModel
     {
+        SwagContext _context;
         public SwagWindowSettingGroup() : base()
         {
             //String groupName = $"{Assembly.GetEntryAssembly().GetName().Name}";
@@ -39,13 +40,16 @@ namespace SwagOverflowWPF.Controls
             SwagItemChanged += SwagWindowSettingGroup_SwagItemChanged;
         }
 
+        public void SetContext(SwagContext context)
+        {
+            _context = context;
+        }
+
         private void SwagWindowSettingGroup_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
         {
-            using (SwagSettingUnitOfWork work = new SwagSettingUnitOfWork(new SwagContext()))
-            {
-                work.Settings.Update((SwagSettingViewModel)e.SwagItem);
-                work.Complete();
-            }
+            SwagSettingUnitOfWork work = new SwagSettingUnitOfWork(_context);
+            work.Settings.Update((SwagSettingViewModel)e.SwagItem);
+            work.Complete();
         }
 
         private void WindowSettingCollection_ThemePropertyChanged(object sender, PropertyChangedEventArgs e)
