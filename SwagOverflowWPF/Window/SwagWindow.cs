@@ -1,6 +1,7 @@
 ﻿using MahApps.Metro.Controls;
 using SwagOverflowWPF.Commands;
 using SwagOverflowWPF.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -21,6 +22,30 @@ namespace SwagOverflowWPF.Controls
             set { SetValue(SettingsProperty, value); }
         }
         #endregion Settings
+
+        #region StatusMessage
+        public String StatusMessage
+        {
+            get { return Settings["Window"]["Status"]["Message"].GetValue<String>(); }
+            set 
+            {
+                Settings["Window"]["Status"]["Message"].SetValue(value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion StatusMessage
+
+        #region IsBusy
+        public Boolean IsBusy
+        {
+            get { return Settings["Window"]["Status"]["IsBusy"].GetValue<Boolean>(); }
+            set
+            {
+                Settings["Window"]["Status"]["IsBusy"].SetValue(value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion IsBusy
 
         #region CommandManager
         private static readonly DependencyProperty CommandManagerProperty =

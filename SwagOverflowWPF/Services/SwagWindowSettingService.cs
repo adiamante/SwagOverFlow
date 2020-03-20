@@ -60,11 +60,11 @@ namespace SwagOverflowWPF.Services
                         {
                             newSetting.Value = Boolean.Parse(swagItemOriginal.Value.ToString());
                         }
-                        else if (valueType == typeof(String))
+                        else if (valueType == typeof(String) && swagItemOriginal.Value != null)
                         {
                             newSetting.Value = swagItemOriginal.Value.ToString();
                         }
-                        else
+                        else if (swagItemOriginal.Value != null)
                         {
                             newSetting.Value = JsonConvert.DeserializeObject(swagItemOriginal.Value.ToString(), valueType);
                         }
