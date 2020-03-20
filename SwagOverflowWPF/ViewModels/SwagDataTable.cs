@@ -93,15 +93,11 @@ namespace SwagOverflowWPF.ViewModels
                 }
                 RootGeneric.Children.Clear();
 
-                //Add all DataRows
-                Int32 sequence = 0;
                 foreach (DataRow dr in _dataTable.Rows)
                 {
                     SwagDataRow row = new SwagDataRow(dr);
                     row.Value = row.Value;
                     row.ValueTypeString = row.ValueTypeString;
-                    row.Sequence = sequence;
-                    sequence++;
                     RootGeneric.Children.Add(row);
                 }
 

@@ -161,6 +161,10 @@ namespace SwagOverflowWPF.ViewModels
                 {
                     child.Parent = this;
                     child.Group = this.Group;
+                    if (child.Sequence <= 0)
+                    {
+                        child.Sequence = this.Children.Count;
+                    }
                 }
             }
         }
