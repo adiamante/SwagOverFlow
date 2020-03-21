@@ -85,13 +85,17 @@ namespace SwagOverflowWPF.Controls
         public SwagWindow()
         {
             Loaded += SwagWindow_Loaded;
+
+            ResourceDictionary rdSwagWindow = new ResourceDictionary();
+            rdSwagWindow.Source = new Uri("/SwagOverflowWPF;component/Controls/SwagWindow.xaml", UriKind.RelativeOrAbsolute);
+            this.Resources.MergedDictionaries.Add(rdSwagWindow);
         }
 
         private void SwagWindow_Loaded(object sender, RoutedEventArgs e)
         {
             if (Settings != null)
             {
-                Settings.Initialize();
+                //Settings.Initialize();
                 CommandManager.Attach(Settings);
 
                 InputBindings.Add(new KeyBinding() { Modifiers = ModifierKeys.Control, Key = Key.Z, Command = CommandManager.UndoCommand });

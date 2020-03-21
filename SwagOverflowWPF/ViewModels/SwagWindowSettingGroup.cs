@@ -1,17 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 using MahApps.Metro;
 using MahApps.Metro.IconPacks;
+using SwagOverflowWPF.Controls;
 using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Repository;
 using SwagOverflowWPF.UI;
-using SwagOverflowWPF.ViewModels;
 
-namespace SwagOverflowWPF.Controls
+namespace SwagOverflowWPF.ViewModels
 {
     public class SwagWindowSettingGroup : SwagSettingGroupViewModel
     {

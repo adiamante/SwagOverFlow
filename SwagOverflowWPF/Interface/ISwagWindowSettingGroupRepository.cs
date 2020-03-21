@@ -1,7 +1,4 @@
-﻿using SwagOverflowWPF.Controls;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SwagOverflowWPF.ViewModels;
 
 namespace SwagOverflowWPF.Interface
 {
