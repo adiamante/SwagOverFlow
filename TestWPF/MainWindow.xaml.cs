@@ -14,6 +14,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections;
 
 namespace TestWPF
 {
@@ -25,6 +26,8 @@ namespace TestWPF
         private static IServiceProvider serviceProvider;
         SwagDataTable _sdtSource = null, _sdtDest = null;
         String descriptionField = "FullDescription";
+        IEnumerable _comboboxSource = null;
+        String _combobxText = "";
 
         #region Source
         public SwagDataTable Source
@@ -41,6 +44,22 @@ namespace TestWPF
             set { SetValue(ref _sdtDest, value); }
         }
         #endregion Dest
+
+        #region ComboBoxText
+        public String ComboBoxText
+        {
+            get { return _combobxText; }
+            set { SetValue(ref _combobxText, value); }
+        }
+        #endregion ComboBoxText
+
+        #region ComboBoxSource
+        public IEnumerable ComboBoxSource
+        {
+            get { return _comboboxSource; }
+            set { SetValue(ref _comboboxSource, value); }
+        }
+        #endregion ComboBoxSource
 
         public MainWindow()
         {
@@ -61,6 +80,16 @@ namespace TestWPF
 
             BindSourceGrid();
             BindDestGrid();
+
+            //InitCombobox();
+        }
+
+        private void InitCombobox()
+        {
+            CsvFileToDataTable csvFileToDataTable = new CsvFileToDataTable();
+            DataTable dt = csvFileToDataTable.FileToDataTable(@"C:\Users\Desktop\Desktop\445.csv");
+            ComboBoxSource = dt.DefaultView;
+            //scbxTest.ItemsSource = dt.DefaultView;
         }
 
         private static void ConfigureServices()
@@ -137,10 +166,10 @@ namespace TestWPF
                 #endregion DestID
 
                 #region Mapping
-                //if (!Source.DataTable.Columns.Contains("Mapping"))
-                //{
-                //    Source.DataTable.Columns.Add("Mapping");
-                //}
+                if (!Source.DataTable.Columns.Contains("Mapping"))
+                {
+                    Source.DataTable.Columns.Add("Mapping");
+                }
 
                 DataGridTemplateColumn dgtc = new DataGridTemplateColumn();
                 dgtc.Header = "Mapping";
@@ -148,39 +177,21 @@ namespace TestWPF
                 DataTemplate itemTemplate = new DataTemplate();
 
                 //https://stackoverflow.com/questions/9385489/why-errors-when-filters-datatable-with-collectionview
-                FrameworkElementFactory comboBoxFactory = new FrameworkElementFactory(typeof(AutoFilteredComboBox));
-                //comboBoxFactory.SetValue(AutoFilteredComboBox.TextProperty, "");
-                comboBoxFactory.SetValue(AutoFilteredComboBox.DisplayMemberPathProperty, descriptionField);
-                comboBoxFactory.SetValue(AutoFilteredComboBox.IsEditableProperty, true);
-                comboBoxFactory.SetBinding(AutoFilteredComboBox.ItemsSourceProperty, new Binding("Dest.DataTable.DefaultView") { RelativeSource = new RelativeSource() { AncestorType = typeof(MainWindow) }});
-                //comboBoxFactory.SetValue(AutoFilteredComboBox.ItemsSourceProperty, Dest.DataTable.DefaultView);
-
-                //comboBoxFactory.SetValue(AutoFilteredComboBox.HorizontalContentAlignmentProperty, HorizontalAlignment.Left);
-                //comboBoxFactory.SetValue(AutoFilteredComboBox.VerticalAlignmentProperty, VerticalAlignment.Center);
-                comboBoxFactory.SetValue(AutoFilteredComboBox.SelectedValuePathProperty, "ItemID");
-                //comboBoxFactory.SetBinding(AutoFilteredComboBox.TextProperty, new Binding("Mapping"));
-                comboBoxFactory.SetBinding(AutoFilteredComboBox.SelectedValueProperty, new Binding("DestID"));
-
-                comboBoxFactory.AddHandler(AutoFilteredComboBox.SelectionChangedEvent, new SelectionChangedEventHandler((o, e) =>
+                FrameworkElementFactory comboBoxFactory = new FrameworkElementFactory(typeof(SwagComboBox));
+                comboBoxFactory.SetValue(SwagComboBox.DisplayMemberPropertyProperty, descriptionField);
+                comboBoxFactory.SetBinding(SwagComboBox.ItemsSourceProperty, new Binding("Dest.DataTable.DefaultView") { RelativeSource = new RelativeSource() { AncestorType = typeof(MainWindow) }});
+                comboBoxFactory.SetValue(SwagComboBox.ValueMemberPropertyProperty, "ItemID");
+                comboBoxFactory.SetBinding(SwagComboBox.ValueProperty, new Binding("DestID"));
+                comboBoxFactory.SetValue(SwagComboBox.TextProperty, new Binding("Mapping"));
+                comboBoxFactory.AddHandler(SwagComboBox.ValueChangedEvent, new RoutedEventHandler((s, e) =>
                 {
-                    ComboBox comboBox = (ComboBox)o;
-
-                    if (comboBox.DataContext != null && comboBox.DataContext is DataRowView && e.AddedItems.Count > 0 && e.AddedItems[0] is DataRowView)
-                    {
-                        DataRowView drvNew = (DataRowView)e.AddedItems[0];
-                        DataRowView drv = (DataRowView)comboBox.DataContext;
-                        drv["DestID"] = drvNew["ItemID"];
-                    }
-                    else if (comboBox.DataContext != null && comboBox.DataContext is DataRowView && e.AddedItems.Count > 0)
-                    {
-                        DataRowView drv = (DataRowView)comboBox.DataContext;
-                        drv["DestID"] = null;
-                    }
-                    //else if (e.AddedItems.Count == 0 && e.RemovedItems.Count > 0)
-                    //{
-                    //    e.Handled = true;
-                    //}
+                    SwagComboBox scbx = (SwagComboBox)s;
+                    DataRowView drv = (DataRowView)scbx.DataContext;
+                    //This is needed notify these properties changed so it can be saved
+                    drv["DestID"] = scbx.Value;
+                    drv["Mapping"] = scbx.Text;
                 }));
+                
                 template.VisualTree = comboBoxFactory;
 
                 dgtc.CellTemplate = template;

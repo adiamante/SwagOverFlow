@@ -95,7 +95,7 @@ namespace SwagOverflowWPF.Controls
         {
             if (Settings != null)
             {
-                //Settings.Initialize();
+                Settings.Initialize();
                 CommandManager.Attach(Settings);
 
                 InputBindings.Add(new KeyBinding() { Modifiers = ModifierKeys.Control, Key = Key.Z, Command = CommandManager.UndoCommand });

@@ -10,6 +10,9 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <TabControl>
+        <TabItem Header="ComboBox">
+            <swag:SwagComboBox x:Name="scbxTest" ItemsSource="{Binding ComboBoxSource}" DisplayMemberProperty="FullDescription" />
+        </TabItem>
         <TabItem Header="Source">
             <DockPanel>
                 <Grid DockPanel.Dock="Top">

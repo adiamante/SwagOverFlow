@@ -65,10 +65,16 @@ namespace SwagOverflowWPF.ViewModels
                 //When there are duplicate references to Common.xaml (unavoidable since we are using Custom Controls),
                 //add the theme to the Merged Dictionary 
                 //(inefficient but there is no way to reset the MergedDictionaries without breaking during runtime)
-                foreach (var sc in Application.Current.MainWindow.FindVisualChildren<SettingsControl>())
+                foreach (SettingsControl sc in Application.Current.MainWindow.FindVisualChildren<SettingsControl>())
                 {
                     sc.Resources.MergedDictionaries.Add(resourceDictionary);
                 }
+
+                foreach (SwagComboBox scbx in Application.Current.MainWindow.FindVisualChildren<SwagComboBox>())
+                {
+                    scbx.Resources.MergedDictionaries.Add(resourceDictionary);
+                }
+
             }
         }
     }
