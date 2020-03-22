@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -101,6 +103,13 @@ namespace SwagOverflowWPF.Controls
                 InputBindings.Add(new KeyBinding() { Modifiers = ModifierKeys.Control, Key = Key.Z, Command = CommandManager.UndoCommand });
                 InputBindings.Add(new KeyBinding() { Modifiers = ModifierKeys.Control, Key = Key.Y, Command = CommandManager.RedoCommand });
             }
+        }
+
+        public async Task RunInBackground(Action action)
+        {
+            IsBusy = true;
+            await Task.Run(action);
+            IsBusy = false;
         }
     }
 }

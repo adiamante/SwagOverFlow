@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SwagOverflowWPF.Utilities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -267,7 +268,7 @@ namespace SwagOverflowWPF.Controls
             {
                 BindingListCollectionView bindingView = (BindingListCollectionView)view;
                 //https://stackoverflow.com/questions/9385489/why-errors-when-filters-datatable-with-collectionview
-                bindingView.CustomFilter = $"[{DisplayMemberProperty}] LIKE '%{Text}%'";
+                bindingView.CustomFilter = $"[{DisplayMemberProperty}] LIKE '%{DataTableHelper.EscapeLikeValue(Text)}%'";
             }
         }
 

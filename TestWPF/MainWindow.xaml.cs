@@ -15,6 +15,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.Threading;
 
 namespace TestWPF
 {
@@ -186,10 +187,14 @@ namespace TestWPF
                 comboBoxFactory.AddHandler(SwagComboBox.ValueChangedEvent, new RoutedEventHandler((s, e) =>
                 {
                     SwagComboBox scbx = (SwagComboBox)s;
-                    DataRowView drv = (DataRowView)scbx.DataContext;
-                    //This is needed notify these properties changed so it can be saved
-                    drv["DestID"] = scbx.Value;
-                    drv["Mapping"] = scbx.Text;
+
+                    if (scbx.DataContext is DataRowView)
+                    {
+                        DataRowView drv = (DataRowView)scbx.DataContext;
+                        //This is needed notify these properties changed so it can be saved
+                        drv["DestID"] = scbx.Value;
+                        drv["Mapping"] = scbx.Text;
+                    }
                 }));
                 
                 template.VisualTree = comboBoxFactory;
@@ -236,20 +241,32 @@ namespace TestWPF
             }
         }
 
-        private void MapSimilar_Button_Click(object sender, RoutedEventArgs e)
+        private async void MapSimilar_Button_Click(object sender, RoutedEventArgs e)
         {
-            for (int r = 0; r < Source.DataTable.Rows.Count; r++)
-            {
-                DataRow drSource = Source.DataTable.Rows[r];
-                String description = drSource[descriptionField].ToString();
-                DataRow[] drMatches = Dest.DataTable.Select($"[{descriptionField}] = '{description.Replace("'", "''")}'");
+            DataTable dt = Source.DataTable;
 
-                if (drMatches.Length > 0)
+            await this.RunInBackground(() =>
+            {
+                Source.SetContext(null);
+                for (int r = 0; r < dt.Rows.Count; r++)
                 {
-                    DataRow drDest = drMatches[0];
-                    drSource["DestID"] = drDest["ItemID"];
+                    Thread.Sleep(25);
+                    DataRow drSource = Source.DataTable.Rows[r];
+                    String description = drSource[descriptionField].ToString();
+                    DataRow[] drMatches = Dest.DataTable.Select($"[{descriptionField}] = '{description.Replace("'", "''")}'");
+
+                    if (drMatches.Length > 0)
+                    {
+                        DataRow drDest = drMatches[0];
+                        drSource["DestID"] = drDest["ItemID"];
+                        drSource["Mapping"] = drDest[descriptionField];
+                    }
                 }
-            }
+            });
+
+            SwagContext context = serviceProvider.GetService<SwagContext>();
+            Source.SetContext(context);
+            Source.DataTable = dt;
         }
 
         private void Export_Mapppings_Button_Click(object sender, RoutedEventArgs e)

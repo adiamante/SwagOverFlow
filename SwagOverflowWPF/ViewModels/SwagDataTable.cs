@@ -187,6 +187,14 @@ namespace SwagOverflowWPF.ViewModels
             _context = context;
         }
 
+        public void Save()
+        {
+            if (_context != null)
+            {
+                _context.SaveChanges();
+            }
+        }
+
         public void SetDataTableSilent(DataTable dt)
         {
             SetValue(ref _dataTable, dt);
