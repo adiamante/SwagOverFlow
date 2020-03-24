@@ -53,6 +53,10 @@ namespace SwagOverflowWPF.Collections {
       return BinarySearchForIndex(0, count - 1, key, indexToKey);
     }
 
+    public int GetMatchIndex(int count, TKey key, Func<int,TKey> indexToKey) {
+      return BinarySearchForMatch(0, count - 1, key, indexToKey);
+    }
+
     #endregion Public Methods
 
     // ************************************************************************
@@ -67,12 +71,24 @@ namespace SwagOverflowWPF.Collections {
     /// <param name="key2"></param>
     /// <returns></returns>
     private int Compare(TKey key1, TKey key2) {
-      if (_comparer != null) {
+      // First use the comparer if it is set
+      if(_comparer != null) {
         return _comparer.Compare(key1, key2);
-      } else {
-        return string.Compare(key1.ToString(), key2.ToString(), StringComparison.InvariantCultureIgnoreCase);
       }
+
+      // Then try using the default Collections comparer, only try this once, then skip it following tries
+      if(!_defaultCompareFailed) {
+        try {
+          return System.Collections.Comparer.Default.Compare(key1, key2);
+        } catch(Exception) {
+          _defaultCompareFailed = true;
+        }
+      }
+
+      // Last resort do a string compare
+      return string.Compare(key1.ToString(), key2.ToString(), StringComparison.InvariantCultureIgnoreCase);
     }
+    private bool _defaultCompareFailed = false;
 
     /// <summary>
     /// Searches for the index of the insertion point for the key passed in such that
@@ -100,6 +116,37 @@ namespace SwagOverflowWPF.Collections {
           high = mid - 1;
       }
       return low;
+    }
+
+    /// <summary>
+    /// Searches for the index of the insertion point for the key passed in such that
+    /// the sort order is maintained. Implemented as a non-recursive method.
+    /// </summary>
+    /// <param name="low"></param>
+    /// <param name="high"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    private int BinarySearchForMatch(int low, int high, TKey key, Func<int, TKey> indexToKey)
+    {
+      while (high >= low)
+      {
+
+        // Calculate the mid point and determine if the key passed in
+        // should be inserted at this point, below it, or above it.
+        int mid = low + ((high - low) >> 1);
+        int result = Compare(indexToKey(mid), key);
+
+        // Return the current position, or change the search bounds
+        // to be above or below the mid point depending on the result.
+        if (result == 0)
+          return mid;
+        else if (result < 0)
+          low = mid + 1;
+        else
+          high = mid - 1;
+      }
+      return -1;
+      //return low;
     }
 
     #endregion Private Methods

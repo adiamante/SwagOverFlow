@@ -1,77 +1,127 @@
-﻿// Authored by: John Stewien
-// Year: 2011
-// Company: Swordfish Computing
-// License: 
-// The Code Project Open License http://www.codeproject.com/info/cpol10.aspx
-// Originally published at:
-// http://www.codeproject.com/Articles/208361/Concurrent-Observable-Collection-Dictionary-and-So
-// Last Revised: September 2012
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
-using System.Collections;
+using System.Threading.Tasks;
 
-namespace SwagOverflowWPF.Collections {
-  /// <summary>
-  /// This class provides a sorted collection that can be bound to a WPF
-  /// control, where the dictionary can be modified from a thread that is
-  /// not the GUI thread. The notify event is thrown using the dispatcher
-  /// from the event listener(s).
-  /// </summary>
-  public class ConcurrentObservableSortedDictionary<TKey, TValue> : ConcurrentObservableDictionary<TKey, TValue> {
-
-    // ************************************************************************
-    // Private Fields
-    // ************************************************************************
-    #region Private Fields
-
-    /// <summary>
-    /// Used for doing a sorted insert of new entries
-    /// </summary>
+//https://github.com/stewienj/SwordfishCollections
+namespace SwagOverflowWPF.Collections
+{
+  [Serializable]
+  public class ConcurrentObservableSortedDictionary<TKey, TValue> : ConcurrentObservableDictionary<TKey, TValue>, ISerializable
+  {
     private BinarySorter<TKey> _sorter;
 
-    #endregion Private Fields
-
-    // ************************************************************************
-    // Public Methods
-    // ************************************************************************
-    #region Public Methods
-
-    /// <summary>
-    /// Constructor with an optional IComparer<TKey> parameter.
-    /// </summary>
-    /// <param name="comparer">Comparer used to sort the keys.</param>
-    public ConcurrentObservableSortedDictionary(IComparer<TKey> comparer = null) {
+    public ConcurrentObservableSortedDictionary() : this(true, null) { }
+    public ConcurrentObservableSortedDictionary(bool isMultithreaded) : this(isMultithreaded, null) { }
+    public ConcurrentObservableSortedDictionary(IComparer<TKey> comparer) : this(true, comparer) { }
+    public ConcurrentObservableSortedDictionary(bool isMultithreaded, IComparer<TKey> comparer) : base(isMultithreaded)
+    {
       _sorter = new BinarySorter<TKey>(comparer);
     }
 
-    /// <summary>
-    /// Adds an element with the provided key and value to the IDictionary<TKey, TValue>.
-    /// </summary>
-    /// <param name="key">
-    /// The object to use as the key of the element to add.
-    /// </param>
-    /// <param name="value">
-    /// The object to use as the value of the element to add.
-    /// </param>
-    protected override void BaseAdd(TKey key, TValue value) {
-      int index = _sorter.GetInsertIndex(WriteCollection.Count, key, delegate(int testIndex) {
-        return WriteCollection[testIndex].Key;
-      });
+    public override void Add(KeyValuePair<TKey, TValue> pair)
+    {
+      DoReadWriteNotify(
+        () => _sorter.GetInsertIndex(_internalCollection.Count, pair.Key, i=>_internalCollection.List[i].Key),
+        (index) => _internalCollection.Insert(index,pair),
+        (index) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, pair, index)
+      );
+    }
 
-      if(index >= WriteCollection.Count) {
-        base.BaseAdd(key, value);
-      } else {
-        TKey listKey = WriteCollection[index].Key;
-        DoubleLinkListIndexNode next = _keyToIndex[listKey];
-        DoubleLinkListIndexNode newNode = new DoubleLinkListIndexNode(next.Previous, next);
-        _keyToIndex[key] = newNode;
-        WriteCollection.Insert(index, new KeyValuePair<TKey, TValue>(key, value));
+    public override void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+    {
+      Func<int, ImmutableDictionaryListPair<TKey, TValue>> getIndicesAndInsert = (x) =>
+      {
+        var updatedCollection = _internalCollection;
+        foreach(var pair in pairs)
+        {
+          int index = _sorter.GetInsertIndex(updatedCollection.Count, pair.Key, i => updatedCollection.List[i].Key);
+          updatedCollection = updatedCollection.Insert(index, pair);
+        }
+        return updatedCollection;
+      };
+
+      DoReadWriteNotify(
+        () => 0,
+        getIndicesAndInsert,
+        (nothing) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, pairs.ToList())
+      );
+    }
+
+    public override void Insert(int index, KeyValuePair<TKey, TValue> pair)
+    {
+      Add(pair);
+    }
+
+    public override TValue RetrieveOrAdd(TKey key, Func<TKey, TValue> getValue)
+    {
+      ObservableDictionaryNode<TKey, TValue> internalNode = null;
+      // Make this nullable so it throws an exception if there's a bug in this code
+      KeyValuePair<TKey, TValue>? newPair = null;
+      if (DoTestReadWriteNotify(
+        // Test if already exists, continue if it doesn't
+        () => !_internalCollection.Dictionary.TryGetValue(key, out internalNode),
+        // create new node, similar to add
+        () => _sorter.GetInsertIndex(_internalCollection.Count, key, i => _internalCollection.List[i].Key),
+        (index) => _internalCollection.Insert(index,(newPair = KeyValuePair.Create(key, getValue(key))).Value),
+        (index) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newPair, index)
+      ))
+      {
+        // new one created 
+        return newPair.Value.Value;
+      }
+      else
+      {
+        return internalNode.Value;
       }
     }
 
+    public override TValue this[TKey key]
+    {
+      get
+      {
+        return base[key];
+      }
+
+      set
+      {
+        var pair = KeyValuePair.Create(key, value);
+        DoTestReadWriteNotify(
+          // Test if adding or replacing  
+          () => !_internalCollection.Dictionary.ContainsKey(key),
+          // Similar to Add, but need to match return type arguments
+          () =>
+          {
+            int index = _sorter.GetInsertIndex(_internalCollection.Count, pair.Key, i => _internalCollection.List[i].Key);
+            return new ImmutableDictionaryListPair<TKey, TValue>.ItemAndIndex(pair, index);
+          },
+          (itemAndIndex) => _internalCollection.Insert(itemAndIndex.Index, pair),
+          (itemAndIndex) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, pair, itemAndIndex.Index),
+          // Do replace
+          () => _internalCollection.GetItemAndIndex(key),
+          (itemAndIndex) => _internalCollection.ReplaceItem(itemAndIndex.Index, pair),
+          (itemAndIndex) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, pair, itemAndIndex.Item, itemAndIndex.Index));
+      }
+    }
+
+    // ************************************************************************
+    // ISerializable Implementation
+    // ************************************************************************
+    #region ISerializable Implementation
+    protected override void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+      base.GetObjectData(info, context);
+    }
+
+    protected ConcurrentObservableSortedDictionary(SerializationInfo information, StreamingContext context) : base(information, context)
+    {
+      
+    }
     #endregion
   }
 }
+
+

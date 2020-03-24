@@ -1,10 +1,13 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SwagOverflowWPF.Controls;
 using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Iterator;
 using SwagOverflowWPF.Repository;
+using SwagOverflowWPF.Utilities;
 using SwagOverflowWPF.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
@@ -28,12 +31,11 @@ namespace SwagOverflowWPF.Services
                 work.DataRows.RecursiveLoadChildren(sdtDataTable.RootGeneric);
                 DataTable dt = new DataTable();
 
-                if (sdtDataTable.ColumnsString != null)
+                if (sdtDataTable.Columns != null)
                 {
-                    DataColumn[] cols = JsonConvert.DeserializeObject<DataColumn[]>(sdtDataTable.ColumnsString);
-                    foreach (DataColumn dc in cols)
+                    foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in sdtDataTable.Columns)
                     {
-                        dt.Columns.Add(dc);
+                        dt.Columns.Add(sdcKvp.Value.DataColumn);
                     }
                 }
 
@@ -53,17 +55,24 @@ namespace SwagOverflowWPF.Services
                         swagItemOriginal.Parent.Children.Add(newRow);
 
                         Type valueType = JsonConvert.DeserializeObject<Type>(swagItemOriginal.ValueTypeString);
-                        Object[] itemsArray = JsonConvert.DeserializeObject<Object[]>(swagItemOriginal.Value.ToString());
+                        JObject rowValues = JsonConvert.DeserializeObject<JObject>(swagItemOriginal.Value.ToString());
                         DataRow dr = dt.NewRow();
-                        dr.ItemArray = itemsArray;
+
+                        foreach (KeyValuePair<String, JToken> kvp in rowValues)
+                        {
+                            if (kvp.Value.Type != JTokenType.Null)
+                            {
+                                dr[kvp.Key] = kvp.Value;
+                            }
+                        }
+
                         newRow.DataRow = dr;
                         dt.Rows.Add(dr);
                         work.DataRows.Insert(newRow);
-                        newRow.Value = itemsArray;
                     }
                 }
 
-                sdtDataTable.SetDataTableSilent(dt);
+                sdtDataTable.SetDataTable(dt, true);
                 #endregion Load SwagDataTableUnitOfWork
             }
 

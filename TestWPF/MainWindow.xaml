@@ -8,7 +8,13 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:ui="clr-namespace:SwagOverflowWPF.UI;assembly=SwagOverflowWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+                 Loaded="SwagWindow_Loaded">
+    <swag:SwagWindow.Resources>
+        <!--<Style TargetType="{x:Type swag:SwagComboBox}">
+            <EventSetter Event="ValueChanged" Handler="SwagComboBox_ValueChanged" />
+        </Style>-->
+    </swag:SwagWindow.Resources>
     <TabControl>
         <!--<TabItem Header="ComboBox">
             <swag:SwagComboBox x:Name="scbxTest" ItemsSource="{Binding ComboBoxSource}" DisplayMemberProperty="FullDescription" />
@@ -40,13 +46,16 @@
                         </Button>
                     </StackPanel>
                 </Grid>
-                <DataGrid x:Name="dgSource" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="True"  VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True" EnableRowVirtualization="True" ItemsSource="{Binding Source.DataTable.DefaultView}" AutoGenerateColumns="False" AllowDrop="True" DragEnter="dg_DragEnter" Drop="dg_Drop">
+                <swag:SwagDataGrid x:Name="sdgSource" SwagDataTable="{Binding Source}" AllowDrop="True" DragEnter="dg_DragEnter" Drop="dg_Source_Drop">
+                    
+                </swag:SwagDataGrid>
+                <!--<DataGrid x:Name="dgSource" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="True"  VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True" EnableRowVirtualization="True" ItemsSource="{Binding Source.DataTable.DefaultView}" AutoGenerateColumns="False" AllowDrop="True" DragEnter="dg_DragEnter" Drop="dg_Drop">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel IsItemsHost="True"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
-                </DataGrid>
+                </DataGrid>-->
             </DockPanel>
         </TabItem>
         <TabItem Header="Dest">
@@ -64,13 +73,9 @@
                         </Button>
                     </StackPanel>
                 </Grid>
-                <DataGrid x:Name="dgDest" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VirtualizingStackPanel.IsVirtualizing="True"  VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True" EnableRowVirtualization="True" ItemsSource="{Binding Dest.DataTable.DefaultView}" AutoGenerateColumns="False" AllowDrop="True" DragEnter="dg_DragEnter" Drop="dg_Drop">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel IsItemsHost="True"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </DataGrid>
+                <swag:SwagDataGrid x:Name="sdgDest" SwagDataTable="{Binding Dest}" AllowDrop="True" DragEnter="dg_DragEnter" Drop="dg_Dest_Drop">
+
+                </swag:SwagDataGrid>
             </DockPanel>
         </TabItem>
     </TabControl>

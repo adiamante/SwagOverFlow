@@ -87,7 +87,6 @@ namespace SwagOverflowWPF.Utilities
             }
         }
 
-
         public void Load()
         {
             foreach (FieldInfo fieldInfo in typeof(T).GetFields(BindingFlags.Public | BindingFlags.Instance))

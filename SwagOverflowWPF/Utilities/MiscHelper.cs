@@ -23,11 +23,11 @@ namespace SwagOverflowWPF.Utilities
         /// <typeparam name="TTarget">Type of the target</typeparam>
         /// <param name="source">Source to copy properties from</param>
         /// <param name="target">Target to copy properties to</param>
-        public static void Copy<TSource, TTarget>(TSource source, TTarget target)
+        public static void Copy<TSource, TTarget>(TSource source, TTarget target, List<String> propertiesToSkip = null)
             where TSource : class
             where TTarget : class
         {
-            PropertyCopier<TSource, TTarget>.Copy(source, target);
+            PropertyCopier<TSource, TTarget>.Copy(source, target, propertiesToSkip);
         }
     }
 
@@ -89,7 +89,7 @@ namespace SwagOverflowWPF.Utilities
             return creator(source);
         }
 
-        internal static void Copy(TSource source, TTarget target)
+        internal static void Copy(TSource source, TTarget target, List<String> propertiesToSkip = null)
         {
             if (initializationException != null)
             {
@@ -102,7 +102,11 @@ namespace SwagOverflowWPF.Utilities
             for (int i = 0; i < sourceProperties.Count; i++)
             {
                 object val = sourceProperties[i].GetValue(source, null);
-                targetProperties[i].SetValue(target, val, null);
+
+                if (propertiesToSkip == null || !propertiesToSkip.Contains(sourceProperties[i].Name))
+                {
+                    targetProperties[i].SetValue(target, val, null);
+                }
             }
 
         }
@@ -131,6 +135,11 @@ namespace SwagOverflowWPF.Utilities
             }
             foreach (PropertyInfo sourceProperty in ReflectionHelper.PropertyInfoCollection[typeof(TSource)])
             {
+                if (sourceProperty == null)
+                {
+                    continue;
+                }
+
                 if (!sourceProperty.CanRead)
                 {
                     continue;
@@ -139,10 +148,12 @@ namespace SwagOverflowWPF.Utilities
                 {
                     continue;
                 }
+
                 PropertyInfo targetProperty = ReflectionHelper.PropertyInfoCollection[typeof(TTarget)][sourceProperty.Name];
                 if (targetProperty == null)
                 {
-                    throw new ArgumentException("Property " + sourceProperty.Name + " is not present and accessible in " + typeof(TTarget).FullName);
+                    continue;
+                    //throw new ArgumentException("Property " + sourceProperty.Name + " is not present and accessible in " + typeof(TTarget).FullName);
                 }
                 if (!targetProperty.CanWrite)
                 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using MahApps.Metro;
 using MahApps.Metro.IconPacks;
 using SwagOverflowWPF.Controls;
@@ -75,6 +76,10 @@ namespace SwagOverflowWPF.ViewModels
                     scbx.Resources.MergedDictionaries.Add(resourceDictionary);
                 }
 
+                foreach (SwagDataGrid sdg in Application.Current.MainWindow.FindVisualChildren<SwagDataGrid>())
+                {
+                    sdg.Resources.MergedDictionaries.Add(resourceDictionary);
+                }
             }
         }
     }

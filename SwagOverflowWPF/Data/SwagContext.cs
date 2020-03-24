@@ -2,11 +2,14 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.Controls;
 using SwagOverflowWPF.Utilities;
 using SwagOverflowWPF.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 
@@ -35,11 +38,11 @@ namespace SwagOverflowWPF.Data
             modelBuilder.ApplyConfiguration(new SwagDataRowEntityConfiguration());
         }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
             //SetSqlServerOptions(optionsBuilder);
-            //SetSqliteOptions(optionsBuilder);
-        //}
+            SetSqliteOptions(optionsBuilder);
+        }
 
         public static void SetSqlServerOptions(DbContextOptionsBuilder optionsBuilder)
         {
@@ -114,7 +117,7 @@ namespace SwagOverflowWPF.Data
             //SwagItemViewModel Value
             builder.Property(si => si.Value)
                 .HasConversion(
-                    si => JsonHelper.ToJsonString(si, ShouldSerializeContractResolver.Instance),
+                    si => JsonHelper.ToJsonString(si),
                     si => JsonConvert.DeserializeObject<object>(si));
 
             //SwagItemViewModel ValueType => Ignore
@@ -151,6 +154,24 @@ namespace SwagOverflowWPF.Data
         {
             //SwagDataTable DataTable => Ignore
             builder.Ignore(sdt => sdt.DataTable);
+
+            Func<String, ConcurrentObservableOrderedDictionary<String, SwagDataColumn>> stringToDict = (str) =>
+            {
+                KeyValuePair<String, SwagDataColumn>[] cols = JsonConvert.DeserializeObject<KeyValuePair<String, SwagDataColumn>[]>(str, new SwagDataTableConverter());
+                ConcurrentObservableOrderedDictionary<string, SwagDataColumn> dict = new ConcurrentObservableOrderedDictionary<string, SwagDataColumn>();
+                foreach (KeyValuePair<String, SwagDataColumn> kvp in cols)
+                {
+                    dict.Add(kvp.Key, kvp.Value);
+                }
+                return dict;
+            };
+
+            //SwagItemViewModel Value
+            builder.Property(sdt => sdt.Columns)
+                .HasConversion(
+                    sdc => JsonConvert.SerializeObject(sdc.List, Formatting.Indented),
+                    sdc => stringToDict(sdc)
+             );
         }
     }
 
@@ -163,16 +184,95 @@ namespace SwagOverflowWPF.Data
         }
     }
 
+    //https://www.jerriepelser.com/blog/custom-converters-in-json-net-case-study-1/
+    public class SwagDataTableConverter : JsonConverter
+    {
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(KeyValuePair<String, SwagDataColumn>[]).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            JArray jArray = JArray.Load(reader);
+            KeyValuePair<String, SwagDataColumn>[] pairs = new KeyValuePair<string, SwagDataColumn>[jArray.Count];
+
+            for (int c = 0; c < jArray.Count; c++)
+            {
+                JToken jItem = jArray[c];
+                String key = jItem["Key"].Value<String>();
+                JObject jColumn = jItem["Value"].Value<JObject>();
+
+                SwagDataColumn sdc = new SwagDataColumn();
+
+                foreach (KeyValuePair<String, JToken> cProp in jColumn)
+                {
+                    if (cProp.Value is JValue)
+                    {
+                        JValue jVal = (JValue)cProp.Value;
+                        ReflectionHelper.PropertyInfoCollection[typeof(SwagDataColumn)][cProp.Key].SetValue(sdc, jVal.Value);
+                    }
+
+                    if (cProp.Value is JObject && cProp.Key == "Binding")
+                    {
+                        JObject jBinding = (JObject)cProp.Value;
+                        System.Windows.Data.Binding binding = new System.Windows.Data.Binding();
+
+                        foreach (KeyValuePair<String, JToken> bProp in jBinding)
+                        {
+                            JValue jVal = (JValue)bProp.Value;
+                            Object val = jVal.Value;
+
+                            if (val != null)
+                            {
+                                switch (bProp.Key)
+                                {
+                                    case "Path":
+                                        val = new System.Windows.PropertyPath(jVal.Value.ToString());
+                                        break;
+                                    case "Mode":
+                                        val = (System.Windows.Data.BindingMode)Convert.ToInt32(jVal.Value);
+                                        break;
+                                    case "UpdateSourceTrigger":
+                                        val = (System.Windows.Data.UpdateSourceTrigger)Convert.ToInt32(jVal.Value);
+                                        break;
+                                    case "Delay":
+                                        val = Convert.ToInt32(jVal.Value);
+                                        break;
+                                }
+
+                                ReflectionHelper.PropertyInfoCollection[typeof(System.Windows.Data.Binding)][bProp.Key].SetValue(binding, val);
+                            }
+                        }
+
+                        sdc.Binding = binding;
+                    }
+                }
+
+                pairs[c] = new KeyValuePair<string, SwagDataColumn>(key, sdc);
+            }
+
+            return pairs;
+        }
+    }
+
     public class ShouldSerializeContractResolver : DefaultContractResolver
     {
-        public new static readonly ShouldSerializeContractResolver Instance = new ShouldSerializeContractResolver();
+        public static readonly ShouldSerializeContractResolver Instance = new ShouldSerializeContractResolver();
 
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             JsonProperty property = base.CreateProperty(member, memberSerialization);
 
-            if ((property.DeclaringType == typeof(DataRow) && property.PropertyName == "Table") ||
-                property.DeclaringType == typeof(DataColumn) && property.PropertyName == "Table")
+            if (property.Ignored == true ||
+                (property.DeclaringType == typeof(DataRow) && property.PropertyName == "Table") ||
+                (property.DeclaringType == typeof(DataColumn) && property.PropertyName == "Table") ||
+                (property.DeclaringType == typeof(SwagDataColumn) && (property.PropertyName == "DataGridColumn" || property.PropertyName == "DataColumn")))
             {
                 property.ShouldSerialize = i => false;
             }

@@ -16,6 +16,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using System.Threading;
+using System.IO;
+using System.Xml;
+using System.Windows.Markup;
 
 namespace TestWPF
 {
@@ -80,9 +83,9 @@ namespace TestWPF
             Dest = tableService.GetDataTableByName(destTableGroupName);
 
             BindSourceGrid();
-            BindDestGrid();
 
             //InitCombobox();
+            EventManager.RegisterClassHandler(typeof(SwagComboBox), SwagComboBox.ValueChangedEvent, new RoutedEventHandler(SwagComboBox_ValueChanged));
         }
 
         private void InitCombobox()
@@ -112,26 +115,24 @@ namespace TestWPF
             }
         }
 
-        private void dg_Drop(object sender, System.Windows.DragEventArgs e)
+        private void dg_Source_Drop(object sender, System.Windows.DragEventArgs e)
         {
-            DataGrid dataGrid = (DataGrid)sender;
             foreach (String file in (String [])e.Data.GetData(DataFormats.FileDrop))
             {
                 CsvFileToDataTable csvFileToDataTable = new CsvFileToDataTable();
                 DataTable dt = csvFileToDataTable.FileToDataTable(file);
-                dataGrid.ItemsSource = dt.DefaultView;
+                Source.DataTable = dt;
+                BindSourceGrid();
+            }
+        }
 
-                if (dataGrid == dgSource)
-                {
-                    Source.DataTable = dt;
-                    BindSourceGrid();
-                }
-
-                if (dataGrid == dgDest)
-                {
-                    Dest.DataTable = dt;
-                    BindDestGrid();
-                }
+        private void dg_Dest_Drop(object sender, System.Windows.DragEventArgs e)
+        {
+            foreach (String file in (String[])e.Data.GetData(DataFormats.FileDrop))
+            {
+                CsvFileToDataTable csvFileToDataTable = new CsvFileToDataTable();
+                DataTable dt = csvFileToDataTable.FileToDataTable(file);
+                Dest.DataTable = dt;
             }
         }
 
@@ -139,105 +140,59 @@ namespace TestWPF
         {
             if (Source.DataTable != null && Source.DataTable.Columns.Count > 0)
             {
-                #region Columns
-                foreach (DataColumn dc in Source.DataTable.Columns)
-                {
-                    if (dc.ColumnName != "DestID" && dc.ColumnName != "Mapping" && dc.ColumnName != "Source, Dest")
-                    {
-                        DataGridTextColumn dgc = new DataGridTextColumn();
-                        dc.ReadOnly = false;
-                        dgc.Header = dc.ColumnName;
-                        dgc.Binding = new Binding(dc.ColumnName);
-                        dgc.IsReadOnly = false;
-                        dgSource.Columns.Add(dgc);
-                    }
-                }
-                #endregion Columns
-
                 #region DestID
-                if (!Source.DataTable.Columns.Contains("DestID"))
+                if (!Source.Columns.ContainsKey("DestID"))
                 {
-                    Source.DataTable.Columns.Add("DestID");
-                }
+                    SwagDataColumn sdc = new SwagDataColumn()
+                    {
+                        ColumnName = "DestID",
+                        Binding = new Binding("[DestID]") { TargetNullValue = "----------", FallbackValue = "----------" }
+                    };
 
-                DataGridTextColumn dgcDestID = new DataGridTextColumn();
-                dgcDestID.Header = "DestID";
-                dgcDestID.Binding = new Binding("[DestID]") { TargetNullValue = "----------" };
-                dgSource.Columns.Add(dgcDestID);
+                    Source.Columns.Add("DestID", sdc);
+                }
                 #endregion DestID
 
                 #region Mapping
                 if (!Source.DataTable.Columns.Contains("Mapping"))
                 {
-                    Source.DataTable.Columns.Add("Mapping");
-                }
+                    String mappingTemplate = @"<DataTemplate 
+                                xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+                                xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+                                xmlns:local='clr-namespace:TestWPF;assembly=TestWPF'
+                                xmlns:swag='clr-namespace:SwagOverflowWPF.Controls;assembly=SwagOverflowWPF'>
+                                <swag:SwagComboBox 
+                                    DisplayMemberProperty ='{{descriptionField}}' 
+                                    ItemsSource='{Binding Dest.DataTable.DefaultView, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}'
+                                    ValueMemberProperty='ItemID'
+                                    Value='{Binding DestID}'
+                                    Text='{Binding Mapping}'/>
+                            </DataTemplate>";
+                    mappingTemplate = mappingTemplate.Replace("{{descriptionField}}", descriptionField);
 
-                DataGridTemplateColumn dgtc = new DataGridTemplateColumn();
-                dgtc.Header = "Mapping";
-                DataTemplate template = new DataTemplate();
-                DataTemplate itemTemplate = new DataTemplate();
-
-                //https://stackoverflow.com/questions/9385489/why-errors-when-filters-datatable-with-collectionview
-                FrameworkElementFactory comboBoxFactory = new FrameworkElementFactory(typeof(SwagComboBox));
-                comboBoxFactory.SetValue(SwagComboBox.DisplayMemberPropertyProperty, descriptionField);
-                comboBoxFactory.SetBinding(SwagComboBox.ItemsSourceProperty, new Binding("Dest.DataTable.DefaultView") { RelativeSource = new RelativeSource() { AncestorType = typeof(MainWindow) }});
-                comboBoxFactory.SetValue(SwagComboBox.ValueMemberPropertyProperty, "ItemID");
-                comboBoxFactory.SetBinding(SwagComboBox.ValueProperty, new Binding("DestID"));
-                comboBoxFactory.SetValue(SwagComboBox.TextProperty, new Binding("Mapping"));
-                comboBoxFactory.AddHandler(SwagComboBox.ValueChangedEvent, new RoutedEventHandler((s, e) =>
-                {
-                    SwagComboBox scbx = (SwagComboBox)s;
-
-                    if (scbx.DataContext is DataRowView)
+                    SwagDataColumn sdc = new SwagDataColumn()
                     {
-                        DataRowView drv = (DataRowView)scbx.DataContext;
-                        //This is needed notify these properties changed so it can be saved
-                        drv["DestID"] = scbx.Value;
-                        drv["Mapping"] = scbx.Text;
-                    }
-                }));
-                
-                template.VisualTree = comboBoxFactory;
+                        ColumnName = "Mapping",
+                        DataTemplate = mappingTemplate
+                    };
 
-                dgtc.CellTemplate = template;
-                dgSource.Columns.Add(dgtc);
+                    Source.Columns.Add("Mapping", sdc);
+                }
                 #endregion Mapping
 
                 #region (Source, Dest)
-                if (!Source.DataTable.Columns.Contains("Source, Dest"))
+                if (!Source.Columns.ContainsKey("Source, Dest"))
                 {
-                    DataColumn dc = new DataColumn();
-                    dc.ColumnName = "Source, Dest";
-                    dc.Expression = "'(' + ItemID + ', ' + DestID + ')'";
-                    Source.DataTable.Columns.Add(dc);
-                }
+                    SwagDataColumn sdc = new SwagDataColumn()
+                    {
+                        ColumnName = "Source, Dest",
+                        Expression = "'(' + ItemID + ', ' + DestID + ')'"
+                    };
 
-                DataGridTextColumn dgcSourceDest = new DataGridTextColumn();
-                dgcSourceDest.Header = "(Source, Dest)";
-                dgcSourceDest.Binding = new Binding("Source, Dest");
-                dgcSourceDest.IsReadOnly = true;
-                dgSource.Columns.Add(dgcSourceDest);
+                    Source.Columns.Add("Source, Dest", sdc);
+                }
                 #endregion (Source, Dest)
 
-                Source.Init();
-            }
-        }
-
-        private void BindDestGrid()
-        {
-            if (Dest.DataTable != null)
-            {
-                foreach (DataColumn dc in Dest.DataTable.Columns)
-                {
-                    DataGridTextColumn dgc = new DataGridTextColumn();
-                    dc.ReadOnly = false;
-                    dgc.Header = dc.ColumnName;
-                    dgc.Binding = new Binding(dc.ColumnName);
-                    dgc.IsReadOnly = false;
-                    dgDest.Columns.Add(dgc);
-                }
-
-                Dest.Init();
             }
         }
 
@@ -250,7 +205,6 @@ namespace TestWPF
                 Source.SetContext(null);
                 for (int r = 0; r < dt.Rows.Count; r++)
                 {
-                    Thread.Sleep(25);
                     DataRow drSource = Source.DataTable.Rows[r];
                     String description = drSource[descriptionField].ToString();
                     DataRow[] drMatches = Dest.DataTable.Select($"[{descriptionField}] = '{description.Replace("'", "''")}'");
@@ -310,7 +264,25 @@ namespace TestWPF
             context.FieldDelim = '\t';
             DataTable dt = csvStringToDataTable.StringToDataTable(data, context);
             Dest.DataTable = dt;
-            BindDestGrid();
         }
+
+        private void SwagComboBox_ValueChanged(object sender, RoutedEventArgs e)
+        {
+            SwagComboBox scbx = (SwagComboBox)sender;
+
+            if (scbx.DataContext is DataRowView)
+            {
+                DataRowView drv = (DataRowView)scbx.DataContext;
+                //This is needed notify these properties changed so it can be saved
+                drv["DestID"] = scbx.Value;
+                drv["Mapping"] = scbx.Text;
+            }
+        }
+
+        private void SwagWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
     }
 }

@@ -34,6 +34,7 @@ namespace SwagOverflowWPF.Utilities
             return jsonString;
         }
 
+
         public static String ToJsonString(Object obj, IContractResolver contractResolver)
         {
             String jsonString = JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings()

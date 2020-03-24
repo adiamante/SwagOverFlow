@@ -1,213 +1,118 @@
-﻿// Authored by: John Stewien
-// Year: 2011
-// Company: Swordfish Computing
-// License: 
-// The Code Project Open License http://www.codeproject.com/info/cpol10.aspx
-// Originally published at:
-// http://www.codeproject.com/Articles/208361/Concurrent-Observable-Collection-Dictionary-and-So
-// Last Revised: September 2012
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
-using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Collections;
-using System.ComponentModel;
-using System.Collections.Specialized;
+using System.Collections.Immutable;
+using System.Threading;
+using System.Collections.Concurrent;
+using System.Runtime.Serialization;
 
-namespace SwagOverflowWPF.Collections {
-
+//https://github.com/stewienj/SwordfishCollections
+namespace SwagOverflowWPF.Collections
+{
   /// <summary>
-  /// This class provides a dictionary that can be bound to a WPF control,
-  /// where the dictionary can be modified from a thread that is not the
-  /// GUI thread. The notify event is thrown using the dispatcher from
-  /// the event listener(s).
+  /// A collection that can be updated from multiple threads, and can be bound to an items control in the user interface.
+  /// Has the advantage over ObservableCollection in that it doesn't have to be updated from the Dispatcher thread.
+  /// When using this in your view model you should bind to the CollectionView property in your view model. If you
+  /// bind directly this this class it will throw an exception.
   /// </summary>
-  /// <remarks>
-  /// Used a Dictionary to map keys to the index in the underlying observable
-  /// collection.
-  /// 
-  /// TODO: Implement all of the methods offered by the framework
-  /// ConcurrentDictionary.
-  /// </remarks>
+  /// <typeparam name="T"></typeparam>
+  [Serializable]
   public class ConcurrentObservableDictionary<TKey, TValue> :
-    ConcurrentObservableBase<KeyValuePair<TKey, TValue>>,
-    IDictionary<TKey, TValue>,
+    ConcurrentObservableBase< KeyValuePair<TKey, TValue> , ImmutableDictionaryListPair<TKey, TValue> >,
     ICollection<KeyValuePair<TKey, TValue>>,
-    ICollection {
-
-    // ************************************************************************
-    // Private Fields
-    // ************************************************************************
-    #region Private Fields
-
-    /// <summary>
-    /// A dictionary of link list nodes to work out for the key the corresponding
-    /// index for the master list, key list, and value list.
-    /// </summary>
-    protected Dictionary<TKey, DoubleLinkListIndexNode> _keyToIndex;
-    /// <summary>
-    /// The last node of the link list, used for adding new nodes to the end
-    /// </summary>
-    protected DoubleLinkListIndexNode _lastNode = null;
-
-    #endregion Private Fields
-
-    // ************************************************************************
-    // Public Methods
-    // ************************************************************************
-    #region Public Methods
-
-    /// <summary>
-    /// Initializes a new instance of this class that is empty, has the default
-    /// initial capacity, and uses the default equality comparer for the key
-    /// type.
-    /// </summary>
-    public ConcurrentObservableDictionary() {
-      _keyToIndex = new Dictionary<TKey, DoubleLinkListIndexNode>();
+    IDictionary<TKey, TValue>,
+    ICollection,
+    ISerializable
+  {
+    public ConcurrentObservableDictionary() : this(true)
+    {
     }
 
     /// <summary>
-    /// Initializes a new instance of this class that contains elements copied
-    /// from the specified IDictionary<TKey, TValue> and uses the default
-    /// equality comparer for the key type.
+    /// Constructructor. Takes an optional isMultithreaded argument where when true allows you to update the collection
+    /// from multiple threads. In testing there didn't seem to be any performance hit from turning this on, so I made
+    /// it the default.
     /// </summary>
-    /// <param name="source"></param>
-    public ConcurrentObservableDictionary(IDictionary<TKey, TValue> source)
-      : this() {
-      
-      foreach (KeyValuePair<TKey, TValue> pair in source) {
-        Add(pair);
-      }
-    }
-
-    /// <summary>
-    /// Initializes a new instance of this class that is empty, has the default
-    /// initial capacity, and uses the specified IEqualityComparer<T>.
-    /// </summary>
-    /// <param name="equalityComparer"></param>
-    public ConcurrentObservableDictionary(IEqualityComparer<TKey> equalityComparer)
-      : this() {
-      
-      _keyToIndex = new Dictionary<TKey, DoubleLinkListIndexNode>(equalityComparer);
-    }
-
-    /// <summary>
-    /// Initializes a new instance of this class that is empty, has the
-    /// specified initial capacity, and uses the default equality comparer for
-    /// the key type.
-    /// </summary>
-    /// <param name="capactity"></param>
-    public ConcurrentObservableDictionary(int capactity)
-      : this() {
-
-      _keyToIndex = new Dictionary<TKey, DoubleLinkListIndexNode>(capactity);
-    }
-
-    /// <summary>
-    /// Initializes a new instance of this class that contains elements copied
-    /// from the specified IDictionary<TKey, TValue> and uses the specified
-    /// IEqualityComparer<T>.
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="equalityComparer"></param>
-    public ConcurrentObservableDictionary(IDictionary<TKey, TValue> source, IEqualityComparer<TKey> equalityComparer)
-      : this(equalityComparer) {
-
-      foreach (KeyValuePair<TKey, TValue> pair in source) {
-        Add(pair);
-      }
-    }
-
-    /// <summary>
-    /// Initializes a new instance of this class that is empty, has the
-    /// specified initial capacity, and uses the specified
-    /// IEqualityComparer<T>.
-    /// </summary>
-    /// <param name="capacity"></param>
-    /// <param name="equalityComparer"></param>
-    public ConcurrentObservableDictionary(int capacity, IEqualityComparer<TKey> equalityComparer)
-      : this() {
-
-        _keyToIndex = new Dictionary<TKey, DoubleLinkListIndexNode>(capacity, equalityComparer);
-    }
-
-    /// <summary>
-    /// Gets the array index of the key passed in.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    public int IndexOfKey(TKey key) {
-      return DoBaseRead(() => {
-        return _keyToIndex[key].Index;
-      });
-    }
-
-    /// <summary>
-    /// Tries to get the index of the key passed in. Returns true if succeeded
-    /// and false otherwise.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="index"></param>
-    /// <returns></returns>
-    public bool TryGetIndexOf(TKey key, out int index) {
-      var values = DoBaseRead(() => {
-        DoubleLinkListIndexNode node;
-        if (_keyToIndex.TryGetValue(key, out node)) {
-          return Tuple.Create(true, node.Index);
-        } else {
-          return Tuple.Create(false, 0);
+    /// <param name="isThreadSafe"></param>
+    public ConcurrentObservableDictionary(bool isMultithreaded) : base(isMultithreaded,ImmutableDictionaryListPair<TKey, TValue>.Empty)
+    {
+      PropertyChanged += (s, e) =>
+      {
+        if (e.PropertyName == nameof(CollectionView))
+        {
+          OnPropertyChanged(nameof(Keys), nameof(Values));
         }
-      });
-      index = values.Item2;
-      return values.Item1;
+      };
     }
 
-    #endregion Public Methods
-
-    // ************************************************************************
-    // IDictionary<TKey, TValue> Members
-    // ************************************************************************
-    #region IDictionary<TKey, TValue> Members
-
-    /// <summary>
-    /// Adds an element with the provided key and value to the IDictionary<TKey, TValue>.
-    /// </summary>
-    /// <param name="key">
-    /// The object to use as the key of the element to add.
-    /// </param>
-    /// <param name="value">
-    /// The object to use as the value of the element to add.
-    /// </param>
-    public void Add(TKey key, TValue value) {
-      DoBaseWrite(() => {
-        BaseAdd(key, value);
-      });
+    public virtual void Add(TKey key, TValue value)
+    {
+      Add(KeyValuePair.Create(key, value));
+    }
+    public virtual void Add(KeyValuePair<TKey, TValue> pair)
+    {
+      DoReadWriteNotify(
+        () => _internalCollection.Count,
+        (index) => _internalCollection.Add(pair),
+        (index) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, pair, index)
+      );
     }
 
     /// <summary>
-    /// Tries adding a new key value pair. 
+    /// Adds a range of items to the end of the collection. Quicker than adding them individually,
+    /// but the view doesn't update until the last item has been added.
+    /// </summary>
+    public virtual void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+    {
+      DoReadWriteNotify(
+        () => _internalCollection.Count,
+        (index) => _internalCollection.AddRange(pairs),
+        (index) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, (IList)pairs, index)
+      );
+    }
+
+    /// <summary>
+    /// Adds a value for the key passed in if it isn't already in the dictionary
     /// </summary>
     /// <param name="key">
-    /// The object to use as the key of the element to add.
+    /// The object to use as the key of the element to retrieve or add.
     /// </param>
-    /// <param name="value">
-    /// The object to use as the value of the element to add.
+    /// <param name="getValue">
+    /// The object factory to use if key doesn't already exist
     /// </param>
-    /// <returns>
-    /// True if successful or false if the key already exists.
-    /// </returns>
-    public bool TryAdd(TKey key, TValue value) {
-      return DoBaseReadWrite(() => {
-        return _keyToIndex.ContainsKey(key);
-      }, () => {
-        return false;
-      }, () => {
-        BaseAdd(key, value);
+    /// <returns>true is new item was added, false otherwise</returns>
+    public virtual bool TryAdd(TKey key, Func<TKey, TValue> getValue)
+    {
+      // Make this nullable so it throws an exception if there's a bug in the code
+      KeyValuePair<TKey, TValue>? newPair = null;
+      if (DoTestReadWriteNotify(
+        // Test if already exists, continue if it doesn't
+        () => !_internalCollection.Dictionary.ContainsKey(key),
+        // create new node, similar to add
+        () => _internalCollection.Count,
+        (index) => _internalCollection.Add((newPair = KeyValuePair.Create(key, getValue(key))).Value),
+        (index) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newPair, index)
+      ))
+      {
+        // new one created and added
         return true;
-      });
+      }
+      else
+      {
+        // key already existed, nothing happened
+        return false;
+      }
     }
+
+    public bool TryAdd(TKey key, Func<TValue> getValue)
+    {
+      return TryAdd(key, (keyIn) => getValue());
+    }
+
 
     /// <summary>
     /// Retrives a value for the key passed in if it exists, else
@@ -216,305 +121,306 @@ namespace SwagOverflowWPF.Collections {
     /// <param name="key">
     /// The object to use as the key of the element to retrieve or add.
     /// </param>
-    /// <param name="value">
-    /// The object to add if it doesn't already exist
+    /// <param name="getValue">
+    /// The object factory to use if key doesn't already exist
     /// </param>
     /// <returns></returns>
-    public TValue RetrieveOrAdd(TKey key, Func<TValue> getValue) {
-      TValue value = default(TValue);
-      return DoBaseReadWrite(() => {
-        // Test for read or write
-        return _keyToIndex.ContainsKey(key);
-      }, () => {
-        // Read func
-        int index = _keyToIndex[key].Index;
-        return WriteCollection[index].Value;
-      }, () => {
-        // Pre write func (outside of locking the collection)
-        value = getValue();
-      }, () => {
-        // Write func
-        BaseAdd(key, value);
-        return value;
-      });
-    }
-
-    protected virtual void BaseAdd(TKey key, TValue value) {
-      DoubleLinkListIndexNode node = new DoubleLinkListIndexNode(_lastNode, _keyToIndex.Count);
-      _keyToIndex.Add(key, node);
-      _lastNode = node;
-      WriteCollection.Add(new KeyValuePair<TKey, TValue>(key, value));
-    }
-
-    /// <summary>
-    /// Determines whether the IDictionary<TKey, TValue> contains an element with the specified key.
-    /// </summary>
-    /// <param name="key">
-    /// The key to locate in the IDictionary<TKey, TValue>.
-    /// </param>
-    /// <returns>
-    /// True if the IDictionary<TKey, TValue> contains an element with the key; otherwise, false.
-    /// </returns>
-    public bool ContainsKey(TKey key) {
-      return DoBaseRead(() => {
-        return _keyToIndex.ContainsKey(key);
-      });
-    }
-
-    /// <summary>
-    /// Gets an ICollection<T> containing the keys of the IDictionary<TKey, TValue>.
-    /// </summary>
-    /// <remarks>
-    /// Note that the returned collection is immutable. This was deliberate, and
-    /// is related to the implementation of GetEnumerator() which also returns a
-    /// snapshot.
-    /// 
-    /// If you hand off the Enumerator, Values, or Keys to a GUI object you'll
-    /// potentially get a crash because the collection can be modified by another
-    /// thread while the GUI is enumerating.
-    /// 
-    /// I thought about having an enumerator where the underlying collection
-    /// could be modified without causing an exception, and have new objects
-    /// added to the end, but then how would that work for the sorted version
-    /// (which was actually my end goal)?
-     /// </remarks>
-    public ICollection<TKey> Keys {
-      get {
-        return new ConcurrentKeyCollection<TKey, TValue>(this);
+    public virtual TValue RetrieveOrAdd(TKey key, Func<TKey, TValue> getValue)
+    {
+      ObservableDictionaryNode<TKey, TValue> internalNode = null;
+      // Make this nullable so it throws an exception if there's a bug in the code
+      KeyValuePair<TKey, TValue>? newPair = null;
+      if(DoTestReadWriteNotify(
+        // Test if already exists, continue if it doesn't
+        () => !_internalCollection.Dictionary.TryGetValue(key, out internalNode),
+        // create new node, similar to add
+        () => _internalCollection.Count,
+        (index) => _internalCollection.Add((newPair = KeyValuePair.Create(key, getValue(key))).Value),
+        (index) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newPair, index)
+      ))
+      {
+        // new one created 
+        return newPair.Value.Value;
+      }
+      else
+      {
+        return internalNode.Value;
       }
     }
 
-    /// <summary>
-    /// Removes the element with the specified key from the IDictionary<TKey, TValue>.
-    /// </summary>
-    /// <param name="key">
-    /// The key of the element to remove.
-    /// </param>
-    /// <returns>
-    /// True if the element is successfully removed; otherwise, false. This method also returns false if key was not found in the original IDictionary<TKey, TValue>.
-    /// </returns>
-    public bool Remove(TKey key) {
-      return DoBaseWrite(() => {
-        DoubleLinkListIndexNode node;
-        if (_keyToIndex.TryGetValue(key, out node)) {
-          WriteCollection.RemoveAt(node.Index);
-          if (node == _lastNode) {
-            _lastNode = node.Previous;
-          }
-          node.Remove();
-        }
-        return _keyToIndex.Remove(key);
-      });
+    public TValue RetrieveOrAdd(TKey key, Func<TValue> getValue)
+    {
+      return RetrieveOrAdd(key, (keyIn) => getValue());
+    }
+
+    public virtual void Insert(int index, KeyValuePair<TKey, TValue> pair)
+    {
+      DoWriteNotify(
+        () => _internalCollection.Insert(index, pair),
+        () => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, pair, index)
+      );
+    }
+
+    public virtual void RemoveAt(int index)
+    {
+      DoReadWriteNotify(
+        () => _internalCollection.GetItem(index),
+        (item) => _internalCollection.RemoveAt(index),
+        (item) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index)
+      );
+    }
+
+    public virtual bool Remove(TKey key)
+    {
+      var retVal = DoReadWriteNotify(
+        // Get the list of keys and values from the internal list
+        () => _internalCollection.GetItemAndIndex(key),
+        // remove the keys from the dictionary, remove the range from the list
+        (itemAndIndex) => _internalCollection.Remove(key),
+        // Notify which items were removed
+        (itemAndIndex) => itemAndIndex != null ? new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, itemAndIndex.Item, itemAndIndex.Index) : null
+      ) !=null;
+      return retVal;
+    }
+
+    public bool Remove(KeyValuePair<TKey, TValue> pair)
+    {
+      return DoTestReadWriteNotify(
+        // Make sure Key/Value pair matches what's in the collection
+        ()=> { var itemAndIndex = _internalCollection.GetItemAndIndex(pair.Key); return itemAndIndex != null && itemAndIndex.Item.Value.Equals(pair.Value); },
+        // Get the list of keys and values from the internal list
+        () => _internalCollection.GetItemAndIndex(pair.Key),
+        // remove the keys from the dictionary, remove the range from the list
+        (itemAndIndex) => _internalCollection.Remove(pair.Key),
+        // Notify which items were removed
+        (itemAndIndex) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, itemAndIndex.Item, itemAndIndex.Index)
+      );
     }
 
     /// <summary>
-    /// Gets the value associated with the specified key.
+    /// Rmoves a range of items by index and count
     /// </summary>
-    /// <param name="key">
-    /// The key whose value to get.
-    /// </param>
-    /// <param name="value">
-    /// When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.
-    /// </param>
-    /// <returns>
-    /// True if the object that implements IDictionary<TKey, TValue> contains an element with the specified key; otherwise, false.
-    /// </returns>
-    public bool TryGetValue(TKey key, out TValue value) {
-      var values = DoBaseRead(() => {
-        DoubleLinkListIndexNode index;
-        if (_keyToIndex.TryGetValue(key, out index)) {
-          // Use write collection here because that is what
-          // is in sync with _keyToIndex
-          return Tuple.Create(true, WriteCollection[index.Index].Value);
-        } else {
-          return Tuple.Create(false, default(TValue));
-        }
-      });
-      value = values.Item2;
-      return values.Item1;
+    public void RemoveRange(int index, int count)
+    {
+      DoReadWriteNotify<IList<KeyValuePair<TKey,TValue>>>(
+        // Get the list of keys and values from the internal list
+        () => _internalCollection.GetRange(index, count),
+        // remove the keys from the dictionary, remove the range from the list
+        (items) => _internalCollection.RemoveRange(index, count),
+        // Notify which items were removed
+        (items) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items, index)
+      );
+    }
+
+    public void RemoveRange(IList<TKey> keys)
+    {
+      DoReadWriteNotify<IList<KeyValuePair<TKey, TValue>>>(
+        // Get the list of keys and values from the internal list
+        () => _internalCollection.GetRange(keys),
+        // remove the keys from the dictionary, remove the range from the list
+        (items) => _internalCollection.RemoveRange(keys),
+        // Notify which items were removed
+        (items) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items)
+      );
+    }
+
+    public KeyValuePair<TKey, TValue> GetItem(int index)
+    {
+      return _internalCollection.GetItem(index);
     }
 
     /// <summary>
-    /// Gets an ICollection<T> containing the values in the IDictionary<TKey, TValue>.
+    /// This is the view of the colleciton that you should be binding to with your ListView/GridView control.
     /// </summary>
-    /// <remarks>
-    /// Note that the returned collection is immutable. This was deliberate, and
-    /// is related to the implementation of GetEnumerator() which also returns a
-    /// snapshot.
-    /// 
-    /// If you hand off the Enumerator, Values, or Keys to a GUI object you'll
-    /// potentially get a crash because the collection can be modified by another
-    /// thread while the GUI is enumerating.
-    /// 
-    /// I thought about having an enumerator where the underlying collection
-    /// could be modified without causing an exception, and have new objects
-    /// added to the end, but then how would that work for the sorted version
-    /// (which was actually my end goal)?
-    /// </remarks>
-    public ICollection<TValue> Values {
-      get {
-        return new ConcurrentValueCollection<TKey, TValue>(this);
+    public override IList<KeyValuePair<TKey, TValue>> CollectionView
+    {
+      get
+      {
+        return ListSelect.Create(_internalCollection.List, node=>node.KeyValuePair);
       }
     }
 
-    /// <summary>
-    /// Gets or sets the element with the specified key.
-    /// </summary>
-    /// <param name="key">
-    /// The key of the element to get or set.
-    /// </param>
-    /// <returns>
-    /// The element with the specified key.
-    /// </returns>
-    public TValue this[TKey key] {
-      get {
-        return DoBaseRead(() => {
-          int index = _keyToIndex[key].Index;
-          // Use write collection here because that is what
-          // is in sync with _keyToIndex
-          return WriteCollection[index].Value;
-        });
+    public IList<TKey> Keys
+    {
+      get
+      {
+        return ListSelect.Create(_internalCollection.List, node => node.Key);
       }
-      set {
-        DoBaseWrite(() => {
-          if (_keyToIndex.ContainsKey(key)) {
-            int index = _keyToIndex[key].Index;
-            WriteCollection[index] = new KeyValuePair<TKey, TValue>(key, value);
-          } else {
-            BaseAdd(key, value);
-          }
-        });
+    }
+    ICollection<TKey> IDictionary<TKey,TValue>.Keys
+    {
+      get
+      {
+        return ListSelect.Create(_internalCollection.List, node => node.Key);
       }
     }
 
-    #endregion IDictionary<TKey, TValue> Members
-
-    // ************************************************************************
-    // ICollection<KeyValuePair<TKey, TValue>> Members
-    // ************************************************************************
-    #region ICollection<KeyValuePair<TKey, TValue>> Members
-
-    /// <summary>
-    /// Adds an item to the ICollection<T>.
-    /// </summary>
-    /// <param name="item"></param>
-    public void Add(KeyValuePair<TKey, TValue> item) {
-      Add(item.Key, item.Value);
+    public IList<TValue> Values
+    {
+      get
+      {
+        return ListSelect.Create(_internalCollection.List, node => node.Value);
+      }
+    }
+    ICollection<TValue> IDictionary<TKey, TValue>.Values
+    {
+      get
+      {
+        return ListSelect.Create(_internalCollection.List, node => node.Value);
+      }
     }
 
-    /// <summary>
-    /// Removes all items from the ICollection<T>.
-    /// </summary>
-    public void Clear() {
-      DoBaseClear(()=>{
-        // See base class implementation
-        _keyToIndex.Clear();
-        _lastNode = null;
-      });
+    public override int Count
+    {
+      get
+      {
+        return _internalCollection.Count;
+      }
     }
 
-    /// <summary>
-    /// Determines whether the ICollection<T> contains a specific value.
-    /// </summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    public bool Contains(KeyValuePair<TKey, TValue> item) {
-      return DoBaseRead(() => {
-        return ReadCollection.Contains(item);
-      });
+    public virtual TValue this[TKey key]
+    {
+      get
+      {
+        return _internalCollection.Dictionary[key].Value;
+      }
+      set
+      {
+        var pair = KeyValuePair.Create(key, value);
+        DoTestReadWriteNotify(
+          // Test if adding or replacing  
+          ()=>!_internalCollection.Dictionary.ContainsKey(key),
+          // Same as Add
+          () => _internalCollection.ItemAndIndexCount,
+          (itemAndIndex) => _internalCollection.Add(pair),
+          (itemAndIndex) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, pair, itemAndIndex.Index),
+          // Do replace
+          () => _internalCollection.GetItemAndIndex(key),
+          (itemAndIndex) => _internalCollection.ReplaceItem(itemAndIndex.Index, pair),
+          (itemAndIndex) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, pair, itemAndIndex.Item, itemAndIndex.Index));
+      }
     }
 
-    /// <summary>
-    /// Copies the elements of the ICollection<T> to an Array, starting at a particular Array index.
-    /// </summary>
-    /// <param name="array"></param>
-    /// <param name="arrayIndex"></param>
-    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) {
-      DoBaseRead(() => {
-        ReadCollection.CopyTo(array, arrayIndex);
-      });
-    }
-
-    /// <summary>
-    /// Removes the first occurrence of a specific object from the ICollection<T>.
-    /// </summary>
-    /// <param name="item">
-    /// The object to remove from the ICollection<T>.
-    /// </param>
-    /// <returns>
-    /// True if item was successfully removed from the ICollection<T>; otherwise, false. This method also returns false if item is not found in the original ICollection<T>.
-    /// </returns>
-    public bool Remove(KeyValuePair<TKey, TValue> item) {
-      // "Contains" does a read lock, and "Remove" does a write lock..
-      // ... so don't want to wrap this in a lock
-      if (Contains(item)) {
-        return Remove(item.Key);
-      } else {
+    public bool IsReadOnly
+    {
+      get
+      {
         return false;
       }
     }
 
-    /// <summary>
-    /// Gets the number of elements contained in the ICollection<T>.
-    /// </summary>
-    public int Count {
-      get {
-        return DoBaseRead(() => {
-          return ReadCollection.Count;
-        });
-      }
+    public override string ToString()
+    {
+      return $"{{Items : {Count}}}";
     }
 
-    /// <summary>
-    /// Gets a value indicating whether the ICollection<T> is read-only.
-    /// </summary>
-    public bool IsReadOnly {
-      get {
+    
+
+    // ************************************************************************
+    // IEnumerable<T> Implementation
+    // ************************************************************************
+    #region IEnumerable<T> Implementation
+
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+    {
+      return _internalCollection.List.Select(x=>x.KeyValuePair).GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+      return _internalCollection.List.Select(x => x.KeyValuePair).GetEnumerator();
+    }
+
+
+    #endregion IEnumerable<T> Implementation
+
+    public bool ContainsKey(TKey key)
+    {
+      return _internalCollection.Dictionary.ContainsKey(key);
+    }
+
+    public bool TryGetValue(TKey key, out TValue value)
+    {
+      var itemAndIndex = _internalCollection.GetItemAndIndex(key);
+      if (itemAndIndex != null)
+      {
+        value = itemAndIndex.Item.Value;
+        return true;
+      }
+      else
+      {
+        value = default;
         return false;
       }
     }
 
-    #endregion ICollection<KeyValuePair<TKey, TValue>> Members
 
-    // ************************************************************************
-    // ICollection Members
-    // ************************************************************************
-    #region ICollection Members
-
-    /// <summary>
-    /// Copies the elements of the ICollection to an Array, starting at a particular Array index.
-    /// </summary>
-    /// <param name="array"></param>
-    /// <param name="index"></param>
-    public void CopyTo(Array array, int index) {
-      DoBaseRead(() => {
-        ((ICollection)ReadCollection).CopyTo(array, index);
-      });
+    public void Clear()
+    {
+      DoReadWriteNotify(
+        // Get the list of keys and values from the internal list
+        () => ListSelect.Create(_internalCollection.List, x=>x.KeyValuePair),
+        // remove the keys from the dictionary, remove the range from the list
+        (items) => ImmutableDictionaryListPair<TKey, TValue>.Empty,
+        // Notify which items were removed
+        (items) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items,0)
+      );
     }
- 
-    /// <summary>
-    /// Gets a value indicating whether access to the ICollection is synchronized (thread safe).
-    /// </summary>
-    public bool IsSynchronized {
-      get {
-        return DoBaseRead(() => {
-          return ((ICollection)ReadCollection).IsSynchronized;
-        });
+
+    public bool Contains(KeyValuePair<TKey, TValue> item)
+    {
+      var itemAndIndex = _internalCollection.GetItemAndIndex(item.Key);
+      return itemAndIndex != null && itemAndIndex.Item.Value.Equals(item.Value);
+    }
+
+    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+    {
+      // Take a snapshot of the current list with a converter
+      var list = ListSelect.Create(_internalCollection.List, node => node.KeyValuePair);
+      list.CopyTo(array, arrayIndex);
+    }
+
+    void ICollection.CopyTo(Array array, int arrayIndex)
+    {
+      var list = ListSelect.Create(_internalCollection.List, node => node.KeyValuePair);
+      ((ICollection)list).CopyTo(array, arrayIndex);
+    }
+
+    object ICollection.SyncRoot
+    {
+      get
+      {
+        throw new NotImplementedException();
       }
     }
 
-    /// <summary>
-    /// Gets an object that can be used to synchronize access to the ICollection.
-    /// </summary>
-    public object SyncRoot {
-      get {
-        return DoBaseRead(() => {
-          return ((ICollection)ReadCollection).SyncRoot;
-        });
+    bool ICollection.IsSynchronized
+    {
+      get
+      {
+        throw new NotImplementedException();
       }
     }
+        
+    // ************************************************************************
+    // ISerializable Implementation
+    // ************************************************************************
+    #region ISerializable Implementation
+    protected override void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+      base.GetObjectData(info, context);
+      var internalCollection = _internalCollection;
+      var children = new KeyValuePair<TKey,TValue>[internalCollection.Count];
+      for (int i = 0; i < internalCollection.Count; i++)
+        children[i] = internalCollection.GetItem(i);
+      info.AddValue("children", children);
+    }
 
-    #endregion ICollection Members
-
+    protected ConcurrentObservableDictionary(SerializationInfo information, StreamingContext context) : base(information, context)
+    {
+      var children = (KeyValuePair<TKey, TValue>[])information.GetValue("children",typeof(KeyValuePair<TKey, TValue>[]));
+      _internalCollection = ImmutableDictionaryListPair<TKey, TValue>.Empty.AddRange(children);
+    }
+    #endregion
   }
 }
