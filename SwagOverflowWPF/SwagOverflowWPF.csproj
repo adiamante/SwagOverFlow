@@ -92,6 +92,8 @@
     <Compile Remove="Migrations\20200318185428_M1.Designer.cs" />
     <Compile Remove="Migrations\20200318211007_M1.cs" />
     <Compile Remove="Migrations\20200318211007_M1.Designer.cs" />
+    <Compile Remove="Migrations\20200329034128_M3.cs" />
+    <Compile Remove="Migrations\20200329034128_M3.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -34,7 +34,6 @@ namespace SwagOverflowWPF.ViewModels
 
         #region Properties
         #region Icon
-        [NotMapped]
         public Enum Icon
         {
             get 
@@ -99,10 +98,6 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _itemsSource, value); }
         }
         #endregion ItemsSource
-        #region ItemsSourceType
-        [NotMapped]
-        public virtual Type ItemsSourceType { get { return null; } set { } }
-        #endregion ItemsSourceType
         #region ItemsSourceTypeString
         public virtual String ItemsSourceTypeString
         {
@@ -150,10 +145,6 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion GenericValue
-        #region ItemsSourceType
-        [NotMapped]
-        public override Type ItemsSourceType { get { return typeof(T[]); } set { } }
-        #endregion ItemsSourceType
         #region ItemsSourceTypeString
         public override String ItemsSourceTypeString
         {
@@ -196,5 +187,16 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion Initialization
     }
+
+    public class SwagSettingString : SwagSetting<String>
+    {
+
+    }
+
+    public class SwagSettingBoolean : SwagSetting<Boolean>
+    {
+
+    }
+
 }
 

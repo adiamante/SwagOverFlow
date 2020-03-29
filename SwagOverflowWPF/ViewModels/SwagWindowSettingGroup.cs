@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
 using MahApps.Metro;
 using MahApps.Metro.IconPacks;
 using SwagOverflowWPF.Controls;
@@ -18,15 +17,15 @@ namespace SwagOverflowWPF.ViewModels
         {
             this["Window"] = new SwagSetting() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.SettingsOutline };
             this["Window"]["Status"] = new SwagSetting() { SettingType = SettingType.Hidden };
-            this["Window"]["Status"]["Message"] = new SwagSetting<String>() { SettingType = SettingType.Hidden };
-            this["Window"]["Status"]["IsBusy"] = new SwagSetting<Boolean>() { SettingType = SettingType.Hidden, GenericValue = false };
+            this["Window"]["Status"]["Message"] = new SwagSettingString() { SettingType = SettingType.Hidden };
+            this["Window"]["Status"]["IsBusy"] = new SwagSettingBoolean() { SettingType = SettingType.Hidden, GenericValue = false };
             this["Window"]["Settings"] = new SwagSetting() { SettingType = SettingType.Hidden };
-            this["Window"]["Settings"]["IsOpen"] = new SwagSetting<Boolean>() { GenericValue = false, SettingType = SettingType.Hidden };
+            this["Window"]["Settings"]["IsOpen"] = new SwagSettingBoolean() { GenericValue = false, SettingType = SettingType.Hidden };
             this["Window"]["CommandHistory"] = new SwagSetting() { SettingType = SettingType.Hidden };
-            this["Window"]["CommandHistory"]["IsOpen"] = new SwagSetting<Boolean>() { GenericValue = false, SettingType = SettingType.Hidden };
+            this["Window"]["CommandHistory"]["IsOpen"] = new SwagSettingBoolean() { GenericValue = false, SettingType = SettingType.Hidden };
             this["Window"]["Theme"] = new SwagSetting() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.PaletteOutline };
-            this["Window"]["Theme"]["Base"] = new SwagSetting<String>() { GenericValue = "Light", Icon = PackIconMaterialKind.PaletteSwatchOutline, GenericItemsSource = new[] { "Light", "Dark" }, SettingType = SettingType.DropDown };
-            this["Window"]["Theme"]["Accent"] = new SwagSetting<String>() { GenericValue = "Blue", Icon = PackIconMaterialKind.Brush, GenericItemsSource = new [] { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" }, SettingType = SettingType.DropDown };
+            this["Window"]["Theme"]["Base"] = new SwagSettingString() { GenericValue = "Light", Icon = PackIconMaterialKind.PaletteSwatchOutline, GenericItemsSource = new[] { "Light", "Dark" }, SettingType = SettingType.DropDown };
+            this["Window"]["Theme"]["Accent"] = new SwagSettingString() { GenericValue = "Blue", Icon = PackIconMaterialKind.Brush, GenericItemsSource = new [] { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" }, SettingType = SettingType.DropDown };
         }
 
         public void Initialize()

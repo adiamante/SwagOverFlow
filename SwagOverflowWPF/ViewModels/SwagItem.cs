@@ -111,7 +111,6 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion Value
         #region ValueType
-        [NotMapped]
         public virtual Type ValueType 
         { 
             get 
@@ -446,7 +445,6 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion RootId
         #region Root
-        [NotMapped]
         public SwagItem Root
         {
             get { return _root; }
@@ -489,7 +487,6 @@ namespace SwagOverflowWPF.ViewModels
 
         #region Properties
         #region Root
-        [NotMapped]
         public SwagIndexedItem IndexedRoot
         {
             get { return (SwagIndexedItem)_root; }
@@ -501,7 +498,6 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion Root
         #region Descendants
-        [NotMapped]
         public virtual ObservableCollection<SwagIndexedItem> IndexedDescendants
         {
             get { return _indexedDescendants; }

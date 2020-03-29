@@ -19,8 +19,11 @@ namespace SwagOverflowWPF.Data
     {
         static string _dataSource = "localhost";
         public DbSet<SwagGroup> SwagGroups { get; set; }
+        public DbSet<SwagIndexedGroup> SwagIndexedGroups { get; set; }
         public DbSet<SwagItem> SwagItems { get; set; }
         public DbSet<SwagSetting> SwagSettings { get; set; }
+        public DbSet<SwagSettingString> SwagSettingStrings { get; set; }
+        public DbSet<SwagSettingBoolean> SwagSettingBooleans { get; set; }
         public DbSet<SwagSettingGroup> SwagSettingGroups { get; set; }
         public DbSet<SwagWindowSettingGroup> SwagWindowSettingGroups { get; set; }
         public DbSet<SwagDataRow> SwagDataRows { get; set; }
@@ -32,8 +35,11 @@ namespace SwagOverflowWPF.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new SwagGroupEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagIndexedGroupEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagItemEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new SwagSettingViewModelEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagSettingEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagSettingStringEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagSettingBooleanEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataTableEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataRowEntityConfiguration());
         }
@@ -90,6 +96,18 @@ namespace SwagOverflowWPF.Data
         }
     }
 
+    public class SwagIndexedGroupEntityConfiguration : IEntityTypeConfiguration<SwagIndexedGroup>
+    {
+        public void Configure(EntityTypeBuilder<SwagIndexedGroup> builder)
+        {
+            //SwagIndexedGroup IndexedRoot => Ignore
+            builder.Ignore(sig => sig.IndexedRoot);
+
+            //SwagIndexedGroup IndexedDescendants => Ignore
+            builder.Ignore(sig => sig.IndexedDescendants);
+        }
+    }
+
     public class SwagItemEntityConfiguration : IEntityTypeConfiguration<SwagItem>
     {
         public void Configure(EntityTypeBuilder<SwagItem> builder)
@@ -131,7 +149,7 @@ namespace SwagOverflowWPF.Data
         }
     }
 
-    public class SwagSettingViewModelEntityConfiguration : IEntityTypeConfiguration<SwagSetting>
+    public class SwagSettingEntityConfiguration : IEntityTypeConfiguration<SwagSetting>
     {
         public void Configure(EntityTypeBuilder<SwagSetting> builder)
         {
@@ -144,9 +162,11 @@ namespace SwagOverflowWPF.Data
                 .HasConversion(
                     ss => JsonHelper.ToJsonString(ss),
                     ss => JsonConvert.DeserializeObject<object>(ss));
+
+            //SwagSetting Icon => Ignore
+            builder.Ignore(ss => ss.Icon);
         }
     }
-
 
     public class SwagDataTableEntityConfiguration : IEntityTypeConfiguration<SwagDataTable>
     {
@@ -172,6 +192,24 @@ namespace SwagOverflowWPF.Data
                     sdc => JsonConvert.SerializeObject(sdc.List, Formatting.Indented),
                     sdc => stringToDict(sdc)
              );
+        }
+    }
+
+    public class SwagSettingStringEntityConfiguration : IEntityTypeConfiguration<SwagSettingString>
+    {
+        public void Configure(EntityTypeBuilder<SwagSettingString> builder)
+        {
+            //SwagSettingString DataRow => Ignore
+            builder.Ignore(sdr => sdr.GenericItemsSource);
+        }
+    }
+
+    public class SwagSettingBooleanEntityConfiguration : IEntityTypeConfiguration<SwagSettingBoolean>
+    {
+        public void Configure(EntityTypeBuilder<SwagSettingBoolean> builder)
+        {
+            //SwagSettingBoolean DataRow => Ignore
+            builder.Ignore(sdr => sdr.GenericItemsSource);
         }
     }
 
