@@ -11,22 +11,22 @@ using SwagOverflowWPF.UI;
 
 namespace SwagOverflowWPF.ViewModels
 {
-    public class SwagWindowSettingGroup : SwagSettingGroupViewModel
+    public class SwagWindowSettingGroup : SwagSettingGroup
     {
         SwagContext _context;
         public SwagWindowSettingGroup() : base()
         {
-            this["Window"] = new SwagSettingViewModel() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.SettingsOutline };
-            this["Window"]["Status"] = new SwagSettingViewModel() { SettingType = SettingType.Hidden };
-            this["Window"]["Status"]["Message"] = new SwagSettingViewModel<String>() { SettingType = SettingType.Hidden };
-            this["Window"]["Status"]["IsBusy"] = new SwagSettingViewModel<Boolean>() { SettingType = SettingType.Hidden, GenericValue = false };
-            this["Window"]["Settings"] = new SwagSettingViewModel() { SettingType = SettingType.Hidden };
-            this["Window"]["Settings"]["IsOpen"] = new SwagSettingViewModel<Boolean>() { GenericValue = false, SettingType = SettingType.Hidden };
-            this["Window"]["CommandHistory"] = new SwagSettingViewModel() { SettingType = SettingType.Hidden };
-            this["Window"]["CommandHistory"]["IsOpen"] = new SwagSettingViewModel<Boolean>() { GenericValue = false, SettingType = SettingType.Hidden };
-            this["Window"]["Theme"] = new SwagSettingViewModel() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.PaletteOutline };
-            this["Window"]["Theme"]["Base"] = new SwagSettingViewModel<String>() { GenericValue = "Light", Icon = PackIconMaterialKind.PaletteSwatchOutline, GenericItemsSource = new[] { "Light", "Dark" }, SettingType = SettingType.DropDown };
-            this["Window"]["Theme"]["Accent"] = new SwagSettingViewModel<String>() { GenericValue = "Blue", Icon = PackIconMaterialKind.Brush, GenericItemsSource = new [] { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" }, SettingType = SettingType.DropDown };
+            this["Window"] = new SwagSetting() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.SettingsOutline };
+            this["Window"]["Status"] = new SwagSetting() { SettingType = SettingType.Hidden };
+            this["Window"]["Status"]["Message"] = new SwagSetting<String>() { SettingType = SettingType.Hidden };
+            this["Window"]["Status"]["IsBusy"] = new SwagSetting<Boolean>() { SettingType = SettingType.Hidden, GenericValue = false };
+            this["Window"]["Settings"] = new SwagSetting() { SettingType = SettingType.Hidden };
+            this["Window"]["Settings"]["IsOpen"] = new SwagSetting<Boolean>() { GenericValue = false, SettingType = SettingType.Hidden };
+            this["Window"]["CommandHistory"] = new SwagSetting() { SettingType = SettingType.Hidden };
+            this["Window"]["CommandHistory"]["IsOpen"] = new SwagSetting<Boolean>() { GenericValue = false, SettingType = SettingType.Hidden };
+            this["Window"]["Theme"] = new SwagSetting() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.PaletteOutline };
+            this["Window"]["Theme"]["Base"] = new SwagSetting<String>() { GenericValue = "Light", Icon = PackIconMaterialKind.PaletteSwatchOutline, GenericItemsSource = new[] { "Light", "Dark" }, SettingType = SettingType.DropDown };
+            this["Window"]["Theme"]["Accent"] = new SwagSetting<String>() { GenericValue = "Blue", Icon = PackIconMaterialKind.Brush, GenericItemsSource = new [] { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" }, SettingType = SettingType.DropDown };
         }
 
         public void Initialize()
@@ -46,7 +46,7 @@ namespace SwagOverflowWPF.ViewModels
         private void SwagWindowSettingGroup_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
         {
             SwagSettingUnitOfWork work = new SwagSettingUnitOfWork(_context);
-            work.Settings.Update((SwagSettingViewModel)e.SwagItem);
+            work.Settings.Update((SwagSetting)e.SwagItem);
             work.Complete();
         }
 

@@ -2,7 +2,7 @@
 
 namespace SwagOverflowWPF.Interface
 {
-    public interface ISwagSettingGroupRepository : IRepository<SwagSettingGroupViewModel>
+    public interface ISwagSettingGroupRepository : IRepository<SwagSettingGroup>
     {
         //Custom query methods here
     }

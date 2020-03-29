@@ -90,10 +90,10 @@ namespace SwagOverflowWPF.Services
                 windowSettings = new SwagWindowSettingGroup();
                 windowSettings.Name = windowSettings.AlternateId = groupName;
                 work.SettingGroups.Insert(windowSettings);
-                SwagItemPreOrderIterator<SwagItemViewModel> iterator = windowSettings.CreateIterator();
-                for (SwagItemViewModel swagItem = iterator.First(); !iterator.IsDone; swagItem = iterator.Next())
+                SwagItemPreOrderIterator<SwagItem> iterator = windowSettings.CreateIterator();
+                for (SwagItem swagItem = iterator.First(); !iterator.IsDone; swagItem = iterator.Next())
                 {
-                    SwagSettingViewModel setting = (SwagSettingViewModel)swagItem;
+                    SwagSetting setting = (SwagSetting)swagItem;
                     //Mark these properites as modified to have them save properly
                     setting.Value = setting.Value;
                     setting.ValueTypeString = setting.ValueTypeString;

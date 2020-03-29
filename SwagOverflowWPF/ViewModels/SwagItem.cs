@@ -8,12 +8,11 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 using System.Windows.Data;
 
 namespace SwagOverflowWPF.ViewModels
 {
-    public class SwagItemViewModel : ViewModelBaseExtended, ISwagHeirarchy<SwagItemViewModel>
+    public class SwagItem : ViewModelBaseExtended, ISwagHeirarchy<SwagItem>
     {
         #region Private/Protected Members
         String _display, _alternateId;
@@ -21,10 +20,10 @@ namespace SwagOverflowWPF.ViewModels
         Int32 _itemId, _groupId, _sequence;
         Int32? _parentId, _groupRootId;
         Boolean _isExpanded;
-        protected ObservableCollection<SwagItemViewModel> _children = new ObservableCollection<SwagItemViewModel>();
-        SwagItemViewModel _parent;
+        protected ObservableCollection<SwagItem> _children = new ObservableCollection<SwagItem>();
+        SwagItem _parent;
         CollectionViewSource _childrenCollectionViewSource;
-        SwagGroupViewModel _group, _groupRoot;
+        SwagGroup _group, _groupRoot;
         protected Object _value;
         protected Type _valueType = null;
         #endregion Private/Protected Members
@@ -134,7 +133,7 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion ValueTypeString
         #region Parent
-        public virtual SwagItemViewModel Parent
+        public virtual SwagItem Parent
         {
             get { return _parent; }
             set { SetValue(ref _parent, value); }
@@ -147,21 +146,21 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion ChildrenView
         #region Children
-        public ObservableCollection<SwagItemViewModel> Children
+        public ObservableCollection<SwagItem> Children
         {
             get { return _children; }
             set { SetValue(ref _children, value); }
         }
         #endregion Children
         #region Group
-        public SwagGroupViewModel Group
+        public SwagGroup Group
         {
             get { return _group; }
             set { SetValue(ref _group, value); }
         }
         #endregion Group
         #region GroupRoot
-        public SwagGroupViewModel GroupRoot
+        public SwagGroup GroupRoot
         {
             get { return _groupRoot; }
             set { SetValue(ref _groupRoot, value); }
@@ -170,7 +169,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Properties
 
         #region Initialization
-        public SwagItemViewModel()
+        public SwagItem()
         {
             PropertyChangedExtended += SwagItemViewModel_PropertyChangedExtended;
             _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
@@ -187,7 +186,7 @@ namespace SwagOverflowWPF.ViewModels
         {
             if (e.NewItems != null)
             {
-                foreach (SwagItemViewModel child in e.NewItems)
+                foreach (SwagItem child in e.NewItems)
                 {
                     child.Parent = this;
                     child.Group = this.Group;
@@ -201,7 +200,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
     }
 
-    public class SwagItemViewModel<T> : SwagItemViewModel
+    public class SwagItem<T> : SwagItem
     {
         #region Properties
         #region ValueType
@@ -237,7 +236,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Properties
 
         #region Initialization
-        public SwagItemViewModel() : base()
+        public SwagItem() : base()
         {
 
         }
@@ -245,10 +244,10 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
     }
 
-    public class SwagIndexedItemViewModel : SwagItemViewModel
+    public class SwagIndexedItem : SwagItem
     {
         #region Private Members
-        Dictionary<String, SwagIndexedItemViewModel> _dict = new Dictionary<string, SwagIndexedItemViewModel>();
+        Dictionary<String, SwagIndexedItem> _dict = new Dictionary<string, SwagIndexedItem>();
         String _key;
         #endregion Private Members
 
@@ -267,13 +266,13 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion HasChildren
         #region Indexer
-        public SwagIndexedItemViewModel this[String key]
+        public SwagIndexedItem this[String key]
         {
             get
             {
                 if (!_dict.ContainsKey(key))
                 {
-                    SwagIndexedItemViewModel child = (SwagIndexedItemViewModel)Activator.CreateInstance(this.GetType());
+                    SwagIndexedItem child = (SwagIndexedItem)Activator.CreateInstance(this.GetType());
                     child.Key = child.Display = key;
                     _children.Add(child);
                 }
@@ -296,7 +295,7 @@ namespace SwagOverflowWPF.ViewModels
         {
             get 
             {
-                SwagItemViewModel tempNode = this;
+                SwagItem tempNode = this;
                 String path = "";
                 while (tempNode != null)
                 {
@@ -310,7 +309,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Properties
 
         #region Initialization
-        public SwagIndexedItemViewModel() : base()
+        public SwagIndexedItem() : base()
         {
             _children.CollectionChanged += _children_CollectionChanged;
         }
@@ -319,7 +318,7 @@ namespace SwagOverflowWPF.ViewModels
         {
             if (e.NewItems != null)
             {
-                foreach (SwagIndexedItemViewModel newItem in e.NewItems)
+                foreach (SwagIndexedItem newItem in e.NewItems)
                 {
                     _dict.Add(newItem.Key, newItem);
                 }
@@ -327,7 +326,7 @@ namespace SwagOverflowWPF.ViewModels
 
             if (e.OldItems != null)
             {
-                foreach (SwagIndexedItemViewModel oldItem in e.OldItems)
+                foreach (SwagIndexedItem oldItem in e.OldItems)
                 {
                     _dict.Remove(oldItem.Key);
                 }
@@ -349,7 +348,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Methods
     }
 
-    public class SwagIndexedItemViewModel<T> : SwagIndexedItemViewModel
+    public class SwagIndexedItem<T> : SwagIndexedItem
     {
         #region Properties
         #region ValueType
@@ -378,7 +377,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Properties
 
         #region Initialization
-        public SwagIndexedItemViewModel() : base()
+        public SwagIndexedItem() : base()
         {
             
         }
@@ -387,24 +386,24 @@ namespace SwagOverflowWPF.ViewModels
 
     public class SwagItemChangedEventArgs : EventArgs
     {
-        public SwagItemViewModel SwagItem { get; set; }
+        public SwagItem SwagItem { get; set; }
         public PropertyChangedExtendedEventArgs PropertyChangedArgs { get; set; }
     }
 
-    public class SwagGroupViewModel : ViewModelBaseExtended
+    public class SwagGroup : ViewModelBaseExtended
     {
         #region Private/Protected Members
         String _name, _display, _alternateId;
         Int32 _groupId;
         Int32? _rootId;
-        protected SwagItemViewModel _root;
-        protected ObservableCollection<SwagItemViewModel> _descendants = new ObservableCollection<SwagItemViewModel>();
+        protected SwagItem _root;
+        protected ObservableCollection<SwagItem> _descendants = new ObservableCollection<SwagItem>();
         #endregion Private/Protected Members
 
         #region Events
         public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
 
-        public virtual void OnSwagItemChanged(SwagItemViewModel swagItem, PropertyChangedExtendedEventArgs e)
+        public virtual void OnSwagItemChanged(SwagItem swagItem, PropertyChangedExtendedEventArgs e)
         {
             SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
         }
@@ -448,7 +447,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion RootId
         #region Root
         [NotMapped]
-        public SwagItemViewModel Root
+        public SwagItem Root
         {
             get { return _root; }
             set 
@@ -459,7 +458,7 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion Root
         #region Descendants
-        public virtual ObservableCollection<SwagItemViewModel> Descendants
+        public virtual ObservableCollection<SwagItem> Descendants
         {
             get { return _descendants; }
             set { SetValue(ref _descendants, value); }
@@ -468,32 +467,32 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Properties
 
         #region Initialization
-        public SwagGroupViewModel() : base()
+        public SwagGroup() : base()
         {
             
         }
         #endregion Initialization
 
         #region Iterator
-        public SwagItemPreOrderIterator<SwagItemViewModel> CreateIterator()
+        public SwagItemPreOrderIterator<SwagItem> CreateIterator()
         {
-            return new SwagItemPreOrderIterator<SwagItemViewModel>(Root);
+            return new SwagItemPreOrderIterator<SwagItem>(Root);
         }
         #endregion Iterator
     }
 
-    public class SwagIndexedGroupViewModel : SwagGroupViewModel
+    public class SwagIndexedGroup : SwagGroup
     {
         #region Private/Protected Members
-        protected ObservableCollection<SwagIndexedItemViewModel> _indexedDescendants = new ObservableCollection<SwagIndexedItemViewModel>();
+        protected ObservableCollection<SwagIndexedItem> _indexedDescendants = new ObservableCollection<SwagIndexedItem>();
         #endregion Private/Protected Members
 
         #region Properties
         #region Root
         [NotMapped]
-        public SwagIndexedItemViewModel IndexedRoot
+        public SwagIndexedItem IndexedRoot
         {
-            get { return (SwagIndexedItemViewModel)_root; }
+            get { return (SwagIndexedItem)_root; }
             set
             {
                 _root.Group = this;
@@ -503,7 +502,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Root
         #region Descendants
         [NotMapped]
-        public virtual ObservableCollection<SwagIndexedItemViewModel> IndexedDescendants
+        public virtual ObservableCollection<SwagIndexedItem> IndexedDescendants
         {
             get { return _indexedDescendants; }
             set 
@@ -515,14 +514,14 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Properties
 
         #region Initialization
-        public SwagIndexedGroupViewModel() : base()
+        public SwagIndexedGroup() : base()
         {
 
         }
         #endregion Initialization
 
         #region Indexer
-        public SwagIndexedItemViewModel this[String key]
+        public SwagIndexedItem this[String key]
         {
             get { return IndexedRoot[key]; }
             set
@@ -535,7 +534,7 @@ namespace SwagOverflowWPF.ViewModels
 
     }
 
-    public class SwagGroupViewModel<T> : SwagGroupViewModel where T : SwagItemViewModel, ISwagHeirarchy<SwagItemViewModel>, new()
+    public class SwagGroup<T> : SwagGroup where T : SwagItem, ISwagHeirarchy<SwagItem>, new()
     {
         #region RootGeneric
         [NotMapped]
@@ -547,7 +546,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion RootGeneric
 
         #region Initialization
-        public SwagGroupViewModel() : base()
+        public SwagGroup() : base()
         {
             RootGeneric = new T();
             RootGeneric.Group = this;
@@ -555,7 +554,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
     }
 
-    public class SwagIndexedGroupViewModel<T> : SwagIndexedGroupViewModel where T : SwagIndexedItemViewModel, new()
+    public class SwagIndexedGroup<T> : SwagIndexedGroup where T : SwagIndexedItem, new()
     {
         #region RootGeneric
         [NotMapped]
@@ -567,7 +566,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion RootGeneric
 
         #region Initialization
-        public SwagIndexedGroupViewModel() : base()
+        public SwagIndexedGroup() : base()
         {
             IndexedRootGeneric = new T();
             IndexedRootGeneric.Group = this;

@@ -21,7 +21,7 @@ using System.Xml;
 namespace SwagOverflowWPF.ViewModels
 {
     #region SwagDataRow
-    public class SwagDataRow : SwagItemViewModel<JObject>
+    public class SwagDataRow : SwagItem<JObject>
     {
         DataRow _dataRow;
 
@@ -238,7 +238,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
     }
 
-    public class SwagDataTable  : SwagGroupViewModel<SwagDataRow>
+    public class SwagDataTable  : SwagGroup<SwagDataRow>
     {
         #region Private Members
         DataTable _dataTable;

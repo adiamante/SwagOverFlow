@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SwagOverflowWPF.Repository
 {
-    public class SwagSettingRepository : SwagEFRepository<SwagSettingViewModel>, ISwagSettingRepository
+    public class SwagSettingRepository : SwagEFRepository<SwagSetting>, ISwagSettingRepository
     {
         //Custom query method implementation here
         public SwagSettingRepository(SwagContext context) : base(context)
@@ -14,11 +14,11 @@ namespace SwagOverflowWPF.Repository
 
         }
 
-        public void RecursiveLoadChildren(SwagSettingViewModel swagSettingViewModel)
+        public void RecursiveLoadChildren(SwagSetting swagSettingViewModel)
         {
-            context.Entry(swagSettingViewModel).Collection(ss => ((SwagSettingViewModel)ss).Children).Load();
+            context.Entry(swagSettingViewModel).Collection(ss => ((SwagSetting)ss).Children).Load();
 
-            foreach (SwagSettingViewModel child in swagSettingViewModel.Children)
+            foreach (SwagSetting child in swagSettingViewModel.Children)
             {
                 RecursiveLoadChildren(child);
             }

@@ -4,7 +4,7 @@ using SwagOverflowWPF.ViewModels;
 
 namespace SwagOverflowWPF.Repository
 {
-    public class SwagSettingGroupRepository : SwagEFRepository<SwagSettingGroupViewModel>, ISwagSettingGroupRepository
+    public class SwagSettingGroupRepository : SwagEFRepository<SwagSettingGroup>, ISwagSettingGroupRepository
     {
         //Custom query method implementation here
         public SwagSettingGroupRepository(SwagContext context) : base(context)

@@ -18,10 +18,10 @@ namespace SwagOverflowWPF.Data
     public class SwagContext : DbContext
     {
         static string _dataSource = "localhost";
-        public DbSet<SwagGroupViewModel> SwagGroups { get; set; }
-        public DbSet<SwagItemViewModel> SwagItems { get; set; }
-        public DbSet<SwagSettingViewModel> SwagSettings { get; set; }
-        public DbSet<SwagSettingGroupViewModel> SwagSettingGroups { get; set; }
+        public DbSet<SwagGroup> SwagGroups { get; set; }
+        public DbSet<SwagItem> SwagItems { get; set; }
+        public DbSet<SwagSetting> SwagSettings { get; set; }
+        public DbSet<SwagSettingGroup> SwagSettingGroups { get; set; }
         public DbSet<SwagWindowSettingGroup> SwagWindowSettingGroups { get; set; }
         public DbSet<SwagDataRow> SwagDataRows { get; set; }
         public DbSet<SwagDataTable> SwagDataTables { get; set; }
@@ -63,9 +63,9 @@ namespace SwagOverflowWPF.Data
         }
     }
 
-    public class SwagGroupEntityConfiguration : IEntityTypeConfiguration<SwagGroupViewModel>
+    public class SwagGroupEntityConfiguration : IEntityTypeConfiguration<SwagGroup>
     {
-        public void Configure(EntityTypeBuilder<SwagGroupViewModel> builder)
+        public void Configure(EntityTypeBuilder<SwagGroup> builder)
         {
             //SwagGroupViewModel GroupId => Key
             builder.HasKey(sg => sg.GroupId);
@@ -79,7 +79,7 @@ namespace SwagOverflowWPF.Data
             //vs Item.GroupRoot => Group.Root => (limmited to one Item.GroupRoot)
             builder.HasOne(sg => sg.Root)
                 .WithOne(si => si.GroupRoot)
-                .HasForeignKey<SwagItemViewModel>(si => si.GroupRootId)
+                .HasForeignKey<SwagItem>(si => si.GroupRootId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             //SwagGroupViewModel Many to One => SwagItemViewModel
@@ -90,9 +90,9 @@ namespace SwagOverflowWPF.Data
         }
     }
 
-    public class SwagItemEntityConfiguration : IEntityTypeConfiguration<SwagItemViewModel>
+    public class SwagItemEntityConfiguration : IEntityTypeConfiguration<SwagItem>
     {
-        public void Configure(EntityTypeBuilder<SwagItemViewModel> builder)
+        public void Configure(EntityTypeBuilder<SwagItem> builder)
         {
             //SwagItemViewModel Key + Id (AutoIncrement) => Key
             //Sqlite does not play too well with composite keys
@@ -131,9 +131,9 @@ namespace SwagOverflowWPF.Data
         }
     }
 
-    public class SwagSettingViewModelEntityConfiguration : IEntityTypeConfiguration<SwagSettingViewModel>
+    public class SwagSettingViewModelEntityConfiguration : IEntityTypeConfiguration<SwagSetting>
     {
-        public void Configure(EntityTypeBuilder<SwagSettingViewModel> builder)
+        public void Configure(EntityTypeBuilder<SwagSetting> builder)
         {
             //SwagSettingViewModel SettingType => Convert to String
             EnumToStringConverter<SettingType> settingTypeconverter = new EnumToStringConverter<SettingType>();

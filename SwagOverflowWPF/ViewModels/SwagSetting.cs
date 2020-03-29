@@ -1,14 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SwagOverflowWPF.Data;
-using SwagOverflowWPF.Repository;
 using SwagOverflowWPF.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 
 namespace SwagOverflowWPF.ViewModels
@@ -29,7 +23,7 @@ namespace SwagOverflowWPF.ViewModels
     }
     #endregion SettingType
 
-    public class SwagSettingViewModel : SwagIndexedItemViewModel
+    public class SwagSetting : SwagIndexedItem
     {
         #region Private/Protected Members
         SettingType _settingType;
@@ -119,14 +113,14 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Properties
 
         #region Initialization
-        public SwagSettingViewModel() : base()
+        public SwagSetting() : base()
         {
 
         }
         #endregion Initialization
     }
 
-    public class SwagSettingViewModel<T> : SwagSettingViewModel
+    public class SwagSetting<T> : SwagSetting
     {
         #region Private/Protected Members
         T[] _genericItemsSource;
@@ -181,22 +175,22 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Properties
 
         #region Initialization
-        public SwagSettingViewModel() : base()
+        public SwagSetting() : base()
         {
 
         }
 
-        public SwagSettingViewModel(SwagSettingViewModel swagSetting) : base()
+        public SwagSetting(SwagSetting swagSetting) : base()
         {
             PropertyCopy.Copy(swagSetting, this);
         }
         #endregion Initialization
     }
 
-    public class SwagSettingGroupViewModel : SwagIndexedGroupViewModel<SwagSettingViewModel>
+    public class SwagSettingGroup : SwagIndexedGroup<SwagSetting>
     {
         #region Initialization
-        public SwagSettingGroupViewModel() : base()
+        public SwagSettingGroup() : base()
         {
             IndexedRootGeneric.SettingType = SettingType.SettingGroup;
         }

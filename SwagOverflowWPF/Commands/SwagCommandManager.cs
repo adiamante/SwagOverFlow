@@ -88,12 +88,12 @@ namespace SwagOverflowWPF.Commands
             }
         }
 
-        public void Attach(SwagGroupViewModel subject)
+        public void Attach(SwagGroup subject)
         {
             subject.SwagItemChanged += Subject_SwagItemChanged;
         }
 
-        public void Detatch(SwagGroupViewModel subject)
+        public void Detatch(SwagGroup subject)
         {
             subject.SwagItemChanged -= Subject_SwagItemChanged;
         }
@@ -105,9 +105,9 @@ namespace SwagOverflowWPF.Commands
             if (_listening)
             {
                 String display = e.PropertyChangedArgs.PropertyName + "=>" + e.PropertyChangedArgs.NewValue;
-                if (e.PropertyChangedArgs.Object is SwagSettingViewModel && e.PropertyChangedArgs.PropertyName == "Value")
+                if (e.PropertyChangedArgs.Object is SwagSetting && e.PropertyChangedArgs.PropertyName == "Value")
                 {
-                    SwagSettingViewModel setting = (SwagSettingViewModel)e.PropertyChangedArgs.Object;
+                    SwagSetting setting = (SwagSetting)e.PropertyChangedArgs.Object;
                     display = $"{setting.Path}=> {e.PropertyChangedArgs.NewValue}";
                     if (setting.Display == "IsOpen" && setting.Parent != null && (setting.Parent.Display == "Settings" || setting.Parent.Display == "CommandHistory"))
                     {

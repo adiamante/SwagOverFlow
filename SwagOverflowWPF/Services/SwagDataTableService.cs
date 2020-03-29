@@ -39,8 +39,8 @@ namespace SwagOverflowWPF.Services
                     }
                 }
 
-                SwagItemPreOrderIterator<SwagItemViewModel> iterator = sdtDataTable.CreateIterator();
-                for (SwagItemViewModel swagItem = iterator.First(); !iterator.IsDone; swagItem = iterator.Next())
+                SwagItemPreOrderIterator<SwagItem> iterator = sdtDataTable.CreateIterator();
+                for (SwagItem swagItem = iterator.First(); !iterator.IsDone; swagItem = iterator.Next())
                 {
                     SwagDataRow swagDataRow = (SwagDataRow)swagItem;
 

@@ -153,7 +153,7 @@ namespace SwagOverflowWPF.UI
             {
                 return null;
             }
-            SwagSettingViewModel setting = (SwagSettingViewModel)item;
+            SwagSetting setting = (SwagSetting)item;
 
             //Then we go through them checking if any of them match our criteria
             foreach (Template template in templates)

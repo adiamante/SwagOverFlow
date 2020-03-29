@@ -6,8 +6,8 @@ using System.Text;
 
 namespace SwagOverflowWPF.Interface
 {
-    public interface ISwagSettingRepository : IRepository<SwagSettingViewModel>
+    public interface ISwagSettingRepository : IRepository<SwagSetting>
     {
-        void RecursiveLoadChildren(SwagSettingViewModel swagSettingViewModel);
+        void RecursiveLoadChildren(SwagSetting swagSettingViewModel);
     }
 }
