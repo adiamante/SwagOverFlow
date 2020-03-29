@@ -26,6 +26,7 @@ namespace SwagOverflowWPF.ViewModels
         CollectionViewSource _childrenCollectionViewSource;
         SwagGroupViewModel _group, _groupRoot;
         protected Object _value;
+        protected Type _valueType = null;
         #endregion Private/Protected Members
 
         #region Properties
@@ -88,13 +89,42 @@ namespace SwagOverflowWPF.ViewModels
         #region Value
         public virtual object Value
         {
-            get { return (object)_value; }
+            get 
+            {
+                if (ValueType != null && _value != null && ValueType != _value.GetType())
+                {
+                    if (ValueType == typeof(Boolean))
+                    {
+                        _value = Boolean.Parse(_value.ToString());
+                    }
+                    else if (ValueType == typeof(String))
+                    {
+                        _value = _value.ToString();
+                    }
+                    else
+                    {
+                        _value = JsonConvert.DeserializeObject(_value.ToString(), ValueType);
+                    }
+                }
+                return (object)_value; 
+            }
             set { SetValue(ref _value, value); }
         }
         #endregion Value
         #region ValueType
         [NotMapped]
-        public virtual Type ValueType { get { return null; } set { } }
+        public virtual Type ValueType 
+        { 
+            get 
+            {
+                if (_valueType == null && !String.IsNullOrEmpty(_valueTypeString))
+                {
+                    _valueType = JsonConvert.DeserializeObject<Type>(_valueTypeString);
+                }
+                return _valueType; 
+            } 
+            set { }
+        }
         #endregion ValueType
         #region ValueTypeString
         public virtual String ValueTypeString

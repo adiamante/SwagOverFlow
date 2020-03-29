@@ -25,53 +25,62 @@ namespace SwagOverflowWPF.Services
             {
                 #region Load SwagSettingUnitOfWork
                 work.Settings.RecursiveLoadChildren(windowSettings.IndexedRootGeneric);
-                SwagItemPreOrderIterator<SwagItemViewModel> iterator = windowSettings.CreateIterator();
-                for (SwagItemViewModel swagItem = iterator.First(); !iterator.IsDone; swagItem = iterator.Next())
-                {
-                    SwagSettingViewModel swagItemOriginal = (SwagSettingViewModel)swagItem;
-                    if (swagItemOriginal.IconString != null)
-                    {
-                        Type iconType = JsonConvert.DeserializeObject<Type>(swagItemOriginal.IconTypeString);
-                        swagItemOriginal.Icon = (Enum)Enum.Parse(iconType, swagItemOriginal.IconString);
-                    }
 
-                    if (!String.IsNullOrEmpty(swagItemOriginal.ValueTypeString))
-                    {
-                        Type typeGenericTemplate = typeof(SwagSettingViewModel<>);
-                        Type valueType = JsonConvert.DeserializeObject<Type>(swagItemOriginal.ValueTypeString);
-                        Type[] typeArgs = { valueType };
-                        Type typeGeneric = typeGenericTemplate.MakeGenericType(typeArgs);
-                        windowSettings.Descendants.Remove(swagItemOriginal);
-                        work.Settings.Delete(swagItemOriginal);
+                #region OLD - Dynamically creates generic type (handled in Properties of SwagItemViewModel/SwagSettingView instead) 
+                //SwagItemPreOrderIterator<SwagItemViewModel> iterator = windowSettings.CreateIterator();
+                //for (SwagItemViewModel swagItem = iterator.First(); !iterator.IsDone; swagItem = iterator.Next())
+                //{
+                //    SwagSettingViewModel swagSetting = (SwagSettingViewModel)swagItem;
+                //    if (swagSetting.IconString != null)
+                //    {
+                //        Type iconType = JsonConvert.DeserializeObject<Type>(swagSetting.IconTypeString);
+                //        swagSetting.Icon = (Enum)Enum.Parse(iconType, swagSetting.IconString);
+                //    }
 
-                        SwagSettingViewModel newSetting = (SwagSettingViewModel)Activator.CreateInstance(typeGeneric, swagItemOriginal);
-                        newSetting.Children = swagItemOriginal.Children;
+                //    if (swagSetting.ItemsSource != null)
+                //    {
+                //        Type itemsSourceType = JsonConvert.DeserializeObject<Type>(swagSetting.ItemsSourceTypeString);
+                //        swagSetting.ItemsSource = JsonConvert.DeserializeObject(swagSetting.ItemsSource.ToString(), itemsSourceType);
+                //    }
 
-                        if (newSetting.ItemsSource != null)
-                        {
-                            Type itemsSourceType = JsonConvert.DeserializeObject<Type>(newSetting.ItemsSourceTypeString);
-                            newSetting.ItemsSource = JsonConvert.DeserializeObject(newSetting.ItemsSource.ToString(), itemsSourceType);
-                        }
+                //    if (!String.IsNullOrEmpty(swagSetting.ValueTypeString))
+                //    {
+                //        Type typeGenericTemplate = typeof(SwagSettingViewModel<>);
+                //        Type valueType = JsonConvert.DeserializeObject<Type>(swagSetting.ValueTypeString);
+                //        Type[] typeArgs = { valueType };
+                //        Type typeGeneric = typeGenericTemplate.MakeGenericType(typeArgs);
+                //        windowSettings.Descendants.Remove(swagSetting);
+                //        work.Settings.Delete(swagSetting);
 
-                        swagItemOriginal.Parent.Children.Remove(swagItemOriginal);
-                        swagItemOriginal.Parent.Children.Add(newSetting);
+                //        SwagSettingViewModel newSetting = (SwagSettingViewModel)Activator.CreateInstance(typeGeneric, swagSetting);
+                //        newSetting.Children = swagSetting.Children;
 
-                        if (valueType == typeof(Boolean))
-                        {
-                            newSetting.Value = Boolean.Parse(swagItemOriginal.Value.ToString());
-                        }
-                        else if (valueType == typeof(String) && swagItemOriginal.Value != null)
-                        {
-                            newSetting.Value = swagItemOriginal.Value.ToString();
-                        }
-                        else if (swagItemOriginal.Value != null)
-                        {
-                            newSetting.Value = JsonConvert.DeserializeObject(swagItemOriginal.Value.ToString(), valueType);
-                        }
+                //        if (newSetting.ItemsSource != null)
+                //        {
+                //            Type itemsSourceType = JsonConvert.DeserializeObject<Type>(newSetting.ItemsSourceTypeString);
+                //            newSetting.ItemsSource = JsonConvert.DeserializeObject(newSetting.ItemsSource.ToString(), itemsSourceType);
+                //        }
 
-                        work.Settings.Insert(newSetting);
-                    }
-                }
+                //        swagSetting.Parent.Children.Remove(swagSetting);
+                //        swagSetting.Parent.Children.Add(newSetting);
+
+                //        if (valueType == typeof(Boolean))
+                //        {
+                //            newSetting.Value = Boolean.Parse(swagSetting.Value.ToString());
+                //        }
+                //        else if (valueType == typeof(String) && swagSetting.Value != null)
+                //        {
+                //            newSetting.Value = swagSetting.Value.ToString();
+                //        }
+                //        else if (swagSetting.Value != null)
+                //        {
+                //            newSetting.Value = JsonConvert.DeserializeObject(swagSetting.Value.ToString(), valueType);
+                //        }
+
+                //        work.Settings.Insert(newSetting);
+                //    }
+                //}
+                #endregion OLD
                 #endregion Load SwagSettingUnitOfWork
             }
 

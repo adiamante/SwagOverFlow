@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Repository;
 using SwagOverflowWPF.Utilities;
@@ -42,7 +43,15 @@ namespace SwagOverflowWPF.ViewModels
         [NotMapped]
         public Enum Icon
         {
-            get { return _icon; }
+            get 
+            {
+                if (_icon == null && !String.IsNullOrEmpty(_iconTypeString) && !String.IsNullOrEmpty(_iconTypeString))
+                {
+                    Type iconType = JsonConvert.DeserializeObject<Type>(_iconTypeString);
+                    _icon = (Enum)Enum.Parse(iconType, _iconString);
+                }
+                return _icon; 
+            }
             set { SetValue(ref _icon, value); }
         }
         #endregion Icon
@@ -84,7 +93,15 @@ namespace SwagOverflowWPF.ViewModels
         #region ItemsSource
         public virtual Object ItemsSource
         {
-            get { return _itemsSource; }
+            get 
+            {
+                if (_itemsSource != null && _itemsSource is JArray && !String.IsNullOrEmpty(_itemsSourceTypeString))
+                {
+                    Type itemsSourceType = JsonConvert.DeserializeObject<Type>(_itemsSourceTypeString);
+                    _itemsSource = JsonConvert.DeserializeObject(_itemsSource.ToString(), itemsSourceType);
+                }
+                return _itemsSource; 
+            }
             set { SetValue(ref _itemsSource, value); }
         }
         #endregion ItemsSource
