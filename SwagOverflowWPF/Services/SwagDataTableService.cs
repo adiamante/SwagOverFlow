@@ -42,20 +42,11 @@ namespace SwagOverflowWPF.Services
                 SwagItemPreOrderIterator<SwagItemViewModel> iterator = sdtDataTable.CreateIterator();
                 for (SwagItemViewModel swagItem = iterator.First(); !iterator.IsDone; swagItem = iterator.Next())
                 {
-                    SwagDataRow swagItemOriginal = (SwagDataRow)swagItem;
+                    SwagDataRow swagDataRow = (SwagDataRow)swagItem;
 
-                    if (!String.IsNullOrEmpty(swagItemOriginal.ValueTypeString) && swagItemOriginal.Parent != null)
+                    if (swagDataRow.Value != null)      //Skip the root
                     {
-                        sdtDataTable.Descendants.Remove(swagItemOriginal);
-                        work.DataRows.Delete(swagItemOriginal);
-
-                        SwagDataRow newRow = (SwagDataRow)Activator.CreateInstance(typeof(SwagDataRow), swagItemOriginal);
-                        newRow.Children = swagItemOriginal.Children;
-                        swagItemOriginal.Parent.Children.Remove(swagItemOriginal);
-                        swagItemOriginal.Parent.Children.Add(newRow);
-
-                        Type valueType = JsonConvert.DeserializeObject<Type>(swagItemOriginal.ValueTypeString);
-                        JObject rowValues = JsonConvert.DeserializeObject<JObject>(swagItemOriginal.Value.ToString());
+                        JObject rowValues = (JObject)swagDataRow.Value;
                         DataRow dr = dt.NewRow();
 
                         foreach (KeyValuePair<String, JToken> kvp in rowValues)
@@ -66,10 +57,37 @@ namespace SwagOverflowWPF.Services
                             }
                         }
 
-                        newRow.DataRow = dr;
+                        swagDataRow.DataRow = dr;
                         dt.Rows.Add(dr);
-                        work.DataRows.Insert(newRow);
                     }
+                    
+                    #region OLD
+                    //if (!String.IsNullOrEmpty(swagDataRow.ValueTypeString) && swagDataRow.Parent != null)
+                    //{
+                    //    sdtDataTable.Descendants.Remove(swagDataRow);
+                    //    work.DataRows.Delete(swagDataRow);
+
+                    //    SwagDataRow newRow = (SwagDataRow)Activator.CreateInstance(typeof(SwagDataRow), swagDataRow);
+                    //    newRow.Children = swagDataRow.Children;
+                    //    swagDataRow.Parent.Children.Remove(swagDataRow);
+                    //    swagDataRow.Parent.Children.Add(newRow);
+
+                    //    JObject rowValues = JsonConvert.DeserializeObject<JObject>(swagDataRow.Value.ToString());
+                    //    DataRow dr = dt.NewRow();
+
+                    //    foreach (KeyValuePair<String, JToken> kvp in rowValues)
+                    //    {
+                    //        if (kvp.Value.Type != JTokenType.Null)
+                    //        {
+                    //            dr[kvp.Key] = kvp.Value;
+                    //        }
+                    //    }
+
+                    //    newRow.DataRow = dr;
+                    //    dt.Rows.Add(dr);
+                    //    work.DataRows.Insert(newRow);
+                    //}
+                    #endregion Name
                 }
 
                 sdtDataTable.SetDataTable(dt, true);
