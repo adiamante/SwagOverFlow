@@ -20,7 +20,7 @@ namespace SwagOverflowWPF.Data
             }
 
             StreamReader sr = new StreamReader(stream);
-            DataTable _dt = new DataTable();
+            DataTable dt = new DataTable();
 
             if (context.RecordDelim != '\n')
             {
@@ -68,19 +68,19 @@ namespace SwagOverflowWPF.Data
                 #region If No Headers loop through all records and add columns as columns are found
                 while (dataReader.Read())
                 {
-                    while (_dt.Columns.Count < dataReader.FieldCount)
+                    while (dt.Columns.Count < dataReader.FieldCount)
                     {
-                        _dt.Columns.Add($"Col{_dt.Columns.Count}");
+                        dt.Columns.Add($"Col{dt.Columns.Count}");
                     }
 
-                    DataRow row = _dt.NewRow();
+                    DataRow row = dt.NewRow();
 
                     for (int i = 0; i < dataReader.FieldCount; i++)
                     {
                         row[i] = dataReader.GetValue(i);
                     }
 
-                    _dt.Rows.Add(row);
+                    dt.Rows.Add(row);
                 }
 
                 dataReader.Close();
@@ -92,7 +92,7 @@ namespace SwagOverflowWPF.Data
                 #region If there are headers DataTable.Load will suffice
                 try
                 {
-                    _dt.Load(dataReader, LoadOption.Upsert);
+                    dt.Load(dataReader, LoadOption.Upsert);
                 }
                 catch (Exception ex)
                 {
@@ -106,7 +106,13 @@ namespace SwagOverflowWPF.Data
                 #endregion If there are headers DataTable.Load will suffice
             }
 
-            return _dt;
+            //CsvHelper seems to make DataTable Columns readonly
+            foreach (DataColumn dc in dt.Columns)
+            {
+                dc.ReadOnly = false;
+            }
+
+            return dt;
         }
     }
 }
