@@ -7,7 +7,7 @@ namespace SwagOverflowWPF.Controls
     /// <summary>
     /// Interaction logic for WindowSettings.xaml
     /// </summary>
-    public partial class SettingsControl : UserControl
+    public partial class SettingsControl : SwagControlBase
     {
         #region Settings
         private static readonly DependencyProperty SettingsProperty =

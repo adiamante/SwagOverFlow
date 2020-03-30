@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="SwagOverflowWPF.Controls.SwagComboBox"
+﻿<local:SwagControlBase x:Class="SwagOverflowWPF.Controls.SwagComboBox"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,7 +7,7 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Name="ControlInstance"
+             x:Name="ControlInstance"
              Loaded="ControlInstance_Loaded"
              KeyUp="ControlInstance_KeyUp"
              xmlns:ui="clr-namespace:SwagOverflowWPF.UI">
@@ -52,4 +52,4 @@
             </Grid>
         </Popup>
     </Grid>
-</UserControl>
+</local:SwagControlBase>

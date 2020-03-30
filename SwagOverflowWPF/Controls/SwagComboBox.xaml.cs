@@ -19,7 +19,7 @@ namespace SwagOverflowWPF.Controls
     /// <summary>
     /// Interaction logic for SwagComboBox.xaml
     /// </summary>
-    public partial class SwagComboBox : UserControl, INotifyPropertyChanged
+    public partial class SwagComboBox : SwagControlBase, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

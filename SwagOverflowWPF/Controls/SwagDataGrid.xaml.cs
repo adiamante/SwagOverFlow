@@ -16,7 +16,7 @@ namespace SwagOverflowWPF.Controls
     /// <summary>
     /// Interaction logic for SwagDataGrid.xaml
     /// </summary>
-    public partial class SwagDataGrid : UserControl, INotifyPropertyChanged
+    public partial class SwagDataGrid : SwagControlBase, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

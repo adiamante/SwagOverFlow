@@ -49,36 +49,49 @@ namespace SwagOverflowWPF.ViewModels
             work.Complete();
         }
 
+        public Theme GetCurrentTheme()
+        {
+            String myBase = this["Window"]["Theme"]["Base"].Value.ToString();
+            String myAccent = this["Window"]["Theme"]["Accent"].Value.ToString();
+
+            Theme theme = ThemeManager.GetTheme($"{myBase}.{myAccent}");
+            return theme;
+        }
+
         private void WindowSettingCollection_ThemePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Value")
             {
-                String myBase = this["Window"]["Theme"]["Base"].Value.ToString();
-                String myAccent = this["Window"]["Theme"]["Accent"].Value.ToString();
-
-                MahApps.Metro.Theme theme = ThemeManager.GetTheme($"{myBase}.{myAccent}");
+                Theme theme = GetCurrentTheme();
                 ThemeManager.ChangeTheme(Application.Current.MainWindow.Resources, theme);
 
-                ResourceDictionary resourceDictionary = new ResourceDictionary();
-                resourceDictionary.Source = new Uri($"pack://application:,,,/MahApps.Metro;component/Styles/Themes/{myBase}.{myAccent}.xaml", UriKind.Absolute);
+                #region OLD - Theme switching is now handled in SwagControlBase.cs
+                //ResourceDictionary resourceDictionary = new ResourceDictionary();
+                //resourceDictionary.Source = new Uri($"pack://application:,,,/MahApps.Metro;component/Styles/Themes/{theme.BaseColorScheme}.{theme.ColorScheme}.xaml", UriKind.Absolute);
 
-                //When there are duplicate references to Common.xaml (unavoidable since we are using Custom Controls),
-                //add the theme to the Merged Dictionary 
-                //(inefficient but there is no way to reset the MergedDictionaries without breaking during runtime)
-                foreach (SettingsControl sc in Application.Current.MainWindow.FindVisualChildren<SettingsControl>())
-                {
-                    sc.Resources.MergedDictionaries.Add(resourceDictionary);
-                }
+                ////When there are duplicate references to Common.xaml (unavoidable since we are using Custom Controls),
+                ////add the theme to the Merged Dictionary 
+                ////(inefficient but there is no way to reset the MergedDictionaries without breaking during runtime)
+                //foreach (SettingsControl sc in Application.Current.MainWindow.FindVisualChildren<SettingsControl>())
+                //{
+                //    sc.Resources.MergedDictionaries.Add(resourceDictionary);
+                //}
 
-                foreach (SwagComboBox scbx in Application.Current.MainWindow.FindVisualChildren<SwagComboBox>())
-                {
-                    scbx.Resources.MergedDictionaries.Add(resourceDictionary);
-                }
+                //foreach (SwagComboBox scbx in Application.Current.MainWindow.FindVisualChildren<SwagComboBox>())
+                //{
+                //    scbx.Resources.MergedDictionaries.Add(resourceDictionary);
+                //}
 
-                foreach (SwagDataGrid sdg in Application.Current.MainWindow.FindVisualChildren<SwagDataGrid>())
-                {
-                    sdg.Resources.MergedDictionaries.Add(resourceDictionary);
-                }
+                //foreach (SwagDataGrid sdg in Application.Current.MainWindow.FindVisualChildren<SwagDataGrid>())
+                //{
+                //    sdg.Resources.MergedDictionaries.Add(resourceDictionary);
+                //}
+
+                //foreach (SearchTextBox stb in Application.Current.MainWindow.FindVisualChildren<SearchTextBox>())
+                //{
+                //    stb.Resources.MergedDictionaries.Add(resourceDictionary);
+                //}
+                #endregion OLD - Theme switching is now handled in SwagControlBase.cs
             }
         }
     }
