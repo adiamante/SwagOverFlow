@@ -37,6 +37,8 @@ namespace SwagOverflowWPF.UI
         /// </summary>
         public String DynamicResourceBrush { get; set; } = "MahApps.Brushes.AccentBase";
 
+        public Boolean UseForegroundBrush { get; set; } = false;
+
         /// <summary>
         /// Gets the <see cref="T:System.Windows.Media.TransformGroup" /> for the <see cref="T:System.Windows.Media.DrawingGroup" />.
         /// </summary>
@@ -81,26 +83,34 @@ namespace SwagOverflowWPF.UI
                     break;
             }
 
+            String fill = UseForegroundBrush ?
+                $"{{Binding RelativeSource={{RelativeSource AncestorType={{x:Type FrameworkElement}}}}, Path=(TextElement.Foreground)}}" :
+                $"{{DynamicResource {DynamicResourceBrush}}}";
+
             StringReader stringReader = new StringReader("Nothing");    //should fail if this hits custom
             switch (iconKind)
             {
                 case PackIconCustomKind customKind:
-                    //Not implemented yet
+                    if (!UseForegroundBrush)
+                    {
+                        path = path.Replace($"{{Binding RelativeSource={{RelativeSource AncestorType={{x:Type FrameworkElement}}}}, Path=(TextElement.Foreground)}}", fill);
+                    }
+                    stringReader = new StringReader(path);
                     break;
                 default:
                     stringReader = new StringReader(
-                    $@"<DataTemplate 
-                        xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""> 
-                            <Viewbox xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" Stretch=""Uniform"">
-                                <Canvas Width=""{baseWidth}"" Height=""{baseHeight}"">
-                                    <Path Fill=""{{DynamicResource {DynamicResourceBrush}}}"">
-                                        <Path.Data>
-                                            <PathGeometry Figures=""{path}"" />
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                            </Viewbox>
-                        </DataTemplate>");
+                        $@"<DataTemplate 
+                            xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""> 
+                                <Viewbox xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" Stretch=""Uniform"">
+                                    <Canvas Width=""{baseWidth}"" Height=""{baseHeight}"">
+                                        <Path Fill=""{fill}"">
+                                            <Path.Data>
+                                                <PathGeometry Figures=""{path}"" />
+                                            </Path.Data>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </DataTemplate>");
                     break;
             }
             
