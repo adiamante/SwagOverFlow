@@ -253,7 +253,11 @@ namespace SwagOverflowWPF.Data
                     if (cProp.Value is JValue)
                     {
                         JValue jVal = (JValue)cProp.Value;
-                        ReflectionHelper.PropertyInfoCollection[typeof(SwagDataColumn)][cProp.Key].SetValue(sdc, jVal.Value);
+                        PropertyInfo propertyInfo = ReflectionHelper.PropertyInfoCollection[typeof(SwagDataColumn)][cProp.Key];
+                        if (propertyInfo.SetMethod != null)
+                        {
+                            propertyInfo.SetValue(sdc, jVal.Value);
+                        }
                     }
 
                     if (cProp.Value is JObject && cProp.Key == "Binding")

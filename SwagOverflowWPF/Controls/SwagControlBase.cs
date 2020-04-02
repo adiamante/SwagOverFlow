@@ -1,11 +1,32 @@
 ﻿using MahApps.Metro;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace SwagOverflowWPF.Controls
 {
-    public class SwagControlBase : UserControl
+    public class SwagControlBase : UserControl, INotifyPropertyChanged
     {
+        #region INotifyPropertyChanged
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected virtual void SetValue<T>(ref T backingField, T value, [CallerMemberName] string propertyname = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(backingField, value))
+                return;
+
+            backingField = value;
+            OnPropertyChanged(propertyname);
+        }
+        #endregion INotifyPropertyChanged
+
         Theme _theme = ThemeManager.GetTheme("Light.Blue");
         SwagWindow _swagWindow = null;
 

@@ -8,5 +8,6 @@
     xmlns:ui="clr-namespace:SwagOverflowWPF.UI">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/SwagOverflowWPF;component/Controls/SwagWindow.xaml"/>
+        <!--<ResourceDictionary Source="/SwagOverflowWPF;component/Controls/SearchTextBox.xaml"/>-->
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

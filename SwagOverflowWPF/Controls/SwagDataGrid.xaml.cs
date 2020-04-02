@@ -16,26 +16,8 @@ namespace SwagOverflowWPF.Controls
     /// <summary>
     /// Interaction logic for SwagDataGrid.xaml
     /// </summary>
-    public partial class SwagDataGrid : SwagControlBase, INotifyPropertyChanged
+    public partial class SwagDataGrid : SwagControlBase
     {
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected virtual void SetValue<T>(ref T backingField, T value, [CallerMemberName] string propertyname = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(backingField, value))
-                return;
-
-            backingField = value;
-            OnPropertyChanged(propertyname);
-        }
-        #endregion INotifyPropertyChanged
-
         #region SwagDataTable
         public static DependencyProperty SwagDataTableProperty =
                 DependencyProperty.Register(

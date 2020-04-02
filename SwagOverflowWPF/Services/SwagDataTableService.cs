@@ -36,6 +36,7 @@ namespace SwagOverflowWPF.Services
                     foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in sdtDataTable.Columns)
                     {
                         dt.Columns.Add(sdcKvp.Value.DataColumn);
+                        sdcKvp.Value.SwagDataTable = sdtDataTable;
                     }
                 }
 

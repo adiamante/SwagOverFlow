@@ -1,0 +1,231 @@
+﻿<local:SwagControlBase x:Class="SwagOverflowWPF.Controls.SearchTextBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SwagOverflowWPF.Controls"
+             xmlns:ui="clr-namespace:SwagOverflowWPF.UI"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks" xmlns:Converters="http://metro.mahapps.com/winfx/xaml/shared"
+             mc:Ignorable="d" 
+             x:Name="ControlInstance"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/SwagOverflowWPF;component/Themes/Common.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <ui:EnumMatchToBooleanConverter x:Key="EnumMatchToBooleanConverter" />
+            <ui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <ui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverterInverse" TrueValue="Collapsed" FalseValue="Visible"/>
+            <CollectionViewSource x:Key="DefaultContextMenuItems">
+                <CollectionViewSource.Source>
+                    <ui:MenuItemCollection>
+                        <MenuItem Header="Filter">
+                            <MenuItem.Icon>
+                                <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Filter}" />
+                            </MenuItem.Icon>
+                            <MenuItem Header="Contains" Click="FilterModeMenuItem_Click" Tag="{x:Static local:FilterMode.CONTAINS}"
+                                IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterMode.CONTAINS}}">
+                                <MenuItem.Icon>
+                                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Contain}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Equals" Click="FilterModeMenuItem_Click" Tag="{x:Static local:FilterMode.EQUALS}"
+                                IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterMode.EQUALS}}">
+                                <MenuItem.Icon>
+                                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Equal}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Starts With" Click="FilterModeMenuItem_Click" Tag="{x:Static local:FilterMode.STARTS_WITH}"
+                                IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterMode.STARTS_WITH}}">
+                                <MenuItem.Icon>
+                                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.ContainStart}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Ends With" Click="FilterModeMenuItem_Click" Tag="{x:Static local:FilterMode.ENDS_WITH}"
+                                IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterMode.ENDS_WITH}}">
+                                <MenuItem.Icon>
+                                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.ContainEnd}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Between (Inclusive Delimeter ~)" Click="FilterModeMenuItem_Click" Tag="{x:Static local:FilterMode.BETWEEN_INCLUSIVE}"
+                                      Visibility="{Binding IsNonNumericOnly, Converter={StaticResource BoolToVisibilityConverterInverse}}"
+                                IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterMode.BETWEEN_INCLUSIVE}}">
+                                <MenuItem.Icon>
+                                    <local:IconControl Height="20" Width="20" Kind="{x:Static ui:PackIconCustomKind.CompareBetweenInclusive}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Between (Exclusive Delimeter ~)" Click="FilterModeMenuItem_Click" Tag="{x:Static local:FilterMode.BETWEEN_EXCLUSIVE}"
+                                      Visibility="{Binding IsNonNumericOnly, Converter={StaticResource BoolToVisibilityConverterInverse}}"
+                                      IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterMode.BETWEEN_EXCLUSIVE}}">
+                                <MenuItem.Icon>
+                                    <local:IconControl Height="20" Width="20" Kind="{x:Static ui:PackIconCustomKind.CompareBetweenExclusive}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Greater Than" Click="FilterModeMenuItem_Click" Tag="{x:Static local:FilterMode.GREATER_THAN}"
+                                      Visibility="{Binding IsNonNumericOnly, Converter={StaticResource BoolToVisibilityConverterInverse}}"
+                                      IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterMode.GREATER_THAN}}">
+                                <MenuItem.Icon>
+                                    <local:IconControl Height="20" Width="20" Kind="{x:Static ui:PackIconCustomKind.CompareGreaterThan}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Greater Than Or Equal To" Click="FilterModeMenuItem_Click" Tag="{x:Static local:FilterMode.GREATER_THAN_OR_EQUAL_TO}"
+                                      Visibility="{Binding IsNonNumericOnly, Converter={StaticResource BoolToVisibilityConverterInverse}}"
+                                      IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterMode.GREATER_THAN_OR_EQUAL_TO}}">
+                                <MenuItem.Icon>
+                                    <local:IconControl Height="20" Width="20" Kind="{x:Static ui:PackIconCustomKind.CompareGreaterThanOrEqual}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Less Than" Click="FilterModeMenuItem_Click" Tag="{x:Static local:FilterMode.LESS_THAN}"
+                                      Visibility="{Binding IsNonNumericOnly, Converter={StaticResource BoolToVisibilityConverterInverse}}"
+                                      IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterMode.LESS_THAN}}">
+                                <MenuItem.Icon>
+                                    <local:IconControl Height="20" Width="20" Kind="{x:Static ui:PackIconCustomKind.CompareLessThan}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Less Than Or Equal To" Click="FilterModeMenuItem_Click" Tag="{x:Static local:FilterMode.LESS_THAN_OR_EQUAL_TO}"
+                                      Visibility="{Binding IsNonNumericOnly, Converter={StaticResource BoolToVisibilityConverterInverse}}"
+                                      IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterMode.LESS_THAN_OR_EQUAL_TO}}">
+                                <MenuItem.Icon>
+                                    <local:IconControl Height="20" Width="20" Kind="{x:Static ui:PackIconCustomKind.CompareLessThanOrEqual}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Regex" Click="FilterModeMenuItem_Click" Tag="{x:Static local:FilterMode.REGULAR_EXPRESSSION}"
+                                      Visibility="{Binding IncludeRegex, Converter={StaticResource BoolToVisibilityConverter}}"
+                                      IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterMode.REGULAR_EXPRESSSION}}">
+                                <MenuItem.Icon>
+                                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Regex}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuItem>
+                        <MenuItem Command="ApplicationCommands.Copy" Header="Copy">
+                            <MenuItem.Icon>
+                                <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.ContentCopy}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Command="ApplicationCommands.Paste" Header="Paste">
+                            <MenuItem.Icon>
+                                <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.ContentPaste}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Command="ApplicationCommands.Cut" Header="Cut">
+                            <MenuItem.Icon>
+                                <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.ContentCut}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ui:MenuItemCollection>
+                </CollectionViewSource.Source>
+            </CollectionViewSource>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <TextBox x:Name="SearchTextBoxControl" TextChanged="SearchTextBoxControl_TextChanged" KeyDown="SearchTextBoxControl_KeyDown" 
+             BorderThickness="1" SnapsToDevicePixels="True"
+             DataContext="{Binding ElementName=ControlInstance}"
+             Text="{Binding Text, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+        <TextBox.ContextMenu>
+            <ContextMenu>
+                <ContextMenu.ItemsSource>
+                    <CompositeCollection>
+                        <CollectionContainer Collection="{Binding Source={StaticResource DefaultContextMenuItems}}" />
+                    </CompositeCollection>
+                </ContextMenu.ItemsSource>
+            </ContextMenu>
+        </TextBox.ContextMenu>
+        <TextBox.Template>
+            <ControlTemplate TargetType="{x:Type TextBox}">
+                <ControlTemplate.Resources>
+                    <Storyboard x:Key="HoverOn">
+                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="HoverBorder" Storyboard.TargetProperty="(UIElement.Opacity)">
+                            <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0.5" />
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                    <Storyboard x:Key="HoverOff">
+                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="HoverBorder" Storyboard.TargetProperty="(UIElement.Opacity)">
+                            <SplineDoubleKeyFrame KeyTime="00:00:00.4000000" Value="0" />
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                    <Storyboard x:Key="FocusedOn">
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusVisualElement" Storyboard.TargetProperty="Opacity">
+                            <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1" />
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                    <Storyboard x:Key="FocusedOff">
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusVisualElement" Storyboard.TargetProperty="Opacity">
+                            <SplineDoubleKeyFrame KeyTime="00:00:00.4000000" Value="0" />
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </ControlTemplate.Resources>
+                <Grid>
+                    <Border x:Name="Border" Padding="1" Opacity="1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2,2,2,2" >
+                        <Grid x:Name="LayoutGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Decorator VerticalAlignment="Center" Margin="2,0,0,0" x:Name="PART_ContentHost" Grid.Column="0" />
+                            <Label x:Name="LabelText" Grid.Column="0" Foreground="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SearchTextBox}}, Path=LabelTextColor}" Content="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SearchTextBox}}, Path=LabelText}"
+                                        Padding="2,0,0,0" FontStyle="Italic" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,5,0" />
+                            <Button Grid.Column="1" Width="20" Height="20" 
+                                    x:Name="btnSearch" Margin="0,0,5,0" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                    Padding="0"
+                                    Style="{StaticResource MahApps.Styles.Button.Flat}"
+                                    Foreground="{DynamicResource MahApps.Brushes.Black}"
+                                    Background="{DynamicResource MahApps.Brushes.Control.Background}"
+                                    VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Click="btnSearch_Click">
+                                <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Magnify}" />
+                            </Button>
+                            <Button Grid.Column="2" Width="20" Height="20" x:Name="btnClear" 
+                                    Margin="0" HorizontalAlignment="Center"
+                                    Padding="0"
+                                    Style="{StaticResource MahApps.Styles.Button.Flat}"
+                                    Foreground="Red"
+                                    Background="{DynamicResource MahApps.Brushes.Control.Background}"
+                                    VerticalAlignment="Center" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Visibility="Collapsed" Click="btnClear_Click">
+                                <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Close}" />
+                            </Button>
+                        </Grid>
+                    </Border>
+                    <Border x:Name="HoverBorder" IsHitTestVisible="False" Opacity="0" BorderBrush="{DynamicResource ThemeHoverBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2,2,2,2" />
+                    <Border x:Name="FocusVisualElement" IsHitTestVisible="False" Opacity="0" BorderBrush="{DynamicResource ThemeFocusBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2,2,2,2" />
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SearchTextBox}}, Path=HasText}" Value="True">
+                        <Setter Property="Visibility" TargetName="LabelText" Value="Hidden" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SearchTextBox}}, Path=HasText}" Value="True">
+                        <Setter Property="Visibility" TargetName="btnClear" Value="Visible" />
+                    </DataTrigger>
+                    <!--<DataTrigger Binding="{Binding SearchMode}" Value="Instant">
+                        <Setter Property="Visibility" TargetName="btnSearch" Value="Collapsed" />
+                    </DataTrigger>-->
+                    <Trigger Property="IsFocused" Value="True">
+                        <Trigger.ExitActions>
+                            <BeginStoryboard Storyboard="{StaticResource FocusedOff}" x:Name="FocusedOff_BeginStoryboard" />
+                        </Trigger.ExitActions>
+                        <Trigger.EnterActions>
+                            <BeginStoryboard Storyboard="{StaticResource FocusedOn}" x:Name="FocusedOn_BeginStoryboard" />
+                        </Trigger.EnterActions>
+                    </Trigger>
+                    <MultiTrigger>
+                        <MultiTrigger.ExitActions>
+                            <BeginStoryboard Storyboard="{StaticResource HoverOff}" x:Name="HoverOff_BeginStoryboard"/>
+                        </MultiTrigger.ExitActions>
+                        <MultiTrigger.EnterActions>
+                            <BeginStoryboard Storyboard="{StaticResource HoverOn}"/>
+                        </MultiTrigger.EnterActions>
+                        <MultiTrigger.Conditions>
+                            <Condition Property="IsMouseOver" Value="True" />
+                            <Condition Property="IsFocused" Value="False" />
+                        </MultiTrigger.Conditions>
+                    </MultiTrigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </TextBox.Template>
+    </TextBox>
+</local:SwagControlBase>

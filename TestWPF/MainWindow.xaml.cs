@@ -5,20 +5,12 @@ using System;
 using System.Reflection;
 using System.Windows;
 using System.Data;
-using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Extensions.DependencyInjection;
 using SwagOverflowWPF.ViewModels;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Collections.Generic;
 using System.Text;
 using System.Collections;
-using System.Threading;
-using System.IO;
-using System.Xml;
-using System.Windows.Markup;
+
 
 namespace TestWPF
 {
@@ -277,6 +269,12 @@ namespace TestWPF
                 drv["DestID"] = scbx.Value;
                 drv["Mapping"] = scbx.Text;
             }
+        }
+
+        private void SearchTextBox_Search(object sender, RoutedEventArgs e)
+        {
+            SearchTextBox s = (SearchTextBox)sender;
+            MessageBox.Show($"Searching: {s.Text}");
         }
 
         private void SwagWindow_Loaded(object sender, RoutedEventArgs e)

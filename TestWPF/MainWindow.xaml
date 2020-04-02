@@ -16,6 +16,9 @@
         </Style>-->
     </swag:SwagWindow.Resources>
     <TabControl>
+        <!--<TabItem Header="SearchBox">
+            <swag:SearchTextBox LabelText="Label" SearchMode="Delayed" Search="SearchTextBox_Search" />
+        </TabItem>-->
         <!--<TabItem Header="ComboBox">
             <swag:SwagComboBox x:Name="scbxTest" ItemsSource="{Binding ComboBoxSource}" DisplayMemberProperty="FullDescription" />
         </TabItem>-->
