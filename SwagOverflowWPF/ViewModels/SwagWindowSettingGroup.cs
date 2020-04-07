@@ -15,17 +15,25 @@ namespace SwagOverflowWPF.ViewModels
         SwagContext _context;
         public SwagWindowSettingGroup() : base()
         {
-            this["Window"] = new SwagSetting() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.SettingsOutline };
-            this["Window"]["Status"] = new SwagSetting() { SettingType = SettingType.Hidden };
-            this["Window"]["Status"]["Message"] = new SwagSettingString() { SettingType = SettingType.Hidden };
-            this["Window"]["Status"]["IsBusy"] = new SwagSettingBoolean() { SettingType = SettingType.Hidden, GenericValue = false };
-            this["Window"]["Settings"] = new SwagSetting() { SettingType = SettingType.Hidden };
-            this["Window"]["Settings"]["IsOpen"] = new SwagSettingBoolean() { GenericValue = false, SettingType = SettingType.Hidden };
-            this["Window"]["CommandHistory"] = new SwagSetting() { SettingType = SettingType.Hidden };
-            this["Window"]["CommandHistory"]["IsOpen"] = new SwagSettingBoolean() { GenericValue = false, SettingType = SettingType.Hidden };
-            this["Window"]["Theme"] = new SwagSetting() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.PaletteOutline };
-            this["Window"]["Theme"]["Base"] = new SwagSettingString() { GenericValue = "Light", Icon = PackIconMaterialKind.PaletteSwatchOutline, GenericItemsSource = new[] { "Light", "Dark" }, SettingType = SettingType.DropDown };
-            this["Window"]["Theme"]["Accent"] = new SwagSettingString() { GenericValue = "Blue", Icon = PackIconMaterialKind.Brush, GenericItemsSource = new [] { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" }, SettingType = SettingType.DropDown };
+            
+        }
+
+        public SwagWindowSettingGroup(Boolean doInit) : this()
+        {
+            if (doInit)
+            {
+                this["Window"] = new SwagSettingGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.SettingsOutline };
+                this["Window"]["Status"] = new SwagSettingGroup() { SettingType = SettingType.Hidden };
+                this["Window"]["Status"]["Message"] = new SwagSettingString() { SettingType = SettingType.Hidden };
+                this["Window"]["Status"]["IsBusy"] = new SwagSettingBoolean() { SettingType = SettingType.Hidden, Value = false };
+                this["Window"]["Settings"] = new SwagSettingGroup() { SettingType = SettingType.Hidden };
+                this["Window"]["Settings"]["IsOpen"] = new SwagSettingBoolean() { Value = false, SettingType = SettingType.Hidden };
+                this["Window"]["CommandHistory"] = new SwagSettingGroup() { SettingType = SettingType.Hidden };
+                this["Window"]["CommandHistory"]["IsOpen"] = new SwagSettingBoolean() { Value = false, SettingType = SettingType.Hidden };
+                this["Window"]["Theme"] = new SwagSettingGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.PaletteOutline };
+                this["Window"]["Theme"]["Base"] = new SwagSettingString() { Value = "Light", Icon = PackIconMaterialKind.PaletteSwatchOutline, ItemsSource = new[] { "Light", "Dark" }, SettingType = SettingType.DropDown };
+                this["Window"]["Theme"]["Accent"] = new SwagSettingString() { Value = "Blue", Icon = PackIconMaterialKind.Brush, ItemsSource = new[] { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" }, SettingType = SettingType.DropDown };
+            }
         }
 
         public void Initialize()
@@ -51,8 +59,8 @@ namespace SwagOverflowWPF.ViewModels
 
         public Theme GetCurrentTheme()
         {
-            String myBase = this["Window"]["Theme"]["Base"].Value.ToString();
-            String myAccent = this["Window"]["Theme"]["Accent"].Value.ToString();
+            String myBase = this["Window"]["Theme"]["Base"].ObjValue.ToString();
+            String myAccent = this["Window"]["Theme"]["Accent"].ObjValue.ToString();
 
             Theme theme = ThemeManager.GetTheme($"{myBase}.{myAccent}");
             return theme;

@@ -1,5 +1,6 @@
 ﻿using SwagOverflowWPF.ViewModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -54,11 +55,12 @@ namespace SwagOverflowWPF.UI
     /// <summary>
     /// Holds a collection of <see cref="Template"/> items
     /// for application as a control's DataTemplate.
+    /// https://stackoverflow.com/questions/28247883/simple-existing-implementation-of-icollectiont
     /// </summary>
     public class TemplateCollection : List<Template>
-    {
-
+    { 
     }
+
 
     //https://www.codeproject.com/Articles/418250/WPF-Based-Dynamic-DataTemplateSelector
     public class WindowSettingTemplateSelector : DataTemplateSelector
@@ -153,6 +155,7 @@ namespace SwagOverflowWPF.UI
             {
                 return null;
             }
+
             SwagSetting setting = (SwagSetting)item;
 
             //Then we go through them checking if any of them match our criteria
@@ -163,6 +166,8 @@ namespace SwagOverflowWPF.UI
                 if (template.Value != null && template.Value.IsInstanceOfType(item))
                     //And if it is, then we return that DataTemplate
                     return template.DataTemplate;
+
+                
 
                 switch (setting.SettingType)
                 {
@@ -180,16 +185,14 @@ namespace SwagOverflowWPF.UI
                         }
                         break;
                     case SettingType.SettingGroup:
-                        if (Enum.Equals(template.Option, SettingType.SettingGroup) && setting.HasChildren)
+                        if (Enum.Equals(template.Option, SettingType.SettingGroup) && setting is SwagSettingGroup)
                         {
                             return template.DataTemplate;
                         }
                         break;
-                        
                 }
             }
                
-
             //If all else fails, then we go back to using the default DataTemplate
             return base.SelectTemplate(item, container);
         }

@@ -88,12 +88,12 @@ namespace SwagOverflowWPF.Commands
             }
         }
 
-        public void Attach(SwagGroup subject)
+        public void Attach(ISwagItemChanged subject)
         {
             subject.SwagItemChanged += Subject_SwagItemChanged;
         }
 
-        public void Detatch(SwagGroup subject)
+        public void Detatch(ISwagItemChanged subject)
         {
             subject.SwagItemChanged -= Subject_SwagItemChanged;
         }

@@ -38,7 +38,7 @@ namespace SwagOverflowWPF.Controls
         private void SwagControlBase_Loaded(object sender, RoutedEventArgs e)
         {
             Window window = Application.Current.MainWindow;
-            
+
             if (window is SwagWindow)
             {
                 SwagWindow swagWindow = (SwagWindow)window;

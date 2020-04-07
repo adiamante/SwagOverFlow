@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SwagOverflowWPF.Data;
 
 namespace SwagOverflowWPF.Migrations
 {
     [DbContext(typeof(SwagContext))]
-    partial class SwagContextModelSnapshot : ModelSnapshot
+    [Migration("20200404033053_M0")]
+    partial class M0
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

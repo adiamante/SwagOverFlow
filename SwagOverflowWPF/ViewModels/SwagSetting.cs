@@ -1,9 +1,15 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SwagOverflowWPF.Collections;
+using SwagOverflowWPF.Iterator;
 using SwagOverflowWPF.Utilities;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using System.Windows.Data;
 
 namespace SwagOverflowWPF.ViewModels
 {
@@ -23,13 +29,13 @@ namespace SwagOverflowWPF.ViewModels
     }
     #endregion SettingType
 
-    public class SwagSetting : SwagIndexedItem
+    public class SwagSetting : SwagIndexedItem<SwagSettingGroup, SwagSetting>
     {
         #region Private/Protected Members
         SettingType _settingType;
         Enum _icon;
-        protected Object _itemsSource;
         protected String _iconString, _iconTypeString, _itemsSourceTypeString;
+        protected Object _objItemsSource;
         #endregion Private/Protected Members
 
         #region Properties
@@ -83,21 +89,13 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _settingType, value); }
         }
         #endregion SettingType
-        #region ItemsSource
-        public virtual Object ItemsSource
+        #region ObjItemsSource
+        public virtual Object ObjItemsSource
         {
-            get 
-            {
-                if (_itemsSource != null && _itemsSource is JArray && !String.IsNullOrEmpty(_itemsSourceTypeString))
-                {
-                    Type itemsSourceType = JsonConvert.DeserializeObject<Type>(_itemsSourceTypeString);
-                    _itemsSource = JsonConvert.DeserializeObject(_itemsSource.ToString(), itemsSourceType);
-                }
-                return _itemsSource; 
-            }
-            set { SetValue(ref _itemsSource, value); }
+            get { return _objItemsSource; }
+            set { SetValue(ref _objItemsSource, value); }
         }
-        #endregion ItemsSource
+        #endregion ObjItemsSource
         #region ItemsSourceTypeString
         public virtual String ItemsSourceTypeString
         {
@@ -115,13 +113,44 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
     }
 
-    public class SwagSetting<T> : SwagSetting
+    public abstract class SwagSetting<T> : SwagSetting
     {
         #region Private/Protected Members
-        T[] _genericItemsSource;
+        protected T _value;
+        protected T[] _itemsSource;
         #endregion Private/Protected Members
 
         #region Properties
+        #region Value
+        public virtual T Value
+        {
+            get
+            {
+                if (ValueType != null && _objValue != null && ValueType != _objValue.GetType())
+                {
+                    if (ValueType == typeof(Boolean))
+                    {
+                        _objValue = Boolean.Parse(_objValue.ToString());
+                    }
+                    else if (ValueType == typeof(String))
+                    {
+                        _objValue = _objValue.ToString();
+                    }
+                    else
+                    {
+                        _objValue = JsonConvert.DeserializeObject(_objValue.ToString(), ValueType);
+                    }
+                    _value = (T)_objValue;
+                }
+                return _value;
+            }
+            set
+            {
+                SetValue(ref _value, value);
+                SetValue(ref _objValue, value);
+            }
+        }
+        #endregion Value
         #region ValueType
         public override Type ValueType { get { return typeof(T); } set { } }
         #endregion ValueType
@@ -132,60 +161,162 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _valueTypeString, value); }
         }
         #endregion ValueTypeString
-        #region GenericValue
-        [NotMapped]
-        public T GenericValue
+        #region ItemsSource
+        public T[] ItemsSource
         {
-            get { return (T)_value; }
-            set
+            get 
             {
-                T _temp = default(T);
-                SetValue<T>(ref _temp, (T)value);
-                _value = _temp;
+                if (_objItemsSource != null && _objItemsSource is JArray && !String.IsNullOrEmpty(_itemsSourceTypeString))
+                {
+                    Type itemsSourceType = JsonConvert.DeserializeObject<Type>(_itemsSourceTypeString);
+                    _objItemsSource = JsonConvert.DeserializeObject(_objItemsSource.ToString(), itemsSourceType);
+                    _itemsSource = (T[])_objItemsSource;
+                }
+                return _itemsSource; 
+            }
+            set 
+            { 
+                SetValue(ref _itemsSource, value);
+                SetValue(ref _objItemsSource, value, "ObjItemsSource");
             }
         }
-        #endregion GenericValue
+        #endregion ItemsSource
         #region ItemsSourceTypeString
         public override String ItemsSourceTypeString
         {
-            get { return JsonHelper.ToJsonString(typeof(T[])); }
+            get { return JsonHelper.ToJsonString(typeof(T[])); ; }
             set { SetValue(ref _itemsSourceTypeString, value); }
         }
         #endregion ItemsSourceTypeString
-        #region GenericItemsSource
-        public T[] GenericItemsSource
-        {
-            get { return _genericItemsSource; }
-            set 
-            {
-                ItemsSource = value;
-                SetValue(ref _genericItemsSource, value); 
-            }
-        }
-        #endregion GenericItemsSource
         #endregion Properties
 
         #region Initialization
         public SwagSetting() : base()
         {
-
-        }
-
-        public SwagSetting(SwagSetting swagSetting) : base()
-        {
-            PropertyCopy.Copy(swagSetting, this);
         }
         #endregion Initialization
     }
 
-    public class SwagSettingGroup : SwagIndexedGroup<SwagSetting>
+    public class SwagSettingGroup : SwagSetting, ISwagParent<SwagSettingGroup, SwagSetting>
     {
+        #region Private/Protected Members
+        String _name;
+        CollectionViewSource _childrenCollectionViewSource;
+        protected ObservableCollection<SwagSetting> _children = new ObservableCollection<SwagSetting>();
+        Dictionary<String, SwagSetting> _dict = new Dictionary<string, SwagSetting>();
+        #endregion Private/Protected Members
+
+        #region Events
+        public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
+
+        public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        {
+            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+            Parent?.OnSwagItemChanged(swagItem, e);
+        }
+        #endregion Events
+
+        #region Properties
+        #region Name
+        public String Name
+        {
+            get { return _name; }
+            set { SetValue(ref _name, value); }
+        }
+        #endregion Name
+        #region Children
+        public ObservableCollection<SwagSetting> Children
+        {
+            get { return _children; }
+            set { SetValue(ref _children, value); }
+        }
+        #endregion Children
+        #region ChildrenView
+        public ICollectionView ChildrenView
+        {
+            get { return _childrenCollectionViewSource.View; }
+        }
+        #endregion ChildrenView
+        #region HasChildren
+        public Boolean HasChildren
+        {
+            get { return _children.Count > 0; }
+        }
+        #endregion HasChildren
+        #region Indexer
+        public override SwagSetting this[String key]
+        {
+            get
+            {
+                if (!_dict.ContainsKey(key))
+                {
+                    SwagSettingGroup child = (SwagSettingGroup)Activator.CreateInstance(this.GetType());
+                    child.Key = child.Display = key;
+                    _children.Add(child);
+                }
+                return _dict[key];
+            }
+            set
+            {
+                if (!_dict.ContainsKey(key))
+                {
+                    value.Display = value.Key = key;
+                    _children.Add(value);
+                }
+                _dict[key] = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion Indexer
+        #endregion Properties
+
         #region Initialization
         public SwagSettingGroup() : base()
         {
-            IndexedRootGeneric.SettingType = SettingType.SettingGroup;
+            _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
+            _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
+            _children.CollectionChanged += _children_CollectionChanged;
+        }
+
+        private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (SwagSetting newItem in e.NewItems)
+                {
+                    newItem.Parent = this;
+                    if (newItem.Sequence <= 0)
+                    {
+                        newItem.Sequence = this.Children.Count;
+                    }
+                    if (_dict.ContainsKey(newItem.Key))
+                    {
+                        _dict[newItem.Key] = newItem;
+                    }
+                    else
+                    {
+                        _dict.Add(newItem.Key, newItem);
+                    }
+                    
+                }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (SwagSetting oldItems in e.OldItems)
+                {
+                    _dict.Remove(oldItems.Key);
+                }
+            }
         }
         #endregion Initialization
+
+        #region Iterator
+        public SwagItemPreOrderIterator<SwagSettingGroup, SwagSetting> CreateIterator()
+        {
+            return new SwagItemPreOrderIterator<SwagSettingGroup, SwagSetting>(this);
+        }
+        #endregion Iterator
     }
 
     public class SwagSettingString : SwagSetting<String>

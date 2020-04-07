@@ -19,12 +19,12 @@ namespace SwagOverflowWPF.Services
         {
             SwagWindowSettingGroup windowSettings = null;
             SwagSettingUnitOfWork work = new SwagSettingUnitOfWork(_context);
-            
-            windowSettings = work.WindowSettingGroups.Get(sg => sg.Name == groupName, null, "Root").FirstOrDefault();
+
+            windowSettings = work.WindowSettingGroups.Get(sg => sg.Name == groupName, null).FirstOrDefault();
             if (windowSettings != null)
             {
                 #region Load SwagSettingUnitOfWork
-                work.Settings.RecursiveLoadChildren(windowSettings.IndexedRootGeneric);
+                work.SettingGroups.RecursiveLoadChildren(windowSettings);
 
                 #region OLD - Dynamically creates generic type (handled in Properties of SwagItemViewModel/SwagSettingView instead) 
                 //SwagItemPreOrderIterator<SwagItemViewModel> iterator = windowSettings.CreateIterator();
@@ -87,17 +87,16 @@ namespace SwagOverflowWPF.Services
             if (windowSettings == null)
             {
                 #region Create SwagWindowSettingGroup
-                windowSettings = new SwagWindowSettingGroup();
+                windowSettings = new SwagWindowSettingGroup(true);
                 windowSettings.Name = windowSettings.AlternateId = groupName;
                 work.SettingGroups.Insert(windowSettings);
-                SwagItemPreOrderIterator<SwagItem> iterator = windowSettings.CreateIterator();
-                for (SwagItem swagItem = iterator.First(); !iterator.IsDone; swagItem = iterator.Next())
+                SwagItemPreOrderIterator<SwagSettingGroup, SwagSetting> iterator = windowSettings.CreateIterator();
+                for (SwagSetting setting = iterator.First(); !iterator.IsDone; setting = iterator.Next())
                 {
-                    SwagSetting setting = (SwagSetting)swagItem;
                     //Mark these properites as modified to have them save properly
-                    setting.Value = setting.Value;
+                    setting.ObjValue = setting.ObjValue;
                     setting.ValueTypeString = setting.ValueTypeString;
-                    setting.ItemsSource = setting.ItemsSource;
+                    setting.ObjItemsSource = setting.ObjItemsSource;
                     setting.ItemsSourceTypeString = setting.ItemsSourceTypeString;
                     setting.IconString = setting.IconString;
                     setting.IconTypeString = setting.IconTypeString;

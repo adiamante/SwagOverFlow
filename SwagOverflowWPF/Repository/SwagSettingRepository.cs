@@ -2,6 +2,7 @@
 using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Interface;
 using SwagOverflowWPF.ViewModels;
+using System;
 using System.Linq;
 
 namespace SwagOverflowWPF.Repository
@@ -14,14 +15,9 @@ namespace SwagOverflowWPF.Repository
 
         }
 
-        public void RecursiveLoadChildren(SwagSetting swagSettingViewModel)
+        public void RecursiveLoadChildren(SwagSetting swagSetting)
         {
-            context.Entry(swagSettingViewModel).Collection(ss => ((SwagSetting)ss).Children).Load();
-
-            foreach (SwagSetting child in swagSettingViewModel.Children)
-            {
-                RecursiveLoadChildren(child);
-            }
+            throw new NotImplementedException();
         }
     }
 }

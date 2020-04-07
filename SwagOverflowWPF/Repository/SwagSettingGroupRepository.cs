@@ -11,5 +11,19 @@ namespace SwagOverflowWPF.Repository
         {
             
         }
+
+        public void RecursiveLoadChildren(SwagSetting swagSetting)
+        {
+            if (swagSetting is SwagSettingGroup)
+            {
+                SwagSettingGroup swagSettingGroup = (SwagSettingGroup)swagSetting;
+                context.Entry(swagSettingGroup).Collection(ss => ss.Children).Load();
+
+                foreach (SwagSetting child in swagSettingGroup.Children)
+                {
+                    RecursiveLoadChildren(child);
+                }
+            }
+        }
     }
 }

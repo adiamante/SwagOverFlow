@@ -18,26 +18,24 @@ namespace SwagOverflowWPF.Data
     public class SwagContext : DbContext
     {
         static string _dataSource = "localhost";
-        public DbSet<SwagGroup> SwagGroups { get; set; }
-        public DbSet<SwagIndexedGroup> SwagIndexedGroups { get; set; }
-        public DbSet<SwagItem> SwagItems { get; set; }
+        public DbSet<SwagItemBase> SwagItems { get; set; }
+        public DbSet<SwagItemBase> SwagIndexedItems { get; set; }
         public DbSet<SwagSetting> SwagSettings { get; set; }
+        public DbSet<SwagSettingGroup> SwagSettingGroups { get; set; }
         public DbSet<SwagSettingString> SwagSettingStrings { get; set; }
         public DbSet<SwagSettingBoolean> SwagSettingBooleans { get; set; }
-        public DbSet<SwagSettingGroup> SwagSettingGroups { get; set; }
         public DbSet<SwagWindowSettingGroup> SwagWindowSettingGroups { get; set; }
-        public DbSet<SwagDataRow> SwagDataRows { get; set; }
         public DbSet<SwagDataTable> SwagDataTables { get; set; }
+        public DbSet<SwagDataRow> SwagDataRows { get; set; }
         public SwagContext() : base() { }
 
         public SwagContext(DbContextOptions<SwagContext> options) : base (options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new SwagGroupEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new SwagIndexedGroupEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new SwagItemEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagItemBaseEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagSettingGroupEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingStringEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingBooleanEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataTableEntityConfiguration());
@@ -61,6 +59,7 @@ namespace SwagOverflowWPF.Data
         {
             string connectionString = "Data Source=settings.db";
             optionsBuilder.UseSqlite(connectionString);
+            optionsBuilder.EnableSensitiveDataLogging();
         }
 
         public override void Dispose()
@@ -69,83 +68,27 @@ namespace SwagOverflowWPF.Data
         }
     }
 
-    public class SwagGroupEntityConfiguration : IEntityTypeConfiguration<SwagGroup>
+    public class SwagItemBaseEntityConfiguration : IEntityTypeConfiguration<SwagItemBase>
     {
-        public void Configure(EntityTypeBuilder<SwagGroup> builder)
+        public void Configure(EntityTypeBuilder<SwagItemBase> builder)
         {
-            //SwagGroupViewModel GroupId => Key
-            builder.HasKey(sg => sg.GroupId);
-
-            //SwagGroupViewModel AlternateId => Unique
-            builder.HasIndex(sg => sg.AlternateId).IsUnique();
-
-            //SwagGroupViewModel One to One => SwagItemViewModel
-            //Group and GroupRoot exist in SwagItemViewModel as a workaround for circular references
-            //Item.Group => Group.Root => Item.Group => (multiple Item.Group exist that have references to the same Group.Root) 
-            //vs Item.GroupRoot => Group.Root => (limmited to one Item.GroupRoot)
-            builder.HasOne(sg => sg.Root)
-                .WithOne(si => si.GroupRoot)
-                .HasForeignKey<SwagItem>(si => si.GroupRootId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            //SwagGroupViewModel Many to One => SwagItemViewModel
-            //builder.HasMany(sg => sg.Descendants)
-            //    .WithOne(si => si.Group)
-            //    .HasForeignKey(si => si.GroupId)
-            //    .OnDelete(DeleteBehavior.NoAction);
-        }
-    }
-
-    public class SwagIndexedGroupEntityConfiguration : IEntityTypeConfiguration<SwagIndexedGroup>
-    {
-        public void Configure(EntityTypeBuilder<SwagIndexedGroup> builder)
-        {
-            //SwagIndexedGroup IndexedRoot => Ignore
-            builder.Ignore(sig => sig.IndexedRoot);
-
-            //SwagIndexedGroup IndexedDescendants => Ignore
-            builder.Ignore(sig => sig.IndexedDescendants);
-        }
-    }
-
-    public class SwagItemEntityConfiguration : IEntityTypeConfiguration<SwagItem>
-    {
-        public void Configure(EntityTypeBuilder<SwagItem> builder)
-        {
-            //SwagItemViewModel Key + Id (AutoIncrement) => Key
+            //SwagIndexedItemViewModel Key + Id (AutoIncrement) => Key
             //Sqlite does not play too well with composite keys
             //builder.HasKey(si => new { si.GroupId, si.ItemId });
             builder.HasKey(si => si.ItemId);
             builder.Property(si => si.ItemId).ValueGeneratedOnAdd();
 
-            //SwagItemViewModel AlternateId => Unique
+            //SwagIndexedItemViewModel AlternateId => Unique
             builder.HasIndex(si => si.AlternateId).IsUnique();
 
-            //SwagItemViewModel Children =>  One to many
-            //Sqlite does not play too well with composite keys
-            //builder.HasMany(si => si.Children)
-            //    .WithOne(si => si.Parent)
-            //    .HasForeignKey(si => new { si.GroupId, si.ParentId })
-            //    .OnDelete(DeleteBehavior.NoAction);
-            builder.HasMany(si => si.Children)
-                .WithOne(si => si.Parent)
-                .HasForeignKey(si => si.ParentId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            //SwagItemViewModel Value
-            builder.Property(si => si.Value)
+            //SwagIndexedItemViewModel Value
+            builder.Property(si => si.ObjValue)
                 .HasConversion(
                     si => JsonHelper.ToJsonString(si),
                     si => JsonConvert.DeserializeObject<object>(si));
 
-            //SwagItemViewModel ValueType => Ignore
+            //SwagIndexedItemViewModel ValueType => Ignore
             builder.Ignore(si => si.ValueType);
-
-            //SwagItemViewModel One to One => SwagGroupViewModel
-            //builder.HasOne(si => si.GroupRoot)
-            //    .WithOne(sg => sg.Root)
-            //    .HasForeignKey<SwagGroupViewModel>(sg => new { sg.GroupId, sg.RootId })
-            //    .OnDelete(DeleteBehavior.NoAction);
         }
     }
 
@@ -157,11 +100,26 @@ namespace SwagOverflowWPF.Data
             EnumToStringConverter<SettingType> settingTypeconverter = new EnumToStringConverter<SettingType>();
             builder.Property(ss => ss.SettingType).HasConversion(settingTypeconverter);
 
-            //SwagSettingViewModel ItemsSource => Convert to String
-            builder.Property(ss => ss.ItemsSource)
+            //SwagSettingViewModel ObjItemsSource => Convert to String
+            builder.Property(ss => ss.ObjItemsSource)
                 .HasConversion(
                     ss => JsonHelper.ToJsonString(ss),
                     ss => JsonConvert.DeserializeObject<object>(ss));
+
+            //SwagSetting Icon => Ignore
+            builder.Ignore(ss => ss.Icon);
+        }
+    }
+
+    public class SwagSettingGroupEntityConfiguration : IEntityTypeConfiguration<SwagSettingGroup>
+    {
+        public void Configure(EntityTypeBuilder<SwagSettingGroup> builder)
+        {
+            //SwagSetting Children =>  One to many
+            builder.HasMany(ss => ss.Children)
+                .WithOne(ss => ss.Parent)
+                .HasForeignKey(ss => ss.ParentId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             //SwagSetting Icon => Ignore
             builder.Ignore(ss => ss.Icon);
@@ -199,8 +157,11 @@ namespace SwagOverflowWPF.Data
     {
         public void Configure(EntityTypeBuilder<SwagSettingString> builder)
         {
-            //SwagSettingString DataRow => Ignore
-            builder.Ignore(sdr => sdr.GenericItemsSource);
+            //SwagSettingString Value => Ignore
+            builder.Ignore(ss => ss.Value);
+
+            //SwagSettingString ItemsSource => Ignore
+            builder.Ignore(ss => ss.ItemsSource);
         }
     }
 
@@ -208,8 +169,12 @@ namespace SwagOverflowWPF.Data
     {
         public void Configure(EntityTypeBuilder<SwagSettingBoolean> builder)
         {
-            //SwagSettingBoolean DataRow => Ignore
-            builder.Ignore(sdr => sdr.GenericItemsSource);
+            //SwagSettingBoolean Value => Ignore
+            builder.Ignore(ss => ss.Value);
+
+
+            //SwagSettingBoolean ItemsSource => Ignore
+            builder.Ignore(ss => ss.ItemsSource);
         }
     }
 
@@ -219,6 +184,9 @@ namespace SwagOverflowWPF.Data
         {
             //SwagDataRow DataRow => Ignore
             builder.Ignore(sdr => sdr.DataRow);
+
+            //SwagDataRow DataRow => Ignore
+            builder.Ignore(sdr => sdr.Value);
         }
     }
 

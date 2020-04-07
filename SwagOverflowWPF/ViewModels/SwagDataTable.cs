@@ -25,12 +25,14 @@ using System.Xml;
 namespace SwagOverflowWPF.ViewModels
 {
     #region SwagDataRow
-    public class SwagDataRow : SwagItem<JObject>
+    public class SwagDataRow : SwagItem<SwagDataTable, SwagDataRow, JObject>
     {
+        #region Private/Protected Members
         DataRow _dataRow;
+        #endregion Private/Protected Members
 
+        #region Properties
         #region DataRow
-        [NotMapped]
         public DataRow DataRow
         {
             get { return _dataRow; }
@@ -44,22 +46,23 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion DataRow
-
         #region Value
-        public override object Value
+        public override object ObjValue
         {
             get
             {
                 if (_dataRow != null)
                 {
-                    _value = this.ToJObject();
+                    _objValue = this.ToJObject();
                 }
-                return _value;
+                return _objValue;
             }
-            set { SetValue(ref _value, value); }
+            set { SetValue(ref _objValue, value); }
         }
         #endregion Value
+        #endregion Properties
 
+        #region Initialization
         public SwagDataRow()
         {
 
@@ -78,7 +81,9 @@ namespace SwagOverflowWPF.ViewModels
         {
             PropertyCopy.Copy(row, this);
         }
+        #endregion Initialization
 
+        #region Methods
         public JObject ToJObject()
         {
             if (_dataRow == null)
@@ -95,6 +100,7 @@ namespace SwagOverflowWPF.ViewModels
                 return jObject;
             }
         }
+        #endregion Methods
     }
     #endregion SwagDataRow
 
@@ -284,6 +290,7 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion SearchFilter
         #region SearchFilterMode
+        [JsonIgnore]
         public FilterMode SearchFilterMode
         {
             get { return _searchFilterMode; }
@@ -291,6 +298,7 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion SearchFilterMode
         #region ListValuesFilterMode
+        [JsonIgnore]
         public FilterMode ListValuesFilterMode
         {
             get { return _listValuesFilterMode; }
@@ -586,17 +594,50 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Methods
     }
 
-    public class SwagDataTable  : SwagGroup<SwagDataRow>
+    public class SwagDataTable  : SwagDataRow, ISwagParent<SwagDataTable, SwagDataRow>
     {
         #region Private Members
+        String _name;
         DataTable _dataTable;
         SwagContext _context;
+        CollectionViewSource _childrenCollectionViewSource;
+        protected ObservableCollection<SwagDataRow> _children = new ObservableCollection<SwagDataRow>();
         Dictionary<DataRow, SwagDataRow> _dictChildren = new Dictionary<DataRow, SwagDataRow>();
         ConcurrentObservableOrderedDictionary<String, SwagDataColumn> _columns = new ConcurrentObservableOrderedDictionary<String, SwagDataColumn>();
         ICommand _filterCommand;
         #endregion Private Members
 
+        #region Events
+        public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
+
+        public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        {
+            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+            Parent?.OnSwagItemChanged(swagItem, e);
+        }
+        #endregion Events
+
         #region Properties
+        #region Name
+        public String Name
+        {
+            get { return _name; }
+            set { SetValue(ref _name, value); }
+        }
+        #endregion Name
+        #region Children
+        public ObservableCollection<SwagDataRow> Children
+        {
+            get { return _children; }
+            set { SetValue(ref _children, value); }
+        }
+        #endregion Children
+        #region ChildrenView
+        public ICollectionView ChildrenView
+        {
+            get { return _childrenCollectionViewSource.View; }
+        }
+        #endregion ChildrenView
         #region DataTable
         public DataTable DataTable
         {
@@ -604,7 +645,12 @@ namespace SwagOverflowWPF.ViewModels
             set { SetDataTable(value); }
         }
         #endregion DataTable
-
+        #region HasChildren
+        public Boolean HasChildren
+        {
+            get { return _children.Count > 0; }
+        }
+        #endregion HasChildren
         #region Columns
         public ConcurrentObservableOrderedDictionary<String, SwagDataColumn> Columns
         {
@@ -612,7 +658,6 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _columns, value); }
         }
         #endregion Columns
-
         #region FilterCommand
         public ICommand FilterCommand
         {
@@ -657,6 +702,8 @@ namespace SwagOverflowWPF.ViewModels
         #region Initialization
         public SwagDataTable()
         {
+            _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
+            _children.CollectionChanged += _children_CollectionChanged;
         }
 
         public SwagDataTable(DataTable dt)
@@ -664,6 +711,20 @@ namespace SwagOverflowWPF.ViewModels
             SetDataTable(dt);
         }
 
+        private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (SwagDataRow newItem in e.NewItems)
+                {
+                    newItem.Parent = this;
+                    if (newItem.Sequence <= 0)
+                    {
+                        newItem.Sequence = this.Children.Count;
+                    }
+                }
+            }
+        }
         public void SetDataTable(DataTable dt, Boolean silent = false)
         {
             SetValue(ref _dataTable, dt, "DataTable");
@@ -674,7 +735,7 @@ namespace SwagOverflowWPF.ViewModels
                 if (_context != null)
                 {
                     SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
-                    foreach (SwagDataRow row in RootGeneric.Children)
+                    foreach (SwagDataRow row in Children)
                     {
                         work.DataRows.Delete(row);
                     }
@@ -686,7 +747,7 @@ namespace SwagOverflowWPF.ViewModels
 
                 #region Clear Columns and Rows for instance
                 Columns.Clear();
-                RootGeneric.Children.Clear();
+                Children.Clear();
                 #endregion Clear Columns and Rows for instance
 
                 #region Add Columns and Rows for instance
@@ -703,7 +764,7 @@ namespace SwagOverflowWPF.ViewModels
                     SwagDataRow row = new SwagDataRow(dr);
                     row.Value = row.Value;
                     row.ValueTypeString = row.ValueTypeString;
-                    RootGeneric.Children.Add(row);
+                    Children.Add(row);
                     _dictChildren.Add(row.DataRow, row);
                 }
                 #endregion Add Columns and Rows for instance
@@ -720,7 +781,7 @@ namespace SwagOverflowWPF.ViewModels
             else
             {
                 _dictChildren.Clear();
-                foreach (SwagDataRow row in RootGeneric.Children)
+                foreach (SwagDataRow row in Children)
                 {
                     _dictChildren.Add(row.DataRow, row);
                 }
@@ -795,7 +856,7 @@ namespace SwagOverflowWPF.ViewModels
             {
                 SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
                 SwagDataRow row = _dictChildren[e.Row];
-                row.Value = row.Value;
+                row.ObjValue = row.ObjValue;
                 work.DataRows.Update(row);
                 work.Complete();
             }
@@ -814,7 +875,7 @@ namespace SwagOverflowWPF.ViewModels
             {
                 SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
                 this.Columns = Columns;
-                foreach (SwagDataRow dataRow in this.RootGeneric.Children)
+                foreach (SwagDataRow dataRow in Children)
                 {
                     dataRow.Value = dataRow.Value;
                 }
@@ -832,5 +893,12 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion Context Methods
+
+        #region Iterator
+        public SwagItemPreOrderIterator<SwagDataTable, SwagDataRow> CreateIterator()
+        {
+            return new SwagItemPreOrderIterator<SwagDataTable, SwagDataRow>(this);
+        }
+        #endregion Iterator
     }
 }

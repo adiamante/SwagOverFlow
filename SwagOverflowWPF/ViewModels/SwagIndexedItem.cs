@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SwagOverflowWPF.Interface;
+using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.Iterator;
 using SwagOverflowWPF.Utilities;
 using System;
@@ -8,143 +8,23 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 using System.Windows.Data;
 
 namespace SwagOverflowWPF.ViewModels
 {
     #region Interfaces
-    public interface ISwagChild<TParent, TChild>
+    public interface ISwagIndexedChild<TParent, TChild> : ISwagChild<TParent, TChild>
             where TParent : class, ISwagParent<TParent, TChild>
             where TChild : class, ISwagChild<TParent, TChild>
     {
-        TParent Parent { get; set; }
-        String Display { get; set; }        //Used for debugging
-        Int32 Sequence { get; set; }
-    }
-
-    public interface ISwagParent<TParent, TChild> : ISwagChild<TParent, TChild>, ISwagItemChanged
-        where TParent : class, ISwagParent<TParent, TChild>
-        where TChild : class, ISwagChild<TParent, TChild>
-    {
-        ObservableCollection<TChild> Children { get; set; }
-    }
-
-    public interface ISwagItemChanged
-    {
-        event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
-        void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e);
+        String Key { get; set; }
     }
     #endregion Interfaces
 
-    #region SwagItemChangedEventArgs
-    public class SwagItemChangedEventArgs : EventArgs
-    {
-        public SwagItemBase SwagItem { get; set; }
-        public PropertyChangedExtendedEventArgs PropertyChangedArgs { get; set; }
-    }
-    #endregion SwagItemChangedEventArgs
-
-    public abstract class SwagItemBase : ViewModelBaseExtended
-    {
-        #region Private/Protected Members
-        String _display, _alternateId;
-        protected String _valueTypeString;
-        Int32 _itemId, _sequence;
-        Boolean _isExpanded;
-        String _key;
-        protected Object _objValue;
-        protected Type _valueType = null;
-        #endregion Private/Protected Members
-
-        #region Properties
-        #region ItemId
-        public Int32 ItemId
-        {
-            get { return _itemId; }
-            set { SetValue(ref _itemId, value); }
-        }
-        #endregion ItemId
-        #region AlternateId
-        public String AlternateId
-        {
-            get { return _alternateId; }
-            set { SetValue(ref _alternateId, value); }
-        }
-        #endregion AlternateId
-        #region Sequence
-        public Int32 Sequence
-        {
-            get { return _sequence; }
-            set { SetValue(ref _sequence, value); }
-        }
-        #endregion Sequence
-        #region Display
-        public String Display
-        {
-            get { return _display; }
-            set { SetValue(ref _display, value); }
-        }
-        #endregion Display
-        #region IsExpanded
-        public Boolean IsExpanded
-        {
-            get { return _isExpanded; }
-            set { SetValue(ref _isExpanded, value); }
-        }
-        #endregion IsExpanded
-        #region Key
-        public String Key
-        {
-            get { return _key; }
-            set { SetValue(ref _key, value); }
-        }
-        #endregion Key
-        #region ValueType
-        public virtual Type ValueType
-        {
-            get
-            {
-                if (_valueType == null && !String.IsNullOrEmpty(_valueTypeString))
-                {
-                    _valueType = JsonConvert.DeserializeObject<Type>(_valueTypeString);
-                }
-                return _valueType;
-            }
-            set { }
-        }
-        #endregion ValueType
-        #region ValueTypeString
-        public virtual String ValueTypeString
-        {
-            get { return _valueTypeString; }
-            set { SetValue(ref _valueTypeString, value); }
-        }
-        #endregion ValueTypeString
-        #region ObjValue
-        public virtual object ObjValue
-        {
-            get { return _objValue; }
-            set { SetValue(ref _objValue, value); }
-        }
-        #endregion ObjValue
-        #endregion Properties
-
-        #region Methods
-        public T GetValue<T>()
-        {
-            return (T)ObjValue;
-        }
-
-        public void SetValue<T>(T val)
-        {
-            ObjValue = val;
-        }
-        #endregion Methods
-    }
-
-    public abstract class SwagItem<TParent, TChild> : SwagItemBase, ISwagChild<TParent, TChild>
+    public abstract class SwagIndexedItem<TParent, TChild> : SwagItemBase, ISwagIndexedChild<TParent, TChild>
         where TParent : class, ISwagParent<TParent, TChild>
-        where TChild : class, ISwagChild<TParent, TChild>
+        where TChild : class, ISwagIndexedChild<TParent, TChild>
     {
         #region Private/Protected Members
         TParent _parent;
@@ -166,10 +46,40 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _parent, value); }
         }
         #endregion Parent
+        #region Path
+        public String Path
+        {
+            get
+            {
+                SwagIndexedItem<TParent, TChild> tempNode = this;
+                String path = "";
+                while (tempNode != null)
+                {
+                    path = $"{tempNode.Display}/{path}";
+                    tempNode = tempNode.Parent as SwagIndexedItem<TParent, TChild>;
+                }
+                return path.Trim('/');
+            }
+        }
+        #endregion Path
+        #region Indexer
+        //This is here for transparency
+        public virtual TChild this[String key]
+        {
+            get
+            {
+                throw new InvalidOperationException("SwagIndexedItem type does not support indexing");
+            }
+            set
+            {
+                throw new InvalidOperationException("SwagIndexedItem type does not support indexing");
+            }
+        }
+        #endregion Indexer
         #endregion Properties
 
         #region Initialization
-        public SwagItem()
+        public SwagIndexedItem()
         {
             PropertyChangedExtended += SwagIndexedItem_PropertyChangedExtended;
         }
@@ -181,9 +91,9 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
     }
 
-    public abstract class SwagItem<TParent, TChild, T> : SwagItem<TParent, TChild>
+    public abstract class SwagIndexedItem<TParent, TChild, T> : SwagIndexedItem<TParent, TChild>
         where TParent : class, ISwagParent<TParent, TChild>
-        where TChild : class, ISwagChild<TParent, TChild>
+        where TChild : class, ISwagIndexedChild<TParent, TChild>
     {
         #region Private/Protected Members
         protected T _value;
@@ -194,7 +104,7 @@ namespace SwagOverflowWPF.ViewModels
         [NotMapped]
         public virtual T Value
         {
-            get 
+            get
             {
                 if (ValueType != null && _objValue != null && ValueType != _objValue.GetType())
                 {
@@ -217,7 +127,7 @@ namespace SwagOverflowWPF.ViewModels
                     _value = (T)_objValue;
                 }
 
-                return _value; 
+                return _value;
             }
             set
             {
@@ -226,32 +136,23 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion Value
-        #region ValueType
-        public override Type ValueType { get { return typeof(T); } set { } }
-        #endregion ValueType
-        #region ValueTypeString
-        public override String ValueTypeString
-        {
-            get { return JsonHelper.ToJsonString(typeof(T)); }
-            set { SetValue(ref _valueTypeString, value); }
-        }
-        #endregion ValueTypeString
         #endregion Properties
 
         #region Initialization
-        public SwagItem() : base()
+        public SwagIndexedItem() : base()
         {
         }
         #endregion Initialization
     }
 
-    public abstract class SwagItemGroup<TParent, TChild> : SwagItem<TParent, TChild>, ISwagParent<TParent, TChild>
+    public abstract class SwagIndexedItemGroup<TParent, TChild> : SwagIndexedItem<TParent, TChild>, ISwagParent<TParent, TChild>
         where TParent : class, ISwagParent<TParent, TChild>
-        where TChild : class, ISwagChild<TParent, TChild>
+        where TChild : class, ISwagIndexedChild<TParent, TChild>
     {
         #region Private/Protected Members
         String _name;
         protected ObservableCollection<TChild> _children = new ObservableCollection<TChild>();
+        Dictionary<String, TChild> _dict = new Dictionary<string, TChild>();
         CollectionViewSource _childrenCollectionViewSource;
         #endregion Private/Protected Members
 
@@ -291,10 +192,35 @@ namespace SwagOverflowWPF.ViewModels
             get { return _children.Count > 0; }
         }
         #endregion HasChildren
+        #region Indexer
+        public override TChild this[String key]
+        {
+            get 
+            {
+                if (!_dict.ContainsKey(key))
+                {
+                    TChild child = (TChild)Activator.CreateInstance(this.GetType());
+                    child.Key = child.Display = key;
+                    _children.Add(child);
+                }
+                return _dict[key]; 
+            }
+            set
+            {
+                if (!_dict.ContainsKey(key))
+                {
+                    value.Display = value.Key = key;
+                    _children.Add(value);
+                }
+                _dict[key] = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion Indexer
         #endregion Properties
 
         #region Initialization
-        public SwagItemGroup() : base()
+        public SwagIndexedItemGroup() : base()
         {
             _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
             _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
@@ -312,6 +238,15 @@ namespace SwagOverflowWPF.ViewModels
                     {
                         newItem.Sequence = this.Children.Count;
                     }
+                    _dict.Add(newItem.Key, newItem);
+                }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (TChild oldItems in e.OldItems)
+                {
+                    _dict.Remove(oldItems.Key);
                 }
             }
         }
@@ -324,5 +259,4 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion Iterator
     }
-
 }
