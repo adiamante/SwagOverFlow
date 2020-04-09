@@ -14,11 +14,20 @@ namespace SwagOverflowWPF.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+
         protected virtual void SetValue<T>(ref T backingField, T value, [CallerMemberName] string propertyname = null)
         {
-            if (EqualityComparer<T>.Default.Equals(backingField, value))
-                return;
+            SetValue<T>(ref backingField, value, true, propertyname);
+        }
 
+        protected virtual void SetValue<T>(ref T backingField, T value, Boolean doEqualityCheck, [CallerMemberName] string propertyname = null)
+        {
+            if (doEqualityCheck)
+            {
+                if (EqualityComparer<T>.Default.Equals(backingField, value))
+                    return;
+            }
+            
             backingField = value;
             OnPropertyChanged(propertyname);
         }
@@ -52,8 +61,16 @@ namespace SwagOverflowWPF.ViewModels
 
         protected override void SetValue<T>(ref T backingField, T value, [CallerMemberName] string propertyName = null)
         {
-            if (EqualityComparer<T>.Default.Equals(backingField, value))
-                return;
+            SetValue<T>(ref backingField, value, true, propertyName);
+        }
+
+        protected override void SetValue<T>(ref T backingField, T value, Boolean doEqualityCheck, [CallerMemberName] string propertyName = null)
+        {
+            if (doEqualityCheck)
+            {
+                if (EqualityComparer<T>.Default.Equals(backingField, value))
+                    return;
+            }
 
             T oldValue = backingField;
             backingField = value;

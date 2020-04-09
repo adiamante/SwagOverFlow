@@ -217,7 +217,8 @@ namespace SwagOverflowWPF.ViewModels
 
         public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
         {
-            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+            SwagSetting swagSetting = (SwagSetting)swagItem;
+            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e, Message = $"{swagSetting.Path}({e.OldValue}) => {e.NewValue}" });
             Parent?.OnSwagItemChanged(swagItem, e);
         }
         #endregion Events

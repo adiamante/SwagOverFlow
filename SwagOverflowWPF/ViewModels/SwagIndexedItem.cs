@@ -55,7 +55,7 @@ namespace SwagOverflowWPF.ViewModels
                 String path = "";
                 while (tempNode != null)
                 {
-                    path = $"{tempNode.Display}/{path}";
+                    path = $"{tempNode.Display ?? tempNode.Key}/{path}";
                     tempNode = tempNode.Parent as SwagIndexedItem<TParent, TChild>;
                 }
                 return path.Trim('/');
@@ -161,7 +161,9 @@ namespace SwagOverflowWPF.ViewModels
 
         public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
         {
-            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+            SwagIndexedItem<TParent, TChild> swagSetting = (SwagIndexedItem<TParent, TChild>)swagItem;
+            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e, Message = $"{swagSetting.Path}({e.OldValue}) => {e.NewValue}" });
+            Parent?.OnSwagItemChanged(swagItem, e);
         }
         #endregion Events
 

@@ -102,32 +102,19 @@ namespace SwagOverflowWPF.Commands
         #region Events
         private void Subject_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
         {
-            if (_listening)
+            if (_listening && e.SwagItem.CanUndo)
             {
-                String display = e.PropertyChangedArgs.PropertyName + "=>" + e.PropertyChangedArgs.NewValue;
-                if (e.PropertyChangedArgs.Object is SwagSetting && e.PropertyChangedArgs.PropertyName == "Value")
-                {
-                    SwagSetting setting = (SwagSetting)e.PropertyChangedArgs.Object;
-                    display = $"{setting.Path}=> {e.PropertyChangedArgs.NewValue}";
-                    if (setting.Display == "IsOpen" && setting.Parent != null && (setting.Parent.Display == "Settings" || setting.Parent.Display == "CommandHistory"))
-                    {
-                        //Do not record opening/closing Settings and CommandHistory FlyOver
-                        return;
-                    }
-                }
-
                 SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
-                e.PropertyChangedArgs.PropertyName,
-                e.PropertyChangedArgs.Object,
-                e.PropertyChangedArgs.OldValue,
-                e.PropertyChangedArgs.NewValue);
-                cmd.Display = display;
+                    e.PropertyChangedArgs.PropertyName,
+                    e.PropertyChangedArgs.Object,
+                    e.PropertyChangedArgs.OldValue,
+                    e.PropertyChangedArgs.NewValue);
+                cmd.Display = e.Message ?? $"{e.PropertyChangedArgs.PropertyName} ({e.PropertyChangedArgs.OldValue}) => {e.PropertyChangedArgs.NewValue}";
 
                 _commandHistory.Add(_commandHistory.Count, cmd);
             }
         }
         #endregion Events
-
     }
 
     #region SwagCommand

@@ -27,6 +27,8 @@ namespace SwagOverflowWPF.Services
             sdtDataTable = work.DataTables.Get(sg => sg.Name == groupName, null).FirstOrDefault();
             if (sdtDataTable != null)
             {
+                sdtDataTable.Listening = false;
+
                 #region Load SwagDataTableUnitOfWork
                 work.DataTables.RecursiveLoadChildren(sdtDataTable);
                 DataTable dt = new DataTable();
@@ -43,9 +45,9 @@ namespace SwagOverflowWPF.Services
                 SwagItemPreOrderIterator<SwagDataTable, SwagDataRow> iterator = sdtDataTable.CreateIterator();
                 for (SwagDataRow swagDataRow = iterator.First(); !iterator.IsDone; swagDataRow = iterator.Next())
                 {
-                    if (swagDataRow.Value != null)      //Skip the root
+                    if (swagDataRow.ObjValue != null)      //Skip the root
                     {
-                        JObject rowValues = (JObject)swagDataRow.Value;
+                        JObject rowValues = (JObject)swagDataRow.ObjValue;
                         DataRow dr = dt.NewRow();
 
                         foreach (KeyValuePair<String, JToken> kvp in rowValues)
@@ -91,6 +93,8 @@ namespace SwagOverflowWPF.Services
 
                 sdtDataTable.SetDataTable(dt, true);
                 #endregion Load SwagDataTableUnitOfWork
+
+                sdtDataTable.Listening = true;
             }
 
             if (sdtDataTable == null)

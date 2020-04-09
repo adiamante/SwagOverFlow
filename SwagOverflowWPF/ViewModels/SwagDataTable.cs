@@ -29,6 +29,7 @@ namespace SwagOverflowWPF.ViewModels
     {
         #region Private/Protected Members
         DataRow _dataRow;
+        JObject _previousValue;
         #endregion Private/Protected Members
 
         #region Properties
@@ -38,26 +39,50 @@ namespace SwagOverflowWPF.ViewModels
             get { return _dataRow; }
             set
             {
+                SetValue(ref _dataRow, value);
                 if (_dataRow != null)
                 {
+                    _previousValue = _value;
                     _value = this.ToJObject();
                 }
-                SetValue(ref _dataRow, value);
             }
         }
         #endregion DataRow
         #region Value
-        public override object ObjValue
+        public override JObject Value
         {
             get
             {
                 if (_dataRow != null)
                 {
-                    _objValue = this.ToJObject();
+                    _previousValue = _value;
+                    _value = this.ToJObject();
+                    _objValue = _value;
                 }
-                return _objValue;
+                return _value;
             }
-            set { SetValue(ref _objValue, value); }
+            set
+            {
+                SetValue(ref _previousValue, value, false);
+                _objValue = _value;
+
+                if (Parent != null && Parent.Listening)
+                {
+                    Parent.Listening = false;
+                    foreach (KeyValuePair<String, JToken> kvp in value)
+                    {
+                        if (kvp.Value is JValue)
+                        {
+                            JValue jVal = (JValue)kvp.Value;
+                            if (_dataRow[kvp.Key] != jVal.Value && !Parent.Columns[kvp.Key].ReadOnly)
+                            {
+                                _dataRow[kvp.Key] = jVal.Value;
+                            }
+                        }
+                    }
+                    Parent.Listening = true;
+                }
+            }
         }
         #endregion Value
         #endregion Properties
@@ -73,6 +98,7 @@ namespace SwagOverflowWPF.ViewModels
             _dataRow = dataRow;
             if (_dataRow != null)
             {
+                _previousValue = _value;
                 _value = this.ToJObject();
             }
         }
@@ -99,6 +125,11 @@ namespace SwagOverflowWPF.ViewModels
                 }
                 return jObject;
             }
+        }
+
+        public void RowOnPropertyChangedExtended(object oldValue, object newValue, string propertyName = null)
+        {
+            base.OnPropertyChangedExtended(oldValue, newValue, propertyName);
         }
         #endregion Methods
     }
@@ -605,6 +636,7 @@ namespace SwagOverflowWPF.ViewModels
         Dictionary<DataRow, SwagDataRow> _dictChildren = new Dictionary<DataRow, SwagDataRow>();
         ConcurrentObservableOrderedDictionary<String, SwagDataColumn> _columns = new ConcurrentObservableOrderedDictionary<String, SwagDataColumn>();
         ICommand _filterCommand;
+        Boolean _listening = true;
         #endregion Private Members
 
         #region Events
@@ -612,8 +644,11 @@ namespace SwagOverflowWPF.ViewModels
 
         public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
         {
-            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
-            Parent?.OnSwagItemChanged(swagItem, e);
+            if (Listening)
+            {
+                SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+                Parent?.OnSwagItemChanged(swagItem, e);
+            }
         }
         #endregion Events
 
@@ -697,6 +732,27 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion FilterCommand
+        #region Listening
+        public Boolean Listening
+        {
+            get { return _listening; }
+            set 
+            { 
+                if (_listening != value)
+                {
+                    SetValue(ref _listening, value);
+                    if (_listening && _dataTable != null)
+                    {
+                        _dataTable.RowChanged += dataTable_RowChanged;
+                    }
+                    else if (_dataTable != null)
+                    {
+                        _dataTable.RowChanged -= dataTable_RowChanged;
+                    }
+                }
+            }
+        }
+        #endregion Listening
         #endregion Properties
 
         #region Initialization
@@ -727,6 +783,7 @@ namespace SwagOverflowWPF.ViewModels
         }
         public void SetDataTable(DataTable dt, Boolean silent = false)
         {
+            Listening = false;
             SetValue(ref _dataTable, dt, "DataTable");
 
             if (!silent)
@@ -787,15 +844,18 @@ namespace SwagOverflowWPF.ViewModels
                 }
             }
 
-            _dataTable.RowChanged += dataTable_RowChanged;
+            Listening = true;
+            //_dataTable.RowChanged += dataTable_RowChanged;
             _dataTable.Columns.CollectionChanged += dataTable_Columns_CollectionChanged;
             _columns.CollectionChanged += viewModel_Columns_CollectionChanged;
         }
+
         #endregion Initialization
 
         #region Column Events
         private void dataTable_Columns_CollectionChanged(object sender, CollectionChangeEventArgs e)
         {
+            Listening = false;
             DataColumn dc = (DataColumn)e.Element;
             switch (e.Action)
             {
@@ -818,10 +878,12 @@ namespace SwagOverflowWPF.ViewModels
                     }
                     break;
             }
+            Listening = true;
         }
 
         private void viewModel_Columns_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            Listening = false;
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
@@ -846,19 +908,26 @@ namespace SwagOverflowWPF.ViewModels
                     break;
             }
             TrySaveColumns();
+            Listening = true;
+
         }
         #endregion Column Events
 
         #region RowEvents
+
         private void dataTable_RowChanged(object sender, DataRowChangeEventArgs e)
         {
+            SwagDataRow row = _dictChildren[e.Row];
+            row.Value = row.Value;
+
             if (_context != null)
             {
                 SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
-                SwagDataRow row = _dictChildren[e.Row];
+                Listening = false;
                 row.ObjValue = row.ObjValue;
                 work.DataRows.Update(row);
                 work.Complete();
+                Listening = true;
             }
         }
         #endregion RowEvents
@@ -871,6 +940,7 @@ namespace SwagOverflowWPF.ViewModels
 
         public void TrySaveColumns()
         {
+            Listening = false;
             if (_context != null)
             {
                 SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
@@ -883,6 +953,7 @@ namespace SwagOverflowWPF.ViewModels
                 work.DataTables.Update(this);
                 work.Complete();
             }
+            Listening = true;
         }
 
         public void Save()

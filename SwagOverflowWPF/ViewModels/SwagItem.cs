@@ -41,6 +41,8 @@ namespace SwagOverflowWPF.ViewModels
     {
         public SwagItemBase SwagItem { get; set; }
         public PropertyChangedExtendedEventArgs PropertyChangedArgs { get; set; }
+        public String Message { get; set; }
+        
     }
     #endregion SwagItemChangedEventArgs
 
@@ -50,7 +52,7 @@ namespace SwagOverflowWPF.ViewModels
         String _display, _alternateId;
         protected String _valueTypeString;
         Int32 _itemId, _sequence;
-        Boolean _isExpanded;
+        Boolean _isExpanded, _canUndo = true;
         String _key;
         protected Object _objValue;
         protected Type _valueType = null;
@@ -92,6 +94,13 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _isExpanded, value); }
         }
         #endregion IsExpanded
+        #region CanUndo
+        public Boolean CanUndo
+        {
+            get { return _canUndo; }
+            set { SetValue(ref _canUndo, value); }
+        }
+        #endregion CanUndo
         #region Key
         public String Key
         {

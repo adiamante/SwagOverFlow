@@ -144,7 +144,7 @@ namespace SwagOverflowWPF.Data
                 return dict;
             };
 
-            //SwagItemViewModel Value
+            //SwagDataTable Columns
             builder.Property(sdt => sdt.Columns)
                 .HasConversion(
                     sdc => JsonConvert.SerializeObject(sdc.List, Formatting.Indented),

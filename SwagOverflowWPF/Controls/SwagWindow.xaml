@@ -56,23 +56,23 @@
                                     </StackPanel>
                                 </Grid>
                             </GroupBox.Header>
-                            <StackPanel>
-                                <ListView VerticalAlignment="Top" ItemsSource="{Binding CommandManager.CommandHistory}">
+                            <DockPanel>
+                                <ListView DockPanel.Dock="Top" VerticalAlignment="Top" ItemsSource="{Binding CommandManager.CommandHistory}">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding Value.Display}" />
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
                                 </ListView>
-                                <Separator />
-                                <ListView VerticalAlignment="Bottom" ItemsSource="{Binding CommandManager.UndoHistory}">
+                                <Separator DockPanel.Dock="Top" />
+                                <ListView VerticalAlignment="Top" ItemsSource="{Binding CommandManager.UndoHistory}">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding Value.Display}" />
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
                                 </ListView>
-                            </StackPanel>
+                            </DockPanel>
                         </GroupBox>
                     </metro:Flyout>
                     <metro:Flyout IsOpen="{Binding Settings[Window][Settings][IsOpen].Value}" Position="Right" Theme="Accent">
