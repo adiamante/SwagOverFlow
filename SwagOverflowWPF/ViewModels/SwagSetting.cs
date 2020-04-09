@@ -140,14 +140,20 @@ namespace SwagOverflowWPF.ViewModels
                     {
                         _objValue = JsonConvert.DeserializeObject(_objValue.ToString(), ValueType);
                     }
+                }
+
+                if (_objValue != null && _value == null)
+                {
                     _value = (T)_objValue;
                 }
+
                 return _value;
             }
             set
             {
-                SetValue(ref _value, value);
-                SetValue(ref _objValue, value);
+                _objValue = value;
+                OnPropertyChanged("ObjValue");      //Normal (if this was extended SwagCommandManager detects double)
+                SetValue(ref _value, value);        //Extended
             }
         }
         #endregion Value
