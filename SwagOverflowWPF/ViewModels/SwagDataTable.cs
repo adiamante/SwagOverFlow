@@ -1,18 +1,20 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SwagOverFlow.Data;
 using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.Commands;
 using SwagOverflowWPF.Controls;
 using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Iterator;
 using SwagOverflowWPF.Repository;
+using SwagOverflowWPF.UI;
 using SwagOverflowWPF.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.IO;
 using System.Windows;
@@ -625,6 +627,25 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Methods
     }
 
+    #region SwagTableExportType
+    public enum SwagTableExportType
+    {
+        Csv,
+        Sqlite,
+        TSql_Command,
+        Sqlite_Command
+    }
+    #endregion SwagTableExportType
+
+    #region SwagTableDestinationType
+    public enum SwagTableDestinationType
+    {
+        Clipboard,
+        File,
+        New_Window
+    }
+    #endregion SwagTableDestinationType
+
     public class SwagDataTable  : SwagDataRow, ISwagParent<SwagDataTable, SwagDataRow>
     {
         #region Private Members
@@ -635,8 +656,10 @@ namespace SwagOverflowWPF.ViewModels
         protected ObservableCollection<SwagDataRow> _children = new ObservableCollection<SwagDataRow>();
         Dictionary<DataRow, SwagDataRow> _dictChildren = new Dictionary<DataRow, SwagDataRow>();
         ConcurrentObservableOrderedDictionary<String, SwagDataColumn> _columns = new ConcurrentObservableOrderedDictionary<String, SwagDataColumn>();
-        ICommand _filterCommand;
+        ICommand _filterCommand, _exportCommand;
         Boolean _listening = true;
+        SwagSettingGroup _settings;
+        SwagTabCollection _tabs;
         #endregion Private Members
 
         #region Events
@@ -732,6 +755,67 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion FilterCommand
+        #region ExportCommand
+        public ICommand ExportCommand
+        {
+            get
+            {
+                return _exportCommand ?? (_exportCommand =
+                    new RelayCommand(() =>
+                    {
+                        IDataTableConverter converter = null;
+                        string dialogFilter = "";
+                        switch (Settings["Export"]["Type"].GetValue<SwagTableExportType>())
+                        {
+                            case SwagTableExportType.Csv:
+                                converter = new DataTableCsvStringConverter();
+                                dialogFilter = "CSV files (*.csv)|*.csv";
+                                break;
+                            case SwagTableExportType.TSql_Command:
+                                converter = new DataTableTSqlCommandConverter();
+                                dialogFilter = "SQL files (*.sql)|*.sql";
+                                break;
+                            case SwagTableExportType.Sqlite:
+                            case SwagTableExportType.Sqlite_Command:
+                                converter = new DataTableSqliteCommandConverter();
+                                dialogFilter = "SQLite files (*.sqlite)|*.sqlite";
+                                break;
+                        }
+
+                        Object output = converter.FromDataTableToObject(new DataTableConvertContext(), _dataTable);
+
+                        switch (Settings["Export"]["Destination"].GetValue<SwagTableDestinationType>())
+                        {
+                            case SwagTableDestinationType.Clipboard:
+                                Clipboard.SetText(output.ToString());
+                                break;
+                            case SwagTableDestinationType.File:
+                                SaveFileDialog sfd = new SaveFileDialog();
+                                sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                                sfd.FileName = _dataTable.TableName;
+                                sfd.Filter = dialogFilter;
+
+                                System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+                                {
+                                    if (sfd.ShowDialog() ?? false)
+                                    {
+                                        File.WriteAllText(sfd.FileName, output.ToString());
+                                    }
+                                }));
+                                break;
+                            case SwagTableDestinationType.New_Window:
+                                Window window = new Window();
+                                TextBox textBox = new TextBox();
+                                textBox.AcceptsReturn = textBox.AcceptsTab = true;
+                                textBox.Text = output.ToString();
+                                window.Content = textBox;
+                                window.Show();
+                                break;
+                        }
+                    }));
+            }
+        }
+        #endregion ExportCommand
         #region Listening
         public Boolean Listening
         {
@@ -753,6 +837,55 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion Listening
+        #region Settings
+        public SwagSettingGroup Settings
+        {
+            get 
+            {
+                if (_settings == null)
+                {
+                    _settings = new SwagSettingGroup();
+                    _settings["Export"] = new SwagSettingGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconCustomKind.Export };
+                    _settings["Export"]["Type"] = new SwagSetting<SwagTableExportType>() { SettingType = SettingType.DropDown, Value = SwagTableExportType.Csv, Icon = PackIconCustomKind.ExportType, ItemsSource = (SwagTableExportType[])Enum.GetValues(typeof(SwagTableExportType)) };
+                    _settings["Export"]["Destination"] = new SwagSetting<SwagTableDestinationType>() { SettingType = SettingType.DropDown, Value = SwagTableDestinationType.Clipboard, Icon = PackIconCustomKind.Destination, ItemsSource = (SwagTableDestinationType[])Enum.GetValues(typeof(SwagTableDestinationType)) };
+                }
+                return _settings; 
+            }
+            set 
+            { 
+                SetValue(ref _settings, value);
+                InitSettings();
+            }
+        }
+        #endregion Settings
+        #region Tabs
+        public SwagTabCollection Tabs
+        {
+            get 
+            {
+                if (_tabs == null)
+                {
+                    _tabs = new SwagTabCollection();
+                    _tabs["ColumnEditor"] = new SwagTabCollection() { Icon = PackIconCustomKind.TableColumnEdit, Display = "Column Editor" };
+                    _tabs["Search"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSearch };
+                    _tabs["Export"] = new SwagTabItem() { Icon = PackIconCustomKind.TableExport };
+                    _tabs["Import"] = new SwagTabItem() { Icon = PackIconCustomKind.TableImport };
+                    _tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSettings };
+                    _tabs["ColumnEditor"]["Visibility"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnVisibility };
+                    _tabs["ColumnEditor"]["Filters"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnFilter };
+                    _tabs["ColumnEditor"]["Add"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnAdd };
+                    _tabs["ColumnEditor"]["View"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnView };
+                    InitTabs();
+                }
+                return _tabs; 
+            }
+            set 
+            { 
+                SetValue(ref _tabs, value);
+                InitTabs();
+            }
+        }
+        #endregion Tabs
         #endregion Properties
 
         #region Initialization
@@ -781,6 +914,7 @@ namespace SwagOverflowWPF.ViewModels
                 }
             }
         }
+
         public void SetDataTable(DataTable dt, Boolean silent = false)
         {
             Listening = false;
@@ -914,7 +1048,6 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Column Events
 
         #region RowEvents
-
         private void dataTable_RowChanged(object sender, DataRowChangeEventArgs e)
         {
             SwagDataRow row = _dictChildren[e.Row];
@@ -971,5 +1104,64 @@ namespace SwagOverflowWPF.ViewModels
             return new SwagItemPreOrderIterator<SwagDataTable, SwagDataRow>(this);
         }
         #endregion Iterator
+
+        #region Methods
+        public void InitSettings()
+        {
+            Settings.SwagItemChanged += _settings_SwagItemChanged;
+        }
+
+        private void _settings_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
+        {
+            switch (e.PropertyChangedArgs.PropertyName)
+            {
+                case "Value":
+                case "IsExpanded":
+                    if (_context != null)
+                    {
+                        SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
+                        this.Settings = Settings;
+                        work.DataTables.Update(this);
+                        work.Complete();
+                    }
+                    break;
+            }
+        }
+
+        public void InitTabs()
+        {
+            if (_tabs != null)
+            {
+                SwagItemPreOrderIterator<SwagTabCollection, SwagTabItem> iterator = _tabs.CreateIterator();
+                for (SwagTabItem tabItem = iterator.First(); !iterator.IsDone; tabItem = iterator.Next())
+                {
+                    tabItem.ViewModel = this;
+                }
+                _tabs.SwagItemChanged += _tabs_SwagItemChanged;
+                _tabs.PropertyChangedExtended += _tabs_PropertyChangedExtended;
+            }
+        }
+
+        private void _tabs_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
+        {
+            _tabs_PropertyChangedExtended(sender, e.PropertyChangedArgs);
+        }
+
+        private void _tabs_PropertyChangedExtended(object sender, PropertyChangedExtendedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "SelectedIndex":
+                    if (_context != null)
+                    {
+                        SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
+                        this.Tabs = Tabs;
+                        work.DataTables.Update(this);
+                        work.Complete();
+                    }
+                    break;
+            }
+        }
+        #endregion Methods
     }
 }

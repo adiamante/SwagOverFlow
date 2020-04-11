@@ -27,9 +27,19 @@ namespace SwagOverflowWPF.Controls
         }
         #endregion INotifyPropertyChanged
 
+        #region Private Properties
         Theme _theme = ThemeManager.GetTheme("Light.Blue");
         SwagWindow _swagWindow = null;
+        #endregion Private Properties
 
+        #region SwagWindow
+        public SwagWindow SwagWindow
+        {
+            get { return _swagWindow; }
+        }
+        #endregion SwagWindow
+
+        #region Initialization
         public SwagControlBase()
         {
             this.Loaded += SwagControlBase_Loaded;
@@ -48,12 +58,16 @@ namespace SwagOverflowWPF.Controls
                 ApplyTheme();
             }
         }
+        #endregion Initialization
 
+        #region Events
         private void SwagWindowThemPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             ApplyTheme();
         }
+        #endregion Events
 
+        #region Methods
         private void ApplyTheme()
         {
             if (_swagWindow != null)
@@ -67,5 +81,6 @@ namespace SwagOverflowWPF.Controls
                 }
             }
         }
+        #endregion Methods
     }
 }

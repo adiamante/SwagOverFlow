@@ -7,9 +7,11 @@
              xmlns:ui="clr-namespace:SwagOverflowWPF.UI"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:cmd="clr-namespace:SwagOverflowWPF.Commands"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:SwagOverflowWPF.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
+             Loaded="ControlInstance_Loaded"
              x:Name="ControlInstance">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -249,14 +251,117 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
+            <ControlTemplate x:Key="TabItemTemplate" TargetType="{x:Type ContentControl}">
+                <GroupBox Header="{Binding Display}">
+                    <GroupBox.Content>
+                        <ContentPresenter />
+                    </GroupBox.Content>
+                </GroupBox>
+            </ControlTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
-    <DockPanel DataContext="{Binding ElementName=ControlInstance}">
-        <DataGrid x:Name="dgGrid" 
-                  AutoGenerateColumns="False"
-                  ItemsSource="{Binding SwagDataTable.DataTable.DefaultView}"
-                  ColumnHeaderStyle="{StaticResource SwagColumnHeaderStyle}">
-            
-        </DataGrid>
-    </DockPanel>
+    <Grid>
+        <DockPanel DataContext="{Binding ElementName=ControlInstance}">
+            <local:SwagSidePanelControl DockPanel.Dock="Left" SwagTabCollection="{Binding SwagDataTable.Tabs, ElementName=ControlInstance}">
+                <local:SwagSidePanelControl.TabItemTemplates>
+                    <ui:TemplateCollection>
+                        <ui:Template Option="ColumnEditor">
+                            <ui:Template.DataTemplate>
+                                <DataTemplate>
+                                    <ContentControl Template="{StaticResource TabItemTemplate}">
+                                        <TextBlock Text="Placeholder" />
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ui:Template.DataTemplate>
+                        </ui:Template>
+                        <ui:Template Option="ColumnEditor/Visibility">
+                            <ui:Template.DataTemplate>
+                                <DataTemplate>
+                                    <ContentControl Template="{StaticResource TabItemTemplate}">
+                                        <TextBlock Text="Placeholder" />
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ui:Template.DataTemplate>
+                        </ui:Template>
+                        <ui:Template Option="ColumnEditor/Filters">
+                            <ui:Template.DataTemplate>
+                                <DataTemplate>
+                                    <ContentControl Template="{StaticResource TabItemTemplate}">
+                                        <TextBlock Text="Placeholder" />
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ui:Template.DataTemplate>
+                        </ui:Template>
+                        <ui:Template Option="ColumnEditor/Add">
+                            <ui:Template.DataTemplate>
+                                <DataTemplate>
+                                    <ContentControl Template="{StaticResource TabItemTemplate}">
+                                        <TextBlock Text="Placeholder" />
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ui:Template.DataTemplate>
+                        </ui:Template>
+                        <ui:Template Option="ColumnEditor/View">
+                            <ui:Template.DataTemplate>
+                                <DataTemplate>
+                                    <ContentControl Template="{StaticResource TabItemTemplate}">
+                                        <TextBlock Text="Placeholder" />
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ui:Template.DataTemplate>
+                        </ui:Template>
+                        <ui:Template Option="Search">
+                            <ui:Template.DataTemplate>
+                                <DataTemplate>
+                                    <ContentControl Template="{StaticResource TabItemTemplate}">
+                                        <TextBlock Text="Placeholder" />
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ui:Template.DataTemplate>
+                        </ui:Template>
+                        <ui:Template Option="Import">
+                            <ui:Template.DataTemplate>
+                                <DataTemplate>
+                                    <ContentControl Template="{StaticResource TabItemTemplate}">
+                                        <TextBlock Text="Placeholder" />
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ui:Template.DataTemplate>
+                        </ui:Template>
+                        <ui:Template Option="Export">
+                            <ui:Template.DataTemplate>
+                                <DataTemplate>
+                                    <ContentControl Template="{StaticResource TabItemTemplate}">
+                                        <DockPanel>
+                                            <local:SettingsControl DockPanel.Dock="Top" Settings="{Binding ViewModel.Settings[Export]}" />
+                                            <Button Command="{Binding ViewModel.ExportCommand}">Go</Button>
+                                        </DockPanel>
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ui:Template.DataTemplate>
+                        </ui:Template>
+                        <ui:Template Option="Settings">
+                            <ui:Template.DataTemplate>
+                                <DataTemplate>
+                                    <ContentControl Template="{StaticResource TabItemTemplate}">
+                                        <local:SettingsControl Settings="{Binding ViewModel.Settings}" />
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ui:Template.DataTemplate>
+                        </ui:Template>
+                    </ui:TemplateCollection>
+                </local:SwagSidePanelControl.TabItemTemplates>
+            </local:SwagSidePanelControl>
+            <DataGrid x:Name="dgGrid" 
+                      AutoGenerateColumns="False"
+                      ItemsSource="{Binding SwagDataTable.DataTable.DefaultView}"
+                      ColumnHeaderStyle="{StaticResource SwagColumnHeaderStyle}">
+                <DataGrid.Style>
+                    <Style TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
+                        <Setter Property="AlternatingRowBackground" Value="{DynamicResource MahApps.Brushes.Accent3}"/>
+                    </Style>
+                </DataGrid.Style>
+            </DataGrid>
+        </DockPanel>
+    </Grid>
 </local:SwagControlBase>

@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SwagOverflowWPF.Data;
 
 namespace SwagOverflowWPF.Migrations
 {
     [DbContext(typeof(SwagContext))]
-    partial class SwagContextModelSnapshot : ModelSnapshot
+    [Migration("20200410194711_M1")]
+    partial class M1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,11 +137,15 @@ namespace SwagOverflowWPF.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Settings")
-                        .HasColumnType("TEXT");
+                    b.Property<int?>("SettingsItemId")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("Tabs")
-                        .HasColumnType("TEXT");
+                    b.Property<int?>("TabsItemId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasIndex("SettingsItemId");
+
+                    b.HasIndex("TabsItemId");
 
                     b.HasDiscriminator().HasValue("SwagDataTable");
                 });
@@ -212,6 +218,17 @@ namespace SwagOverflowWPF.Migrations
                     b.HasOne("SwagOverflowWPF.ViewModels.SwagTabCollection", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId");
+                });
+
+            modelBuilder.Entity("SwagOverflowWPF.ViewModels.SwagDataTable", b =>
+                {
+                    b.HasOne("SwagOverflowWPF.ViewModels.SwagSettingGroup", "Settings")
+                        .WithMany()
+                        .HasForeignKey("SettingsItemId");
+
+                    b.HasOne("SwagOverflowWPF.ViewModels.SwagTabCollection", "Tabs")
+                        .WithMany()
+                        .HasForeignKey("TabsItemId");
                 });
 #pragma warning restore 612, 618
         }

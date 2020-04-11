@@ -34,6 +34,10 @@ namespace SwagOverflowWPF.Utilities
             return jsonString;
         }
 
+        public static T ToObject<T>(String str)
+        {
+            return JsonConvert.DeserializeObject<T>(str, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
+        }
 
         public static String ToJsonString(Object obj, IContractResolver contractResolver)
         {

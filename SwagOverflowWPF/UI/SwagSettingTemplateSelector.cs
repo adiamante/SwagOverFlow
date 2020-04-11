@@ -63,7 +63,7 @@ namespace SwagOverflowWPF.UI
 
 
     //https://www.codeproject.com/Articles/418250/WPF-Based-Dynamic-DataTemplateSelector
-    public class WindowSettingTemplateSelector : DataTemplateSelector
+    public class SwagSettingTemplateSelector : DataTemplateSelector
     {
         public TemplateCollection Templates { get; set; }
         ///// <summary>
@@ -75,7 +75,7 @@ namespace SwagOverflowWPF.UI
         ///// a control's TemplateSelector is set to an instance of <see cref="DynamicTemplateSelector"/>
         ///// </remarks>
         //public static readonly DependencyProperty TemplatesProperty =
-        //    DependencyProperty.RegisterAttached("Templates", typeof(TemplateCollection), typeof(WindowSettingTemplateSelector),
+        //    DependencyProperty.RegisterAttached("Templates", typeof(TemplateCollection), typeof(SwagSettingTemplateSelector),
         //    new FrameworkPropertyMetadata(new TemplateCollection(), FrameworkPropertyMetadataOptions.Inherits));
 
         ///// <summary>
@@ -108,7 +108,7 @@ namespace SwagOverflowWPF.UI
         /// a control's TemplateSelector is set to an instance of <see cref="DynamicTemplateSelector"/>
         /// </remarks>
         public static readonly DependencyProperty CustomTemplatesProperty =
-            DependencyProperty.RegisterAttached("CustomTemplates", typeof(TemplateCollection), typeof(WindowSettingTemplateSelector),
+            DependencyProperty.RegisterAttached("CustomTemplates", typeof(TemplateCollection), typeof(SwagSettingTemplateSelector),
             new FrameworkPropertyMetadata(new TemplateCollection(), FrameworkPropertyMetadataOptions.Inherits));
 
         /// <summary>
@@ -167,7 +167,11 @@ namespace SwagOverflowWPF.UI
                     //And if it is, then we return that DataTemplate
                     return template.DataTemplate;
 
-                
+                //Check if setting is a group first
+                if (Enum.Equals(template.Option, SettingType.SettingGroup) && (setting is SwagSettingGroup || Enum.Equals(setting.SettingType, SettingType.SettingGroup)))
+                {
+                    return template.DataTemplate;
+                }
 
                 switch (setting.SettingType)
                 {
@@ -179,13 +183,7 @@ namespace SwagOverflowWPF.UI
                         break;
                     case SettingType.Normal:
                     default:
-                        if (template.Value == setting.ValueType)
-                        {
-                            return template.DataTemplate;
-                        }
-                        break;
-                    case SettingType.SettingGroup:
-                        if (Enum.Equals(template.Option, SettingType.SettingGroup) && setting is SwagSettingGroup)
+                        if (template.Value == setting.ValueType && !(setting is SwagSettingGroup || Enum.Equals(setting.SettingType, SettingType.SettingGroup)))
                         {
                             return template.DataTemplate;
                         }

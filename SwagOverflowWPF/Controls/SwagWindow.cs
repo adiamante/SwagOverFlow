@@ -79,6 +79,7 @@ namespace SwagOverflowWPF.Controls
         }
         #endregion INotifyPropertyChanged
 
+        #region Initialization
         static SwagWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SwagWindow), new FrameworkPropertyMetadata(typeof(SwagWindow)));
@@ -104,12 +105,15 @@ namespace SwagOverflowWPF.Controls
                 InputBindings.Add(new KeyBinding() { Modifiers = ModifierKeys.Control, Key = Key.Y, Command = CommandManager.RedoCommand });
             }
         }
+        #endregion Initialization
 
+        #region Events
         public async Task RunInBackground(Action action)
         {
             IsBusy = true;
             await Task.Run(action);
             IsBusy = false;
         }
+        #endregion Events
     }
 }

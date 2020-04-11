@@ -58,7 +58,7 @@
                                     </ToggleButton>
                                 </DockPanel>
                                 <ListView Grid.Row="1" ItemsSource="{Binding ChildrenView}" Grid.IsSharedSizeScope="True" Visibility="{Binding IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                      Focusable="False" ItemTemplateSelector="{DynamicResource WindowSettingTemplateSelector}">
+                                      Focusable="False" ItemTemplateSelector="{DynamicResource SwagSettingTemplateSelector}">
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="{x:Type ListViewItem}">
                                             <Setter Property="HorizontalAlignment" Value="Left" />
@@ -89,12 +89,12 @@
                     </ui:Template.DataTemplate>
                 </ui:Template>
             </ui:TemplateCollection>
-            <ui:WindowSettingTemplateSelector x:Key="WindowSettingTemplateSelector" Templates="{StaticResource SettingTemplateCollection}" />
+            <ui:SwagSettingTemplateSelector x:Key="SwagSettingTemplateSelector" Templates="{StaticResource SettingTemplateCollection}" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <ListView Grid.Row="1" ItemsSource="{Binding Settings.ChildrenView, RelativeSource={RelativeSource AncestorType={x:Type local:SettingsControl}}}"
-                  Grid.IsSharedSizeScope="True" Focusable="False" ItemTemplateSelector="{StaticResource WindowSettingTemplateSelector}">
+                  Grid.IsSharedSizeScope="True" Focusable="False" ItemTemplateSelector="{StaticResource SwagSettingTemplateSelector}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
                     <Setter Property="HorizontalAlignment" Value="Left" />

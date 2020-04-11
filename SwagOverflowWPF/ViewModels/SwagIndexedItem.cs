@@ -251,6 +251,8 @@ namespace SwagOverflowWPF.ViewModels
                     _dict.Remove(oldItems.Key);
                 }
             }
+
+            _childrenCollectionViewSource.View.Refresh();
         }
         #endregion Initialization
 

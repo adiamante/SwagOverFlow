@@ -16,6 +16,9 @@
         </Style>-->
     </swag:SwagWindow.Resources>
     <TabControl>
+        <!--<TabItem Header="IconControl">
+            <swag:IconControl Text="Test" TextDock="Left" Kind="{x:Static iconPacks:PackIconMaterialKind.ClipboardText}" />
+        </TabItem>-->
         <!--<TabItem Header="SearchBox">
             <swag:SearchTextBox LabelText="Label" SearchMode="Delayed" Search="SearchTextBox_Search" />
         </TabItem>-->

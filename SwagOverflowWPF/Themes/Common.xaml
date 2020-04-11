@@ -10,6 +10,11 @@
     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MahApps.Styles.Button.AccentedSquare}">
         <Setter Property="metro:ControlsHelper.ContentCharacterCasing" Value="Normal" />
     </Style>
+
+    <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource MahApps.Styles.GroupBox}">
+        <Setter Property="metro:ControlsHelper.ContentCharacterCasing" Value="Normal" />
+    </Style>
+    
     <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MahApps.Styles.ToggleButton.WindowCommands}">
         <!--<Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Accent}" />-->
     </Style>
@@ -94,5 +99,9 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
+    </Style>
+
+    <Style TargetType="{x:Type TabControl}" BasedOn="{StaticResource MahApps.Styles.TabControl}">
+
     </Style>
 </ResourceDictionary>

@@ -323,6 +323,8 @@ namespace SwagOverflowWPF.ViewModels
                     }
                 }
             }
+
+            _childrenCollectionViewSource.View.Refresh();
         }
         #endregion Initialization
 

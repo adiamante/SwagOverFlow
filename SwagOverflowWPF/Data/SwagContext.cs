@@ -19,7 +19,7 @@ namespace SwagOverflowWPF.Data
     {
         static string _dataSource = "localhost";
         public DbSet<SwagItemBase> SwagItems { get; set; }
-        public DbSet<SwagItemBase> SwagIndexedItems { get; set; }
+        //public DbSet<SwagItemBase> SwagIndexedItems { get; set; }
         public DbSet<SwagSetting> SwagSettings { get; set; }
         public DbSet<SwagSettingGroup> SwagSettingGroups { get; set; }
         public DbSet<SwagSettingString> SwagSettingStrings { get; set; }
@@ -27,6 +27,7 @@ namespace SwagOverflowWPF.Data
         public DbSet<SwagWindowSettingGroup> SwagWindowSettingGroups { get; set; }
         public DbSet<SwagDataTable> SwagDataTables { get; set; }
         public DbSet<SwagDataRow> SwagDataRows { get; set; }
+        public DbSet<SwagTabItem> SwagTabItems { get; set; }
         public SwagContext() : base() { }
 
         public SwagContext(DbContextOptions<SwagContext> options) : base (options) { }
@@ -40,6 +41,7 @@ namespace SwagOverflowWPF.Data
             modelBuilder.ApplyConfiguration(new SwagSettingBooleanEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataTableEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataRowEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagTabItemEntityConfiguration());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -150,6 +152,18 @@ namespace SwagOverflowWPF.Data
                     sdc => JsonConvert.SerializeObject(sdc.List, Formatting.Indented),
                     sdc => stringToDict(sdc)
              );
+
+            //SwagDataTable Settings
+            builder.Property(si => si.Settings)
+                .HasConversion(
+                    si => JsonHelper.ToJsonString(si),
+                    si => JsonHelper.ToObject<SwagSettingGroup>(si));
+
+            //SwagDataTable Tabs
+            builder.Property(si => si.Tabs)
+                .HasConversion(
+                    si => JsonHelper.ToJsonString(si),
+                    si => JsonHelper.ToObject<SwagTabCollection>(si));
         }
     }
 
@@ -187,6 +201,15 @@ namespace SwagOverflowWPF.Data
 
             //SwagDataRow DataRow => Ignore
             builder.Ignore(sdr => sdr.Value);
+        }
+    }
+
+    public class SwagTabItemEntityConfiguration : IEntityTypeConfiguration<SwagTabItem>
+    {
+        public void Configure(EntityTypeBuilder<SwagTabItem> builder)
+        {
+            //SwagSetting Icon => Ignore
+            builder.Ignore(ss => ss.Icon);
         }
     }
 

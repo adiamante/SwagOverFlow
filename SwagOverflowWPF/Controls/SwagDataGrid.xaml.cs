@@ -10,6 +10,8 @@ using System.Collections.Specialized;
 using System.Windows.Data;
 using System.Linq;
 using System.Windows.Threading;
+using MahApps.Metro.Controls;
+using SwagOverflowWPF.UI;
 
 namespace SwagOverflowWPF.Controls
 {
@@ -48,60 +50,63 @@ namespace SwagOverflowWPF.Controls
             SwagDataGrid fdgDataGrid = source as SwagDataGrid;
             DataGrid dataGrid = fdgDataGrid.dgGrid;
 
-            ConcurrentObservableOrderedDictionary<String, SwagDataColumn> columns = e.NewValue as ConcurrentObservableOrderedDictionary<String, SwagDataColumn>;
-
-            dataGrid.Dispatcher.Invoke(new Action(() =>
+            if (dataGrid != null)
             {
-                dataGrid.Columns.Clear();
-                if (columns == null)
-                {
-                    return;
-                }
+                ConcurrentObservableOrderedDictionary<String, SwagDataColumn> columns = e.NewValue as ConcurrentObservableOrderedDictionary<String, SwagDataColumn>;
 
-                foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in columns)
+                dataGrid.Dispatcher.Invoke(new Action(() =>
                 {
-                    dataGrid.Columns.Add(sdcKvp.Value.DataGridColumn);
-                }
-
-                columns.CollectionChanged += (sender, e2) =>
-                {
-                    NotifyCollectionChangedEventArgs ne = e2 as NotifyCollectionChangedEventArgs;
-
-                    switch (ne.Action)
+                    dataGrid.Columns.Clear();
+                    if (columns == null)
                     {
-                        case NotifyCollectionChangedAction.Reset:
-                            dataGrid.Columns.Clear();
-                            foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
-                            {
-                                dataGrid.Columns.Add(kvp.Value.DataGridColumn);
-                            }
-                            break;
-                        case NotifyCollectionChangedAction.Add:
-                            foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
-                            {
-                                dataGrid.Columns.Insert(ne.NewStartingIndex, kvp.Value.DataGridColumn);
-                            }
-                            break;
-                        case NotifyCollectionChangedAction.Move:
-                            foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
-                            {
-                                dataGrid.Columns.RemoveAt(ne.OldStartingIndex);
-                                dataGrid.Columns.Insert(ne.NewStartingIndex, kvp.Value.DataGridColumn);
-                            }
-                            //dataGrid.Columns.Move(ne.OldStartingIndex, ne.NewStartingIndex);
-                            break;
-                        case NotifyCollectionChangedAction.Remove:
-                            foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.OldItems)
-                            {
-                                dataGrid.Columns.RemoveAt(ne.OldStartingIndex);
-                            }
-                            break;
-                        case NotifyCollectionChangedAction.Replace:
-                            dataGrid.Columns[ne.NewStartingIndex] = ne.NewItems[0] as DataGridColumn;
-                            break;
+                        return;
                     }
-                };
-            }));
+
+                    foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in columns)
+                    {
+                        dataGrid.Columns.Add(sdcKvp.Value.DataGridColumn);
+                    }
+
+                    columns.CollectionChanged += (sender, e2) =>
+                    {
+                        NotifyCollectionChangedEventArgs ne = e2 as NotifyCollectionChangedEventArgs;
+
+                        switch (ne.Action)
+                        {
+                            case NotifyCollectionChangedAction.Reset:
+                                dataGrid.Columns.Clear();
+                                foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
+                                {
+                                    dataGrid.Columns.Add(kvp.Value.DataGridColumn);
+                                }
+                                break;
+                            case NotifyCollectionChangedAction.Add:
+                                foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
+                                {
+                                    dataGrid.Columns.Insert(ne.NewStartingIndex, kvp.Value.DataGridColumn);
+                                }
+                                break;
+                            case NotifyCollectionChangedAction.Move:
+                                foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
+                                {
+                                    dataGrid.Columns.RemoveAt(ne.OldStartingIndex);
+                                    dataGrid.Columns.Insert(ne.NewStartingIndex, kvp.Value.DataGridColumn);
+                                }
+                                //dataGrid.Columns.Move(ne.OldStartingIndex, ne.NewStartingIndex);
+                                break;
+                            case NotifyCollectionChangedAction.Remove:
+                                foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.OldItems)
+                                {
+                                    dataGrid.Columns.RemoveAt(ne.OldStartingIndex);
+                                }
+                                break;
+                            case NotifyCollectionChangedAction.Replace:
+                                dataGrid.Columns[ne.NewStartingIndex] = ne.NewItems[0] as DataGridColumn;
+                                break;
+                        }
+                    };
+                }));
+            }
         }
 
         public ConcurrentObservableOrderedDictionary<String, SwagDataColumn> Columns
@@ -114,8 +119,14 @@ namespace SwagOverflowWPF.Controls
         public SwagDataGrid()
         {
             InitializeComponent();
-
+            
             BindingOperations.SetBinding(this, SwagDataGrid.ColumnsProperty, new Binding("SwagDataTable.Columns") { RelativeSource = RelativeSource.Self });
+        }
+
+        private void ControlInstance_Loaded(object sender, RoutedEventArgs e)
+        {
+            SwagDataTable.InitSettings();
+            SwagDataTable.InitTabs();
         }
     }
 }

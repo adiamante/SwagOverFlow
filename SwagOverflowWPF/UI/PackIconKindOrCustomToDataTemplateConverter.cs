@@ -78,8 +78,8 @@ namespace SwagOverflowWPF.UI
             {
                 default:
                 case PackIconMaterialKind materialKind:
-                    baseWidth = 20m;
-                    baseHeight = 20m;
+                    baseWidth = 25m;
+                    baseHeight = 25m;
                     break;
             }
 

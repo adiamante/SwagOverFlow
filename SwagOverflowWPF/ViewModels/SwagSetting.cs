@@ -40,6 +40,7 @@ namespace SwagOverflowWPF.ViewModels
 
         #region Properties
         #region Icon
+        [JsonIgnore]
         public Enum Icon
         {
             get 
@@ -113,7 +114,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
     }
 
-    public abstract class SwagSetting<T> : SwagSetting
+    public class SwagSetting<T> : SwagSetting
     {
         #region Private/Protected Members
         protected T _value;
@@ -239,6 +240,7 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion Children
         #region ChildrenView
+        [JsonIgnore]
         public ICollectionView ChildrenView
         {
             get { return _childrenCollectionViewSource.View; }
@@ -315,6 +317,8 @@ namespace SwagOverflowWPF.ViewModels
                     _dict.Remove(oldItems.Key);
                 }
             }
+
+            _childrenCollectionViewSource.View.Refresh();
         }
         #endregion Initialization
 

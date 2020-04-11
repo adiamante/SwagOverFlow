@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SwagOverflowWPF.ViewModels;
 using System.Text;
 using System.Collections;
-
+using SwagOverFlow.Data;
 
 namespace TestWPF
 {
@@ -82,8 +82,8 @@ namespace TestWPF
 
         private void InitCombobox()
         {
-            CsvFileToDataTable csvFileToDataTable = new CsvFileToDataTable();
-            DataTable dt = csvFileToDataTable.FileToDataTable(@"C:\Users\Desktop\Desktop\445.csv");
+            DataTableCsvFileConverter csvFileToDataTable = new DataTableCsvFileConverter();
+            DataTable dt = csvFileToDataTable.ToDataTable(new DataTableConvertContext(), @"C:\Users\Desktop\Desktop\445.csv");
             ComboBoxSource = dt.DefaultView;
             //scbxTest.ItemsSource = dt.DefaultView;
         }
@@ -111,8 +111,8 @@ namespace TestWPF
         {
             foreach (String file in (String [])e.Data.GetData(DataFormats.FileDrop))
             {
-                CsvFileToDataTable csvFileToDataTable = new CsvFileToDataTable();
-                DataTable dt = csvFileToDataTable.FileToDataTable(file);
+                DataTableCsvFileConverter csvFileToDataTable = new DataTableCsvFileConverter();
+                DataTable dt = csvFileToDataTable.ToDataTable(new DataTableConvertContext(), file);
                 Source.DataTable = dt;
                 BindSourceGrid();
             }
@@ -122,8 +122,8 @@ namespace TestWPF
         {
             foreach (String file in (String[])e.Data.GetData(DataFormats.FileDrop))
             {
-                CsvFileToDataTable csvFileToDataTable = new CsvFileToDataTable();
-                DataTable dt = csvFileToDataTable.FileToDataTable(file);
+                DataTableCsvFileConverter csvFileToDataTable = new DataTableCsvFileConverter();
+                DataTable dt = csvFileToDataTable.ToDataTable(new DataTableConvertContext(), file);
                 Dest.DataTable = dt;
             }
         }
@@ -184,7 +184,6 @@ namespace TestWPF
                     Source.Columns.Add("Source, Dest", sdc);
                 }
                 #endregion (Source, Dest)
-
             }
         }
 
@@ -240,10 +239,10 @@ namespace TestWPF
         private void Load_Source_From_Clipboard_Button_Click(object sender, RoutedEventArgs e)
         {
             String data = Clipboard.GetText();
-            CsvStringToDataTable csvStringToDataTable = new CsvStringToDataTable();
-            ToDataTableContext context = new ToDataTableContext();
+            DataTableCsvStringConverter csvStringToDataTable = new DataTableCsvStringConverter();
+            DataTableConvertContext context = new DataTableConvertContext();
             context.FieldDelim = '\t';
-            DataTable dt = csvStringToDataTable.StringToDataTable(data, context);
+            DataTable dt = csvStringToDataTable.ToDataTable(context, data);
             Source.DataTable = dt;
             BindSourceGrid();
         }
@@ -251,10 +250,10 @@ namespace TestWPF
         private void Load_Dest_From_Clipboard_Button_Click(object sender, RoutedEventArgs e)
         {
             String data = Clipboard.GetText();
-            CsvStringToDataTable csvStringToDataTable = new CsvStringToDataTable();
-            ToDataTableContext context = new ToDataTableContext();
+            DataTableCsvStringConverter csvStringToDataTable = new DataTableCsvStringConverter();
+            DataTableConvertContext context = new DataTableConvertContext();
             context.FieldDelim = '\t';
-            DataTable dt = csvStringToDataTable.StringToDataTable(data, context);
+            DataTable dt = csvStringToDataTable.ToDataTable(context, data);
             Dest.DataTable = dt;
         }
 
@@ -279,7 +278,7 @@ namespace TestWPF
 
         private void SwagWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            
+            this.CommandManager.Attach(Source);
         }
 
     }
