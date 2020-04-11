@@ -882,7 +882,6 @@ namespace SwagOverflowWPF.ViewModels
             set 
             { 
                 SetValue(ref _tabs, value);
-                InitTabs();
             }
         }
         #endregion Tabs
