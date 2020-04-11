@@ -358,7 +358,7 @@
                       ColumnHeaderStyle="{StaticResource SwagColumnHeaderStyle}">
                 <DataGrid.Style>
                     <Style TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
-                        <Setter Property="AlternatingRowBackground" Value="{DynamicResource MahApps.Brushes.Accent3}"/>
+                        <Setter Property="AlternatingRowBackground" Value="{DynamicResource MahApps.Brushes.Accent2}"/>
                     </Style>
                 </DataGrid.Style>
             </DataGrid>
