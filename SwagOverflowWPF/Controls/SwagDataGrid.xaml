@@ -265,7 +265,7 @@
             <local:SwagSidePanelControl DockPanel.Dock="Left" SwagTabCollection="{Binding SwagDataTable.Tabs, ElementName=ControlInstance}">
                 <local:SwagSidePanelControl.TabItemTemplates>
                     <ui:TemplateCollection>
-                        <ui:Template Option="ColumnEditor">
+                        <ui:Template CompareValue="ColumnEditor/Visibility">
                             <ui:Template.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
@@ -274,7 +274,7 @@
                                 </DataTemplate>
                             </ui:Template.DataTemplate>
                         </ui:Template>
-                        <ui:Template Option="ColumnEditor/Visibility">
+                        <ui:Template CompareValue="ColumnEditor/Filters">
                             <ui:Template.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
@@ -283,7 +283,7 @@
                                 </DataTemplate>
                             </ui:Template.DataTemplate>
                         </ui:Template>
-                        <ui:Template Option="ColumnEditor/Filters">
+                        <ui:Template CompareValue="ColumnEditor/Add">
                             <ui:Template.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
@@ -292,7 +292,7 @@
                                 </DataTemplate>
                             </ui:Template.DataTemplate>
                         </ui:Template>
-                        <ui:Template Option="ColumnEditor/Add">
+                        <ui:Template CompareValue="ColumnEditor/View">
                             <ui:Template.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
@@ -301,7 +301,7 @@
                                 </DataTemplate>
                             </ui:Template.DataTemplate>
                         </ui:Template>
-                        <ui:Template Option="ColumnEditor/View">
+                        <ui:Template CompareValue="Search">
                             <ui:Template.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
@@ -310,7 +310,7 @@
                                 </DataTemplate>
                             </ui:Template.DataTemplate>
                         </ui:Template>
-                        <ui:Template Option="Search">
+                        <ui:Template CompareValue="Import">
                             <ui:Template.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
@@ -319,16 +319,7 @@
                                 </DataTemplate>
                             </ui:Template.DataTemplate>
                         </ui:Template>
-                        <ui:Template Option="Import">
-                            <ui:Template.DataTemplate>
-                                <DataTemplate>
-                                    <ContentControl Template="{StaticResource TabItemTemplate}">
-                                        <TextBlock Text="Placeholder" />
-                                    </ContentControl>
-                                </DataTemplate>
-                            </ui:Template.DataTemplate>
-                        </ui:Template>
-                        <ui:Template Option="Export">
+                        <ui:Template CompareValue="Export">
                             <ui:Template.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
@@ -340,7 +331,7 @@
                                 </DataTemplate>
                             </ui:Template.DataTemplate>
                         </ui:Template>
-                        <ui:Template Option="Settings">
+                        <ui:Template CompareValue="Settings">
                             <ui:Template.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">

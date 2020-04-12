@@ -7,34 +7,44 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:local="clr-namespace:SwagOverflowWPF.Controls"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:vm="clr-namespace:SwagOverflowWPF.ViewModels"
              mc:Ignorable="d" 
              x:Name="ControlInstance"
              d:DesignHeight="450" d:DesignWidth="800">
     <local:SwagControlBase.Resources>
         <CollectionViewSource x:Key="TabItemTemplates" Source="{Binding TabItemTemplates, RelativeSource={RelativeSource AncestorType={x:Type local:SwagSidePanelControl}}}" />
         <ui:BoolToVisibilityConverter x:Key="BoolToVisibilityInverseConverter" TrueValue="Collapsed" FalseValue="Visible" />
-        <DataTemplate x:Key="SwagTabCollectionTemplate">
-            <DockPanel>
-                <GroupBox Header="{Binding Display}">
-                    <TabControl Loaded="ControlInstance_Loaded"
-                        TabStripPlacement="Left" 
-                        ItemsSource="{Binding Children}"
-                        SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
-                        ContentTemplateSelector="{DynamicResource SwagTabItemControlTemplateSelector}"
-                        metro:HeaderedControlHelper.HeaderFontSize="14"
-                        metro:HeaderedControlHelper.HeaderFontWeight="Bold"
-                        ItemTemplate="{DynamicResource TabItemHeaderTemplate}"
-                        Template="{DynamicResource TabControlTemplate}">
-                            <ui:SwagTabItemControlTemplateSelector.Templates>
-                                <CompositeCollection>
-                                    <CollectionContainer Collection="{Binding Source={StaticResource TabItemTemplates}}" />
-                                </CompositeCollection>
-                            </ui:SwagTabItemControlTemplateSelector.Templates>
-                    </TabControl>
-                </GroupBox>
-            </DockPanel>
-        </DataTemplate>
-        <ui:SwagTabItemControlTemplateSelector x:Key="SwagTabItemControlTemplateSelector" CompositeTemplate="{StaticResource SwagTabCollectionTemplate}" />
+        <ui:SwagTemplateSelector x:Key="SwagTemplateSelector" ComparePath="Path">
+            <ui:SwagTemplateSelector.StaticTemplates>
+                <ui:TemplateCollection>
+                    <ui:Template Type="{x:Type vm:SwagTabCollection}" >
+                        <ui:Template.DataTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <GroupBox Header="{Binding Display}">
+                                        <TabControl ItemsSource="{Binding ChildrenView}"
+                                            Loaded="ControlInstance_Loaded"
+                                            TabStripPlacement="Left"
+                                            SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                                            ContentTemplateSelector="{DynamicResource SwagTemplateSelector}"
+                                            metro:HeaderedControlHelper.HeaderFontSize="14"
+                                            metro:HeaderedControlHelper.HeaderFontWeight="Bold"
+                                            ItemTemplate="{DynamicResource TabItemHeaderTemplate}"
+                                            Template="{DynamicResource TabControlTemplate}">
+                                            <ui:SwagTemplateSelector.CustomTemplates>
+                                                <CompositeCollection>
+                                                    <CollectionContainer Collection="{Binding Source={StaticResource TabItemTemplates}}" />
+                                                </CompositeCollection>
+                                            </ui:SwagTemplateSelector.CustomTemplates>
+                                        </TabControl>
+                                    </GroupBox>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ui:Template.DataTemplate>
+                    </ui:Template>
+                </ui:TemplateCollection>
+            </ui:SwagTemplateSelector.StaticTemplates>
+        </ui:SwagTemplateSelector>
         <CollectionViewSource x:Key="TabItemCollection" Source="{Binding SwagSidePanel.Items, ElementName=ControlInstance}" />
         <DataTemplate x:Key="TabItemHeaderTemplate">
             <local:IconControl HorizontalAlignment="Left" ShowText="{Binding ShowText}" Kind="{Binding Icon}" Text="{Binding Display}" />
@@ -127,20 +137,20 @@
         </ControlTemplate>
     </local:SwagControlBase.Resources>
     <DockPanel DataContext="{Binding SwagTabCollection, ElementName=ControlInstance}">
-        <TabControl Loaded="ControlInstance_Loaded"
+        <TabControl ItemsSource="{Binding ChildrenView}"
+                    Loaded="ControlInstance_Loaded"
                     TabStripPlacement="Left" 
                     SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
-                    ItemsSource="{Binding Children}"
-                    ContentTemplateSelector="{StaticResource SwagTabItemControlTemplateSelector}"
+                    ContentTemplateSelector="{StaticResource SwagTemplateSelector}"
                     metro:HeaderedControlHelper.HeaderFontSize="14"
                     metro:HeaderedControlHelper.HeaderFontWeight="Bold"
                     ItemTemplate="{StaticResource TabItemHeaderTemplate}"
                     Template="{StaticResource TabControlTemplate}">
-            <ui:SwagTabItemControlTemplateSelector.Templates>
+            <ui:SwagTemplateSelector.CustomTemplates>
                 <CompositeCollection>
                     <CollectionContainer Collection="{Binding Source={StaticResource TabItemTemplates}}" />
                 </CompositeCollection>
-            </ui:SwagTabItemControlTemplateSelector.Templates>
+            </ui:SwagTemplateSelector.CustomTemplates>
         </TabControl>
     </DockPanel>
 </local:SwagControlBase>

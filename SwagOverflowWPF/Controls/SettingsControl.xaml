@@ -33,7 +33,7 @@
                 </Grid>
             </ControlTemplate>
             <ui:TemplateCollection x:Key="SettingTemplateCollection">
-                <ui:Template Option="{x:Static vm:SettingType.DropDown}">
+                <ui:Template CompareValue="{x:Static vm:SettingType.DropDown}">
                     <ui:Template.DataTemplate>
                         <DataTemplate>
                             <ContentControl Template="{StaticResource SettingControlTemplate}">
@@ -42,7 +42,7 @@
                         </DataTemplate>
                     </ui:Template.DataTemplate>
                 </ui:Template>
-                <ui:Template Option="{x:Static vm:SettingType.SettingGroup}">
+                <ui:Template Type="{x:Type vm:SwagSettingGroup}">
                     <ui:Template.DataTemplate>
                         <DataTemplate>
                             <Grid>
@@ -58,7 +58,7 @@
                                     </ToggleButton>
                                 </DockPanel>
                                 <ListView Grid.Row="1" ItemsSource="{Binding ChildrenView}" Grid.IsSharedSizeScope="True" Visibility="{Binding IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                      Focusable="False" ItemTemplateSelector="{DynamicResource SwagSettingTemplateSelector}">
+                                      Focusable="False" ItemTemplateSelector="{DynamicResource SwagTemplateSelector}">
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="{x:Type ListViewItem}">
                                             <Setter Property="HorizontalAlignment" Value="Left" />
@@ -70,7 +70,7 @@
                         </DataTemplate>
                     </ui:Template.DataTemplate>
                 </ui:Template>
-                <ui:Template Value="{x:Type sys:String}">
+                <ui:Template TypePath="ValueType" Type="{x:Type sys:String}">
                     <ui:Template.DataTemplate>
                         <DataTemplate>
                             <ContentControl Template="{StaticResource SettingControlTemplate}">
@@ -79,7 +79,7 @@
                         </DataTemplate>
                     </ui:Template.DataTemplate>
                 </ui:Template>
-                <ui:Template Value="{x:Type sys:Boolean}">
+                <ui:Template TypePath="ValueType" Type="{x:Type sys:Boolean}">
                     <ui:Template.DataTemplate>
                         <DataTemplate>
                             <ContentControl Template="{StaticResource SettingControlTemplate}">
@@ -89,12 +89,12 @@
                     </ui:Template.DataTemplate>
                 </ui:Template>
             </ui:TemplateCollection>
-            <ui:SwagSettingTemplateSelector x:Key="SwagSettingTemplateSelector" Templates="{StaticResource SettingTemplateCollection}" />
+            <ui:SwagTemplateSelector x:Key="SwagTemplateSelector" ComparePath="SettingType" StaticTemplates="{StaticResource SettingTemplateCollection}" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <ListView Grid.Row="1" ItemsSource="{Binding Settings.ChildrenView, RelativeSource={RelativeSource AncestorType={x:Type local:SettingsControl}}}"
-                  Grid.IsSharedSizeScope="True" Focusable="False" ItemTemplateSelector="{StaticResource SwagSettingTemplateSelector}">
+                  Grid.IsSharedSizeScope="True" Focusable="False" ItemTemplateSelector="{StaticResource SwagTemplateSelector}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
                     <Setter Property="HorizontalAlignment" Value="Left" />

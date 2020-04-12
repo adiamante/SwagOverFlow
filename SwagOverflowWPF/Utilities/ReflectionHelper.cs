@@ -9,7 +9,6 @@ namespace SwagOverflowWPF.Utilities
 {
     public static class ReflectionHelper
     {
-
         private static FieldInfoCollection _fieldInfoCollection = new FieldInfoCollection();
         private static PropertyInfoCollection _propertyInfoCollection = new PropertyInfoCollection();
         private static TypeConverterCache _typeConverterCache = new TypeConverterCache();
