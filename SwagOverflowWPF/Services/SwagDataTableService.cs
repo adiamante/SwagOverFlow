@@ -9,6 +9,7 @@ using SwagOverflowWPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 
 namespace SwagOverflowWPF.Services
@@ -30,7 +31,7 @@ namespace SwagOverflowWPF.Services
                 sdtDataTable.Listening = false;
 
                 #region Load SwagDataTableUnitOfWork
-                work.DataTables.RecursiveLoadChildren(sdtDataTable);
+                work.DataTables.LoadChildren(sdtDataTable);
                 DataTable dt = new DataTable();
 
                 if (sdtDataTable.Columns != null)
@@ -42,11 +43,13 @@ namespace SwagOverflowWPF.Services
                     }
                 }
 
-                SwagItemPreOrderIterator<SwagDataTable, SwagDataRow> iterator = sdtDataTable.CreateIterator();
-                for (SwagDataRow swagDataRow = iterator.First(); !iterator.IsDone; swagDataRow = iterator.Next())
+                SwagItemPreOrderIterator<SwagDataGroup, SwagData> iterator = sdtDataTable.CreateIterator();
+                for (SwagData swagData = iterator.First(); !iterator.IsDone; swagData = iterator.Next())
                 {
-                    if (swagDataRow.ObjValue != null)      //Skip the root
+                    if (swagData is SwagDataRow)
                     {
+                        SwagDataRow swagDataRow = (SwagDataRow)swagData;
+
                         JObject rowValues = (JObject)swagDataRow.ObjValue;
                         DataRow dr = dt.NewRow();
 
@@ -61,7 +64,7 @@ namespace SwagOverflowWPF.Services
                         swagDataRow.DataRow = dr;
                         dt.Rows.Add(dr);
                     }
-
+                    
                     #region OLD
                     //if (!String.IsNullOrEmpty(swagDataRow.ValueTypeString) && swagDataRow.Parent != null)
                     //{

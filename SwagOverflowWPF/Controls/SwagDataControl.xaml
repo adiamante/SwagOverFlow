@@ -1,0 +1,103 @@
+﻿<local:SwagControlBase x:Class="SwagOverflowWPF.Controls.SwagDataControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SwagOverflowWPF.Controls"
+             xmlns:ui="clr-namespace:SwagOverflowWPF.UI"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:vm="clr-namespace:SwagOverflowWPF.ViewModels"
+             xmlns:cmd="clr-namespace:SwagOverflowWPF.Commands"
+             mc:Ignorable="d" 
+             x:Name="ControlInstance"
+             d:DesignHeight="450" d:DesignWidth="800"
+             Loaded="ControlInstance_Loaded">
+    <local:SwagControlBase.Resources>
+        <CollectionViewSource x:Key="DataTemplates" Source="{Binding DataTemplates, RelativeSource={RelativeSource AncestorType={x:Type local:SwagDataControl}}}" />
+        <ui:SwagTemplateSelector x:Key="SwagTemplateSelector">
+            <ui:SwagTemplateSelector.StaticTemplates>
+                <ui:TemplateCollection>
+                    <ui:Template Type="{x:Type vm:SwagDataTable}" >
+                        <ui:Template.DataTemplate>
+                            <DataTemplate>
+                                <local:SwagDataGrid SwagDataTable="{Binding}" />
+                            </DataTemplate>
+                        </ui:Template.DataTemplate>
+                    </ui:Template>
+                    <ui:Template Type="{x:Type vm:SwagDataSet}" >
+                        <ui:Template.DataTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TabControl ItemsSource="{Binding ChildrenView}"
+                                        ContentTemplateSelector="{DynamicResource SwagTemplateSelector}"
+                                        metro:HeaderedControlHelper.HeaderFontSize="14"
+                                        metro:HeaderedControlHelper.HeaderFontWeight="Bold"
+                                        ItemTemplate="{DynamicResource DataHeaderTemplate}">
+                                        <ui:SwagTemplateSelector.CustomTemplates>
+                                            <CompositeCollection>
+                                                <CollectionContainer Collection="{Binding Source={StaticResource DataTemplates}}" />
+                                            </CompositeCollection>
+                                        </ui:SwagTemplateSelector.CustomTemplates>
+                                    </TabControl>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ui:Template.DataTemplate>
+                    </ui:Template>
+                </ui:TemplateCollection>
+            </ui:SwagTemplateSelector.StaticTemplates>
+        </ui:SwagTemplateSelector>
+        <DataTemplate x:Key="DataHeaderTemplate">
+            <TextBlock Text="{Binding Display}" />
+        </DataTemplate>
+        <ControlTemplate x:Key="TabItemTemplate" TargetType="{x:Type ContentControl}">
+            <GroupBox Header="{Binding Display}">
+                <GroupBox.Content>
+                    <ContentPresenter />
+                </GroupBox.Content>
+            </GroupBox>
+        </ControlTemplate>
+    </local:SwagControlBase.Resources>
+    <DockPanel DataContext="{Binding SwagDataSet, ElementName=ControlInstance}">
+        <local:SwagSidePanelControl DockPanel.Dock="Left" SwagTabCollection="{Binding SwagDataSet.Tabs, ElementName=ControlInstance}">
+            <local:SwagSidePanelControl.TabItemTemplates>
+                <ui:TemplateCollection>
+                    <ui:Template CompareValue="SearchTabs">
+                        <ui:Template.DataTemplate>
+                            <DataTemplate>
+                                <ContentControl Template="{StaticResource TabItemTemplate}">
+                                    <DockPanel>
+                                        <local:SearchTextBox DockPanel.Dock="Top" Text="{Binding ViewModel.Settings[Search][Tabs][Text].Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                             cmd:CommandBehavior.Event="Search"
+                                                             cmd:CommandBehavior.Command="{Binding ViewModel.FilterTabsCommand}"/>
+                                        <Grid />
+                                    </DockPanel>
+                                </ContentControl>
+                            </DataTemplate>
+                        </ui:Template.DataTemplate>
+                    </ui:Template>
+                    <ui:Template CompareValue="Settings">
+                        <ui:Template.DataTemplate>
+                            <DataTemplate>
+                                <ContentControl Template="{StaticResource TabItemTemplate}">
+                                    <local:SettingsControl Settings="{Binding ViewModel.Settings}" />
+                                </ContentControl>
+                            </DataTemplate>
+                        </ui:Template.DataTemplate>
+                    </ui:Template>
+                </ui:TemplateCollection>
+            </local:SwagSidePanelControl.TabItemTemplates>
+        </local:SwagSidePanelControl>
+        <TabControl ItemsSource="{Binding ChildrenView}"
+                    ContentTemplateSelector="{StaticResource SwagTemplateSelector}"
+                    metro:HeaderedControlHelper.HeaderFontSize="14"
+                    metro:HeaderedControlHelper.HeaderFontWeight="Bold"
+                    ItemTemplate="{StaticResource DataHeaderTemplate}">
+            <ui:SwagTemplateSelector.CustomTemplates>
+                <CompositeCollection>
+                    <CollectionContainer Collection="{Binding Source={StaticResource DataTemplates}}" />
+                </CompositeCollection>
+            </ui:SwagTemplateSelector.CustomTemplates>
+        </TabControl>
+    </DockPanel>
+</local:SwagControlBase>

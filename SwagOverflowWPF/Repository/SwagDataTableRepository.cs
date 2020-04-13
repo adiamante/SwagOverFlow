@@ -10,18 +10,9 @@ namespace SwagOverflowWPF.Repository
         {
 
         }
-        public void RecursiveLoadChildren(SwagDataRow swagDataRow)
+        public void LoadChildren(SwagDataTable swagDataTable)
         {
-            if (swagDataRow is SwagDataTable)
-            {
-                SwagDataTable swagDataTable = (SwagDataTable)swagDataRow;
-                context.Entry(swagDataTable).Collection(ss => ss.Children).Load();
-
-                foreach (SwagDataRow child in swagDataTable.Children)
-                {
-                    RecursiveLoadChildren(child);
-                }
-            }
+            context.Entry(swagDataTable).Collection(ss => ss.Children).Load();
         }
     }
 }

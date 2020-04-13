@@ -15,7 +15,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,8 +28,149 @@ using System.Xml;
 
 namespace SwagOverflowWPF.ViewModels
 {
+    #region SwagData
+    public class SwagData : SwagItem<SwagDataGroup, SwagData>
+    {
+
+    }
+    #endregion SwagData
+
+    #region SwagDataGroup
+    public class SwagDataGroup : SwagData, ISwagParent<SwagDataGroup, SwagData>
+    {
+        #region Private/Protected Members
+        protected Boolean _listening = true;
+        CollectionViewSource _childrenCollectionViewSource;
+        protected ObservableCollection<SwagData> _children = new ObservableCollection<SwagData>();
+        #endregion Private/Protected Members
+
+        #region Events
+        public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
+
+        public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        {
+            if (Listening)
+            {
+                SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+                Parent?.OnSwagItemChanged(swagItem, e);
+            }
+        }
+        #endregion Events
+
+        #region Properties
+        #region Listening
+        public virtual Boolean Listening
+        {
+            get { return _listening; }
+            set { SetValue(ref _listening, value); }
+        }
+        #endregion Listening
+        #region Children
+        public ObservableCollection<SwagData> Children
+        {
+            get { return _children; }
+            set { SetValue(ref _children, value); }
+        }
+        #endregion Children
+        #region ChildrenView
+        public ICollectionView ChildrenView
+        {
+            get { return _childrenCollectionViewSource.View; }
+        }
+        #endregion ChildrenView
+        #endregion Properties
+
+        #region Initialization
+        public SwagDataGroup()
+        {
+            _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
+            _children.CollectionChanged += _children_CollectionChanged;
+        }
+
+        private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (SwagData newItem in e.NewItems)
+                {
+                    newItem.Parent = this;
+                    if (newItem.Sequence <= 0)
+                    {
+                        newItem.Sequence = this.Children.Count;
+                    }
+                }
+            }
+        }
+        #endregion Initialization
+    }
+    #endregion SwagDataGroup
+
+    #region SwagData<T>
+    public class SwagData<T> : SwagData
+    {
+        #region Private/Protected Members
+        protected T _value;
+        #endregion Private/Protected Members
+
+        #region Properties
+        #region Value
+        public virtual T Value
+        {
+            get
+            {
+                if (ValueType != null && _objValue != null && ValueType != _objValue.GetType())
+                {
+                    if (ValueType == typeof(Boolean))
+                    {
+                        _objValue = Boolean.Parse(_objValue.ToString());
+                    }
+                    else if (ValueType == typeof(String))
+                    {
+                        _objValue = _objValue.ToString();
+                    }
+                    else
+                    {
+                        _objValue = JsonConvert.DeserializeObject(_objValue.ToString(), ValueType);
+                    }
+                }
+
+                if (_objValue != null && _value == null)
+                {
+                    _value = (T)_objValue;
+                }
+
+                return _value;
+            }
+            set
+            {
+                _objValue = value;
+                OnPropertyChanged("ObjValue");      //Normal (if this was extended SwagCommandManager detects double)
+                SetValue(ref _value, value);        //Extended
+            }
+        }
+        #endregion Value
+        #region ValueType
+        public override Type ValueType { get { return typeof(T); } set { } }
+        #endregion ValueType
+        #region ValueTypeString
+        public override String ValueTypeString
+        {
+            get { return JsonHelper.ToJsonString(typeof(T)); }
+            set { SetValue(ref _valueTypeString, value); }
+        }
+        #endregion ValueTypeString
+        #endregion Properties
+
+        #region Initialization
+        public SwagData() : base()
+        {
+        }
+        #endregion Initialization
+    }
+    #endregion SwagData<T>
+
     #region SwagDataRow
-    public class SwagDataRow : SwagItem<SwagDataTable, SwagDataRow, JObject>
+    public class SwagDataRow : SwagData<JObject>
     {
         #region Private/Protected Members
         DataRow _dataRow;
@@ -71,12 +214,14 @@ namespace SwagOverflowWPF.ViewModels
                 if (Parent != null && Parent.Listening)
                 {
                     Parent.Listening = false;
+
+                    SwagDataTable sdtParent = (SwagDataTable)Parent;
                     foreach (KeyValuePair<String, JToken> kvp in value)
                     {
                         if (kvp.Value is JValue)
                         {
                             JValue jVal = (JValue)kvp.Value;
-                            if (_dataRow[kvp.Key] != jVal.Value && !Parent.Columns[kvp.Key].ReadOnly)
+                            if (_dataRow[kvp.Key] != jVal.Value && !sdtParent.Columns[kvp.Key].ReadOnly)
                             {
                                 _dataRow[kvp.Key] = jVal.Value;
                             }
@@ -137,6 +282,7 @@ namespace SwagOverflowWPF.ViewModels
     }
     #endregion SwagDataRow
 
+    #region SwagColumnDistinctValues
     public class SwagColumnDistinctValues : ConcurrentObservableDictionary<Object, SwagDataCell>
     {
         #region Private Members
@@ -196,7 +342,9 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion Methods
     }
+    #endregion SwagColumnDistinctValues
 
+    #region SwagDataCell
     public class SwagDataCell : ViewModelBase
     {
         #region Private Members
@@ -241,7 +389,9 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Count
         #endregion Properties
     }
+    #endregion SwagDataCell
 
+    #region SwagDataColumn
     public class SwagDataColumn : ViewModelBaseExtended
     {
         #region Private Members
@@ -307,8 +457,8 @@ namespace SwagOverflowWPF.ViewModels
         public Boolean ListCheckAll
         {
             get { return _listCheckAll; }
-            set 
-            { 
+            set
+            {
                 SetValue(ref _listCheckAll, value);
                 ToggleListCheckAllCommand.Execute(_listCheckAll);
             }
@@ -349,8 +499,8 @@ namespace SwagOverflowWPF.ViewModels
         public String AppliedFilter
         {
             get { return _appliedFilter; }
-            set 
-            { 
+            set
+            {
                 SetValue(ref _appliedFilter, value);
                 OnPropertyChanged("HasAppliedFilter");
             }
@@ -393,13 +543,13 @@ namespace SwagOverflowWPF.ViewModels
         #region Binding
         public Binding Binding
         {
-            get 
-            { 
+            get
+            {
                 if (_binding == null)
                 {
                     _binding = new Binding(_columnName);
                 }
-                return _binding; 
+                return _binding;
             }
             set { SetValue(ref _binding, value); }
         }
@@ -562,7 +712,7 @@ namespace SwagOverflowWPF.ViewModels
         [JsonIgnore]
         public ICollectionView DistinctValuesView
         {
-            get 
+            get
             {
                 if (_distinctValuesSource == null)
                 {
@@ -571,8 +721,8 @@ namespace SwagOverflowWPF.ViewModels
                     _distinctValues.SortDescriptions.Add(new SortDescription("Value.Value", ListSortDirection.Ascending));
                     ApplyDistinctValuesFilter();
                 }
-                
-                return _distinctValues.View; 
+
+                return _distinctValues.View;
             }
         }
         #endregion DistinctValuesView
@@ -581,7 +731,7 @@ namespace SwagOverflowWPF.ViewModels
         public Boolean ShowAllDistinctValues
         {
             get { return _showAllDistinctValues; }
-            set 
+            set
             {
                 SetValue(ref _showAllDistinctValues, value);
                 ApplyDistinctValuesFilter();
@@ -593,7 +743,7 @@ namespace SwagOverflowWPF.ViewModels
         #region Initialization
         public SwagDataColumn()
         {
-            
+
         }
 
         public SwagDataColumn(DataColumn dc)
@@ -626,6 +776,7 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion Methods
     }
+    #endregion SwagDataColumn
 
     #region SwagTableExportType
     public enum SwagTableExportType
@@ -646,34 +797,19 @@ namespace SwagOverflowWPF.ViewModels
     }
     #endregion SwagTableDestinationType
 
-    public class SwagDataTable  : SwagDataRow, ISwagParent<SwagDataTable, SwagDataRow>
+    #region SwagDataTable
+    public class SwagDataTable : SwagDataGroup
     {
         #region Private Members
-        String _name;
+        String _name, _message;
         DataTable _dataTable;
         SwagContext _context;
-        CollectionViewSource _childrenCollectionViewSource;
-        protected ObservableCollection<SwagDataRow> _children = new ObservableCollection<SwagDataRow>();
         Dictionary<DataRow, SwagDataRow> _dictChildren = new Dictionary<DataRow, SwagDataRow>();
         ConcurrentObservableOrderedDictionary<String, SwagDataColumn> _columns = new ConcurrentObservableOrderedDictionary<String, SwagDataColumn>();
         ICommand _filterCommand, _exportCommand;
-        Boolean _listening = true;
         SwagSettingGroup _settings;
         SwagTabCollection _tabs;
         #endregion Private Members
-
-        #region Events
-        public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
-
-        public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
-        {
-            if (Listening)
-            {
-                SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
-                Parent?.OnSwagItemChanged(swagItem, e);
-            }
-        }
-        #endregion Events
 
         #region Properties
         #region Name
@@ -683,19 +819,15 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _name, value); }
         }
         #endregion Name
-        #region Children
-        public ObservableCollection<SwagDataRow> Children
+        #region Message
+        [JsonIgnore]
+        [NotMapped]
+        public String Message
         {
-            get { return _children; }
-            set { SetValue(ref _children, value); }
+            get { return _message; }
+            set { SetValue(ref _message, value); }
         }
-        #endregion Children
-        #region ChildrenView
-        public ICollectionView ChildrenView
-        {
-            get { return _childrenCollectionViewSource.View; }
-        }
-        #endregion ChildrenView
+        #endregion Message
         #region DataTable
         public DataTable DataTable
         {
@@ -816,31 +948,10 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion ExportCommand
-        #region Listening
-        public Boolean Listening
-        {
-            get { return _listening; }
-            set 
-            { 
-                if (_listening != value)
-                {
-                    SetValue(ref _listening, value);
-                    if (_listening && _dataTable != null)
-                    {
-                        _dataTable.RowChanged += dataTable_RowChanged;
-                    }
-                    else if (_dataTable != null)
-                    {
-                        _dataTable.RowChanged -= dataTable_RowChanged;
-                    }
-                }
-            }
-        }
-        #endregion Listening
         #region Settings
         public SwagSettingGroup Settings
         {
-            get 
+            get
             {
                 if (_settings == null)
                 {
@@ -849,10 +960,10 @@ namespace SwagOverflowWPF.ViewModels
                     _settings["Export"]["Type"] = new SwagSetting<SwagTableExportType>() { SettingType = SettingType.DropDown, Value = SwagTableExportType.Csv, Icon = PackIconCustomKind.ExportType, ItemsSource = (SwagTableExportType[])Enum.GetValues(typeof(SwagTableExportType)) };
                     _settings["Export"]["Destination"] = new SwagSetting<SwagTableDestinationType>() { SettingType = SettingType.DropDown, Value = SwagTableDestinationType.Clipboard, Icon = PackIconCustomKind.Destination, ItemsSource = (SwagTableDestinationType[])Enum.GetValues(typeof(SwagTableDestinationType)) };
                 }
-                return _settings; 
+                return _settings;
             }
-            set 
-            { 
+            set
+            {
                 SetValue(ref _settings, value);
                 InitSettings();
             }
@@ -861,7 +972,7 @@ namespace SwagOverflowWPF.ViewModels
         #region Tabs
         public SwagTabCollection Tabs
         {
-            get 
+            get
             {
                 if (_tabs == null)
                 {
@@ -877,21 +988,40 @@ namespace SwagOverflowWPF.ViewModels
                     _tabs["ColumnEditor"]["View"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnView };
                     InitTabs();
                 }
-                return _tabs; 
+                return _tabs;
             }
-            set 
-            { 
+            set
+            {
                 SetValue(ref _tabs, value);
             }
         }
         #endregion Tabs
+        #region Listening
+        public override Boolean Listening
+        {
+            get { return _listening; }
+            set
+            {
+                if (_listening != value)
+                {
+                    SetValue(ref _listening, value);
+                    if (_listening && _dataTable != null)
+                    {
+                        _dataTable.RowChanged += dataTable_RowChanged;
+                    }
+                    else if (_dataTable != null)
+                    {
+                        _dataTable.RowChanged -= dataTable_RowChanged;
+                    }
+                }
+            }
+        }
+        #endregion Listening
         #endregion Properties
 
         #region Initialization
         public SwagDataTable()
         {
-            _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
-            _children.CollectionChanged += _children_CollectionChanged;
         }
 
         public SwagDataTable(DataTable dt)
@@ -899,23 +1029,11 @@ namespace SwagOverflowWPF.ViewModels
             SetDataTable(dt);
         }
 
-        private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.NewItems != null)
-            {
-                foreach (SwagDataRow newItem in e.NewItems)
-                {
-                    newItem.Parent = this;
-                    if (newItem.Sequence <= 0)
-                    {
-                        newItem.Sequence = this.Children.Count;
-                    }
-                }
-            }
-        }
-
         public void SetDataTable(DataTable dt, Boolean silent = false)
         {
+            //Stopwatch stopwatch = new Stopwatch();
+            //stopwatch.Start();
+
             Listening = false;
             SetValue(ref _dataTable, dt, "DataTable");
 
@@ -981,6 +1099,9 @@ namespace SwagOverflowWPF.ViewModels
             //_dataTable.RowChanged += dataTable_RowChanged;
             _dataTable.Columns.CollectionChanged += dataTable_Columns_CollectionChanged;
             _columns.CollectionChanged += viewModel_Columns_CollectionChanged;
+
+            //stopwatch.Stop();
+            //Message = $"Table Load [{Name}][{stopwatch.Elapsed.ToString("g")}]";
         }
 
         #endregion Initialization
@@ -1098,9 +1219,9 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Context Methods
 
         #region Iterator
-        public SwagItemPreOrderIterator<SwagDataTable, SwagDataRow> CreateIterator()
+        public SwagItemPreOrderIterator<SwagDataGroup, SwagData> CreateIterator()
         {
-            return new SwagItemPreOrderIterator<SwagDataTable, SwagDataRow>(this);
+            return new SwagItemPreOrderIterator<SwagDataGroup, SwagData>(this);
         }
         #endregion Iterator
 
@@ -1138,6 +1259,7 @@ namespace SwagOverflowWPF.ViewModels
                 }
                 _tabs.SwagItemChanged += _tabs_SwagItemChanged;
                 _tabs.PropertyChangedExtended += _tabs_PropertyChangedExtended;
+                //_tabs.IsInitialized = true;
             }
         }
 
@@ -1163,4 +1285,87 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion Methods
     }
+    #endregion SwagDataTable
+
+    #region SwagDataSet
+    public class SwagDataSet : SwagDataGroup
+    {
+        #region Private Members
+        SwagSettingGroup _settings;
+        SwagTabCollection _tabs;
+        ICommand _filterTabsCommand;
+        #endregion Private Members
+
+        #region Settings
+        public SwagSettingGroup Settings
+        {
+            get
+            {
+                if (_settings == null)
+                {
+                    _settings = new SwagSettingGroup();
+                    _settings["Search"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Search };
+                    _settings["Search"]["Tabs"] = new SwagSettingGroup() { Icon = PackIconCustomKind.TableSearch };
+                    _settings["Search"]["Tabs"]["Text"] = new SwagSettingString() { };
+                }
+                return _settings;
+            }
+            set
+            {
+                SetValue(ref _settings, value);
+            }
+        }
+        #endregion Settings
+        #region Tabs
+        public SwagTabCollection Tabs
+        {
+            get
+            {
+                if (_tabs == null)
+                {
+                    _tabs = new SwagTabCollection();
+                    _tabs["SearchTabs"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSearch, ViewModel = this };
+                    _tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.Settings, ViewModel = this };
+                }
+                return _tabs;
+            }
+            set
+            {
+                SetValue(ref _tabs, value);
+                _tabs["SearchTabs"].ViewModel = this;
+                _tabs["Settings"].ViewModel = this;
+            }
+        }
+        #endregion Tabs
+        #region FilterTabsCommand
+        public ICommand FilterTabsCommand
+        {
+            get
+            {
+                return _filterTabsCommand ?? (_filterTabsCommand =
+                    new RelayCommand(() =>
+                    {
+                        String filter = _settings["Search"]["Tabs"]["Text"].GetValue<String>();
+                        ChildrenView.Filter = (item) =>
+                        {
+                            SwagData swagData = (SwagData)item;
+                            Boolean itemMatch = SearchHelper.PassCriteria(swagData.Display, filter, false, FilterMode.CONTAINS, false);
+                            Boolean childDataSetMatch = false;
+
+                            if (swagData is SwagDataSet)
+                            {
+                                SwagDataSet childDataSet = (SwagDataSet)swagData;
+                                childDataSet.Settings["Search"]["Tabs"]["Text"].SetValue(filter);
+                                childDataSet.FilterTabsCommand.Execute(null);
+                                childDataSetMatch = !childDataSet.ChildrenView.IsEmpty;
+                            }
+                            
+                            return itemMatch || childDataSetMatch;
+                        };
+                    }));
+            }
+        }
+        #endregion FilterTabsCommand
+    }
+    #endregion SwagDataSet
 }

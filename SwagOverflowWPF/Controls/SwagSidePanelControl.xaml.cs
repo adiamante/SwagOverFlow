@@ -28,7 +28,17 @@ namespace SwagOverflowWPF.Controls
                 DependencyProperty.Register(
                     "SwagTabCollection",
                     typeof(SwagTabCollection),
-                    typeof(SwagSidePanelControl));
+                    typeof(SwagSidePanelControl),
+                    new UIPropertyMetadata(null, SwagTabCollectionPropertyChanged));
+
+        private static void SwagTabCollectionPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            SwagSidePanelControl swagSidePanelControl = (SwagSidePanelControl)d;
+            if (swagSidePanelControl.IsVisible && e.NewValue != null)
+            {
+                swagSidePanelControl.SwagTabCollection.IsInitialized = true;
+            }
+        }
 
         public SwagTabCollection SwagTabCollection
         {
@@ -67,8 +77,16 @@ namespace SwagOverflowWPF.Controls
             }
             #endregion Prevents Designer Error
 
-            SwagTabCollection swagTabCollection = (sender as TabControl).DataContext as SwagTabCollection;
-            swagTabCollection.IsInitialized = true;
+            if (IsVisible && sender is TabControl)
+            {
+                TabControl tabControl = (TabControl)sender;
+
+                if (tabControl.DataContext is SwagTabCollection)
+                {
+                    SwagTabCollection swagTabCollection = tabControl.DataContext as SwagTabCollection;
+                    swagTabCollection.IsInitialized = true;
+                }
+            }
         }
     }
 }
