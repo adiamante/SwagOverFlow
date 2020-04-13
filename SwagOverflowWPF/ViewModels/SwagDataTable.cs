@@ -31,7 +31,6 @@ namespace SwagOverflowWPF.ViewModels
     #region SwagData
     public class SwagData : SwagItem<SwagDataGroup, SwagData>
     {
-
     }
     #endregion SwagData
 
@@ -914,7 +913,7 @@ namespace SwagOverflowWPF.ViewModels
                                 break;
                         }
 
-                        Object output = converter.FromDataTableToObject(new DataTableConvertContext(), _dataTable);
+                        Object output = converter.FromDataTableToObject(new DataTableConvertParameters(), _dataTable);
 
                         switch (Settings["Export"]["Destination"].GetValue<SwagTableDestinationType>())
                         {
@@ -1359,13 +1358,40 @@ namespace SwagOverflowWPF.ViewModels
                                 childDataSet.FilterTabsCommand.Execute(null);
                                 childDataSetMatch = !childDataSet.ChildrenView.IsEmpty;
                             }
-                            
+
                             return itemMatch || childDataSetMatch;
                         };
                     }));
             }
         }
         #endregion FilterTabsCommand
+
+        public void LoadFiles(IEnumerable<String> files)
+        {
+            foreach (String file in files)
+            {
+                Children.Add(SwagDataHelper.FromFile(file));
+            }
+        }
     }
     #endregion SwagDataSet
+
+    #region SwagDataHelper
+    public static class SwagDataHelper
+    {
+        public static SwagData FromFile(String file, Dictionary<string, string> extensionMappings = null)
+        {
+            String filename = Path.GetFileName(file);
+            String ext = Path.GetExtension(file);
+            var dataTableContext = DataTableConverterHelper.ConverterContexts[ext];
+            if (dataTableContext != null)
+            {
+                return new SwagDataTable(dataTableContext.ToDataTable(file)) { Display = filename };
+            }
+
+            return null;
+        }
+    }
+    #endregion SwagDataHelper
+
 }

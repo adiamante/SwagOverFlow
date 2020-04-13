@@ -26,7 +26,7 @@
             <swag:SwagComboBox x:Name="scbxTest" ItemsSource="{Binding ComboBoxSource}" DisplayMemberProperty="FullDescription" />
         </TabItem>-->
         <TabItem Header="Data Control">
-            <swag:SwagDataControl />
+            <swag:SwagDataControl AllowDrop="True" />
         </TabItem>
         <TabItem Header="Source">
             <DockPanel>

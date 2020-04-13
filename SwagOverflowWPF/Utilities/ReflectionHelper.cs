@@ -18,7 +18,6 @@ namespace SwagOverflowWPF.Utilities
         public static PropertyInfoCollection PropertyInfoCollection => _propertyInfoCollection;
         //Usage: ReflectionHelper.TypeConverterCache[type] instead of TypeDescriptor.GetConverter(type)
         public static TypeConverterCache TypeConverterCache => _typeConverterCache;
-
     }
 
     public class TypeConverterCache

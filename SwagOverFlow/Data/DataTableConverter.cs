@@ -2,6 +2,7 @@
 using CsvHelper.Configuration;
 using SwagOverFlow.Clients;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -11,20 +12,86 @@ using System.Text;
 
 namespace SwagOverFlow.Data
 {
+    #region DataTableConverterHelper
+    public static class DataTableConverterHelper
+    {
+        private static DataTableConverterContextCache _converterContextCache = new DataTableConverterContextCache();
+        public static DataTableConverterContextCache ConverterContexts => _converterContextCache;
+    }
+    #endregion DataTableConverterHelper
+
     #region DataTableConvertContext
     public class DataTableConvertContext
+    {
+        public IDataTableConverter Converter { get; set; }
+        public DataTableConvertParameters Parameters { get; set; }
+
+        public DataTableConvertContext(IDataTableConverter converter, DataTableConvertParameters parameters)
+        {
+            Converter = converter;
+            Parameters = parameters;
+        }
+
+        #region FromDataTableToObject
+        public object FromDataTable(DataTable dt)
+        {
+            return Converter.FromDataTableToObject(Parameters, dt);
+        }
+        #endregion FromDataTableToObject
+
+        #region ToDataTable
+        public DataTable ToDataTable(params object[] args)
+        {
+            return Converter.ToDataTable(Parameters, args);
+        }
+        #endregion ToDataTable
+    }
+    #endregion DataTableConvertContext
+
+    #region DataTableConverterContextCache
+    public class DataTableConverterContextCache
+    {
+        private ConcurrentDictionary<String, DataTableConvertContext> _converters = new ConcurrentDictionary<String, DataTableConvertContext>();
+
+        public DataTableConvertContext this[String extension]
+        {
+            get
+            {
+                switch (extension.ToLower())
+                {
+                    case "csv":
+                    case ".csv":
+                        IDataTableConverter csvConverter = new DataTableCsvFileConverter();
+                        DataTableConvertParameters csvContext = new DataTableConvertParameters();
+                        _converters.TryAdd(extension.ToLower(), new DataTableConvertContext(csvConverter, csvContext));
+                        break;
+                }
+
+                if (!_converters.ContainsKey(extension.ToLower()))
+                {
+                    return null;
+                }
+
+                return _converters[extension];
+            }
+        }
+    }
+    #endregion DataTableConverterContextCache
+
+    #region DataTableConvertParameters
+    public class DataTableConvertParameters
     {
         public Char RecordDelim { get; set; } = '\n';
         public Char FieldDelim { get; set; } = ',';
         public Boolean HasHeaders { get; set; } = true;
     }
-    #endregion DataTableConvertContext
+    #endregion DataTableConvertParameters
 
     #region IDataTableConverter
     public interface IDataTableConverter
     {
-        Object FromDataTableToObject(DataTableConvertContext context, DataTable dt);
-        DataTable ToDataTable(DataTableConvertContext context, params object[] args);
+        Object FromDataTableToObject(DataTableConvertParameters context, DataTable dt);
+        DataTable ToDataTable(DataTableConvertParameters context, params object[] args);
     }
     #endregion IDataTableConverter
 
@@ -32,21 +99,21 @@ namespace SwagOverFlow.Data
     public abstract class DataTableConverter<T> : IDataTableConverter
     {
         #region FromDataTable
-        public virtual Object FromDataTableToObject(DataTableConvertContext context, DataTable dt)
+        public virtual Object FromDataTableToObject(DataTableConvertParameters context, DataTable dt)
         {
             return (Object)FromDataTable(context, dt);
         }
 
-        abstract public T FromDataTable(DataTableConvertContext context, DataTable dt);
+        abstract public T FromDataTable(DataTableConvertParameters context, DataTable dt);
         #endregion FromDataTable
 
         #region ToDataTable
-        public virtual DataTable ToDataTable(DataTableConvertContext context, params object[] args)
+        public virtual DataTable ToDataTable(DataTableConvertParameters context, params object[] args)
         {
             return ToDataTable(context, (T)args[0]);
         }
 
-        abstract public DataTable ToDataTable(DataTableConvertContext context, T input);
+        abstract public DataTable ToDataTable(DataTableConvertParameters context, T input);
         #endregion ToDataTable
     }
     #endregion DataTableConverter<T>
@@ -59,7 +126,7 @@ namespace SwagOverFlow.Data
         #endregion Private Members
 
         #region FromDataTable
-        public override Stream FromDataTable(DataTableConvertContext context, DataTable dt)
+        public override Stream FromDataTable(DataTableConvertParameters context, DataTable dt)
         {
             Func<String, String> escapeCsvField = (strInput) =>
             {
@@ -93,11 +160,11 @@ namespace SwagOverFlow.Data
         #endregion FromDataTable
 
         #region ToDataTable
-        public override DataTable ToDataTable(DataTableConvertContext context, Stream stream)
+        public override DataTable ToDataTable(DataTableConvertParameters context, Stream stream)
         {
             if (context == null)
             {
-                context = new DataTableConvertContext();
+                context = new DataTableConvertParameters();
             }
 
             StreamReader sr = new StreamReader(stream);
@@ -207,7 +274,7 @@ namespace SwagOverFlow.Data
         #endregion Private Members
 
         #region FromDataTable
-        public override string FromDataTable(DataTableConvertContext context, DataTable dt)
+        public override string FromDataTable(DataTableConvertParameters context, DataTable dt)
         {
             Func<String, String> escapeCsvField = (strInput) =>
             {
@@ -239,7 +306,7 @@ namespace SwagOverFlow.Data
         #endregion FromDataTable
 
         #region ToDataTable
-        public override DataTable ToDataTable(DataTableConvertContext context, string input)
+        public override DataTable ToDataTable(DataTableConvertParameters context, string input)
         {
             byte[] byteArray = Encoding.ASCII.GetBytes(input);
             MemoryStream stream = new MemoryStream(byteArray);
@@ -258,14 +325,14 @@ namespace SwagOverFlow.Data
         #endregion Private Members
 
         #region FromDataTable
-        public override string FromDataTable(DataTableConvertContext context, DataTable dt)
+        public override string FromDataTable(DataTableConvertParameters context, DataTable dt)
         {
             return _dataTableCsvStringConverter.FromDataTable(context, dt);
         }
         #endregion FromDataTable
 
         #region ToDataTable
-        public override DataTable ToDataTable(DataTableConvertContext context, string input)
+        public override DataTable ToDataTable(DataTableConvertParameters context, string input)
         {
             StreamReader sr = File.OpenText(input);
             return _dataTableCsvStreamConverter.ToDataTable(context, sr.BaseStream);
@@ -281,14 +348,14 @@ namespace SwagOverFlow.Data
         #endregion Private Members
 
         #region FromDataTable
-        public override string FromDataTable(DataTableConvertContext context, DataTable dt)
+        public override string FromDataTable(DataTableConvertParameters context, DataTable dt)
         {
             return SqlHelper.GenerateTable(dt) + Environment.NewLine + SqlHelper.GenerateTableInsert(dt);
         }
         #endregion FromDataTable
 
         #region ToDataTable
-        public override DataTable ToDataTable(DataTableConvertContext context, string input)
+        public override DataTable ToDataTable(DataTableConvertParameters context, string input)
         {
             throw new NotImplementedException();
         }
@@ -303,14 +370,14 @@ namespace SwagOverFlow.Data
         #endregion Private Members
 
         #region FromDataTable
-        public override string FromDataTable(DataTableConvertContext context, DataTable dt)
+        public override string FromDataTable(DataTableConvertParameters context, DataTable dt)
         {
             return SqliteHelper.GenerateTable(dt) + Environment.NewLine + SqliteHelper.GenerateTableInsert(dt);
         }
         #endregion FromDataTable
 
         #region ToDataTable
-        public override DataTable ToDataTable(DataTableConvertContext context, string input)
+        public override DataTable ToDataTable(DataTableConvertParameters context, string input)
         {
             throw new NotImplementedException();
         }

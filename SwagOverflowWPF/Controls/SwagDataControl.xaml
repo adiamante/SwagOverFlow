@@ -58,7 +58,7 @@
             </GroupBox>
         </ControlTemplate>
     </local:SwagControlBase.Resources>
-    <DockPanel DataContext="{Binding SwagDataSet, ElementName=ControlInstance}">
+    <DockPanel DataContext="{Binding SwagDataSet, ElementName=ControlInstance}" Drop="SwagData_Drop">
         <local:SwagSidePanelControl DockPanel.Dock="Left" SwagTabCollection="{Binding SwagDataSet.Tabs, ElementName=ControlInstance}">
             <local:SwagSidePanelControl.TabItemTemplates>
                 <ui:TemplateCollection>

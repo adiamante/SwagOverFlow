@@ -1,7 +1,9 @@
-﻿using SwagOverflowWPF.UI;
+﻿using Microsoft.WindowsAPICodePack.Shell;
+using SwagOverflowWPF.UI;
 using SwagOverflowWPF.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -81,6 +83,45 @@ namespace SwagOverflowWPF.Controls
             set.Children.Add(s1);
 
             SwagDataSet = set;
+        }
+
+        private void SwagData_Drop(object sender, DragEventArgs e)
+        {
+            List<String> allFiles = new List<string>();
+
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                allFiles = ((string[])e.Data.GetData(DataFormats.FileDrop)).ToList();
+            }
+            else
+            {
+                //https://searchcode.com/codesearch/view/28333948/
+                String[] formats = e.Data.GetFormats();
+
+                foreach (var format in formats)
+                {
+                    // Shell items are passed using the "Shell IDList Array" format. 
+                    if (format == "Shell IDList Array")
+                    {
+                        // Retrieve the ShellObjects from the data object
+                        ShellObjectCollection shellObjects = ShellObjectCollection.FromDataObject(
+                            (System.Runtime.InteropServices.ComTypes.IDataObject)e.Data);
+
+                        foreach (ShellObject shellObject in shellObjects)
+                        {
+                            allFiles.Add(shellObject.ParsingName);
+                        }
+                    }
+                }
+            }
+
+            if (allFiles.Count > 0)
+            {
+                DockPanel dockPanel = (DockPanel)sender;
+
+                SwagDataSet swagDataSet = (SwagDataSet)dockPanel.DataContext;
+                swagDataSet.LoadFiles(allFiles);
+            }
         }
     }
 }
