@@ -50,7 +50,7 @@ namespace SwagOverflowWPF.ViewModels
         {
             if (Listening)
             {
-                SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+                SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e, Message = e.Message });
                 Parent?.OnSwagItemChanged(swagItem, e);
             }
         }
@@ -391,7 +391,7 @@ namespace SwagOverflowWPF.ViewModels
     #endregion SwagDataCell
 
     #region SwagDataColumn
-    public class SwagDataColumn : ViewModelBaseExtended
+    public class SwagDataColumn : SwagData
     {
         #region Private Members
         Boolean _readOnly = false, _isSelected,
@@ -501,6 +501,8 @@ namespace SwagOverflowWPF.ViewModels
             set
             {
                 SetValue(ref _appliedFilter, value);
+                //Calling DataTable Filter upon setting a column filter could be a bad idea. I just don't know how.
+                SwagDataTable?.FilterCommand.Execute(null);
                 OnPropertyChanged("HasAppliedFilter");
             }
         }
@@ -627,8 +629,7 @@ namespace SwagOverflowWPF.ViewModels
                                 break;
                         }
 
-                        AppliedFilter = string.Format(filterFormat, ColumnName, SearchFilter);
-                        SwagDataTable.FilterCommand.Execute(null);
+                        AppliedFilter = string.Format(filterFormat, ColumnName, SearchFilter);                        
                         ApplyDistinctValuesFilter();
                     }));
             }
@@ -742,7 +743,17 @@ namespace SwagOverflowWPF.ViewModels
         #region Initialization
         public SwagDataColumn()
         {
+            PropertyChangedExtended += SwagDataColumn_PropertyChangedExtended;
+        }
 
+        private void SwagDataColumn_PropertyChangedExtended(object sender, PropertyChangedExtendedEventArgs e)
+        {
+            switch (e.PropertyName )
+            {
+                case "AppliedFilter":
+                    SwagDataTable.OnSwagItemChanged(this, e);
+                    break;
+            }
         }
 
         public SwagDataColumn(DataColumn dc)
@@ -1103,6 +1114,17 @@ namespace SwagOverflowWPF.ViewModels
             //Message = $"Table Load [{Name}][{stopwatch.Elapsed.ToString("g")}]";
         }
 
+        public override void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        {
+            switch (e.Object)
+            {
+                case SwagDataColumn sdc:
+                    e.Message = $"{this.Name}.{sdc.ColumnName}({e.OldValue}) => {e.NewValue}";
+                    break;
+            }
+
+            base.OnSwagItemChanged(swagItem, e);
+        }
         #endregion Initialization
 
         #region Column Events
