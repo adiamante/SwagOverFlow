@@ -271,11 +271,15 @@
                     </GroupBox.Content>
                 </GroupBox>
             </ControlTemplate>
+            <ContextMenu x:Key="SwagDataResultContextMenu">
+                <MenuItem Click="Search_ResultGo_Click">
+                    <MenuItem.Header>
+                        <local:IconControl Text="Go" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Share}}" />
+                    </MenuItem.Header>
+                </MenuItem>
+            </ContextMenu>
         </ResourceDictionary>
     </UserControl.Resources>
-    <UserControl.CommandBindings>
-        <CommandBinding Command="local:SwagDataGridCommands.Search_ResultGo" Executed="Search_ResultGo_Executed" CanExecute="CommandBinding_CanExecute_True" />
-    </UserControl.CommandBindings>
     <Grid>
         <DockPanel DataContext="{Binding ElementName=SwagDataGridInstance}">
             <local:SwagSidePanelControl DockPanel.Dock="Left" SwagTabCollection="{Binding SwagDataTable.Tabs, ElementName=SwagDataGridInstance}">
@@ -368,17 +372,7 @@
                                                         <ui:SwagStyle.Style>
                                                             <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
                                                                 <Setter Property="HorizontalAlignment" Value="Left" />
-                                                                <Setter Property="ContextMenu">
-                                                                    <Setter.Value>
-                                                                        <ContextMenu>
-                                                                            <MenuItem Command="local:SwagDataGridCommands.Search_ResultGo" CommandParameter="{Binding}">
-                                                                                <MenuItem.Header>
-                                                                                    <local:IconControl Text="Go" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Share}}" />
-                                                                                </MenuItem.Header>
-                                                                            </MenuItem>
-                                                                        </ContextMenu>
-                                                                    </Setter.Value>
-                                                                </Setter>
+                                                                <Setter Property="ContextMenu" Value="{StaticResource SwagDataResultContextMenu}" />
                                                             </Style>
                                                         </ui:SwagStyle.Style>
                                                     </ui:SwagStyle>

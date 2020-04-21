@@ -147,9 +147,9 @@ namespace SwagOverflowWPF.Controls
             swagData.SwagDataResult = swagDataResult;
         }
 
-        private void Search_ResultGo_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void Search_ResultGo_Click(object sender, RoutedEventArgs e)
         {
-            SwagDataResult swagDataResult = (SwagDataResult)e.Parameter;
+            SwagDataResult swagDataResult = (SwagDataResult)((MenuItem)sender).DataContext;
             SwagDataResult currentResult = swagDataResult;
             DataRowView drv = null;
             SwagDataColumn column = null;
@@ -191,20 +191,5 @@ namespace SwagOverflowWPF.Controls
                 }
             }));
         }
-
-        private void CommandBinding_CanExecute_True(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = true;
-        }
-    }
-
-    public static class SwagDataGridCommands
-    {
-        public static readonly RoutedUICommand Search_ResultGo = new RoutedUICommand
-        (
-            "SearchResultGo",
-            "SearchResultGo",
-            typeof(SwagDataGrid)
-        );
     }
 }
