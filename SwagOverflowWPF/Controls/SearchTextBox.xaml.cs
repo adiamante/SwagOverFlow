@@ -1,4 +1,5 @@
 ﻿using MahApps.Metro;
+using SwagOverFlow.Utils;
 using System;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -9,29 +10,6 @@ using System.Windows.Threading;
 
 namespace SwagOverflowWPF.Controls
 {
-    #region Data Structures
-    public enum SearchMode
-    {
-        Instant,
-        Delayed
-    }
-
-    public enum FilterMode
-    {
-        CONTAINS,
-        EQUALS,
-        STARTS_WITH,
-        ENDS_WITH,
-        BETWEEN_INCLUSIVE,
-        BETWEEN_EXCLUSIVE,
-        GREATER_THAN,
-        LESS_THAN,
-        GREATER_THAN_OR_EQUAL_TO,
-        LESS_THAN_OR_EQUAL_TO,
-        REGULAR_EXPRESSSION
-    }
-    #endregion Data Structures
-
     /// <summary>
     /// Interaction logic for SearchTextBox.xaml
     /// </summary>
@@ -272,42 +250,5 @@ namespace SwagOverflowWPF.Controls
         #endregion Events
     }
 
-    public static class SearchHelper
-    {
-        public static bool PassCriteria(string compareItemOriginal, string filterOriginal, Boolean CriteriaIsCaseSensitive, FilterMode filterMode, Boolean bDefault)
-        {
-            String compareItem = CriteriaIsCaseSensitive ? compareItemOriginal : compareItemOriginal.ToLower();
-            String filterToMatchWith = CriteriaIsCaseSensitive ? filterOriginal : filterOriginal.ToLower();
-            Boolean bPass = bDefault;
-
-            switch (filterMode)
-            {
-                default:
-                case FilterMode.CONTAINS:
-                    bPass = compareItem.Contains(filterToMatchWith);
-                    break;
-                case FilterMode.EQUALS:
-                    bPass = compareItem == filterToMatchWith;
-                    break;
-                case FilterMode.STARTS_WITH:
-                    bPass = compareItem.StartsWith(filterToMatchWith);
-                    break;
-                case FilterMode.ENDS_WITH:
-                    bPass = compareItem.EndsWith(filterToMatchWith);
-                    break;
-                case FilterMode.REGULAR_EXPRESSSION:
-                    try
-                    {
-                        bPass = Regex.IsMatch(compareItemOriginal, filterOriginal, CriteriaIsCaseSensitive == true ? RegexOptions.None : RegexOptions.IgnoreCase);
-                    }
-                    catch
-                    {
-                        bPass = true;
-                    }
-                    break;
-            }
-
-            return bPass;
-        }
-    }
+    
 }
