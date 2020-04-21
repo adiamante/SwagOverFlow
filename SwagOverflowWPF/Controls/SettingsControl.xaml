@@ -32,18 +32,18 @@
                     <ContentPresenter HorizontalAlignment="Left" Grid.Column="2" />
                 </Grid>
             </ControlTemplate>
-            <ui:TemplateCollection x:Key="SettingTemplateCollection">
-                <ui:Template CompareValue="{x:Static vm:SettingType.DropDown}">
-                    <ui:Template.DataTemplate>
+            <ui:SwagTemplateCollection x:Key="SettingTemplateCollection">
+                <ui:SwagTemplate CompareValue="{x:Static vm:SettingType.DropDown}">
+                    <ui:SwagTemplate.DataTemplate>
                         <DataTemplate>
                             <ContentControl Template="{StaticResource SettingControlTemplate}">
                                 <ComboBox ItemsSource="{Binding ItemsSource}" SelectedValue="{Binding Value}" />
                             </ContentControl>
                         </DataTemplate>
-                    </ui:Template.DataTemplate>
-                </ui:Template>
-                <ui:Template Type="{x:Type vm:SwagSettingGroup}">
-                    <ui:Template.DataTemplate>
+                    </ui:SwagTemplate.DataTemplate>
+                </ui:SwagTemplate>
+                <ui:SwagTemplate Type="{x:Type vm:SwagSettingGroup}">
+                    <ui:SwagTemplate.DataTemplate>
                         <DataTemplate>
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -68,27 +68,27 @@
                                 </ListView>
                             </Grid>
                         </DataTemplate>
-                    </ui:Template.DataTemplate>
-                </ui:Template>
-                <ui:Template TypePath="ValueType" Type="{x:Type sys:String}">
-                    <ui:Template.DataTemplate>
+                    </ui:SwagTemplate.DataTemplate>
+                </ui:SwagTemplate>
+                <ui:SwagTemplate TypePath="ValueType" Type="{x:Type sys:String}">
+                    <ui:SwagTemplate.DataTemplate>
                         <DataTemplate>
                             <ContentControl Template="{StaticResource SettingControlTemplate}">
                                 <TextBox Text="{Binding Value, Delay=250, UpdateSourceTrigger=PropertyChanged}" MinWidth="100" />
                             </ContentControl>
                         </DataTemplate>
-                    </ui:Template.DataTemplate>
-                </ui:Template>
-                <ui:Template TypePath="ValueType" Type="{x:Type sys:Boolean}">
-                    <ui:Template.DataTemplate>
+                    </ui:SwagTemplate.DataTemplate>
+                </ui:SwagTemplate>
+                <ui:SwagTemplate TypePath="ValueType" Type="{x:Type sys:Boolean}">
+                    <ui:SwagTemplate.DataTemplate>
                         <DataTemplate>
                             <ContentControl Template="{StaticResource SettingControlTemplate}">
                                 <metro:ToggleSwitch IsChecked="{Binding Value}" VerticalAlignment="Center" />
                             </ContentControl>
                         </DataTemplate>
-                    </ui:Template.DataTemplate>
-                </ui:Template>
-            </ui:TemplateCollection>
+                    </ui:SwagTemplate.DataTemplate>
+                </ui:SwagTemplate>
+            </ui:SwagTemplateCollection>
             <ui:SwagTemplateSelector x:Key="SwagTemplateSelector" ComparePath="SettingType" StaticTemplates="{StaticResource SettingTemplateCollection}" />
         </ResourceDictionary>
     </UserControl.Resources>

@@ -17,16 +17,16 @@
         <CollectionViewSource x:Key="DataTemplates" Source="{Binding DataTemplates, RelativeSource={RelativeSource AncestorType={x:Type local:SwagDataControl}}}" />
         <ui:SwagTemplateSelector x:Key="SwagTemplateSelector">
             <ui:SwagTemplateSelector.StaticTemplates>
-                <ui:TemplateCollection>
-                    <ui:Template Type="{x:Type vm:SwagDataTable}" >
-                        <ui:Template.DataTemplate>
+                <ui:SwagTemplateCollection>
+                    <ui:SwagTemplate Type="{x:Type vm:SwagDataTable}" >
+                        <ui:SwagTemplate.DataTemplate>
                             <DataTemplate>
                                 <local:SwagDataGrid SwagDataTable="{Binding}" />
                             </DataTemplate>
-                        </ui:Template.DataTemplate>
-                    </ui:Template>
-                    <ui:Template Type="{x:Type vm:SwagDataSet}" >
-                        <ui:Template.DataTemplate>
+                        </ui:SwagTemplate.DataTemplate>
+                    </ui:SwagTemplate>
+                    <ui:SwagTemplate Type="{x:Type vm:SwagDataSet}" >
+                        <ui:SwagTemplate.DataTemplate>
                             <DataTemplate>
                                 <DockPanel>
                                     <TabControl ItemsSource="{Binding ChildrenView}"
@@ -42,9 +42,9 @@
                                     </TabControl>
                                 </DockPanel>
                             </DataTemplate>
-                        </ui:Template.DataTemplate>
-                    </ui:Template>
-                </ui:TemplateCollection>
+                        </ui:SwagTemplate.DataTemplate>
+                    </ui:SwagTemplate>
+                </ui:SwagTemplateCollection>
             </ui:SwagTemplateSelector.StaticTemplates>
         </ui:SwagTemplateSelector>
         <DataTemplate x:Key="DataHeaderTemplate">
@@ -61,9 +61,9 @@
     <DockPanel DataContext="{Binding SwagDataSet, ElementName=ControlInstance}" Drop="SwagData_Drop">
         <local:SwagSidePanelControl DockPanel.Dock="Left" SwagTabCollection="{Binding SwagDataSet.Tabs, ElementName=ControlInstance}">
             <local:SwagSidePanelControl.TabItemTemplates>
-                <ui:TemplateCollection>
-                    <ui:Template CompareValue="SearchTabs">
-                        <ui:Template.DataTemplate>
+                <ui:SwagTemplateCollection>
+                    <ui:SwagTemplate CompareValue="SearchTabs">
+                        <ui:SwagTemplate.DataTemplate>
                             <DataTemplate>
                                 <ContentControl Template="{StaticResource TabItemTemplate}">
                                     <DockPanel>
@@ -74,18 +74,18 @@
                                     </DockPanel>
                                 </ContentControl>
                             </DataTemplate>
-                        </ui:Template.DataTemplate>
-                    </ui:Template>
-                    <ui:Template CompareValue="Settings">
-                        <ui:Template.DataTemplate>
+                        </ui:SwagTemplate.DataTemplate>
+                    </ui:SwagTemplate>
+                    <ui:SwagTemplate CompareValue="Settings">
+                        <ui:SwagTemplate.DataTemplate>
                             <DataTemplate>
                                 <ContentControl Template="{StaticResource TabItemTemplate}">
                                     <local:SettingsControl Settings="{Binding ViewModel.Settings}" />
                                 </ContentControl>
                             </DataTemplate>
-                        </ui:Template.DataTemplate>
-                    </ui:Template>
-                </ui:TemplateCollection>
+                        </ui:SwagTemplate.DataTemplate>
+                    </ui:SwagTemplate>
+                </ui:SwagTemplateCollection>
             </local:SwagSidePanelControl.TabItemTemplates>
         </local:SwagSidePanelControl>
         <TabControl ItemsSource="{Binding ChildrenView}"

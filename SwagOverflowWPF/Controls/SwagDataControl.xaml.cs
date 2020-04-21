@@ -42,12 +42,12 @@ namespace SwagOverflowWPF.Controls
 
         #region DataTemplates
         public static readonly DependencyProperty DataTemplatesProperty =
-            DependencyProperty.Register("DataTemplates", typeof(TemplateCollection), typeof(SwagDataControl),
-            new FrameworkPropertyMetadata(new TemplateCollection(), FrameworkPropertyMetadataOptions.Inherits));
+            DependencyProperty.Register("DataTemplates", typeof(SwagTemplateCollection), typeof(SwagDataControl),
+            new FrameworkPropertyMetadata(new SwagTemplateCollection(), FrameworkPropertyMetadataOptions.Inherits));
 
-        public TemplateCollection TabItemTemplates
+        public SwagTemplateCollection TabItemTemplates
         {
-            get { return (TemplateCollection)GetValue(DataTemplatesProperty); }
+            get { return (SwagTemplateCollection)GetValue(DataTemplatesProperty); }
             set { SetValue(DataTemplatesProperty, value); }
         }
         #endregion DataTemplates

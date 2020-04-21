@@ -19,30 +19,28 @@ namespace SwagOverflowWPF.UI
     /// In this case, our value is a <see cref="System.Type"/> which we are attempting to match
     /// to a <see cref="DataTemplate"/>
     /// </remarks>
-    public class Template : DependencyObject
+    public class SwagTemplate : DependencyObject
     {
         /// <summary>
         /// Provides the value used to match this <see cref="DataTemplate"/> to an item
         /// </summary>
-        public static readonly DependencyProperty TypeProperty = DependencyProperty.Register("Type", typeof(Type), typeof(Template));
+        public static readonly DependencyProperty TypeProperty = DependencyProperty.Register("Type", typeof(Type), typeof(SwagTemplate));
 
         /// <summary>
         /// Provides the value used to match this <see cref="DataTemplate"/> to an item
         /// </summary>
-        public static readonly DependencyProperty TypePathProperty = DependencyProperty.Register("TypePath", typeof(String), typeof(Template));
+        public static readonly DependencyProperty TypePathProperty = DependencyProperty.Register("TypePath", typeof(String), typeof(SwagTemplate));
 
         /// <summary>
         /// Provides the Option used to match this <see cref="DataTemplate"/> to an item
         /// </summary>
-        public static readonly DependencyProperty CompareValueProperty = DependencyProperty.Register("CompareValue", typeof(object), typeof(Template));
+        public static readonly DependencyProperty CompareValueProperty = DependencyProperty.Register("CompareValue", typeof(object), typeof(SwagTemplate));
 
         /// <summary>
         /// Provides the <see cref="DataTemplate"/> used to render items matching the <see cref="Value"/>
         /// </summary>
         public static readonly DependencyProperty DataTemplateProperty =
-           DependencyProperty.Register("DataTemplate", typeof(DataTemplate), typeof(Template));
-
-        
+           DependencyProperty.Register("DataTemplate", typeof(DataTemplate), typeof(SwagTemplate));
         /// <summary>
         /// Gets or Sets the value used to match this <see cref="DataTemplate"/> to an item
         /// </summary>
@@ -69,32 +67,50 @@ namespace SwagOverflowWPF.UI
     }
 
     /// <summary>
-    /// Holds a collection of <see cref="Template"/> items
+    /// Holds a collection of <see cref="SwagTemplate"/> items
     /// for application as a control's DataTemplate.
     /// https://stackoverflow.com/questions/28247883/simple-existing-implementation-of-icollectiont
     /// </summary>
-    public class TemplateCollection : List<Template>
+    public class SwagTemplateCollection : List<SwagTemplate>
     {
     }
 
     public class SwagTemplateSelector : DataTemplateSelector
     {
-        public TemplateCollection StaticTemplates { get; set; }
+        public SwagTemplate DefaultTemplate { get; set; }
+        public SwagTemplateCollection StaticTemplates { get; set; }
         public String ComparePath { get; set; }
 
+        #region CustomTemplates
         public static readonly DependencyProperty CustomTemplatesProperty =
-            DependencyProperty.RegisterAttached("CustomTemplates", typeof(IEnumerable), typeof(SwagTemplateSelector),
-            new FrameworkPropertyMetadata(new TemplateCollection(), FrameworkPropertyMetadataOptions.Inherits));
+                    DependencyProperty.RegisterAttached("CustomTemplates", typeof(IEnumerable), typeof(SwagTemplateSelector),
+                    new FrameworkPropertyMetadata(new SwagTemplateCollection(), FrameworkPropertyMetadataOptions.Inherits));
 
         public static IEnumerable GetCustomTemplates(UIElement element)
         {
             return (IEnumerable)element.GetValue(CustomTemplatesProperty);
         }
 
-        public static void SetCustomTemplates(UIElement element, TemplateCollection collection)
+        public static void SetCustomTemplates(UIElement element, SwagTemplateCollection collection)
         {
             element.SetValue(CustomTemplatesProperty, collection);
         }
+        #endregion CustomTemplates
+
+        #region CustomDefaultTemplate
+        public static readonly DependencyProperty CustomDefaultTemplateProperty =
+                    DependencyProperty.RegisterAttached("CustomDefaultTemplate", typeof(SwagTemplate), typeof(SwagTemplateSelector));
+
+        public static SwagTemplate GetCustomDefaultTemplate(UIElement element)
+        {
+            return (SwagTemplate)element.GetValue(CustomDefaultTemplateProperty);
+        }
+
+        public static void SetCustomDefaultTemplate(UIElement element, SwagTemplate template)
+        {
+            element.SetValue(CustomDefaultTemplateProperty, template);
+        }
+        #endregion CustomDefaultTemplate
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -102,13 +118,13 @@ namespace SwagOverflowWPF.UI
                 return base.SelectTemplate(item, container);
 
 
-            TemplateCollection templates = new TemplateCollection();
+            SwagTemplateCollection templates = new SwagTemplateCollection();
             IEnumerable customSource = GetCustomTemplates(container as UIElement);
             ICollectionView customViewSource = CollectionViewSource.GetDefaultView(customSource);
 
             if (customViewSource != null)
             {
-                foreach (Template customTemplate in customViewSource)
+                foreach (SwagTemplate customTemplate in customViewSource)
                 {
                     templates.Add(customTemplate);
                 }
@@ -116,13 +132,13 @@ namespace SwagOverflowWPF.UI
             
             if (StaticTemplates != null)
             {
-                foreach (Template staticTemplate in StaticTemplates)
+                foreach (SwagTemplate staticTemplate in StaticTemplates)
                 {
                     templates.Add(staticTemplate);
                 }
             }
 
-            foreach (Template template in templates)
+            foreach (SwagTemplate template in templates)
             {
                 if (!String.IsNullOrEmpty(ComparePath) && template.CompareValue != null)
                 {
@@ -154,6 +170,26 @@ namespace SwagOverflowWPF.UI
                 {
                     return template.DataTemplate;
                 }
+            }
+
+            SwagTemplate customDefaultTemplate = GetCustomDefaultTemplate(container as UIElement);
+
+            if (customDefaultTemplate == null && 
+                ((container is TreeViewItem) ||
+                (container is FrameworkElement && ((FrameworkElement)container).TemplatedParent is TreeViewItem)))
+            {
+                TreeView treeParent = container.TryFindParent<TreeView>();
+                customDefaultTemplate = GetCustomDefaultTemplate(treeParent);
+            }
+
+            if (customDefaultTemplate != null)
+            {
+                return customDefaultTemplate.DataTemplate;
+            }
+
+            if (DefaultTemplate != null)
+            {
+                return DefaultTemplate.DataTemplate;
             }
 
             return base.SelectTemplate(item, container);
