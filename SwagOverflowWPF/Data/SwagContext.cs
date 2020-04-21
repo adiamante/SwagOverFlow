@@ -10,6 +10,7 @@ using SwagOverflowWPF.Utilities;
 using SwagOverflowWPF.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Reflection;
 
@@ -247,7 +248,20 @@ namespace SwagOverflowWPF.Data
                         PropertyInfo propertyInfo = ReflectionHelper.PropertyInfoCollection[typeof(SwagDataColumn)][cProp.Key];
                         if (propertyInfo.SetMethod != null)
                         {
-                            propertyInfo.SetValue(sdc, jVal.Value);
+                            TypeConverter converter = ReflectionHelper.TypeConverterCache[propertyInfo.PropertyType];
+
+                            if (jVal.Value != null && converter.CanConvertFrom(jVal.Value.GetType()))
+                            {
+                                propertyInfo.SetValue(sdc, converter.ConvertFrom(jVal.Value));
+                            }
+                            else if (jVal.Value != null && converter.CanConvertFrom(typeof(String))) //Try converting from string
+                            {
+                                propertyInfo.SetValue(sdc, converter.ConvertFrom(jVal.Value.ToString()));
+                            }
+                            else
+                            {
+                                propertyInfo.SetValue(sdc, jVal.Value);
+                            }
                         }
                     }
 

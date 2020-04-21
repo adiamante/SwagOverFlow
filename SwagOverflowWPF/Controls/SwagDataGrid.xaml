@@ -7,12 +7,13 @@
              xmlns:ui="clr-namespace:SwagOverflowWPF.UI"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:cmd="clr-namespace:SwagOverflowWPF.Commands"
+             xmlns:vm="clr-namespace:SwagOverflowWPF.ViewModels"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:SwagOverflowWPF.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Loaded="ControlInstance_Loaded"
-             x:Name="ControlInstance">
+             Loaded="SwagDataGridInstance_Loaded"
+             x:Name="SwagDataGridInstance">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -40,6 +41,12 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
                             <Grid>
+                                <Grid.DataContext>
+                                    <MultiBinding Converter="{StaticResource SwagColumnConverter}" Mode="OneTime">
+                                        <Binding RelativeSource="{RelativeSource AncestorType=local:SwagDataGrid, Mode=FindAncestor}" />
+                                        <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="DataContext" />
+                                    </MultiBinding>
+                                </Grid.DataContext>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -48,8 +55,20 @@
                                 <Border x:Name="BackgroundBorder"
                                     Grid.ColumnSpan="3"
                                     Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}" />
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                    <Border.Style>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSelected}" Value="False">
+                                                    <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Gray5}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.AccentBase}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
                                 <metro:ContentControlEx x:Name="HeaderContent"
                                                    Grid.Column="0"
                                                    Margin="{TemplateBinding BorderThickness}"
@@ -63,12 +82,6 @@
                                                    ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                 <Grid Grid.Column="1">
-                                    <Grid.DataContext>
-                                        <MultiBinding Converter="{StaticResource SwagColumnConverter}" Mode="OneTime">
-                                            <Binding RelativeSource="{RelativeSource AncestorType=local:SwagDataGrid, Mode=FindAncestor}" />
-                                            <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="DataContext" />
-                                        </MultiBinding>
-                                    </Grid.DataContext>
                                     <ToggleButton x:Name="tbColumnFilter" Margin="{TemplateBinding BorderThickness}"
                                                    Padding="0,0,4,0">
                                         <ToggleButton.Style>
@@ -260,67 +273,133 @@
             </ControlTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
+    <UserControl.CommandBindings>
+        <CommandBinding Command="local:SwagDataGridCommands.Search_ResultGo" Executed="Search_ResultGo_Executed" CanExecute="CommandBinding_CanExecute_True" />
+    </UserControl.CommandBindings>
     <Grid>
-        <DockPanel DataContext="{Binding ElementName=ControlInstance}">
-            <local:SwagSidePanelControl DockPanel.Dock="Left" SwagTabCollection="{Binding SwagDataTable.Tabs, ElementName=ControlInstance}">
+        <DockPanel DataContext="{Binding ElementName=SwagDataGridInstance}">
+            <local:SwagSidePanelControl DockPanel.Dock="Left" SwagTabCollection="{Binding SwagDataTable.Tabs, ElementName=SwagDataGridInstance}">
                 <local:SwagSidePanelControl.TabItemTemplates>
-                    <ui:TemplateCollection>
-                        <ui:Template CompareValue="ColumnEditor/Visibility">
-                            <ui:Template.DataTemplate>
+                    <ui:SwagTemplateCollection>
+                        <ui:SwagTemplate CompareValue="ColumnEditor/Visibility">
+                            <ui:SwagTemplate.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
                                         <TextBlock Text="Placeholder" />
                                     </ContentControl>
                                 </DataTemplate>
-                            </ui:Template.DataTemplate>
-                        </ui:Template>
-                        <ui:Template CompareValue="ColumnEditor/Filters">
-                            <ui:Template.DataTemplate>
+                            </ui:SwagTemplate.DataTemplate>
+                        </ui:SwagTemplate>
+                        <ui:SwagTemplate CompareValue="ColumnEditor/Filters">
+                            <ui:SwagTemplate.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
                                         <TextBlock Text="Placeholder" />
                                     </ContentControl>
                                 </DataTemplate>
-                            </ui:Template.DataTemplate>
-                        </ui:Template>
-                        <ui:Template CompareValue="ColumnEditor/Add">
-                            <ui:Template.DataTemplate>
+                            </ui:SwagTemplate.DataTemplate>
+                        </ui:SwagTemplate>
+                        <ui:SwagTemplate CompareValue="ColumnEditor/Add">
+                            <ui:SwagTemplate.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
                                         <TextBlock Text="Placeholder" />
                                     </ContentControl>
                                 </DataTemplate>
-                            </ui:Template.DataTemplate>
-                        </ui:Template>
-                        <ui:Template CompareValue="ColumnEditor/View">
-                            <ui:Template.DataTemplate>
+                            </ui:SwagTemplate.DataTemplate>
+                        </ui:SwagTemplate>
+                        <ui:SwagTemplate CompareValue="ColumnEditor/View">
+                            <ui:SwagTemplate.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
                                         <TextBlock Text="Placeholder" />
                                     </ContentControl>
                                 </DataTemplate>
-                            </ui:Template.DataTemplate>
-                        </ui:Template>
-                        <ui:Template CompareValue="Search">
-                            <ui:Template.DataTemplate>
+                            </ui:SwagTemplate.DataTemplate>
+                        </ui:SwagTemplate>
+                        <ui:SwagTemplate CompareValue="Search">
+                            <ui:SwagTemplate.DataTemplate>
+                                <DataTemplate>
+                                    <ContentControl Template="{StaticResource TabItemTemplate}">
+                                        <DockPanel>
+                                            <local:SearchTextBox DockPanel.Dock="Top" 
+                                                                 Text="{Binding ViewModel.Settings[Search][Value].Value, Delay=250, UpdateSourceTrigger=PropertyChanged}" 
+                                                                 FilterMode="{Binding ViewModel.Settings[Search][FilterMode].Value, UpdateSourceTrigger=PropertyChanged}" 
+                                                                 SearchMode="Delayed"
+                                                                 MinWidth="100"
+                                                                 Search="Search_OnSearch"/>
+                                            <local:SwagItemsControl SwagItemsSource="{Binding ViewModel.SwagDataResult}">
+                                                <local:SwagItemsControl.CustomDefaultItemTemplate>
+                                                    <ui:SwagTemplate>
+                                                        <ui:SwagTemplate.DataTemplate>
+                                                            <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
+                                                                <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Dataset}}" Text="{Binding Display}" />
+                                                            </HierarchicalDataTemplate>
+                                                        </ui:SwagTemplate.DataTemplate>
+                                                    </ui:SwagTemplate>
+                                                </local:SwagItemsControl.CustomDefaultItemTemplate>
+                                                <local:SwagItemsControl.ItemTemplates>
+                                                    <ui:SwagTemplateCollection>
+                                                        <ui:SwagTemplate Type="{x:Type vm:SwagDataTableResultGroup}">
+                                                            <ui:SwagTemplate.DataTemplate>
+                                                                <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
+                                                                    <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Table}}" Text="{Binding Display}" />
+                                                                </HierarchicalDataTemplate>
+                                                            </ui:SwagTemplate.DataTemplate>
+                                                        </ui:SwagTemplate>
+                                                        <ui:SwagTemplate Type="{x:Type vm:SwagDataColumnResultGroup}">
+                                                            <ui:SwagTemplate.DataTemplate>
+                                                                <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
+                                                                    <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.TableColumn}}" Text="{Binding Display}" />
+                                                                </HierarchicalDataTemplate>
+                                                            </ui:SwagTemplate.DataTemplate>
+                                                        </ui:SwagTemplate>
+                                                        <ui:SwagTemplate Type="{x:Type vm:SwagDataRowResult}">
+                                                            <ui:SwagTemplate.DataTemplate>
+                                                                <DataTemplate>
+                                                                    <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.TableRow}}" Text="{Binding Display}" />
+                                                                </DataTemplate>
+                                                            </ui:SwagTemplate.DataTemplate>
+                                                        </ui:SwagTemplate>
+                                                    </ui:SwagTemplateCollection>
+                                                </local:SwagItemsControl.ItemTemplates>
+                                                <local:SwagItemsControl.CustomDefaultItemContainerStyle>
+                                                    <ui:SwagStyle>
+                                                        <ui:SwagStyle.Style>
+                                                            <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                                                                <Setter Property="HorizontalAlignment" Value="Left" />
+                                                                <Setter Property="ContextMenu">
+                                                                    <Setter.Value>
+                                                                        <ContextMenu>
+                                                                            <MenuItem Command="local:SwagDataGridCommands.Search_ResultGo" CommandParameter="{Binding}">
+                                                                                <MenuItem.Header>
+                                                                                    <local:IconControl Text="Go" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Share}}" />
+                                                                                </MenuItem.Header>
+                                                                            </MenuItem>
+                                                                        </ContextMenu>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Style>
+                                                        </ui:SwagStyle.Style>
+                                                    </ui:SwagStyle>
+                                                </local:SwagItemsControl.CustomDefaultItemContainerStyle>
+                                            </local:SwagItemsControl>
+                                        </DockPanel>
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ui:SwagTemplate.DataTemplate>
+                        </ui:SwagTemplate>
+                        <ui:SwagTemplate CompareValue="Import">
+                            <ui:SwagTemplate.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
                                         <TextBlock Text="Placeholder" />
                                     </ContentControl>
                                 </DataTemplate>
-                            </ui:Template.DataTemplate>
-                        </ui:Template>
-                        <ui:Template CompareValue="Import">
-                            <ui:Template.DataTemplate>
-                                <DataTemplate>
-                                    <ContentControl Template="{StaticResource TabItemTemplate}">
-                                        <TextBlock Text="Placeholder" />
-                                    </ContentControl>
-                                </DataTemplate>
-                            </ui:Template.DataTemplate>
-                        </ui:Template>
-                        <ui:Template CompareValue="Export">
-                            <ui:Template.DataTemplate>
+                            </ui:SwagTemplate.DataTemplate>
+                        </ui:SwagTemplate>
+                        <ui:SwagTemplate CompareValue="Export">
+                            <ui:SwagTemplate.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
                                         <DockPanel>
@@ -329,21 +408,23 @@
                                         </DockPanel>
                                     </ContentControl>
                                 </DataTemplate>
-                            </ui:Template.DataTemplate>
-                        </ui:Template>
-                        <ui:Template CompareValue="Settings">
-                            <ui:Template.DataTemplate>
+                            </ui:SwagTemplate.DataTemplate>
+                        </ui:SwagTemplate>
+                        <ui:SwagTemplate CompareValue="Settings">
+                            <ui:SwagTemplate.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
                                         <local:SettingsControl Settings="{Binding ViewModel.Settings}" />
                                     </ContentControl>
                                 </DataTemplate>
-                            </ui:Template.DataTemplate>
-                        </ui:Template>
-                    </ui:TemplateCollection>
+                            </ui:SwagTemplate.DataTemplate>
+                        </ui:SwagTemplate>
+                    </ui:SwagTemplateCollection>
                 </local:SwagSidePanelControl.TabItemTemplates>
             </local:SwagSidePanelControl>
-            <DataGrid x:Name="dgGrid" 
+            <DataGrid x:Name="DataGrid" 
+                      SelectionMode="Extended"
+                      SelectionUnit="CellOrRowHeader"
                       AutoGenerateColumns="False"
                       ItemsSource="{Binding SwagDataTable.DataTable.DefaultView}"
                       ColumnHeaderStyle="{StaticResource SwagColumnHeaderStyle}">

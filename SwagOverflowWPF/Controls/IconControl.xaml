@@ -14,7 +14,7 @@
     <Grid DataContext="{Binding ElementName=ControlInstance}">
         <!--The Rectangle below (that is above the Control layer wise) makes it so Tootip works even if it the mouse is in whitespace-->
         <Rectangle Fill="Transparent" />
-        <DockPanel>
+        <DockPanel HorizontalAlignment="Left">
             <TextBlock DockPanel.Dock="{Binding TextDock}" 
                        MaxWidth="{Binding TextMaxWidth}" 
                        TextWrapping="{Binding TextWrapping}" 

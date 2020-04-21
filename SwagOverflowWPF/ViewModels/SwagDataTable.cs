@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SwagOverFlow.Data;
+using SwagOverFlow.Utils;
 using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.Commands;
 using SwagOverflowWPF.Controls;
@@ -19,6 +20,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Linq.Expressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -29,13 +31,24 @@ using System.Xml;
 namespace SwagOverflowWPF.ViewModels
 {
     #region SwagData
-    public class SwagData : SwagItem<SwagDataGroup, SwagData>
+    public abstract class SwagData : SwagItem<SwagDataGroup, SwagData>
     {
+        SwagDataResult _swagDataResult;
+        [NotMapped]
+        [JsonIgnore]
+        #region SwagDataResult
+        public SwagDataResult SwagDataResult
+        {
+            get { return _swagDataResult; }
+            set { SetValue(ref _swagDataResult, value); }
+        }
+        #endregion SwagDataResult
+        public abstract SwagDataResult Search(String searchValue, FilterMode filterMode, Func<SwagDataColumn, SwagDataRow, String, FilterMode, bool> searchFunc);
     }
     #endregion SwagData
 
     #region SwagDataGroup
-    public class SwagDataGroup : SwagData, ISwagParent<SwagDataGroup, SwagData>
+    public abstract class SwagDataGroup : SwagData, ISwagParent<SwagDataGroup, SwagData>
     {
         #region Private/Protected Members
         protected Boolean _listening = true;
@@ -99,13 +112,15 @@ namespace SwagOverflowWPF.ViewModels
                     }
                 }
             }
+
+            _childrenCollectionViewSource.View.Refresh();
         }
         #endregion Initialization
     }
     #endregion SwagDataGroup
 
     #region SwagData<T>
-    public class SwagData<T> : SwagData
+    public abstract class SwagData<T> : SwagData
     {
         #region Private/Protected Members
         protected T _value;
@@ -276,6 +291,12 @@ namespace SwagOverflowWPF.ViewModels
         public void RowOnPropertyChangedExtended(object oldValue, object newValue, string propertyName = null)
         {
             base.OnPropertyChangedExtended(oldValue, newValue, propertyName);
+        }
+
+        public override SwagDataResult Search(String searchValue, FilterMode filterMode, Func<SwagDataColumn, SwagDataRow, String, FilterMode, bool> searchFunc)
+        {
+            //Searching by column because column name is needed to properly search
+            return null;
         }
         #endregion Methods
     }
@@ -777,12 +798,35 @@ namespace SwagOverflowWPF.ViewModels
                     }
                     else
                     {
-                        return SearchHelper.PassCriteria(kvp.Value.Value.ToString(), _listValuesFilter, false, _listValuesFilterMode, true)
+                        return SearchHelper.Evaluate(kvp.Value.Value.ToString(), _listValuesFilter, false, _listValuesFilterMode, true)
                             && (kvp.Value.Count > 0 || _showAllDistinctValues);
                     }
 
                 };
             }
+        }
+
+        public override SwagDataResult Search(String searchValue, FilterMode filterMode, Func<SwagDataColumn, SwagDataRow, String, FilterMode, bool> searchFunc)
+        {
+            List<SwagDataRowResult> lstCellResults = new List<SwagDataRowResult>();
+            foreach (SwagDataRow swagDataRow in SwagDataTable.ChildrenView)
+            {
+                if (searchFunc(this, swagDataRow, searchValue, filterMode))
+                {
+                    String resultValue = swagDataRow.DataRow[ColumnName].ToString(); ;
+                    SwagDataRowResult cellResult = new SwagDataRowResult() { SwagData = swagDataRow, Display = resultValue };
+                    lstCellResults.Add(cellResult);
+                }
+            }
+
+            if (lstCellResults.Count > 0)
+            {
+                SwagDataColumnResultGroup columnResultGroup = new SwagDataColumnResultGroup() { SwagData = this, Display = ColumnName };
+                columnResultGroup.Children = new ObservableCollection<SwagDataResult>(lstCellResults);
+                return columnResultGroup;
+            }
+
+            return null;
         }
         #endregion Methods
     }
@@ -966,16 +1010,19 @@ namespace SwagOverflowWPF.ViewModels
                 if (_settings == null)
                 {
                     _settings = new SwagSettingGroup();
-                    _settings["Export"] = new SwagSettingGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconCustomKind.Export };
+                    _settings["Search"] = new SwagSettingGroup() { Icon = PackIconCustomKind.TableSearch };
+                    _settings["Search"]["Value"] = new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue };
+                    _settings["Search"]["FilterMode"] = new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) };
+                    _settings["Export"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Export };
                     _settings["Export"]["Type"] = new SwagSetting<SwagTableExportType>() { SettingType = SettingType.DropDown, Value = SwagTableExportType.Csv, Icon = PackIconCustomKind.ExportType, ItemsSource = (SwagTableExportType[])Enum.GetValues(typeof(SwagTableExportType)) };
                     _settings["Export"]["Destination"] = new SwagSetting<SwagTableDestinationType>() { SettingType = SettingType.DropDown, Value = SwagTableDestinationType.Clipboard, Icon = PackIconCustomKind.Destination, ItemsSource = (SwagTableDestinationType[])Enum.GetValues(typeof(SwagTableDestinationType)) };
+                    InitSettings();
                 }
                 return _settings;
             }
             set
             {
                 SetValue(ref _settings, value);
-                InitSettings();
             }
         }
         #endregion Settings
@@ -1304,6 +1351,29 @@ namespace SwagOverflowWPF.ViewModels
                     break;
             }
         }
+
+        public override SwagDataResult Search(String searchValue, FilterMode filterMode, Func<SwagDataColumn, SwagDataRow, String, FilterMode, bool> searchFunc)
+        {
+            List<SwagDataColumnResultGroup> lstColumnResults = new List<SwagDataColumnResultGroup>();
+
+            foreach (KeyValuePair<String, SwagDataColumn> kvpCol in Columns)
+            {
+                SwagDataColumnResultGroup columnResults = kvpCol.Value.Search(searchValue, filterMode, searchFunc) as SwagDataColumnResultGroup;
+                if (columnResults != null)
+                {
+                    lstColumnResults.Add(columnResults);
+                }
+            }
+
+            if (lstColumnResults.Count > 0)
+            {
+                SwagDataTableResultGroup swagDataTableResultGroup = new SwagDataTableResultGroup() { SwagData = this, Display = this.Display };
+                swagDataTableResultGroup.Children = new ObservableCollection<SwagDataResult>(lstColumnResults);
+                return swagDataTableResultGroup;
+            }
+
+            return null;
+        }
         #endregion Methods
     }
     #endregion SwagDataTable
@@ -1370,7 +1440,7 @@ namespace SwagOverflowWPF.ViewModels
                         ChildrenView.Filter = (item) =>
                         {
                             SwagData swagData = (SwagData)item;
-                            Boolean itemMatch = SearchHelper.PassCriteria(swagData.Display, filter, false, FilterMode.CONTAINS, false);
+                            Boolean itemMatch = SearchHelper.Evaluate(swagData.Display, filter, false, FilterMode.CONTAINS, false);
                             Boolean childDataSetMatch = false;
 
                             if (swagData is SwagDataSet)
@@ -1395,6 +1465,28 @@ namespace SwagOverflowWPF.ViewModels
                 Children.Add(SwagDataHelper.FromFile(file));
             }
         }
+
+        public override SwagDataResult Search(String searchValue, FilterMode filterMode, Func<SwagDataColumn, SwagDataRow, String, FilterMode, bool> searchFunc)
+        {
+            List<SwagDataResult> lstSwagDataResults = new List<SwagDataResult>();
+
+            foreach (SwagData swagData in ChildrenView)
+            {
+                SwagDataResult swagDataResult = swagData.Search(searchValue, filterMode, searchFunc);
+                if (swagDataResult != null)
+                {
+                    lstSwagDataResults.Add(swagDataResult);
+                }
+            }
+
+            if (lstSwagDataResults.Count > 0)
+            {
+                SwagDataSetResultGroup swagDataSetResultGroup = new SwagDataSetResultGroup() { SwagData = this };
+                swagDataSetResultGroup.Children = new ObservableCollection<SwagDataResult>(lstSwagDataResults);
+            }
+
+            return null;
+        }
     }
     #endregion SwagDataSet
 
@@ -1416,4 +1508,107 @@ namespace SwagOverflowWPF.ViewModels
     }
     #endregion SwagDataHelper
 
+    #region SwagDataResult
+    public class SwagDataResult : SwagItem<SwagDataResultGroup, SwagDataResult>
+    {
+        public SwagData SwagData { get; set; }
+    }
+    #endregion SwagDataResult
+
+    #region SwagDataResultGroup
+    public class SwagDataResultGroup : SwagDataResult, ISwagParent<SwagDataResultGroup, SwagDataResult>
+    {
+        #region Private/Protected Members
+        CollectionViewSource _childrenCollectionViewSource;
+        protected ObservableCollection<SwagDataResult> _children = new ObservableCollection<SwagDataResult>();
+        #endregion Private/Protected Members
+
+        #region Events
+        public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
+        public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        {
+            //Nothing to do here
+        }
+        #endregion Events
+
+        #region Properties
+        #region Children
+        public ObservableCollection<SwagDataResult> Children
+        {
+            get { return _children; }
+            set 
+            {
+                SetValue(ref _children, value);
+                foreach (SwagDataResult child in _children)
+                {
+                    child.Parent = this;
+                    if (child.Sequence <= 0)
+                    {
+                        child.Sequence = _children.Count;
+                    }
+                }
+                _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
+                _children.CollectionChanged += _children_CollectionChanged;
+                OnPropertyChanged("ChildrenView");
+            }
+        }
+        #endregion Children
+        #region ChildrenView
+        public ICollectionView ChildrenView
+        {
+            get { return _childrenCollectionViewSource.View; }
+        }
+        #endregion ChildrenView
+        #endregion Properties
+
+        #region Initialization
+        public SwagDataResultGroup()
+        {
+            _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
+            _children.CollectionChanged += _children_CollectionChanged;
+        }
+
+        private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (SwagDataResult newItem in e.NewItems)
+                {
+                    newItem.Parent = this;
+                    if (newItem.Sequence <= 0)
+                    {
+                        newItem.Sequence = this.Children.Count;
+                    }
+                }
+            }
+
+            _childrenCollectionViewSource.View.Refresh();
+        }
+        #endregion Initialization
+    }
+    #endregion SwagDataResultGroup
+
+    #region SwagDataRowResult
+    public class SwagDataRowResult : SwagDataResult
+    {
+    }
+    #endregion SwagDataRowResult
+
+    #region SwagDataColumnResultGroup
+    public class SwagDataColumnResultGroup : SwagDataResultGroup
+    {
+    }
+    #endregion SwagDataColumnResultGroup
+
+    #region SwagDataTableResultGroup
+    public class SwagDataTableResultGroup : SwagDataResultGroup
+    {
+    }
+    #endregion SwagDataTableResultGroup
+
+    #region SwagDataSetResultGroup
+    public class SwagDataSetResultGroup : SwagDataResultGroup
+    {
+    }
+    #endregion SwagDataSetResultGroup
 }
