@@ -21,6 +21,18 @@
             </ResourceDictionary.MergedDictionaries>
             <ui:SwagColumnConverter x:Key="SwagColumnConverter" />
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <ContextMenu x:Key="SwagColumnHeaderContextMenu">
+                <MenuItem Header="Clear Filter" Command="{Binding ClearFilterCommand}">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.FilterMinus}}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Hide" Command="{Binding HideCommand}">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.EyeOff}}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
             <Style x:Key="SwagColumnHeaderStyle" 
                    TargetType="{x:Type DataGridColumnHeader}">
                 <Setter Property="metro:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
@@ -40,7 +52,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
-                            <Grid>
+                            <Grid ContextMenu="{StaticResource SwagColumnHeaderContextMenu}">
                                 <Grid.DataContext>
                                     <MultiBinding Converter="{StaticResource SwagColumnConverter}" Mode="OneTime">
                                         <Binding RelativeSource="{RelativeSource AncestorType=local:SwagDataGrid, Mode=FindAncestor}" />
@@ -121,8 +133,8 @@
                                                                     <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="DataContext" />
                                                                 </MultiBinding>
                                                             </DockPanel.DataContext>
-                                                            <Button DockPanel.Dock="Top" Margin="3" Height="20" Command="{Binding ClearFilterCommand}">
-                                                                <local:IconControl Padding="0,0,0,0" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.FilterRemove}}" />
+                                                            <Button DockPanel.Dock="Top" Margin="3" Padding="0" Height="20" Command="{Binding ClearFilterCommand}">
+                                                                <local:IconControl Padding="0,0,0,0" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.FilterMinus}}" />
                                                             </Button>
                                                             <local:SearchTextBox DockPanel.Dock="Top"
                                                                              LabelText="Search Column"
@@ -138,7 +150,9 @@
                                                                              cmd:CommandBehavior.Event="Search"
                                                                              cmd:CommandBehavior.Command="{Binding ApplyListValuesFilterCommand}"
                                                                              FilterMode="{Binding ListValuesFilterMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                                                                    <Button DockPanel.Dock="Top" Margin="3" Content="Apply" Command="{Binding ApplyListFilterCommand}" />
+                                                                    <Button DockPanel.Dock="Top" Margin="3" Command="{Binding ApplyListFilterCommand}">
+                                                                        <local:IconControl Text="Apply" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Eye}}" />
+                                                                    </Button>
                                                                     <CheckBox DockPanel.Dock="Top" Padding="3" Margin="6,0,0,0" Content="Show All" IsChecked="{Binding ShowAllDistinctValues}" />
                                                                     <ListView DockPanel.Dock="Top" Padding="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                                                                         <ListView.ItemContainerStyle>
@@ -289,7 +303,50 @@
                             <ui:SwagTemplate.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
-                                        <TextBlock Text="Placeholder" />
+                                        <DockPanel>
+                                            <local:SearchTextBox DockPanel.Dock="Top" 
+                                                                 Text="{Binding ViewModel.Settings[ColumnEditor][Visibility][Search][Value].Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                                 FilterMode="{Binding ViewModel.Settings[ColumnEditor][Visibility][Search][FilterMode].Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                                 SearchMode="Instant"
+                                                                 MinWidth="100"
+                                                                 cmd:CommandBehavior.Event="Search"
+                                                                 cmd:CommandBehavior.Command="{Binding ViewModel.ApplyColumnVisibilityFilterCommand}"/>
+                                            <Button DockPanel.Dock="Top" Command="{Binding ViewModel.ApplyColumnVisibilityCommand}">
+                                                <local:IconControl Text="Apply" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.PlayOutline}}" />
+                                            </Button>
+                                            <ListView DockPanel.Dock="Top" Padding="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                                <ListView.ItemContainerStyle>
+                                                    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MahApps.Styles.ListViewItem}">
+                                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                                        <Setter Property="VerticalContentAlignment" Value="Center" />
+                                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                    </Style>
+                                                </ListView.ItemContainerStyle>
+                                                <ListViewItem>
+                                                    <CheckBox HorizontalContentAlignment="Stretch" IsChecked="{Binding ViewModel.ColumnVisibilityCheckAll}">
+                                                        <TextBlock Grid.Column="0" Text="All" />
+                                                    </CheckBox>
+                                                </ListViewItem>
+                                            </ListView>
+                                            <ListView ItemsSource="{Binding ViewModel.ColumnsVisibilityView}">
+                                                <ListView.ItemContainerStyle>
+                                                    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MahApps.Styles.ListViewItem}">
+                                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                                        <Setter Property="VerticalContentAlignment" Value="Center" />
+                                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                    </Style>
+                                                </ListView.ItemContainerStyle>
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox IsChecked="{Binding Value.IsCheckedVisibility, Mode=TwoWay}">
+                                                            <local:IconControl Text="{Binding Key}" Kind="{Binding Source={x:Static ui:PackIconCustomKind.TableColumn}}" />
+                                                        </CheckBox>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                            </ListView>
+                                        </DockPanel>
                                     </ContentControl>
                                 </DataTemplate>
                             </ui:SwagTemplate.DataTemplate>
@@ -298,7 +355,53 @@
                             <ui:SwagTemplate.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
-                                        <TextBlock Text="Placeholder" />
+                                        <DockPanel>
+                                            <local:SearchTextBox DockPanel.Dock="Top" 
+                                                                 Text="{Binding ViewModel.Settings[ColumnEditor][Filters][Search][Value].Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                                 FilterMode="{Binding ViewModel.Settings[ColumnEditor][Filters][Search][FilterMode].Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                                 SearchMode="Instant"
+                                                                 MinWidth="100"
+                                                                 cmd:CommandBehavior.Event="Search"
+                                                                 cmd:CommandBehavior.Command="{Binding ViewModel.ApplyColumnFiltersFilterCommand}"/>
+                                            <Button DockPanel.Dock="Top" Command="{Binding ViewModel.ClearColumnFiltersCommand}">
+                                                <local:IconControl Text="Clear" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Cancel}}" />
+                                            </Button>
+                                            <ListView DockPanel.Dock="Top" Padding="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                                <ListView.ItemContainerStyle>
+                                                    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MahApps.Styles.ListViewItem}">
+                                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                                        <Setter Property="VerticalContentAlignment" Value="Center" />
+                                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                    </Style>
+                                                </ListView.ItemContainerStyle>
+                                                <ListViewItem>
+                                                    <CheckBox HorizontalContentAlignment="Stretch" IsChecked="{Binding ViewModel.ColumnFiltersCheckAll}">
+                                                        <TextBlock Grid.Column="0" Text="All" />
+                                                    </CheckBox>
+                                                </ListViewItem>
+                                            </ListView>
+                                            <ListView ItemsSource="{Binding ViewModel.ColumnsFilterView}">
+                                                <ListView.ItemContainerStyle>
+                                                    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MahApps.Styles.ListViewItem}">
+                                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                                        <Setter Property="VerticalContentAlignment" Value="Center" />
+                                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                    </Style>
+                                                </ListView.ItemContainerStyle>
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox IsChecked="{Binding Value.IsCheckedFilter, Mode=TwoWay}">
+                                                            <DockPanel>
+                                                                <local:IconControl DockPanel.Dock="Left" Text="{Binding Key, StringFormat={}{0}:}" Kind="{Binding Source={x:Static ui:PackIconCustomKind.Filter}}" />
+                                                                <TextBlock Margin="4,0,0,0" VerticalAlignment="Center" Text="{Binding Value.AppliedFilter}" />
+                                                            </DockPanel>
+                                                        </CheckBox>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                            </ListView>
+                                        </DockPanel>
                                     </ContentControl>
                                 </DataTemplate>
                             </ui:SwagTemplate.DataTemplate>
@@ -327,8 +430,8 @@
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
                                         <DockPanel>
                                             <local:SearchTextBox DockPanel.Dock="Top" 
-                                                                 Text="{Binding ViewModel.Settings[Search][Value].Value, Delay=250, UpdateSourceTrigger=PropertyChanged}" 
-                                                                 FilterMode="{Binding ViewModel.Settings[Search][FilterMode].Value, UpdateSourceTrigger=PropertyChanged}" 
+                                                                 Text="{Binding ViewModel.Settings[Search][Value].Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                                 FilterMode="{Binding ViewModel.Settings[Search][FilterMode].Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                                                  SearchMode="Delayed"
                                                                  MinWidth="100"
                                                                  Search="Search_OnSearch"/>

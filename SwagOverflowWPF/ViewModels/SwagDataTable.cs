@@ -415,14 +415,13 @@ namespace SwagOverflowWPF.ViewModels
     public class SwagDataColumn : SwagData
     {
         #region Private Members
-        Boolean _readOnly = false, _isSelected,
+        Boolean _readOnly = false, _isSelected, _isVisible = true,
             _isColumnFilterOpen = false, _showAllDistinctValues = false, _listCheckAll = false,
-            _isChecked_Visiblity, _isChecked_filter, _ignoreAppliedFilters = false;
+            _isCheckedVisiblity, _isCheckedFilter;
         Decimal _total = 0.0m;
         String _columnName, _expression, _dataTemplate, _searchFilter, _listValuesFilter, _appliedFilter;
         Binding _binding = null;
-        String _jsonBinding;
-        ICommand _applySearchFilterCommand, _applyListFilterCommand, _applyListValuesFilterCommand, _toggleListCheckAllCommand, _clearFilterCommand;
+        ICommand _applySearchFilterCommand, _applyListFilterCommand, _applyListValuesFilterCommand, _toggleListCheckAllCommand, _clearFilterCommand, _hideCommand;
         SwagColumnDistinctValues _distinctValuesSource;
         CollectionViewSource _distinctValues;
         FilterMode _searchFilterMode, _listValuesFilterMode;
@@ -464,6 +463,27 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _isSelected, value); }
         }
         #endregion IsSelected
+        #region IsCheckedVisibility
+        public Boolean IsCheckedVisibility
+        {
+            get { return _isCheckedVisiblity; }
+            set { SetValue(ref _isCheckedVisiblity, value); }
+        }
+        #endregion IsCheckedVisibility
+        #region IsCheckedFilter
+        public Boolean IsCheckedFilter
+        {
+            get { return _isCheckedFilter; }
+            set { SetValue(ref _isCheckedFilter, value); }
+        }
+        #endregion IsCheckedFilter
+        #region IsVisible
+        public Boolean IsVisible
+        {
+            get { return _isVisible; }
+            set { SetValue(ref _isVisible, value); }
+        }
+        #endregion IsVisible
         #region IsColumnFilterOpen
         [JsonIgnore]
         public Boolean IsColumnFilterOpen
@@ -712,6 +732,19 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion ClearFilterCommand
+        #region HideCommand
+        public ICommand HideCommand
+        {
+            get
+            {
+                return _hideCommand ?? (_hideCommand =
+                    new RelayCommand(() =>
+                    {
+                        IsVisible = false;
+                    }));
+            }
+        }
+        #endregion HideCommand
         #region ToggleListCheckAllCommand
         public ICommand ToggleListCheckAllCommand
         {
@@ -772,7 +805,8 @@ namespace SwagOverflowWPF.ViewModels
             switch (e.PropertyName )
             {
                 case "AppliedFilter":
-                    SwagDataTable.OnSwagItemChanged(this, e);
+                case "IsVisible":
+                    SwagDataTable?.OnSwagItemChanged(this, e);
                     break;
             }
         }
@@ -860,11 +894,14 @@ namespace SwagOverflowWPF.ViewModels
         SwagContext _context;
         Dictionary<DataRow, SwagDataRow> _dictChildren = new Dictionary<DataRow, SwagDataRow>();
         ConcurrentObservableOrderedDictionary<String, SwagDataColumn> _columns = new ConcurrentObservableOrderedDictionary<String, SwagDataColumn>();
-        ICommand _filterCommand, _exportCommand;
+        Boolean _columnVisibilityCheckAll = false, _columnFiltersCheckAll = false;
+        ICommand _filterCommand, _exportCommand, _applyColumnVisibilityCommand, _toggleColumnVisibilityCheckedAll, _applyColumnVisibilityFilterCommand,
+            _toggleColumnFiltersCheckedAll, _applyColumnFiltersFilterCommand, _clearColumnFiltersCommand;
         SwagSettingGroup _settings;
         SwagTabCollection _tabs;
+        CollectionViewSource _columnCollectionViewSource, _columnsVisibilityView, _columnsFilterView;
         #endregion Private Members
-
+        
         #region Properties
         #region Name
         public String Name
@@ -902,6 +939,50 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _columns, value); }
         }
         #endregion Columns
+        #region ColumnsView
+        public ICollectionView ColumnsView
+        {
+            get { return _columnCollectionViewSource.View; }
+        }
+        #endregion ColumnsView
+        #region ColumnsVisibilityView
+        public ICollectionView ColumnsVisibilityView
+        {
+            get { return _columnsVisibilityView.View; }
+        }
+        #endregion ColumnsVisibilityView
+        #region ColumnsFilterView
+        public ICollectionView ColumnsFilterView
+        {
+            get { return _columnsFilterView.View; }
+        }
+        #endregion ColumnsSwagDataGridInstanceView
+        #region ColumnVisibilityCheckAll
+        [JsonIgnore]
+        [NotMapped]
+        public Boolean ColumnVisibilityCheckAll
+        {
+            get { return _columnVisibilityCheckAll; }
+            set
+            {
+                SetValue(ref _columnVisibilityCheckAll, value);
+                ToggleColumnVisibilityCheckedAll.Execute(_columnVisibilityCheckAll);
+            }
+        }
+        #endregion ColumnVisibilityCheckAll
+        #region ColumnFiltersCheckAll
+        [JsonIgnore]
+        [NotMapped]
+        public Boolean ColumnFiltersCheckAll
+        {
+            get { return _columnFiltersCheckAll; }
+            set
+            {
+                SetValue(ref _columnFiltersCheckAll, value);
+                ToggleColumnFilterCheckedAll.Execute(_columnFiltersCheckAll);
+            }
+        }
+        #endregion ColumnFiltersCheckAll
         #region FilterCommand
         public ICommand FilterCommand
         {
@@ -937,6 +1018,8 @@ namespace SwagOverflowWPF.ViewModels
 
                             bindingView.CustomFilter = combinedFilter;
                         }
+
+                        _columnsFilterView.View.Refresh();
                     }));
             }
         }
@@ -1002,6 +1085,128 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion ExportCommand
+        #region ApplyColumnVisibilityFilterCommand
+        public ICommand ApplyColumnVisibilityFilterCommand
+        {
+            get
+            {
+                return _applyColumnVisibilityFilterCommand ?? (_applyColumnVisibilityFilterCommand =
+                    new RelayCommand(() =>
+                    {
+                        _columnsVisibilityView.View.Filter = (itm) =>
+                        {
+                            KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
+                            return SearchHelper.Evaluate(
+                                kvp.Key,
+                                _settings["ColumnEditor"]["Visibility"]["Search"]["Value"].GetValue<string>(),
+                                false,
+                                _settings["ColumnEditor"]["Visibility"]["Search"]["FilterMode"].GetValue<FilterMode>(),
+                                false);
+                        };
+                    }));
+            }
+        }
+        #endregion ApplyColumnVisibilityFilterCommand
+        #region ToggleColumnVisibilityCheckedAll
+        public ICommand ToggleColumnVisibilityCheckedAll
+        {
+            get
+            {
+                return _toggleColumnVisibilityCheckedAll ?? (_toggleColumnVisibilityCheckedAll =
+                    new RelayCommand<Boolean>((checkAll) =>
+                    {
+                        foreach (KeyValuePair<String, SwagDataColumn> kvp in _columns)
+                        {
+                            SwagDataColumn col = kvp.Value;
+                            col.IsCheckedVisibility = checkAll;
+                        }
+                    }));
+            }
+        }
+        #endregion ToggleColumnVisibilityCheckedAll
+        #region ApplyColumnVisibilityCommand
+        public ICommand ApplyColumnVisibilityCommand
+        {
+            get
+            {
+                return _applyColumnVisibilityCommand ?? (_applyColumnVisibilityCommand =
+                    new RelayCommand(() =>
+                    {
+                        foreach (KeyValuePair<String, SwagDataColumn> kvp in _columns)
+                        {
+                            SwagDataColumn col = kvp.Value;
+                            col.IsVisible = col.IsCheckedVisibility;
+                        }
+                    }));
+            }
+        }
+        #endregion ApplyColumnVisibilityCommand
+        #region ApplyColumnFiltersFilterCommand
+        public ICommand ApplyColumnFiltersFilterCommand
+        {
+            get
+            {
+                return _applyColumnFiltersFilterCommand ?? (_applyColumnFiltersFilterCommand =
+                    new RelayCommand(() =>
+                    {
+                        _columnsFilterView.View.Filter = (itm) =>
+                        {
+                            KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
+                            return kvp.Value.HasAppliedFilter && (SearchHelper.Evaluate(
+                                kvp.Key,
+                                _settings["ColumnEditor"]["Filters"]["Search"]["Value"].GetValue<string>(),
+                                false,
+                                _settings["ColumnEditor"]["Filters"]["Search"]["FilterMode"].GetValue<FilterMode>(),
+                                false) || SearchHelper.Evaluate(
+                                kvp.Value.AppliedFilter,
+                                _settings["ColumnEditor"]["Filters"]["Search"]["Value"].GetValue<string>(),
+                                false,
+                                _settings["ColumnEditor"]["Filters"]["Search"]["FilterMode"].GetValue<FilterMode>(),
+                                false));
+                        };
+                    }));
+            }
+        }
+        #endregion ApplyColumnFiltersFilterCommand
+        #region ClearColumnFiltersCommand
+        public ICommand ClearColumnFiltersCommand
+        {
+            get
+            {
+                return _clearColumnFiltersCommand ?? (_clearColumnFiltersCommand =
+                    new RelayCommand(() =>
+                    {
+                        foreach (KeyValuePair<String, SwagDataColumn> kvp in _columns)
+                        {
+                            SwagDataColumn col = kvp.Value;
+                            if (col.IsCheckedFilter)
+                            {
+                                col.AppliedFilter = "";
+                            }
+                        }
+
+                        FilterCommand.Execute(null);
+                    }));
+            }
+        }
+        #endregion ClearColumnFiltersCommand
+        #region ToggleColumnFilterCheckedAll
+        public ICommand ToggleColumnFilterCheckedAll
+        {
+            get
+            {
+                return _toggleColumnFiltersCheckedAll ?? (_toggleColumnFiltersCheckedAll =
+                    new RelayCommand<Boolean>((checkAll) =>
+                    {
+                        foreach (KeyValuePair<String, SwagDataColumn> kvp in _columns)
+                        {
+                            SwagDataColumn col = kvp.Value;
+                            col.IsCheckedFilter = checkAll;
+                        }
+                    }));
+            }
+        }
+        #endregion ToggleColumnFilterCheckedAll
         #region Settings
         public SwagSettingGroup Settings
         {
@@ -1010,6 +1215,16 @@ namespace SwagOverflowWPF.ViewModels
                 if (_settings == null)
                 {
                     _settings = new SwagSettingGroup();
+                    //ViewModel.Settings[ColumnEditor][Visibility][Search][Value]
+                    _settings["ColumnEditor"] = new SwagSettingGroup() { Icon = PackIconCustomKind.TableColumnEdit };
+                    _settings["ColumnEditor"]["Visibility"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Eye };
+                    _settings["ColumnEditor"]["Visibility"]["Search"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Search };
+                    _settings["ColumnEditor"]["Visibility"]["Search"]["Value"] = new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue };
+                    _settings["ColumnEditor"]["Visibility"]["Search"]["FilterMode"] = new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) };
+                    _settings["ColumnEditor"]["Filters"] = new SwagSettingGroup() { Icon = PackIconCustomKind.TableColumnFilter };
+                    _settings["ColumnEditor"]["Filters"]["Search"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Search };
+                    _settings["ColumnEditor"]["Filters"]["Search"]["Value"] = new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue };
+                    _settings["ColumnEditor"]["Filters"]["Search"]["FilterMode"] = new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) };
                     _settings["Search"] = new SwagSettingGroup() { Icon = PackIconCustomKind.TableSearch };
                     _settings["Search"]["Value"] = new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue };
                     _settings["Search"]["FilterMode"] = new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) };
@@ -1079,9 +1294,17 @@ namespace SwagOverflowWPF.ViewModels
         #region Initialization
         public SwagDataTable()
         {
+            _columnCollectionViewSource = new CollectionViewSource() { Source = _columns };
+            _columnsVisibilityView = new CollectionViewSource() { Source = _columns };
+            _columnsFilterView = new CollectionViewSource() { Source = _columns };
+            _columnCollectionViewSource.View.Filter = (itm) =>
+            {
+                KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
+                return kvp.Value.IsVisible;
+            };
         }
 
-        public SwagDataTable(DataTable dt)
+        public SwagDataTable(DataTable dt) : this()
         {
             SetDataTable(dt);
         }
@@ -1157,6 +1380,20 @@ namespace SwagOverflowWPF.ViewModels
             _dataTable.Columns.CollectionChanged += dataTable_Columns_CollectionChanged;
             _columns.CollectionChanged += viewModel_Columns_CollectionChanged;
 
+            _columnCollectionViewSource = new CollectionViewSource() { Source = _columns };
+            _columnCollectionViewSource.View.Filter = (itm) =>
+            {
+                KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
+                return kvp.Value.IsVisible;
+            };
+            _columnsFilterView = new CollectionViewSource() { Source = _columns };
+            _columnsFilterView.View.Filter = (itm) =>
+            {
+                KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
+                return kvp.Value.HasAppliedFilter;
+            };
+            _columnsVisibilityView = new CollectionViewSource() { Source = _columns };
+            _columnCollectionViewSource.View.Refresh();
             //stopwatch.Stop();
             //Message = $"Table Load [{Name}][{stopwatch.Elapsed.ToString("g")}]";
         }
@@ -1167,6 +1404,10 @@ namespace SwagOverflowWPF.ViewModels
             {
                 case SwagDataColumn sdc:
                     e.Message = $"{this.Name}.{sdc.ColumnName}({e.OldValue}) => {e.NewValue}";
+                    if (e.PropertyName == "IsVisible")
+                    {
+                        _columnCollectionViewSource.View.Refresh();
+                    }
                     break;
             }
 
@@ -1229,9 +1470,12 @@ namespace SwagOverflowWPF.ViewModels
                     }
                     break;
             }
+
+            _columnCollectionViewSource.View.Refresh();
+            _columnsVisibilityView.View.Refresh();
+            _columnsFilterView.View.Refresh();
             TrySaveColumns();
             Listening = true;
-
         }
         #endregion Column Events
 

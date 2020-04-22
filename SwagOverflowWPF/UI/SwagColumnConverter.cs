@@ -14,7 +14,7 @@ namespace SwagOverflowWPF.UI
                 SwagDataGrid sdg = values[0] as SwagDataGrid;
                 String colName = values[1].ToString();
 
-                return sdg.Columns[colName];
+                return sdg.SwagDataTable.Columns[colName];
             }
             return null;
         }

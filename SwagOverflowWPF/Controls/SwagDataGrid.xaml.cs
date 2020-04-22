@@ -44,7 +44,7 @@ namespace SwagOverflowWPF.Controls
         #region Columns
         public static DependencyProperty ColumnsProperty =
         DependencyProperty.RegisterAttached("Columns",
-                                            typeof(ConcurrentObservableOrderedDictionary<String, SwagDataColumn>),
+                                            typeof(ICollectionView),
                                             typeof(SwagDataGrid),
                                             new UIPropertyMetadata(null, BindableColumnsPropertyChanged));
 
@@ -55,8 +55,8 @@ namespace SwagOverflowWPF.Controls
 
             if (dataGrid != null)
             {
-                ConcurrentObservableOrderedDictionary<String, SwagDataColumn> columns = e.NewValue as ConcurrentObservableOrderedDictionary<String, SwagDataColumn>;
-
+                ICollectionView columns = e.NewValue as ICollectionView;
+                
                 dataGrid.Dispatcher.Invoke(new Action(() =>
                 {
                     dataGrid.Columns.Clear();
@@ -78,7 +78,7 @@ namespace SwagOverflowWPF.Controls
                         {
                             case NotifyCollectionChangedAction.Reset:
                                 dataGrid.Columns.Clear();
-                                foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
+                                foreach (KeyValuePair<String, SwagDataColumn> kvp in columns)
                                 {
                                     dataGrid.Columns.Add(kvp.Value.DataGridColumn);
                                 }
@@ -111,19 +111,14 @@ namespace SwagOverflowWPF.Controls
                 }));
             }
         }
-
-        public ConcurrentObservableOrderedDictionary<String, SwagDataColumn> Columns
-        {
-            get { return (ConcurrentObservableOrderedDictionary<String, SwagDataColumn>)GetValue(ColumnsProperty); }
-            set { SetValue(ColumnsProperty, value); }
-        }
         #endregion Columns
 
         public SwagDataGrid()
         {
             InitializeComponent();
-            
-            BindingOperations.SetBinding(this, SwagDataGrid.ColumnsProperty, new Binding("SwagDataTable.Columns") { RelativeSource = RelativeSource.Self });
+
+            BindingOperations.SetBinding(this, SwagDataGrid.ColumnsProperty, new Binding("SwagDataTable.ColumnsView") { RelativeSource = RelativeSource.Self });
+            //BindingOperations.SetBinding(this, SwagDataGrid.ColumnsProperty, new Binding("SwagDataTable.Columns") { RelativeSource = RelativeSource.Self });
         }
 
         private void SwagDataGridInstance_Loaded(object sender, RoutedEventArgs e)
@@ -169,7 +164,7 @@ namespace SwagOverflowWPF.Controls
 
             DataGridColumn dataGridColumn = DataGrid.Columns.FirstOrDefault(c => c.Header.ToString() == column.ColumnName);
             table = column.SwagDataTable;
-
+            
             Dispatcher.BeginInvoke(DispatcherPriority.Render, new Action(() =>
             {
                 if (drv == null)        //Just column
