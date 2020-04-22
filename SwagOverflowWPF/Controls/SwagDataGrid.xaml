@@ -271,11 +271,11 @@
                     </GroupBox.Content>
                 </GroupBox>
             </ControlTemplate>
-            <ContextMenu x:Key="SwagDataResultContextMenu">
-                <MenuItem Click="Search_ResultGo_Click">
-                    <MenuItem.Header>
-                        <local:IconControl Text="Go" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Share}}" />
-                    </MenuItem.Header>
+            <ContextMenu x:Key="SwagDataResultContextMenu" cmd:CommandBehavior.Event="Opened" cmd:CommandBehavior.Command="{Binding SelectCommand}">
+                <MenuItem Click="Search_ResultGo_Click" Header="View">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Eye}}" />
+                    </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>
         </ResourceDictionary>
@@ -372,6 +372,7 @@
                                                         <ui:SwagStyle.Style>
                                                             <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
                                                                 <Setter Property="HorizontalAlignment" Value="Left" />
+                                                                <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                                                                 <Setter Property="ContextMenu" Value="{StaticResource SwagDataResultContextMenu}" />
                                                             </Style>
                                                         </ui:SwagStyle.Style>

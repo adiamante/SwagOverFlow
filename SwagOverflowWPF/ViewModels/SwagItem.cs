@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SwagOverflowWPF.Commands;
 using SwagOverflowWPF.Interface;
 using SwagOverflowWPF.Iterator;
 using SwagOverflowWPF.Utilities;
@@ -9,6 +10,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace SwagOverflowWPF.ViewModels
 {
@@ -52,10 +54,11 @@ namespace SwagOverflowWPF.ViewModels
         String _display, _alternateId;
         protected String _valueTypeString;
         Int32 _itemId, _sequence;
-        Boolean _isExpanded, _canUndo = true;
+        Boolean _isExpanded, _isSelected, _canUndo = true;
         String _key;
         protected Object _objValue;
         protected Type _valueType = null;
+        ICommand _selectCommand;
         #endregion Private/Protected Members
 
         #region Properties
@@ -94,6 +97,13 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _isExpanded, value); }
         }
         #endregion IsExpanded
+        #region IsSelected
+        public Boolean IsSelected
+        {
+            get { return _isSelected; }
+            set { SetValue(ref _isSelected, value); }
+        }
+        #endregion IsSelected
         #region CanUndo
         public Boolean CanUndo
         {
@@ -136,6 +146,19 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _objValue, value); }
         }
         #endregion ObjValue
+        #region SelectCommand
+        public ICommand SelectCommand
+        {
+            get
+            {
+                return _selectCommand ?? (_selectCommand =
+                    new RelayCommand(() =>
+                    {
+                        IsSelected = true;
+                    }));
+            }
+        }
+        #endregion SelectCommand
         #endregion Properties
 
         #region Methods
