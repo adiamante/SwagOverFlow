@@ -33,6 +33,13 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>
+            <ContextMenu x:Key="SwagDataColumnContextMenu">
+                <MenuItem Header="View" Click="SwagDataColumn_ViewClick">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Eye}}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
             <Style x:Key="SwagColumnHeaderStyle" 
                    TargetType="{x:Type DataGridColumnHeader}">
                 <Setter Property="metro:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
@@ -336,6 +343,8 @@
                                                         <Setter Property="VerticalContentAlignment" Value="Center" />
                                                         <Setter Property="HorizontalAlignment" Value="Stretch" />
                                                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                        <Setter Property="ContextMenu" Value="{StaticResource SwagDataColumnContextMenu}">
+                                                        </Setter>
                                                     </Style>
                                                 </ListView.ItemContainerStyle>
                                                 <ListView.ItemTemplate>
@@ -388,6 +397,7 @@
                                                         <Setter Property="VerticalContentAlignment" Value="Center" />
                                                         <Setter Property="HorizontalAlignment" Value="Stretch" />
                                                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                        <Setter Property="ContextMenu" Value="{StaticResource SwagDataColumnContextMenu}" />
                                                     </Style>
                                                 </ListView.ItemContainerStyle>
                                                 <ListView.ItemTemplate>

@@ -118,7 +118,6 @@ namespace SwagOverflowWPF.Controls
             InitializeComponent();
 
             BindingOperations.SetBinding(this, SwagDataGrid.ColumnsProperty, new Binding("SwagDataTable.ColumnsView") { RelativeSource = RelativeSource.Self });
-            //BindingOperations.SetBinding(this, SwagDataGrid.ColumnsProperty, new Binding("SwagDataTable.Columns") { RelativeSource = RelativeSource.Self });
         }
 
         private void SwagDataGridInstance_Loaded(object sender, RoutedEventArgs e)
@@ -146,44 +145,48 @@ namespace SwagOverflowWPF.Controls
         {
             SwagDataResult swagDataResult = (SwagDataResult)((MenuItem)sender).DataContext;
             SwagDataResult currentResult = swagDataResult;
-            DataRowView drv = null;
-            SwagDataColumn column = null;
-            SwagDataTable table = null;
+            
 
             switch (currentResult)
             {
                 case SwagDataColumnResultGroup columnResult:
-                    column = (SwagDataColumn)columnResult.SwagData;
+                    View((SwagDataColumn)columnResult.SwagData);
                     break;
                 case SwagDataRowResult rowResult:
-                    SwagDataRow row = (SwagDataRow)rowResult.SwagData;
-                    column = (SwagDataColumn)rowResult.Parent.SwagData;
-                    drv = column.SwagDataTable.DataTable.DefaultView[column.SwagDataTable.DataTable.Rows.IndexOf(row.DataRow)];
+                    SwagDataColumn swagDataColumn = (SwagDataColumn)rowResult.Parent.SwagData;
+                    SwagDataRow swagDataRow = (SwagDataRow)rowResult.SwagData;
+                    View(swagDataColumn, swagDataRow);
                     break;
             }
+        }
 
-            DataGridColumn dataGridColumn = DataGrid.Columns.FirstOrDefault(c => c.Header.ToString() == column.ColumnName);
-            table = column.SwagDataTable;
-            
+        private void View(SwagDataColumn swagDataColumn)
+        {
+            DataGridColumn dataGridColumn = DataGrid.Columns.FirstOrDefault(c => c.Header.ToString() == swagDataColumn.ColumnName);
+            SwagDataTable swagDataTable = swagDataColumn.SwagDataTable;
+
+            DataGrid.ScrollIntoView(null, dataGridColumn);
+            foreach (KeyValuePair<String, SwagDataColumn> kvp in swagDataTable.Columns)
+            {
+                kvp.Value.IsSelected = false;
+            }
+            swagDataColumn.IsSelected = true;
+        }
+
+        private void View(SwagDataColumn swagDataColumn, SwagDataRow swagDataRow)
+        {
+            DataRowView drv = drv = swagDataColumn.SwagDataTable.DataTable.DefaultView[swagDataColumn.SwagDataTable.DataTable.Rows.IndexOf(swagDataRow.DataRow)]; ;
+            SwagDataTable swagDataTable = swagDataColumn.SwagDataTable;
+            DataGridColumn dataGridColumn = DataGrid.Columns.FirstOrDefault(c => c.Header.ToString() == swagDataColumn.ColumnName);
+            swagDataTable = swagDataColumn.SwagDataTable;
+
             Dispatcher.BeginInvoke(DispatcherPriority.Render, new Action(() =>
             {
-                if (drv == null)        //Just column
-                {
-                    DataGrid.ScrollIntoView(null, dataGridColumn);
-                    foreach (KeyValuePair<String, SwagDataColumn> kvp in table.Columns)
-                    {
-                        kvp.Value.IsSelected = false;
-                    }
-                    column.IsSelected = true;
-                }
-                else
-                {
-                    DataGridCellInfo cellInfo = new DataGridCellInfo(drv, dataGridColumn);
-                    DataGrid.ScrollIntoView(cellInfo.Item, cellInfo.Column);
-                    DataGrid.SelectedCells.Clear();
-                    DataGrid.SelectedCells.Add(cellInfo);
-                    DataGrid.CurrentCell = cellInfo;
-                }
+                DataGridCellInfo cellInfo = new DataGridCellInfo(drv, dataGridColumn);
+                DataGrid.ScrollIntoView(cellInfo.Item, cellInfo.Column);
+                DataGrid.SelectedCells.Clear();
+                DataGrid.SelectedCells.Add(cellInfo);
+                DataGrid.CurrentCell = cellInfo;
             }));
         }
 
@@ -192,6 +195,12 @@ namespace SwagOverflowWPF.Controls
             SwagDataTable.Settings["Import"]["Type"].SetValue<SwagTableImportType>(SwagTableImportType.Tsv);
             SwagDataTable.Settings["Import"]["Source"].SetValue<SwagTableSourceType>(SwagTableSourceType.Clipboard);
             SwagDataTable.ImportCommand.Execute(null);
+        }
+
+        private void SwagDataColumn_ViewClick(object sender, RoutedEventArgs e)
+        {
+            SwagDataColumn swagDataColumn = ((KeyValuePair<String, SwagDataColumn>)((MenuItem)sender).DataContext).Value;
+            View(swagDataColumn);
         }
     }
 }
