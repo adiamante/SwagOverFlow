@@ -151,7 +151,7 @@
                                                                              cmd:CommandBehavior.Command="{Binding ApplyListValuesFilterCommand}"
                                                                              FilterMode="{Binding ListValuesFilterMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                                                                     <Button DockPanel.Dock="Top" Margin="3" Command="{Binding ApplyListFilterCommand}">
-                                                                        <local:IconControl Text="Apply" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Eye}}" />
+                                                                        <local:IconControl Text="Apply" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Play}}" />
                                                                     </Button>
                                                                     <CheckBox DockPanel.Dock="Top" Padding="3" Margin="6,0,0,0" Content="Show All" IsChecked="{Binding ShowAllDistinctValues}" />
                                                                     <ListView DockPanel.Dock="Top" Padding="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
