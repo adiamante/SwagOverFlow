@@ -866,6 +866,22 @@ namespace SwagOverflowWPF.ViewModels
     }
     #endregion SwagDataColumn
 
+    #region SwagTableImportType
+    public enum SwagTableImportType
+    {
+        Csv,
+        Tsv
+    }
+    #endregion SwagTableImportType
+
+    #region SwagTableSourceType
+    public enum SwagTableSourceType
+    {
+        File,
+        Clipboard
+    }
+    #endregion SwagTableSourceType
+
     #region SwagTableExportType
     public enum SwagTableExportType
     {
@@ -895,7 +911,7 @@ namespace SwagOverflowWPF.ViewModels
         Dictionary<DataRow, SwagDataRow> _dictChildren = new Dictionary<DataRow, SwagDataRow>();
         ConcurrentObservableOrderedDictionary<String, SwagDataColumn> _columns = new ConcurrentObservableOrderedDictionary<String, SwagDataColumn>();
         Boolean _columnVisibilityCheckAll = false, _columnFiltersCheckAll = false;
-        ICommand _filterCommand, _exportCommand, _applyColumnVisibilityCommand, _toggleColumnVisibilityCheckedAll, _applyColumnVisibilityFilterCommand,
+        ICommand _filterCommand, _exportCommand, _importCommand, _applyColumnVisibilityCommand, _toggleColumnVisibilityCheckedAll, _applyColumnVisibilityFilterCommand,
             _toggleColumnFiltersCheckedAll, _applyColumnFiltersFilterCommand, _clearColumnFiltersCommand;
         SwagSettingGroup _settings;
         SwagTabCollection _tabs;
@@ -1085,6 +1101,63 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion ExportCommand
+        #region ImportCommand
+        public ICommand ImportCommand
+        {
+            get
+            {
+                return _importCommand ?? (_importCommand =
+                    new RelayCommand(() =>
+                    {
+                        IDataTableConverter converter = null;
+                        DataTableConvertParameters cp = new DataTableConvertParameters();
+
+                        string dialogFilter = "";
+                        String inputText = "";
+
+                        switch (Settings["Import"]["Type"].GetValue<SwagTableImportType>())
+                        {
+                            case SwagTableImportType.Csv:
+                                converter = new DataTableCsvStringConverter();
+                                dialogFilter = "CSV files (*.csv)|*.csv";
+                                break;
+                            case SwagTableImportType.Tsv:
+                                converter = new DataTableCsvStringConverter();
+                                cp.FieldDelim = '\t';
+                                dialogFilter = "TSV files (*.tsv)|*.tsv";
+                                break;
+                        }
+
+                        switch (Settings["Import"]["Source"].GetValue<SwagTableSourceType>())
+                        {
+                            case SwagTableSourceType.File:
+                                OpenFileDialog ofd = new OpenFileDialog();
+                                ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                                ofd.Filter = dialogFilter;
+
+                                System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+                                {
+                                    if (ofd.ShowDialog() ?? false)
+                                    {
+                                        inputText = File.ReadAllText(ofd.FileName);
+                                    }
+                                    else
+                                    {
+                                        return;
+                                    }
+                                }));
+                                break;
+                            case SwagTableSourceType.Clipboard:
+                                inputText = Clipboard.GetText();
+                                break;
+                        }
+
+                        DataTable dtInput = converter.ToDataTable(cp, inputText);
+                        SetDataTable(dtInput);
+                    }));
+            }
+        }
+        #endregion ImportCommand
         #region ApplyColumnVisibilityFilterCommand
         public ICommand ApplyColumnVisibilityFilterCommand
         {
@@ -1231,6 +1304,9 @@ namespace SwagOverflowWPF.ViewModels
                     _settings["Export"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Export };
                     _settings["Export"]["Type"] = new SwagSetting<SwagTableExportType>() { SettingType = SettingType.DropDown, Value = SwagTableExportType.Csv, Icon = PackIconCustomKind.ExportType, ItemsSource = (SwagTableExportType[])Enum.GetValues(typeof(SwagTableExportType)) };
                     _settings["Export"]["Destination"] = new SwagSetting<SwagTableDestinationType>() { SettingType = SettingType.DropDown, Value = SwagTableDestinationType.Clipboard, Icon = PackIconCustomKind.Destination, ItemsSource = (SwagTableDestinationType[])Enum.GetValues(typeof(SwagTableDestinationType)) };
+                    _settings["Import"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Import };
+                    _settings["Import"]["Type"] = new SwagSetting<SwagTableImportType>() { SettingType = SettingType.DropDown, Value = SwagTableImportType.Tsv, Icon = PackIconCustomKind.ExportType, ItemsSource = (SwagTableImportType[])Enum.GetValues(typeof(SwagTableImportType)) };
+                    _settings["Import"]["Source"] = new SwagSetting<SwagTableSourceType>() { SettingType = SettingType.DropDown, Value = SwagTableSourceType.Clipboard, Icon = PackIconCustomKind.Destination, ItemsSource = (SwagTableSourceType[])Enum.GetValues(typeof(SwagTableSourceType)) };
                     InitSettings();
                 }
                 return _settings;

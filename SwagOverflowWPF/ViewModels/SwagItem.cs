@@ -170,6 +170,7 @@ namespace SwagOverflowWPF.ViewModels
         public void SetValue<T>(T val)
         {
             ObjValue = val;
+            OnPropertyChanged("Value");
         }
         #endregion Methods
     }

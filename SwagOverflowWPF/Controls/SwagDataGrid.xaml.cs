@@ -186,5 +186,12 @@ namespace SwagOverflowWPF.Controls
                 }
             }));
         }
+
+        private void Import_Paste_Click(object sender, RoutedEventArgs e)
+        {
+            SwagDataTable.Settings["Import"]["Type"].SetValue<SwagTableImportType>(SwagTableImportType.Tsv);
+            SwagDataTable.Settings["Import"]["Source"].SetValue<SwagTableSourceType>(SwagTableSourceType.Clipboard);
+            SwagDataTable.ImportCommand.Execute(null);
+        }
     }
 }

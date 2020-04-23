@@ -491,7 +491,20 @@
                             <ui:SwagTemplate.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
-                                        <TextBlock Text="Placeholder" />
+                                        <DockPanel>
+                                            <local:SettingsControl DockPanel.Dock="Top" Settings="{Binding ViewModel.Settings[Import]}" />
+                                            <Button Command="{Binding ViewModel.ImportCommand}" Content="Import!">
+                                                <Button.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Click="Import_Paste_Click" Header="Paste">
+                                                            <MenuItem.Icon>
+                                                                <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ContentPaste}}" />
+                                                            </MenuItem.Icon>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </Button.ContextMenu>
+                                            </Button>
+                                        </DockPanel>
                                     </ContentControl>
                                 </DataTemplate>
                             </ui:SwagTemplate.DataTemplate>
@@ -502,7 +515,7 @@
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
                                         <DockPanel>
                                             <local:SettingsControl DockPanel.Dock="Top" Settings="{Binding ViewModel.Settings[Export]}" />
-                                            <Button Command="{Binding ViewModel.ExportCommand}">Go</Button>
+                                            <Button Command="{Binding ViewModel.ExportCommand}">Export!</Button>
                                         </DockPanel>
                                     </ContentControl>
                                 </DataTemplate>
