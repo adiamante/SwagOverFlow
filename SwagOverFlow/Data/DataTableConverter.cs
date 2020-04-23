@@ -208,6 +208,7 @@ namespace SwagOverFlow.Data
                 _conf.IgnoreQuotes = true;
             }
             _conf.HasHeaderRecord = context.HasHeaders;
+            _conf.MissingFieldFound = null;
             CsvReader csvReader = new CsvReader(sr, _conf);
             CsvDataReader dataReader = new CsvDataReader(csvReader);
 
