@@ -117,6 +117,42 @@ namespace SwagOverflowWPF.Controls
         }
         #endregion Columns
 
+        #region SelectedTotal
+        public static DependencyProperty SelectedTotalProperty =
+                DependencyProperty.Register(
+                    "SelectedTotal",
+                    typeof(Decimal),
+                    typeof(SwagDataGrid));
+
+        public Decimal SelectedTotal
+        {
+            get { return (Decimal)GetValue(SelectedTotalProperty); }
+            set
+            {
+                SetValue(SelectedTotalProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion SelectedTotal
+
+        #region SelectedCount
+        public static DependencyProperty SelectedCountProperty =
+                DependencyProperty.Register(
+                    "SelectedCount",
+                    typeof(Int32),
+                    typeof(SwagDataGrid));
+
+        public Int32 SelectedCount
+        {
+            get { return (Int32)GetValue(SelectedCountProperty); }
+            set
+            {
+                SetValue(SelectedCountProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion SelectedCount
+
         public SwagDataGrid()
         {
             InitializeComponent();
@@ -352,6 +388,27 @@ namespace SwagOverflowWPF.Controls
         private void DataGrid_ColumnReordered(object sender, DataGridColumnEventArgs e)
         {
             SwagDataTable.Columns[e.Column.Header.ToString()].SetSequence(e.Column.DisplayIndex);
+        }
+
+        private void DataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            if (DataGrid.SelectedCells.Count > 0)
+            {
+                Decimal selectedTotal = 0.0m;
+                foreach (DataGridCellInfo cellInfo in DataGrid.SelectedCells)
+                {
+                    DataGridColumn dgCol = cellInfo.Column;
+                    DataRowView drv = (DataRowView)cellInfo.Item;
+
+                    if (Decimal.TryParse(drv[dgCol.Header.ToString()].ToString(), out Decimal val))
+                    {
+                        selectedTotal += val;
+                    }
+                }
+
+                this.SelectedTotal = selectedTotal;
+                this.SelectedCount = DataGrid.SelectedCells.Count;
+            }
         }
     }
 }

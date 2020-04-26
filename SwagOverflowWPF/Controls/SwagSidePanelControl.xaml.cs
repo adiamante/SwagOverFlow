@@ -63,6 +63,17 @@ namespace SwagOverflowWPF.Controls
         }
         #endregion TabItemTemplates
 
+        #region BottomContentTemplate
+        public static readonly DependencyProperty BottomContentTemplateProperty =
+            DependencyProperty.Register("BottomContentTemplate", typeof(DataTemplate), typeof(SwagSidePanelControl));
+
+        public DataTemplate BottomContentTemplate
+        {
+            get { return (DataTemplate)GetValue(BottomContentTemplateProperty); }
+            set { SetValue(BottomContentTemplateProperty, value); }
+        }
+        #endregion BottomContentTemplate
+
         public SwagSidePanelControl()
         {
             InitializeComponent();

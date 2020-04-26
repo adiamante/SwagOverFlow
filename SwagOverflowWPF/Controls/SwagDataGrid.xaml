@@ -20,6 +20,7 @@
                 <ResourceDictionary Source="/SwagOverflowWPF;component/Themes/Common.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <ui:SwagColumnConverter x:Key="SwagColumnConverter" />
+            <ui:MultiBoolToBoolConverter x:Key="MultiBoolToBoolConverter" />
             <ui:BoolToVisibilityConverter x:Key="BooleanToVisibilityConverter" FalseValue="Collapsed" />
             <ContextMenu x:Key="SwagColumnHeaderContextMenu">
                 <MenuItem Header="Clear Filter" Command="{Binding ClearFilterCommand}">
@@ -364,7 +365,7 @@
 
                                 </Grid>
                                 <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SwagDataTable.ShowColumnTotals, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}">
-                                    <local:IconControl Text="{Binding Total}" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Sigma}}" />
+                                    <local:IconControl Text="{Binding Total, StringFormat=N}" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Sigma}}" />
                                 </Grid>
                                 <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SwagDataTable.ShowDebug, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}">
                                     <GroupBox>
@@ -426,8 +427,16 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <DockPanel DataContext="{Binding ElementName=SwagDataGridInstance}">
-            <local:SwagSidePanelControl DockPanel.Dock="Left" SwagTabCollection="{Binding SwagDataTable.Tabs, ElementName=SwagDataGridInstance}">
+        <Grid DataContext="{Binding ElementName=SwagDataGridInstance}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <local:SwagSidePanelControl Grid.Row="0" Grid.Column="0" SwagTabCollection="{Binding SwagDataTable.Tabs, ElementName=SwagDataGridInstance}">
                 <local:SwagSidePanelControl.TabItemTemplates>
                     <ui:SwagTemplateCollection>
                         <ui:SwagTemplate CompareValue="ColumnEditor/Visibility">
@@ -666,21 +675,64 @@
                         </ui:SwagTemplate>
                     </ui:SwagTemplateCollection>
                 </local:SwagSidePanelControl.TabItemTemplates>
+                <local:SwagSidePanelControl.BottomContentTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.AlphaCBoxOutline}}" />
+                            <TextBlock Text="{Binding SwagDataTable.ColumnCount, RelativeSource={RelativeSource AncestorType={x:Type local:SwagDataGrid}, Mode=FindAncestor}}" />
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.AlphaRBoxOutline}}" />
+                            <TextBlock Text="{Binding SwagDataTable.RowCount, RelativeSource={RelativeSource AncestorType={x:Type local:SwagDataGrid}, Mode=FindAncestor}}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </local:SwagSidePanelControl.BottomContentTemplate>
             </local:SwagSidePanelControl>
             <DataGrid x:Name="DataGrid" 
+                      Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
                       SelectionMode="Extended"
                       SelectionUnit="CellOrRowHeader"
                       CanUserSortColumns="False"
                       AutoGenerateColumns="False"
                       ItemsSource="{Binding SwagDataTable.DataTable.DefaultView}"
                       ColumnHeaderStyle="{StaticResource SwagColumnHeaderStyle}"
-                      ColumnReordered="DataGrid_ColumnReordered">
+                      ColumnReordered="DataGrid_ColumnReordered"
+                      SelectedCellsChanged="DataGrid_SelectedCellsChanged">
                 <DataGrid.Style>
                     <Style TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
                         <Setter Property="AlternatingRowBackground" Value="{DynamicResource MahApps.Brushes.Accent2}"/>
                     </Style>
                 </DataGrid.Style>
+                <DataGrid.CellStyle>
+                    <Style TargetType="{x:Type DataGridCell}">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter Property="ToolTipService.IsEnabled" Value="False" />
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True" />
+                                    <Condition Property="IsSelected" Value="True" />
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.Setters>
+                                    <Setter Property="ToolTipService.IsEnabled" Value="True" />
+                                </MultiTrigger.Setters>
+                            </MultiTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:SwagDataGrid}}}" />
+                        <Setter Property="ToolTip">
+                            <Setter.Value>
+                                <ToolTip DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={x:Static RelativeSource.Self}}">
+                                    <StackPanel>
+                                        <local:IconControl Text="{Binding SelectedTotal, StringFormat=N}"
+                                                       Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Sigma}}" />
+                                        <local:IconControl Text="{Binding SelectedCount, StringFormat=D}"
+                                                       Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.AlphaNBoxOutline}}" />
+                                    </StackPanel>
+                                </ToolTip>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DataGrid.CellStyle>
             </DataGrid>
-        </DockPanel>
+        </Grid>
     </Grid>
 </local:SwagControlBase>

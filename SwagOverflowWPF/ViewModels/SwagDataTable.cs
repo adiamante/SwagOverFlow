@@ -1021,6 +1021,18 @@ namespace SwagOverflowWPF.ViewModels
             get { return _children.Count > 0; }
         }
         #endregion HasChildren
+        #region RowCount
+        public Int32 RowCount
+        {
+            get { return _dataTable.DefaultView.Count; }
+        }
+        #endregion RowCount
+        #region ColumnCount
+        public Int32 ColumnCount
+        {
+            get { return Columns.Count; }
+        }
+        #endregion ColumnCount
         #region Columns
         public SwagObservableOrderedDictionary<String, SwagDataColumn> Columns
         {
@@ -1635,6 +1647,7 @@ namespace SwagOverflowWPF.ViewModels
                     break;
             }
             InvalidateColumns();
+            OnPropertyChanged("ColumnCount");
         }
         #endregion Column Events
 
@@ -1677,6 +1690,7 @@ namespace SwagOverflowWPF.ViewModels
                     }
                 }
             }
+            OnPropertyChanged("RowCount");
         }
         #endregion RowEvents
 
@@ -1786,18 +1800,12 @@ namespace SwagOverflowWPF.ViewModels
         public void ResetColumns()
         {
             DelaySave = true;
-            //_columns.Clear();
-            //foreach (DataColumn dc in _dataTable.Columns)
-            //{
-            //    SwagDataColumn sdc = new SwagDataColumn() { ColumnName = dc.ColumnName, DataType = dc.DataType };
-            //    sdc.SwagDataTable = this;
-            //    _columns.Add(dc.ColumnName, sdc);
-            //}
             _columnCollectionViewSource.Source = _columnsVisibilityView.Source = _columnsFilterView.Source = _columns;
             _columnCollectionViewSource.View.Refresh();
             _columnsVisibilityView.View.Refresh();
             _columnsFilterView.View.Refresh();
             OnPropertyChanged("ColumnsView");
+            OnPropertyChanged("ColumnCount");
             DelaySave = false;
         }
 
