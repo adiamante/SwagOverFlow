@@ -1024,7 +1024,14 @@ namespace SwagOverflowWPF.ViewModels
         #region RowCount
         public Int32 RowCount
         {
-            get { return _dataTable.DefaultView.Count; }
+            get 
+            {
+                if (_dataTable == null)
+                {
+                    return 0;
+                }
+                return _dataTable.DefaultView.Count; 
+            }
         }
         #endregion RowCount
         #region ColumnCount

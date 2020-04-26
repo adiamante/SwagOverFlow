@@ -42,7 +42,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ColumnName, Mode=OneWay}" Loaded="SwagColumnHeader_RenameLoad" KeyDown="SwagColumnHeader_RenameKeyDown" MinWidth="100" />
+                                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ColumnName, Mode=OneWay}" Loaded="SwagColumnHeader_TextBoxLoad" KeyDown="SwagColumnHeader_TextBoxKeyDown" MinWidth="100" />
                                 <Button Grid.Row="1" Grid.Column="0" Content="Rename" Click="SwagColumnHeader_RenameClick" />
                             </Grid>
                         </MenuItem.Header>
@@ -71,12 +71,27 @@
                     </MenuItem>
                     <MenuItem Header="Integer" Tag="{x:Type sys:Int32}" Click="SwagColumnHeader_ConvertClick">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Integer}}" />
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Numeric}}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Decimal" Tag="{x:Type sys:Decimal}" Click="SwagColumnHeader_ConvertClick">
                         <MenuItem.Icon>
                             <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Decimal}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="DateTime" Tag="{x:Type sys:DateTime}" Click="SwagColumnHeader_ConvertClick">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Calendar}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="TimeSpan" Tag="{x:Type sys:TimeSpan}" Click="SwagColumnHeader_ConvertClick">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ClockOutline}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="String" Tag="{x:Type sys:String}" Click="SwagColumnHeader_ConvertClick">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.AlphaSBoxOutline}}" />
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
@@ -105,6 +120,34 @@
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
+                <MenuItem Header="Fill Empty">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ViewDashboard}}" />
+                    </MenuItem.Icon>
+                    <MenuItem Header="Default" Tag="Default" Click="SwagColumnHeader_FillEmptyDefaultClick">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Origin}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem StaysOpenOnClick="True">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.KeyboardOutline}}" />
+                        </MenuItem.Icon>
+                        <MenuItem.Header>
+                            <Grid x:Name="gridFillEmptyInput">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Row="0" Grid.Column="0" Loaded="SwagColumnHeader_TextBoxLoad" KeyDown="SwagColumnHeader_TextBoxKeyDown" MinWidth="100" />
+                                <Button Grid.Row="1" Grid.Column="0" Content="Fill" Click="SwagColumnHeader_FillEmptyInputClick" />
+                            </Grid>
+                        </MenuItem.Header>
+                    </MenuItem>
+                </MenuItem>
                 <MenuItem Header="ShowTotals" IsChecked="{Binding SwagDataTable.ShowColumnTotals}" Command="{Binding SwagDataTable.ToggleShowColumnTotalsCommand}">
                     <MenuItem.Icon>
                         <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Sigma}}" />
@@ -114,6 +157,11 @@
                     <MenuItem.Icon>
                         <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Tools}}" />
                     </MenuItem.Icon>
+                    <MenuItem Header="Select All Column Values" Click="SwagColumnHeader_SelectColumnValueClick">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.SelectGroup}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                     <MenuItem Header="Reset Columns" Command="{Binding SwagDataTable.ResetColumnsCommand}">
                         <MenuItem.Icon>
                             <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Refresh}}" />

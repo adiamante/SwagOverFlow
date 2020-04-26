@@ -26,6 +26,7 @@ namespace SwagOverflowWPF.Controls
     /// </summary>
     public partial class SwagDataGrid : SwagControlBase
     {
+        #region Properties
         #region SwagDataTable
         public static DependencyProperty SwagDataTableProperty =
                 DependencyProperty.Register(
@@ -43,7 +44,6 @@ namespace SwagOverflowWPF.Controls
             }
         }
         #endregion SwagDataTable
-
         #region Columns
         public static DependencyProperty ColumnsProperty =
         DependencyProperty.RegisterAttached("Columns",
@@ -59,7 +59,7 @@ namespace SwagOverflowWPF.Controls
             if (dataGrid != null)
             {
                 ICollectionView columns = e.NewValue as ICollectionView;
-                
+
                 dataGrid.Dispatcher.Invoke(new Action(() =>
                 {
                     dataGrid.Columns.Clear();
@@ -116,7 +116,6 @@ namespace SwagOverflowWPF.Controls
             }
         }
         #endregion Columns
-
         #region SelectedTotal
         public static DependencyProperty SelectedTotalProperty =
                 DependencyProperty.Register(
@@ -134,7 +133,6 @@ namespace SwagOverflowWPF.Controls
             }
         }
         #endregion SelectedTotal
-
         #region SelectedCount
         public static DependencyProperty SelectedCountProperty =
                 DependencyProperty.Register(
@@ -152,7 +150,9 @@ namespace SwagOverflowWPF.Controls
             }
         }
         #endregion SelectedCount
+        #endregion Properties
 
+        #region Initialization
         public SwagDataGrid()
         {
             InitializeComponent();
@@ -165,13 +165,43 @@ namespace SwagOverflowWPF.Controls
             SwagDataTable?.InitSettings();
             SwagDataTable?.InitTabs();
         }
+        #endregion Initialization
 
+        #region DataGrid Events
+        private void DataGrid_ColumnReordered(object sender, DataGridColumnEventArgs e)
+        {
+            SwagDataTable.Columns[e.Column.Header.ToString()].SetSequence(e.Column.DisplayIndex);
+        }
+
+        private void DataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            if (DataGrid.SelectedCells.Count > 0)
+            {
+                Decimal selectedTotal = 0.0m;
+                foreach (DataGridCellInfo cellInfo in DataGrid.SelectedCells)
+                {
+                    DataGridColumn dgCol = cellInfo.Column;
+                    DataRowView drv = (DataRowView)cellInfo.Item;
+
+                    if (Decimal.TryParse(drv[dgCol.Header.ToString()].ToString(), out Decimal val))
+                    {
+                        selectedTotal += val;
+                    }
+                }
+
+                this.SelectedTotal = selectedTotal;
+                this.SelectedCount = DataGrid.SelectedCells.Count;
+            }
+        }
+        #endregion DataGrid Events
+
+        #region Search
         private void Search_OnSearch(object sender, RoutedEventArgs e)
         {
             SearchTextBox searchTextBox = (SearchTextBox)sender;
             SwagData swagData = (SwagData)((SwagTabItem)searchTextBox.DataContext).ViewModel;
             SwagDataResult swagDataResult = SwagDataTable.Search(searchTextBox.Text, searchTextBox.FilterMode,
-                (sdc, sdr, searchValue, filterMode) => 
+                (sdc, sdr, searchValue, filterMode) =>
                 {
                     String compareTarget = sdr.DataRow[sdc.ColumnName].ToString();
                     String compareValue = searchValue;
@@ -185,7 +215,7 @@ namespace SwagOverflowWPF.Controls
         {
             SwagDataResult swagDataResult = (SwagDataResult)((MenuItem)sender).DataContext;
             SwagDataResult currentResult = swagDataResult;
-            
+
 
             switch (currentResult)
             {
@@ -230,19 +260,26 @@ namespace SwagOverflowWPF.Controls
             }));
         }
 
+        #endregion Search
+
+        #region Import
         private void Import_Paste_Click(object sender, RoutedEventArgs e)
         {
             SwagDataTable.Settings["Import"]["Type"].SetValue<SwagTableImportType>(SwagTableImportType.Tsv);
             SwagDataTable.Settings["Import"]["Source"].SetValue<SwagTableSourceType>(SwagTableSourceType.Clipboard);
             SwagDataTable.ImportCommand.Execute(null);
         }
+        #endregion Import
 
+        #region ColumnEditor
         private void SwagDataColumn_ViewClick(object sender, RoutedEventArgs e)
         {
             SwagDataColumn swagDataColumn = ((KeyValuePair<String, SwagDataColumn>)((MenuItem)sender).DataContext).Value;
             View(swagDataColumn);
         }
+        #endregion ColumnEditor
 
+        #region SwagColumnHeader
         private void SwagColumnHeader_ConvertClick(object sender, RoutedEventArgs e)
         {
             FlogDetail flogDetail = GetFlogDetail("Convert Column", null);
@@ -308,7 +345,7 @@ namespace SwagOverflowWPF.Controls
             if (!keepOriginal)
             {
                 newSwagDataColumn.SetSequence(originalSwagDataColumn.Sequence);
-                swagDataTable.Columns.Remove(originalSwagDataColumn.ColumnName);
+                originalSwagDataColumn.Remove();
                 newSwagDataColumn.Rename(originalSwagDataColumn.ColumnName);
             }
             swagDataTable.Save();
@@ -329,7 +366,7 @@ namespace SwagOverflowWPF.Controls
             {
                 targetSequence = 0;
             }
-            else if (targetSequence > swagDataColumn.SwagDataTable.Columns.Count -1)
+            else if (targetSequence > swagDataColumn.SwagDataTable.Columns.Count - 1)
             {
                 targetSequence = swagDataColumn.SwagDataTable.Columns.Count - 1;
             }
@@ -355,6 +392,116 @@ namespace SwagOverflowWPF.Controls
             flogDetail.EndTimer();
         }
 
+        private void SwagColumnHeader_TextBoxLoad(object sender, RoutedEventArgs e)
+        {
+            TextBox txtText = (TextBox)sender;
+            txtText.SelectAll();
+            txtText.Focus();
+        }
+
+        private void SwagColumnHeader_TextBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox txtText = (TextBox)sender;
+                MenuItem menuItem = (MenuItem)DependencyObjectHelper.TryFindParent<MenuItem>(txtText);
+                Button btn = menuItem.FindLogicalChild<Button>();
+                btn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            }
+        }
+
+        private void SwagColumnHeader_FillEmptyDefaultClick(object sender, RoutedEventArgs e)
+        {
+            MenuItem menuItem = (MenuItem)sender;
+            SwagDataColumn swagDataColumn = (SwagDataColumn)menuItem.DataContext;
+            SwagDataTable swagDataTable = swagDataColumn.SwagDataTable;
+            String colName = swagDataColumn.ColumnName;
+            Type targetType = swagDataColumn.DataType;
+
+            swagDataTable.DelaySave = true;
+            foreach (DataRowView drv in swagDataTable.DataTable.DefaultView)
+            {
+                if (drv[colName] == null || drv[colName] == DBNull.Value || drv[colName].ToString() == "")
+                {
+                    drv[colName] = Activator.CreateInstance(targetType);
+                }
+            }
+            swagDataTable.DelaySave = false;
+            swagDataTable.Save();
+
+        }
+
+        private void SwagColumnHeader_FillEmptyInputClick(object sender, RoutedEventArgs e)
+        {
+            Button btnFill = (Button)sender;
+            MenuItem miParent = (MenuItem)((MenuItem)((Grid)btnFill.Parent).Parent).Parent;
+            SwagDataColumn swagDataColumn = (SwagDataColumn)btnFill.DataContext;
+            SwagDataTable swagDataTable = swagDataColumn.SwagDataTable;
+            ContextMenu contextMenu = DependencyObjectHelper.TryFindParent<ContextMenu>(btnFill);
+            String colName = swagDataColumn.ColumnName;
+            Type targetType = swagDataColumn.DataType;
+
+            Grid grid = miParent.FindLogicalChild<Grid>("gridFillEmptyInput");
+            String defaultValueText = grid.FindVisualChild<TextBox>().Text;
+
+            if (defaultValueText != "")
+            {
+                #region Resolve defaultValue
+                Object defaultValue = DBNull.Value;
+                if (targetType.GetTypeCode() != TypeCode.String)
+                {
+                    try
+                    {
+                        defaultValue = Convert.ChangeType(defaultValueText, targetType);
+                    }
+                    catch
+                    {
+                        defaultValue = DBNull.Value;
+                    }
+                }
+                else
+                {
+                    defaultValue = defaultValueText;
+                }
+                #endregion Resolve defaultValue
+
+                swagDataTable.DelaySave = true;
+                foreach (DataRowView drv in swagDataTable.DataTable.DefaultView)
+                {
+                    if (drv[colName] == null || drv[colName] == DBNull.Value || drv[colName].ToString() == "")
+                    {
+                        drv[colName] = defaultValue;
+                    }
+                }
+                swagDataTable.DelaySave = false;
+                swagDataTable.Save();
+            }
+
+            contextMenu.IsOpen = false;
+        }
+
+        private void SwagColumnHeader_SelectColumnValueClick(object sender, RoutedEventArgs e)
+        {
+            MenuItem menuItem = (MenuItem)sender;
+            ContextMenu contextMenu = DependencyObjectHelper.TryFindParent<ContextMenu>(menuItem);
+            FrameworkElement placementTarget = (FrameworkElement)contextMenu.PlacementTarget;
+            DataGridColumnHeader dataGridColumnHeader = DependencyObjectHelper.TryFindParent<DataGridColumnHeader>(placementTarget);
+            SwagDataColumn swagDataColumn = (SwagDataColumn)menuItem.DataContext;
+            SwagDataTable swagDataTable = swagDataColumn.SwagDataTable;
+
+            DataGrid.SelectedCellsChanged -= DataGrid_SelectedCellsChanged;
+            DataGrid.SelectedCells.Clear();
+            foreach (DataRowView drv in swagDataTable.DataTable.DefaultView)
+            {
+                DataGrid.SelectedCells.Add(new DataGridCellInfo(drv, dataGridColumnHeader.Column));
+            }
+            DataGrid.SelectedCellsChanged += DataGrid_SelectedCellsChanged;
+            DataGrid_SelectedCellsChanged(null, null);
+        }
+
+        #endregion SwagColumnHeader
+
+        #region Logging (currently experimenting)
         private static FlogDetail GetFlogDetail(String message, Exception ex)
         {
             return new FlogDetail
@@ -366,49 +513,7 @@ namespace SwagOverflowWPF.Controls
                 Exception = ex
             };
         }
+        #endregion Logging (currently experimenting)
 
-        private void SwagColumnHeader_RenameLoad(object sender, RoutedEventArgs e)
-        {
-            TextBox txtRename = (TextBox)sender;
-            txtRename.SelectAll();
-            txtRename.Focus();
-        }
-
-        private void SwagColumnHeader_RenameKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                TextBox txtRename = (TextBox)sender;
-                MenuItem menuItem = (MenuItem)DependencyObjectHelper.TryFindParent<MenuItem>(txtRename);
-                Button btnRename = menuItem.FindLogicalChild<Button>();
-                btnRename.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-            }
-        }
-
-        private void DataGrid_ColumnReordered(object sender, DataGridColumnEventArgs e)
-        {
-            SwagDataTable.Columns[e.Column.Header.ToString()].SetSequence(e.Column.DisplayIndex);
-        }
-
-        private void DataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
-        {
-            if (DataGrid.SelectedCells.Count > 0)
-            {
-                Decimal selectedTotal = 0.0m;
-                foreach (DataGridCellInfo cellInfo in DataGrid.SelectedCells)
-                {
-                    DataGridColumn dgCol = cellInfo.Column;
-                    DataRowView drv = (DataRowView)cellInfo.Item;
-
-                    if (Decimal.TryParse(drv[dgCol.Header.ToString()].ToString(), out Decimal val))
-                    {
-                        selectedTotal += val;
-                    }
-                }
-
-                this.SelectedTotal = selectedTotal;
-                this.SelectedCount = DataGrid.SelectedCells.Count;
-            }
-        }
     }
 }
