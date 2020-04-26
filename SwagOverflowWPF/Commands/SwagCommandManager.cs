@@ -102,7 +102,7 @@ namespace SwagOverflowWPF.Commands
         #region Events
         private void Subject_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
         {
-            if (_listening && e.SwagItem.CanUndo)
+            if (_listening && e.PropertyChangedArgs.PropertyName != "CanUndo" && e.SwagItem.CanUndo)
             {
                 SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
                     e.PropertyChangedArgs.PropertyName,

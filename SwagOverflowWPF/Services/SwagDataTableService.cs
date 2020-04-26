@@ -28,7 +28,7 @@ namespace SwagOverflowWPF.Services
             sdtDataTable = work.DataTables.Get(sg => sg.Name == groupName, null).FirstOrDefault();
             if (sdtDataTable != null)
             {
-                sdtDataTable.Listening = false;
+                sdtDataTable.DelaySave = true;
 
                 #region Load SwagDataTableUnitOfWork
                 work.DataTables.LoadChildren(sdtDataTable);
@@ -97,7 +97,7 @@ namespace SwagOverflowWPF.Services
                 sdtDataTable.SetDataTable(dt, true);
                 #endregion Load SwagDataTableUnitOfWork
 
-                sdtDataTable.Listening = true;
+                sdtDataTable.DelaySave = false;
             }
 
             if (sdtDataTable == null)

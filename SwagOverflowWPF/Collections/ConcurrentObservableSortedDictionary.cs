@@ -120,8 +120,8 @@ namespace SwagOverflowWPF.Collections
     {
       
     }
-    #endregion
-  }
+        #endregion
+    }
 }
 
 

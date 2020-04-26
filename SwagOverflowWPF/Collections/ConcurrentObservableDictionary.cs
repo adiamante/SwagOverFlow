@@ -355,7 +355,7 @@ namespace SwagOverflowWPF.Collections
     }
 
 
-    public void Clear()
+    public virtual void Clear()
     {
       DoReadWriteNotify(
         // Get the list of keys and values from the internal list

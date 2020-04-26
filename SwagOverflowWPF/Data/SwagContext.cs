@@ -136,10 +136,10 @@ namespace SwagOverflowWPF.Data
             //SwagDataTable DataTable => Ignore
             builder.Ignore(sdt => sdt.DataTable);
 
-            Func<String, ConcurrentObservableOrderedDictionary<String, SwagDataColumn>> stringToDict = (str) =>
+            Func<String, SwagObservableOrderedDictionary<String, SwagDataColumn>> stringToSwagDict = (str) =>
             {
                 KeyValuePair<String, SwagDataColumn>[] cols = JsonConvert.DeserializeObject<KeyValuePair<String, SwagDataColumn>[]>(str, new SwagDataTableConverter());
-                ConcurrentObservableOrderedDictionary<string, SwagDataColumn> dict = new ConcurrentObservableOrderedDictionary<string, SwagDataColumn>();
+                SwagObservableOrderedDictionary<string, SwagDataColumn> dict = new SwagObservableOrderedDictionary<string, SwagDataColumn>();
                 foreach (KeyValuePair<String, SwagDataColumn> kvp in cols)
                 {
                     dict.Add(kvp.Key, kvp.Value);
@@ -150,8 +150,8 @@ namespace SwagOverflowWPF.Data
             //SwagDataTable Columns
             builder.Property(sdt => sdt.Columns)
                 .HasConversion(
-                    sdc => JsonConvert.SerializeObject(sdc.List, Formatting.Indented),
-                    sdc => stringToDict(sdc)
+                    sdc => JsonConvert.SerializeObject(sdc, Formatting.Indented),
+                    sdc => stringToSwagDict(sdc)
              );
 
             //SwagDataTable Settings
@@ -229,14 +229,14 @@ namespace SwagOverflowWPF.Data
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JArray jArray = JArray.Load(reader);
-            KeyValuePair<String, SwagDataColumn>[] pairs = new KeyValuePair<string, SwagDataColumn>[jArray.Count];
+            JObject jObject = JObject.Load(reader);
+            KeyValuePair<String, SwagDataColumn>[] pairs = new KeyValuePair<string, SwagDataColumn>[jObject.Count];
 
-            for (int c = 0; c < jArray.Count; c++)
+            Int32 cIndex = 0;
+            foreach (KeyValuePair<String, JToken> kvp in jObject)
             {
-                JToken jItem = jArray[c];
-                String key = jItem["Key"].Value<String>();
-                JObject jColumn = jItem["Value"].Value<JObject>();
+                String key = kvp.Key;
+                JObject jColumn = (JObject)kvp.Value;
 
                 SwagDataColumn sdc = new SwagDataColumn();
 
@@ -257,6 +257,10 @@ namespace SwagOverflowWPF.Data
                             else if (jVal.Value != null && converter.CanConvertFrom(typeof(String))) //Try converting from string
                             {
                                 propertyInfo.SetValue(sdc, converter.ConvertFrom(jVal.Value.ToString()));
+                            }
+                            else if (jVal.Value != null && propertyInfo.PropertyType == typeof(Type))
+                            {
+                                propertyInfo.SetValue(sdc, Type.GetType(jVal.Value.ToString()));
                             }
                             else
                             {
@@ -301,7 +305,8 @@ namespace SwagOverflowWPF.Data
                     }
                 }
 
-                pairs[c] = new KeyValuePair<string, SwagDataColumn>(key, sdc);
+                pairs[cIndex] = new KeyValuePair<string, SwagDataColumn>(key, sdc);
+                cIndex++;
             }
 
             return pairs;

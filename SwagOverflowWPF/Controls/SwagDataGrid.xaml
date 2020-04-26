@@ -20,16 +20,118 @@
                 <ResourceDictionary Source="/SwagOverflowWPF;component/Themes/Common.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <ui:SwagColumnConverter x:Key="SwagColumnConverter" />
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <ui:BoolToVisibilityConverter x:Key="BooleanToVisibilityConverter" FalseValue="Collapsed" />
             <ContextMenu x:Key="SwagColumnHeaderContextMenu">
                 <MenuItem Header="Clear Filter" Command="{Binding ClearFilterCommand}">
                     <MenuItem.Icon>
                         <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.FilterMinus}}" />
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Header="Rename" StaysOpenOnClick="True">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Rename}}" />
+                    </MenuItem.Icon>
+                    <MenuItem StaysOpenOnClick="True">
+                        <MenuItem.Header>
+                            <Grid x:Name="gridRename">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ColumnName, Mode=OneWay}" Loaded="SwagColumnHeader_RenameLoad" KeyDown="SwagColumnHeader_RenameKeyDown" MinWidth="100" />
+                                <Button Grid.Row="1" Grid.Column="0" Content="Rename" Click="SwagColumnHeader_RenameClick" />
+                            </Grid>
+                        </MenuItem.Header>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Convert" StaysOpenOnClick="True">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Convert}}" />
+                    </MenuItem.Icon>
+                    <MenuItem StaysOpenOnClick="True">
+                        <MenuItem.Header>
+                            <Grid x:Name="gridConvertOptions">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <CheckBox Grid.Row="0" Grid.Column="0" Content="KeepOriginal" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Default:" />
+                                <TextBox Grid.Row="3" Grid.Column="0" MinWidth="100" />
+                            </Grid>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Header="Integer" Tag="{x:Type sys:Int32}" Click="SwagColumnHeader_ConvertClick">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Integer}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Decimal" Tag="{x:Type sys:Decimal}" Click="SwagColumnHeader_ConvertClick">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Decimal}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Move">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.DragVariant}}" />
+                    </MenuItem.Icon>
+                    <MenuItem Header="Left 1" Tag="-1" Click="SwagColumnHeader_MoveClick">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ChevronLeft}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Right 1" Tag="1" Click="SwagColumnHeader_MoveClick">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ChevronRight}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Left Edge" Tag="-1000000" Click="SwagColumnHeader_MoveClick">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ChevronTripleLeft}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Right Edge" Tag="1000000" Click="SwagColumnHeader_MoveClick">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ChevronTripleRight}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="ShowTotals" IsChecked="{Binding SwagDataTable.ShowColumnTotals}" Command="{Binding SwagDataTable.ToggleShowColumnTotalsCommand}">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Sigma}}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Options">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Tools}}" />
+                    </MenuItem.Icon>
+                    <MenuItem Header="Reset Columns" Command="{Binding SwagDataTable.ResetColumnsCommand}">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Refresh}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Debug" IsChecked="{Binding SwagDataTable.ShowDebug}" Command="{Binding SwagDataTable.ToggleShowDebugCommand}">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.AndroidDebugBridge}}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
                 <MenuItem Header="Hide" Command="{Binding HideCommand}">
                     <MenuItem.Icon>
                         <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.EyeOff}}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Remove" Command="{Binding RemoveCommand}">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.TableColumnRemove}}" />
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>
@@ -47,7 +149,7 @@
                 <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Gray5}" />
                 <Setter Property="BorderThickness" Value="0 0 0 3" />
                 <Setter Property="metro:ControlsHelper.ContentCharacterCasing" Value="Normal" />
-                <Setter Property="Cursor" Value="Hand" />
+                <!--<Setter Property="Cursor" Value="Hand" />-->
                 <Setter Property="FontWeight" Value="SemiBold" />
                 <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.ThemeForeground}" />
                 <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -66,29 +168,35 @@
                                         <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="DataContext" />
                                     </MultiBinding>
                                 </Grid.DataContext>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Border x:Name="BackgroundBorder"
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border x:Name="BackgroundBorder"
                                     Grid.ColumnSpan="3"
                                     Background="{TemplateBinding Background}"
                                     BorderThickness="{TemplateBinding BorderThickness}">
-                                    <Border.Style>
-                                        <Style TargetType="{x:Type Border}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsSelected}" Value="False">
-                                                    <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Gray5}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                    <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.AccentBase}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                </Border>
-                                <metro:ContentControlEx x:Name="HeaderContent"
+                                        <Border.Style>
+                                            <Style TargetType="{x:Type Border}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsSelected}" Value="False">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Gray5}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.AccentBase}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+                                    <metro:ContentControlEx x:Name="HeaderContent"
                                                    Grid.Column="0"
                                                    Margin="{TemplateBinding BorderThickness}"
                                                    Padding="{TemplateBinding Padding}"
@@ -100,139 +208,139 @@
                                                    ContentTemplate="{TemplateBinding ContentTemplate}"
                                                    ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                                <Grid Grid.Column="1">
-                                    <ToggleButton x:Name="tbColumnFilter" Margin="{TemplateBinding BorderThickness}"
+                                    <Grid Grid.Column="1">
+                                        <ToggleButton x:Name="tbColumnFilter" Margin="{TemplateBinding BorderThickness}"
                                                    Padding="0,0,4,0">
-                                        <ToggleButton.Style>
-                                            <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MahApps.Styles.ToggleButton.Flat}">
-                                                <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.BlackColor}" />
-                                                <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Control.Background}" />
-                                                <Setter Property="IsChecked" Value="{Binding IsColumnFilterOpen}" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding HasAppliedFilter}" Value="True">
-                                                        <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.AccentBase}" />
-                                                    </DataTrigger>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding IsColumnFilterOpen}" Value="True" />
-                                                            <Condition Binding="{Binding HasAppliedFilter}" Value="True"  />
-                                                        </MultiDataTrigger.Conditions>
-                                                        <MultiDataTrigger.Setters>
-                                                            <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.GrayNormal}" />
-                                                        </MultiDataTrigger.Setters>
-                                                    </MultiDataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </ToggleButton.Style>
-                                        <local:IconControl Padding="0,0,0,0" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Filter}}" />
-                                    </ToggleButton>
-                                    <Popup StaysOpen="False" IsOpen="{Binding IsColumnFilterOpen}"
+                                            <ToggleButton.Style>
+                                                <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MahApps.Styles.ToggleButton.Flat}">
+                                                    <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.BlackColor}" />
+                                                    <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Control.Background}" />
+                                                    <Setter Property="IsChecked" Value="{Binding IsColumnFilterOpen}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding HasAppliedFilter}" Value="True">
+                                                            <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.AccentBase}" />
+                                                        </DataTrigger>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding IsColumnFilterOpen}" Value="True" />
+                                                                <Condition Binding="{Binding HasAppliedFilter}" Value="True"  />
+                                                            </MultiDataTrigger.Conditions>
+                                                            <MultiDataTrigger.Setters>
+                                                                <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.GrayNormal}" />
+                                                            </MultiDataTrigger.Setters>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ToggleButton.Style>
+                                            <local:IconControl Padding="0,0,0,0" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Filter}}" />
+                                        </ToggleButton>
+                                        <Popup StaysOpen="False" IsOpen="{Binding IsColumnFilterOpen}"
                                             PlacementTarget="{Binding ElementName=tbColumnFilter}" PopupAnimation="Slide" 
                                             x:Name="puPopup">
-                                        <ContentPresenter>
-                                            <ContentPresenter.ContentTemplate>
-                                                <DataTemplate>
-                                                    <Border Background="{DynamicResource MahApps.Brushes.Control.Background}" BorderThickness="3" BorderBrush="{StaticResource MahApps.Brushes.Gray5}" MinWidth="150">
-                                                        <DockPanel MaxHeight="400">
-                                                            <DockPanel.DataContext>
-                                                                <MultiBinding Converter="{StaticResource SwagColumnConverter}" Mode="OneTime">
-                                                                    <Binding RelativeSource="{RelativeSource AncestorType=local:SwagDataGrid, Mode=FindAncestor}" />
-                                                                    <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="DataContext" />
-                                                                </MultiBinding>
-                                                            </DockPanel.DataContext>
-                                                            <Button DockPanel.Dock="Top" Margin="3" Padding="0" Height="20" Command="{Binding ClearFilterCommand}">
-                                                                <local:IconControl Padding="0,0,0,0" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.FilterMinus}}" />
-                                                            </Button>
-                                                            <local:SearchTextBox DockPanel.Dock="Top"
+                                            <ContentPresenter>
+                                                <ContentPresenter.ContentTemplate>
+                                                    <DataTemplate>
+                                                        <Border Background="{DynamicResource MahApps.Brushes.Control.Background}" BorderThickness="3" BorderBrush="{StaticResource MahApps.Brushes.Gray5}" MinWidth="150">
+                                                            <DockPanel MaxHeight="400">
+                                                                <DockPanel.DataContext>
+                                                                    <MultiBinding Converter="{StaticResource SwagColumnConverter}" Mode="OneTime">
+                                                                        <Binding RelativeSource="{RelativeSource AncestorType=local:SwagDataGrid, Mode=FindAncestor}" />
+                                                                        <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="DataContext" />
+                                                                    </MultiBinding>
+                                                                </DockPanel.DataContext>
+                                                                <Button DockPanel.Dock="Top" Margin="3" Padding="0" Height="20" Command="{Binding ClearFilterCommand}">
+                                                                    <local:IconControl Padding="0,0,0,0" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.FilterMinus}}" />
+                                                                </Button>
+                                                                <local:SearchTextBox DockPanel.Dock="Top"
                                                                              LabelText="Search Column"
                                                                              Text="{Binding SearchFilter, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                                              cmd:CommandBehavior.Event="Search"
                                                                              cmd:CommandBehavior.Command="{Binding ApplySearchFilterCommand}"
                                                                              FilterMode="{Binding SearchFilterMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                                                            <Expander Header="List">
-                                                                <DockPanel>
-                                                                    <local:SearchTextBox DockPanel.Dock="Top"
+                                                                <Expander Header="List">
+                                                                    <DockPanel>
+                                                                        <local:SearchTextBox DockPanel.Dock="Top"
                                                                              LabelText="Search List"
                                                                              Text="{Binding ListValuesFilter, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                                              cmd:CommandBehavior.Event="Search"
                                                                              cmd:CommandBehavior.Command="{Binding ApplyListValuesFilterCommand}"
                                                                              FilterMode="{Binding ListValuesFilterMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                                                                    <Button DockPanel.Dock="Top" Margin="3" Command="{Binding ApplyListFilterCommand}">
-                                                                        <local:IconControl Text="Apply" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Play}}" />
-                                                                    </Button>
-                                                                    <CheckBox DockPanel.Dock="Top" Padding="3" Margin="6,0,0,0" Content="Show All" IsChecked="{Binding ShowAllDistinctValues}" />
-                                                                    <ListView DockPanel.Dock="Top" Padding="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-                                                                        <ListView.ItemContainerStyle>
-                                                                            <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MahApps.Styles.ListViewItem}">
-                                                                                <Setter Property="VerticalAlignment" Value="Center" />
-                                                                                <Setter Property="VerticalContentAlignment" Value="Center" />
-                                                                                <Setter Property="HorizontalAlignment" Value="Stretch" />
-                                                                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                                                            </Style>
-                                                                        </ListView.ItemContainerStyle>
-                                                                        <ListViewItem>
-                                                                            <CheckBox HorizontalContentAlignment="Stretch" IsChecked="{Binding ListCheckAll}">
-                                                                                <Grid>
-                                                                                    <Grid.ColumnDefinitions>
-                                                                                        <ColumnDefinition Width="*" />
-                                                                                        <ColumnDefinition Width="Auto" />
-                                                                                    </Grid.ColumnDefinitions>
-                                                                                    <TextBlock Grid.Column="0" Text="All" />
-                                                                                    <TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding SwagDataTable.DataTable.Rows.Count, StringFormat={}({0})}" />
-                                                                                </Grid>
-                                                                            </CheckBox>
-                                                                        </ListViewItem>
-                                                                    </ListView>
-                                                                    <ListView ItemsSource="{Binding DistinctValuesView, Mode=OneTime}"
+                                                                        <Button DockPanel.Dock="Top" Margin="3" Command="{Binding ApplyListFilterCommand}">
+                                                                            <local:IconControl Text="Apply" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Play}}" />
+                                                                        </Button>
+                                                                        <CheckBox DockPanel.Dock="Top" Padding="3" Margin="6,0,0,0" Content="Show All" IsChecked="{Binding ShowAllDistinctValues}" />
+                                                                        <ListView DockPanel.Dock="Top" Padding="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                                                            <ListView.ItemContainerStyle>
+                                                                                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MahApps.Styles.ListViewItem}">
+                                                                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                                                                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                                                                                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                                                </Style>
+                                                                            </ListView.ItemContainerStyle>
+                                                                            <ListViewItem>
+                                                                                <CheckBox HorizontalContentAlignment="Stretch" IsChecked="{Binding ListCheckAll}">
+                                                                                    <Grid>
+                                                                                        <Grid.ColumnDefinitions>
+                                                                                            <ColumnDefinition Width="*" />
+                                                                                            <ColumnDefinition Width="Auto" />
+                                                                                        </Grid.ColumnDefinitions>
+                                                                                        <TextBlock Grid.Column="0" Text="All" />
+                                                                                        <TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding SwagDataTable.DataTable.Rows.Count, StringFormat={}({0})}" />
+                                                                                    </Grid>
+                                                                                </CheckBox>
+                                                                            </ListViewItem>
+                                                                        </ListView>
+                                                                        <ListView ItemsSource="{Binding DistinctValuesView, Mode=OneTime}"
                                                                       VirtualizingPanel.IsVirtualizing="True"
                                                                       VirtualizingPanel.VirtualizationMode="Recycling"
                                                                       ScrollViewer.CanContentScroll="True">
-                                                                        <ItemsControl.ItemsPanel>
-                                                                            <ItemsPanelTemplate>
-                                                                                <VirtualizingStackPanel IsItemsHost="True"/>
-                                                                            </ItemsPanelTemplate>
-                                                                        </ItemsControl.ItemsPanel>
-                                                                        <ListView.Template>
-                                                                            <ControlTemplate TargetType="{x:Type ListView}">
-                                                                                <ScrollViewer Focusable="False" CanContentScroll="True" Padding="3">
-                                                                                    <ItemsPresenter HorizontalAlignment="Stretch"/>
-                                                                                </ScrollViewer>
-                                                                            </ControlTemplate>
-                                                                        </ListView.Template>
-                                                                        <ListView.ItemContainerStyle>
-                                                                            <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MahApps.Styles.ListViewItem}">
-                                                                                <Setter Property="VerticalAlignment" Value="Center" />
-                                                                                <Setter Property="VerticalContentAlignment" Value="Center" />
-                                                                                <Setter Property="HorizontalAlignment" Value="Stretch" />
-                                                                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                                                            </Style>
-                                                                        </ListView.ItemContainerStyle>
-                                                                        <ListView.ItemTemplate>
-                                                                            <DataTemplate>
-                                                                                <Grid HorizontalAlignment="Stretch">
-                                                                                    <Grid.ColumnDefinitions>
-                                                                                        <ColumnDefinition Width="Auto" />
-                                                                                        <ColumnDefinition Width="*" />
-                                                                                        <ColumnDefinition Width="Auto" />
-                                                                                    </Grid.ColumnDefinitions>
-                                                                                    <CheckBox Grid.Column="0" IsChecked="{Binding Value.IsChecked}" />
-                                                                                    <TextBlock Grid.Column="1" Text="{Binding Value.Value}" />
-                                                                                    <TextBlock Grid.Column="2" HorizontalAlignment="Right" Text="{Binding Value.Count, StringFormat={}({0})}" />
-                                                                                </Grid>
-                                                                            </DataTemplate>
-                                                                        </ListView.ItemTemplate>
-                                                                    </ListView>
-                                                                </DockPanel>
-                                                            </Expander>
-                                                        </DockPanel>
-                                                    </Border>
-                                                </DataTemplate>
-                                            </ContentPresenter.ContentTemplate>
-                                        </ContentPresenter>
-                                    </Popup>
-                                </Grid>
+                                                                            <ItemsControl.ItemsPanel>
+                                                                                <ItemsPanelTemplate>
+                                                                                    <VirtualizingStackPanel IsItemsHost="True"/>
+                                                                                </ItemsPanelTemplate>
+                                                                            </ItemsControl.ItemsPanel>
+                                                                            <ListView.Template>
+                                                                                <ControlTemplate TargetType="{x:Type ListView}">
+                                                                                    <ScrollViewer Focusable="False" CanContentScroll="True" Padding="3">
+                                                                                        <ItemsPresenter HorizontalAlignment="Stretch"/>
+                                                                                    </ScrollViewer>
+                                                                                </ControlTemplate>
+                                                                            </ListView.Template>
+                                                                            <ListView.ItemContainerStyle>
+                                                                                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MahApps.Styles.ListViewItem}">
+                                                                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                                                                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                                                                                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                                                </Style>
+                                                                            </ListView.ItemContainerStyle>
+                                                                            <ListView.ItemTemplate>
+                                                                                <DataTemplate>
+                                                                                    <Grid HorizontalAlignment="Stretch">
+                                                                                        <Grid.ColumnDefinitions>
+                                                                                            <ColumnDefinition Width="Auto" />
+                                                                                            <ColumnDefinition Width="*" />
+                                                                                            <ColumnDefinition Width="Auto" />
+                                                                                        </Grid.ColumnDefinitions>
+                                                                                        <CheckBox Grid.Column="0" IsChecked="{Binding Value.IsChecked}" />
+                                                                                        <TextBlock Grid.Column="1" Text="{Binding Value.Value}" />
+                                                                                        <TextBlock Grid.Column="2" HorizontalAlignment="Right" Text="{Binding Value.Count, StringFormat={}({0})}" />
+                                                                                    </Grid>
+                                                                                </DataTemplate>
+                                                                            </ListView.ItemTemplate>
+                                                                        </ListView>
+                                                                    </DockPanel>
+                                                                </Expander>
+                                                            </DockPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ContentPresenter.ContentTemplate>
+                                            </ContentPresenter>
+                                        </Popup>
+                                    </Grid>
 
-                                <Path x:Name="SortArrow"
+                                    <Path x:Name="SortArrow"
                                   Grid.Column="2"
                                   Width="8"
                                   Height="10"
@@ -243,16 +351,32 @@
                                   Stretch="Fill"
                                   Visibility="Collapsed" />
 
-                                <Thumb x:Name="PART_LeftHeaderGripper"
+                                    <Thumb x:Name="PART_LeftHeaderGripper"
                                    Grid.Column="0"
                                    HorizontalAlignment="Left"
                                    Background="Transparent"
                                    Style="{StaticResource MahApps.Styles.Thumb.ColumnHeaderGripper}" />
 
-                                <Thumb x:Name="PART_RightHeaderGripper"
+                                    <Thumb x:Name="PART_RightHeaderGripper"
                                    Grid.Column="2"
                                    HorizontalAlignment="Right"
                                    Style="{StaticResource MahApps.Styles.Thumb.ColumnHeaderGripper}" />
+
+                                </Grid>
+                                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SwagDataTable.ShowColumnTotals, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}">
+                                    <local:IconControl Text="{Binding Total}" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Sigma}}" />
+                                </Grid>
+                                <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SwagDataTable.ShowDebug, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}">
+                                    <GroupBox>
+                                        <GroupBox.Header>
+                                            <local:IconControl Text="Debug" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.AndroidDebugBridge}}" />
+                                        </GroupBox.Header>
+                                        <StackPanel>
+                                            <local:IconControl Text="{Binding DataType}" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ShapeOutline}}" />
+                                            <local:IconControl Text="{Binding Sequence}" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Numeric}}" />
+                                        </StackPanel>
+                                    </GroupBox>
+                                </Grid>
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="SortDirection" Value="Ascending">
@@ -546,9 +670,11 @@
             <DataGrid x:Name="DataGrid" 
                       SelectionMode="Extended"
                       SelectionUnit="CellOrRowHeader"
+                      CanUserSortColumns="False"
                       AutoGenerateColumns="False"
                       ItemsSource="{Binding SwagDataTable.DataTable.DefaultView}"
-                      ColumnHeaderStyle="{StaticResource SwagColumnHeaderStyle}">
+                      ColumnHeaderStyle="{StaticResource SwagColumnHeaderStyle}"
+                      ColumnReordered="DataGrid_ColumnReordered">
                 <DataGrid.Style>
                     <Style TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
                         <Setter Property="AlternatingRowBackground" Value="{DynamicResource MahApps.Brushes.Accent2}"/>

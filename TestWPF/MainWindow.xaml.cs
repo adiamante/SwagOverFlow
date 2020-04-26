@@ -11,6 +11,7 @@ using SwagOverflowWPF.ViewModels;
 using System.Text;
 using System.Collections;
 using SwagOverFlow.Data;
+using Microsoft.Extensions.Logging;
 
 namespace TestWPF
 {
@@ -72,7 +73,7 @@ namespace TestWPF
             String sourceTableGroupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Table_Source";
             Source = tableService.GetDataTableByName(sourceTableGroupName);
             String destTableGroupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Table_Dest";
-            Dest = tableService.GetDataTableByName(destTableGroupName);
+            //Dest = tableService.GetDataTableByName(destTableGroupName);
 
             BindSourceGrid();
 
@@ -96,6 +97,7 @@ namespace TestWPF
             //services.AddDbContext<SwagContext>(options => SwagContext.SetSqlServerOptions(options));
             services.AddTransient<SwagWindowSettingService>();
             services.AddTransient<SwagDataTableService>();
+
             serviceProvider = services.BuildServiceProvider();
         }
 
@@ -184,6 +186,8 @@ namespace TestWPF
                     Source.Columns.Add("Source, Dest", sdc);
                 }
                 #endregion (Source, Dest)
+
+                Source.Save();
             }
         }
 

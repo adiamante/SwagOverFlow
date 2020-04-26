@@ -328,5 +328,18 @@ namespace SwagOverflowWPF.Collections
 
 		#endregion INotifyCollectionChanged
 
+		public override void Clear()
+		{
+			DoReadWriteNotify(
+			  // Get the list of keys and values from the internal list
+			  () => ListSelect.Create(_internalCollection.List, x => x.KeyValuePair),
+			  // remove the keys from the dictionary, remove the range from the list
+			  (items) => ImmutableDictionaryListPair<TKey, TValue>.Empty,
+			  // Notify which items were removed
+			  (items) => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, null, -1)
+			);
+
+			List.Clear();
+		}
 	}
 }
