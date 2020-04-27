@@ -865,12 +865,14 @@ namespace SwagOverflowWPF.ViewModels
 
         public void Rename(String newColName)
         {
+            Int32 originalSequence = Sequence;
             //Update DataTable to have the new name
             SwagDataTable.DataTable.Columns[ColumnName].ColumnName = newColName;
             SwagDataTable.Columns.Remove(ColumnName);
             ColumnName = newColName;
             Binding = null;         //will need a new binding
             SwagDataTable.Columns.Add(ColumnName, this);
+            Sequence = originalSequence;        //When a column is added with 0 or lower sequence, it gets the value SwagDataTable.Columns.Count - 1
             SwagDataTable.DelaySave = true;
             SwagDataTable.ResetColumns();
             SwagDataTable.InvalidateColumns();

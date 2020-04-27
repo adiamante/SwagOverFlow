@@ -33,6 +33,9 @@
                         <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Rename}}" />
                     </MenuItem.Icon>
                     <MenuItem StaysOpenOnClick="True">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.KeyboardOutline}}" />
+                        </MenuItem.Icon>
                         <MenuItem.Header>
                             <Grid x:Name="gridRename">
                                 <Grid.RowDefinitions>
@@ -53,6 +56,9 @@
                         <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Convert}}" />
                     </MenuItem.Icon>
                     <MenuItem StaysOpenOnClick="True">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Tune}}" />
+                        </MenuItem.Icon>
                         <MenuItem.Header>
                             <Grid x:Name="gridConvertOptions">
                                 <Grid.RowDefinitions>

@@ -371,7 +371,7 @@ namespace SwagOverflowWPF.Controls
                 targetSequence = swagDataColumn.SwagDataTable.Columns.Count - 1;
             }
             swagDataColumn.SetSequence(targetSequence);
-
+            swagDataColumn.SwagDataTable.ResetColumns();
             flogDetail.EndTimer();
         }
 
