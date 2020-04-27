@@ -59,30 +59,31 @@ namespace SwagOverflowWPF.Controls
 
         private void ControlInstance_Loaded(object sender, RoutedEventArgs e)
         {
-            SwagDataSet set = new SwagDataSet();
-            SwagDataTable t1 = new SwagDataTable() { Display = "T1X" };
-            t1.InitSettings();
-            t1.InitTabs();
-            SwagDataTable t2 = new SwagDataTable() { Display = "T2" };
-            t2.InitSettings();
-            t2.InitTabs();
-            set.Children.Add(t1);
-            set.Children.Add(t2);
+            //SwagDataSet set = new SwagDataSet();
+            //SwagDataTable t1 = new SwagDataTable() { Display = "T1X" };
+            //t1.InitSettings();
+            //t1.InitTabs();
+            //SwagDataTable t2 = new SwagDataTable() { Display = "T2" };
+            //t2.InitSettings();
+            //t2.InitTabs();
+            //set.Children.Add(t1);
+            //set.Children.Add(t2);
 
 
-            SwagDataSet s1 = new SwagDataSet() { Display = "S1" };
-            SwagDataTable s1t1 = new SwagDataTable() { Display = "S1T1" };
-            s1t1.InitSettings();
-            s1t1.InitTabs();
-            SwagDataTable s1t2 = new SwagDataTable() { Display = "S1T2" };
-            s1t2.InitSettings();
-            s1t2.InitTabs();
-            s1.Children.Add(s1t1);
-            s1.Children.Add(s1t2);
+            //SwagDataSet s1 = new SwagDataSet() { Display = "S1" };
+            //SwagDataTable s1t1 = new SwagDataTable() { Display = "S1T1" };
+            //s1t1.InitSettings();
+            //s1t1.InitTabs();
+            //SwagDataTable s1t2 = new SwagDataTable() { Display = "S1T2" };
+            //s1t2.InitSettings();
+            //s1t2.InitTabs();
+            //s1.Children.Add(s1t1);
+            //s1.Children.Add(s1t2);
 
-            set.Children.Add(s1);
+            //set.Children.Add(s1);
 
-            SwagDataSet = set;
+            //SwagDataSet = set;
+            SwagDataSet = new SwagDataSet();
         }
 
         private void SwagData_Drop(object sender, DragEventArgs e)
@@ -117,10 +118,9 @@ namespace SwagOverflowWPF.Controls
 
             if (allFiles.Count > 0)
             {
-                DockPanel dockPanel = (DockPanel)sender;
-
-                SwagDataSet swagDataSet = (SwagDataSet)dockPanel.DataContext;
-                swagDataSet.LoadFiles(allFiles);
+                //DockPanel dockPanel = (DockPanel)sender;
+                //SwagDataSet swagDataSet = (SwagDataSet)dockPanel.DataContext;
+                SwagDataSet.LoadFiles(allFiles);
             }
         }
     }
