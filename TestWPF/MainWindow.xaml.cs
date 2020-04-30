@@ -20,7 +20,7 @@ namespace TestWPF
     /// </summary>
     public partial class MainWindow : SwagWindow
     {
-        private static IServiceProvider serviceProvider;
+        
         SwagDataTable _sdtSource = null, _sdtDest = null;
         String descriptionField = "FullDescription";
         IEnumerable _comboboxSource = null;
@@ -62,18 +62,14 @@ namespace TestWPF
         {
             InitializeComponent();
 
-            ConfigureServices();
-            SwagContext context = serviceProvider.GetService<SwagContext>();
-            context.Database.EnsureCreated();
-            SwagWindowSettingService settingService = serviceProvider.GetService<SwagWindowSettingService>();
+            SwagWPFServices.Context.Database.EnsureCreated();
             String settingGoupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Settings";
-            this.Settings = settingService.GetWindowSettingGroupByName(settingGoupName);
+            this.Settings = SwagWPFServices.SettingsService.GetWindowSettingGroupByName(settingGoupName);
 
-            SwagDataTableService tableService = serviceProvider.GetService<SwagDataTableService>();
             String sourceTableGroupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Table_Source";
-            Source = tableService.GetDataTableByName(sourceTableGroupName);
+            Source = SwagWPFServices.DataTableService.GetDataTableByName(sourceTableGroupName);
             String destTableGroupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Table_Dest";
-            //Dest = tableService.GetDataTableByName(destTableGroupName);
+            //Dest = SwagWPFServices.DataTableService.GetDataTableByName(destTableGroupName);
 
             BindSourceGrid();
 
@@ -87,18 +83,6 @@ namespace TestWPF
             DataTable dt = csvFileToDataTable.ToDataTable(new DataTableConvertParameters(), @"C:\Users\Desktop\Desktop\445.csv");
             ComboBoxSource = dt.DefaultView;
             //scbxTest.ItemsSource = dt.DefaultView;
-        }
-
-        private static void ConfigureServices()
-        {
-            var services = new ServiceCollection();
-
-            services.AddDbContext<SwagContext>(options => SwagContext.SetSqliteOptions(options));
-            //services.AddDbContext<SwagContext>(options => SwagContext.SetSqlServerOptions(options));
-            services.AddTransient<SwagWindowSettingService>();
-            services.AddTransient<SwagDataTableService>();
-
-            serviceProvider = services.BuildServiceProvider();
         }
 
         private void dg_DragEnter(object sender, System.Windows.DragEventArgs e)
@@ -213,8 +197,7 @@ namespace TestWPF
                 }
             });
 
-            SwagContext context = serviceProvider.GetService<SwagContext>();
-            Source.SetContext(context);
+            Source.SetContext(SwagWPFServices.Context);
             Source.DataTable = dt;
         }
 
