@@ -62,7 +62,7 @@
                     <RowDefinition x:Name="RowDefinition2" Height="Auto" />
                 </Grid.RowDefinitions>
                 <ToggleButton Grid.Row="0" Grid.Column="0" DockPanel.Dock="Top" IsChecked="{Binding ShowChildText}" 
-                                  HorizontalAlignment="Left" Style="{StaticResource MahApps.Styles.Button.ToolBar}">
+                                  HorizontalAlignment="Left">
                     <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Menu}" />
                 </ToggleButton>
                 <Grid x:Name="HeaderPanelGrid"

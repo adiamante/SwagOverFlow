@@ -18,10 +18,10 @@
             <Setter.Value>
                 <metro:WindowCommands>
                     <ToggleButton IsChecked="{Binding Settings[Window][CommandHistory][IsOpen].Value}">
-                        <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.History}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                        <controls:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.History}" />
                     </ToggleButton>
                     <ToggleButton IsChecked="{Binding Settings[Window][Settings][IsOpen].Value}">
-                        <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Settings}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                        <controls:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Settings}" />
                     </ToggleButton>
                 </metro:WindowCommands>
             </Setter.Value>
@@ -32,10 +32,7 @@
                     <metro:Flyout IsOpen="{Binding Settings[Window][CommandHistory][IsOpen].Value}" Position="Right" Theme="Accent">
                         <metro:Flyout.Header>
                             <StackPanel Orientation="Horizontal">
-                                <Grid>
-                                    <ContentControl HorizontalAlignment="Right" Margin="0,0,10,0" Grid.Column="0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.History}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
-                                </Grid>
-                                <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" Text="Commands" />
+                                <controls:IconControl Text="Commands" Kind="{x:Static iconPacks:PackIconMaterialKind.History}" />
                             </StackPanel>
                         </metro:Flyout.Header>
                         <GroupBox>
@@ -45,13 +42,13 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="History" />
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="History" Foreground="{DynamicResource MahApps.Brushes.SystemControlForegroundChromeWhite}" />
                                     <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                                         <Button Command="{Binding CommandManager.UndoCommand}">
-                                            <ContentControl HorizontalAlignment="Right" Grid.Column="0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Undo}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                            <controls:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Undo}" />
                                         </Button>
                                         <Button Command="{Binding CommandManager.RedoCommand}">
-                                            <ContentControl HorizontalAlignment="Right" Grid.Column="0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Redo}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                            <controls:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Redo}" />
                                         </Button>
                                     </StackPanel>
                                 </Grid>
@@ -78,10 +75,7 @@
                     <metro:Flyout IsOpen="{Binding Settings[Window][Settings][IsOpen].Value}" Position="Right" Theme="Accent">
                         <metro:Flyout.Header>
                             <StackPanel Orientation="Horizontal">
-                                <Grid>
-                                    <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Settings}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
-                                </Grid>
-                                <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" Text="Settings" />
+                                <controls:IconControl Text="Settings" Kind="{x:Static iconPacks:PackIconMaterialKind.Settings}" />
                             </StackPanel>
                         </metro:Flyout.Header>
                         <controls:SettingsControl Settings="{Binding Settings}" />

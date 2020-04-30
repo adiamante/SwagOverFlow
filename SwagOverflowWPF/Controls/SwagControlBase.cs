@@ -1,4 +1,5 @@
-﻿using MahApps.Metro;
+﻿using ControlzEx.Theming;
+using MahApps.Metro;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -28,7 +29,7 @@ namespace SwagOverflowWPF.Controls
         #endregion INotifyPropertyChanged
 
         #region Private Properties
-        Theme _theme = ThemeManager.GetTheme("Light.Blue");
+        Theme _theme = ThemeManager.Current.GetTheme("Light.Blue");
         SwagWindow _swagWindow = null;
         #endregion Private Properties
 
@@ -76,7 +77,7 @@ namespace SwagOverflowWPF.Controls
 
                 if (_theme.Name != currentWindowTheme.Name)
                 {
-                    ThemeManager.ChangeTheme(this.Resources, currentWindowTheme);
+                    ThemeManager.Current.ChangeTheme(this, this.Resources, currentWindowTheme);
                     _theme = currentWindowTheme;
                 }
             }

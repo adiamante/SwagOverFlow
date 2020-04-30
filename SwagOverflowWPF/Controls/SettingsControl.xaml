@@ -83,7 +83,7 @@
                     <ui:SwagTemplate.DataTemplate>
                         <DataTemplate>
                             <ContentControl Template="{StaticResource SettingControlTemplate}">
-                                <metro:ToggleSwitch IsChecked="{Binding Value}" VerticalAlignment="Center" />
+                                <metro:ToggleSwitch IsOn="{Binding Value}" VerticalAlignment="Center" />
                             </ContentControl>
                         </DataTemplate>
                     </ui:SwagTemplate.DataTemplate>

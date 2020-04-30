@@ -18,6 +18,7 @@
     <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MahApps.Styles.ToggleButton.WindowCommands}">
         <!--<Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Accent}" />-->
     </Style>
+    
     <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MahApps.Styles.ComboBox.Virtualized}">
 
     </Style>

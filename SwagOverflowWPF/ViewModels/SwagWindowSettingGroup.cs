@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using ControlzEx.Theming;
 using MahApps.Metro;
 using MahApps.Metro.IconPacks;
 using SwagOverflowWPF.Controls;
@@ -62,7 +63,7 @@ namespace SwagOverflowWPF.ViewModels
             String myBase = this["Window"]["Theme"]["Base"].ObjValue.ToString();
             String myAccent = this["Window"]["Theme"]["Accent"].ObjValue.ToString();
 
-            Theme theme = ThemeManager.GetTheme($"{myBase}.{myAccent}");
+            Theme theme = ThemeManager.Current.GetTheme($"{myBase}.{myAccent}");
             return theme;
         }
 
@@ -71,7 +72,7 @@ namespace SwagOverflowWPF.ViewModels
             if (e.PropertyName == "Value")
             {
                 Theme theme = GetCurrentTheme();
-                ThemeManager.ChangeTheme(Application.Current.MainWindow.Resources, theme);
+                ThemeManager.Current.ChangeTheme(this, Application.Current.MainWindow.Resources, theme);
 
                 #region OLD - Theme switching is now handled in SwagControlBase.cs
                 //ResourceDictionary resourceDictionary = new ResourceDictionary();
