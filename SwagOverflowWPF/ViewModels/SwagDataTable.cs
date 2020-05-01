@@ -1871,7 +1871,7 @@ namespace SwagOverflowWPF.ViewModels
         #region Private Members
         SwagSettingGroup _settings;
         SwagTabCollection _tabs;
-        ICommand _filterTabsCommand;
+        ICommand _filterTabsCommand, _addDataSetCommand, _addDataTableCommand;
         #endregion Private Members
 
         #region Settings
@@ -1944,6 +1944,36 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion FilterTabsCommand
+        #region AddDataSetCommand
+        public ICommand AddDataSetCommand
+        {
+            get
+            {
+                return _addDataSetCommand ?? (_addDataSetCommand =
+                    new RelayCommand(() =>
+                    {
+                        SwagDataSet newDataSet = new SwagDataSet();
+                        newDataSet.Display = $"Set {this.Children.Count + 1}";
+                        Children.Add(newDataSet);
+                    }));
+            }
+        }
+        #endregion AddDataSetCommand
+        #region AddDataTableCommand
+        public ICommand AddDataTableCommand
+        {
+            get
+            {
+                return _addDataTableCommand ?? (_addDataTableCommand =
+                    new RelayCommand(() =>
+                    {
+                        SwagDataTable newDataTable = new SwagDataTable();
+                        newDataTable.Display = $"Table {this.Children.Count + 1}";
+                        Children.Add(newDataTable);
+                    }));
+            }
+        }
+        #endregion AddDataTableCommand
 
         public void LoadFiles(IEnumerable<String> files)
         {

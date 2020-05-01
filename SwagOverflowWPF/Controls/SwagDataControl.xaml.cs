@@ -25,7 +25,7 @@ namespace SwagOverflowWPF.Controls
         #region SwagDataSet
         public static DependencyProperty SwagDataSetProperty =
                 DependencyProperty.Register(
-                    "SwagData",
+                    "SwagDataSet",
                     typeof(SwagDataSet),
                     typeof(SwagDataControl));
 
@@ -83,7 +83,7 @@ namespace SwagOverflowWPF.Controls
             //set.Children.Add(s1);
 
             //SwagDataSet = set;
-            SwagDataSet = new SwagDataSet();
+            //SwagDataSet = new SwagDataSet();
         }
 
         private void SwagData_Drop(object sender, DragEventArgs e)

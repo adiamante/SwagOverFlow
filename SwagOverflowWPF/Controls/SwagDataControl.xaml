@@ -33,7 +33,8 @@
                                         ContentTemplateSelector="{DynamicResource SwagTemplateSelector}"
                                         metro:HeaderedControlHelper.HeaderFontSize="14"
                                         metro:HeaderedControlHelper.HeaderFontWeight="Bold"
-                                        ItemTemplate="{DynamicResource DataHeaderTemplate}">
+                                        ItemTemplate="{DynamicResource DataHeaderTemplate}"
+                                        ItemContainerStyleSelector="{DynamicResource SwagHeaderStyleSelector}">
                                         <ui:SwagTemplateSelector.CustomTemplates>
                                             <CompositeCollection>
                                                 <CollectionContainer Collection="{Binding Source={StaticResource DataTemplates}}" />
@@ -50,6 +51,31 @@
         <DataTemplate x:Key="DataHeaderTemplate">
             <TextBlock Text="{Binding Display}" />
         </DataTemplate>
+        <ContextMenu x:Key="SwagDataSetHeaderContextMenu">
+            <MenuItem Header="Add Set" Command="{Binding AddDataSetCommand}">
+                <MenuItem.Icon>
+                    <local:IconControl Kind="{x:Static ui:PackIconCustomKind.DatasetAdd}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Add Table" Command="{Binding AddDataTableCommand}">
+                <MenuItem.Icon>
+                    <local:IconControl Kind="{x:Static ui:PackIconCustomKind.TableAdd}" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+        <ui:SwagStyleSelector x:Key="SwagHeaderStyleSelector">
+            <ui:SwagStyleSelector.StaticStyles>
+                <ui:SwagStyleCollection>
+                    <ui:SwagStyle Type="{x:Type vm:SwagDataSet}">
+                        <ui:SwagStyle.Style>
+                            <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
+                                <Setter Property="ContextMenu" Value="{StaticResource SwagDataSetHeaderContextMenu}" />
+                            </Style>
+                        </ui:SwagStyle.Style>
+                    </ui:SwagStyle>
+                </ui:SwagStyleCollection>
+            </ui:SwagStyleSelector.StaticStyles>
+        </ui:SwagStyleSelector>
         <ControlTemplate x:Key="TabItemTemplate" TargetType="{x:Type ContentControl}">
             <GroupBox Header="{Binding Display}">
                 <GroupBox.Content>
@@ -92,7 +118,8 @@
                     ContentTemplateSelector="{StaticResource SwagTemplateSelector}"
                     metro:HeaderedControlHelper.HeaderFontSize="14"
                     metro:HeaderedControlHelper.HeaderFontWeight="Bold"
-                    ItemTemplate="{StaticResource DataHeaderTemplate}">
+                    ItemTemplate="{StaticResource DataHeaderTemplate}"
+                    ItemContainerStyleSelector="{StaticResource SwagHeaderStyleSelector}">
             <ui:SwagTemplateSelector.CustomTemplates>
                 <CompositeCollection>
                     <CollectionContainer Collection="{Binding Source={StaticResource DataTemplates}}" />
