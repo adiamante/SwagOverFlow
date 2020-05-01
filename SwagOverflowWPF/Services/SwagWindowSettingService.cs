@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SwagOverFlow.Logger;
 using SwagOverflowWPF.Controls;
 using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Iterator;
@@ -17,6 +18,7 @@ namespace SwagOverflowWPF.Services
 
         public SwagWindowSettingGroup GetWindowSettingGroupByName(String groupName)
         {
+            SwagLogger.LogStart(this, "{Service} {Action}", "WindowSettingService", "GetWindowSettingGroupByName");
             SwagWindowSettingGroup windowSettings = null;
             SwagSettingUnitOfWork work = new SwagSettingUnitOfWork(_context);
 
@@ -82,6 +84,7 @@ namespace SwagOverflowWPF.Services
                 //}
                 #endregion OLD
                 #endregion Load SwagSettingUnitOfWork
+                SwagLogger.Log("{Service} {Action}", "WindowSettingService", "Loaded from database");
             }
 
             if (windowSettings == null)
@@ -103,10 +106,12 @@ namespace SwagOverflowWPF.Services
                 }
 
                 work.Complete();
+                SwagLogger.Log("{Service} {Action}", "WindowSettingService", "Created then saved to database");
                 #endregion Create SwagWindowSettingGroup
             }
 
             windowSettings.SetContext(_context);
+            SwagLogger.LogEnd(this, "{Service} {Action}", "WindowSettingService", "GetWindowSettingGroupByName");
             return windowSettings;
         }
     }
