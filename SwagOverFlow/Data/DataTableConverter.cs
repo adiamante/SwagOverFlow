@@ -1,5 +1,6 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using DbfDataReader;
 using SwagOverFlow.Clients;
 using System;
 using System.Collections.Concurrent;
@@ -304,6 +305,180 @@ namespace SwagOverFlow.Data
     }
     #endregion DataTableCsvFileConverter
 
+    #region DataTableDbfStreamConverter
+    public class DataTableDbfStreamConverter : DataTableConverter<Stream>
+    {
+        #region Private Members
+        #endregion Private Members
+
+        #region FromDataTable
+        public override Stream FromDataTable(DataTableConvertParams context, DataTable dt)
+        {
+            //Would need a DBF writer here
+            throw new NotImplementedException();
+        }
+        #endregion FromDataTable
+
+        #region ToDataTable
+        public override DataTable ToDataTable(DataTableConvertParams context, Stream stream)
+        {
+            DataTable dt = new DataTable();
+
+            DbfTable dbfTable = new DbfTable(stream, Encoding.UTF8);
+            foreach (DbfColumn col in dbfTable.Columns)
+            {
+                #region Resolve Column Type
+                Type colType = typeof(String);
+                switch (col.ColumnType)
+                {
+                    case DbfColumnType.Double:
+                    case DbfColumnType.Float:
+                    case DbfColumnType.Currency:
+                        colType = typeof(Double);
+                        break;
+                    case DbfColumnType.Date:
+                    case DbfColumnType.DateTime:
+                        colType = typeof(DateTime);
+                        break;
+                    case DbfColumnType.SignedLong:
+                        colType = typeof(Int64);
+                        break;
+                    case DbfColumnType.Boolean:
+                        colType = typeof(Boolean);
+                        break;
+                    case DbfColumnType.Number:
+                        colType = typeof(Int32);
+                        break;
+                    case DbfColumnType.Character:
+                    case DbfColumnType.General:
+                    case DbfColumnType.Memo:
+                    default:
+                        colType = typeof(String);
+                        break;
+
+                }
+                #endregion Resolve Column Type
+
+                dt.Columns.Add(col.Name, colType);
+            }
+
+            DbfRecord dbfRecord = new DbfRecord(dbfTable);
+
+            while (dbfTable.Read(dbfRecord))
+            {
+                DataRow dr = dt.NewRow();
+                Object [] items = new Object[dbfTable.Columns.Count];
+                for (int c = 0; c < dbfTable.Columns.Count; c++)
+                {
+                    Object val = null;
+                    #region Resolve Column Value
+                    switch (dbfRecord.Values[c])
+                    {
+                        case DbfValueDouble dvfDouble:
+                            val = dvfDouble.Value;
+                            break;
+                        case DbfValueFloat dbfFloat:
+                            val = dbfFloat.Value;
+                            break;
+                        case DbfValueDate dbfDate:
+                            val = dbfDate.Value;
+                            break;
+                        case DbfValueDateTime dbfDateTime:
+                            val = dbfDateTime.Value;
+                            break;
+                        case DbfValueLong dbfValueLong:
+                            val = dbfValueLong.Value;
+                            break;
+                        case DbfValueInt dbfValueInt:
+                            val = dbfValueInt.Value;
+                            break;
+                        case DbfValueCurrency dbfValueCurrency:
+                            val = dbfValueCurrency.Value;
+                            break;
+                        case DbfValueDecimal dbfValueDecimal:
+                            val = dbfValueDecimal.Value;
+                            break;
+                        case DbfValueBoolean dbfValueBoolean:
+                            val = dbfValueBoolean.Value;
+                            break;
+                        case DbfValueMemo dbfValueMemo:
+                            val = dbfValueMemo.Value;
+                            break;
+                        case DbfValueString dbfString:
+                            val = dbfString.Value;
+                            break;
+                        case DbfValueNull dbfValueNull:
+                            val = DBNull.Value;
+                            break;
+                        default:
+                            val = dbfRecord.Values[c];
+                            break;
+                    }
+                    #endregion Resolve Column Value
+                    items[c] = val;
+                }
+                dr.ItemArray = items;
+                dt.Rows.Add(dr);
+            }
+
+            return dt;
+        }
+        #endregion ToDataTable
+    }
+    #endregion DataTableDbfStreamConverter
+
+    #region DataTableDbfStringConverter
+    public class DataTableDbfStringConverter : DataTableConverter<String>
+    {
+        #region Private Members
+        DataTableDbfStreamConverter _dataTableDbfStreamConverter = new DataTableDbfStreamConverter();
+        #endregion Private Members
+
+        #region FromDataTable
+        public override string FromDataTable(DataTableConvertParams context, DataTable dt)
+        {
+            Stream stream = _dataTableDbfStreamConverter.FromDataTable(context, dt);
+            StreamReader reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
+        #endregion FromDataTable
+
+        #region ToDataTable
+        public override DataTable ToDataTable(DataTableConvertParams context, string input)
+        {
+            byte[] byteArray = Encoding.ASCII.GetBytes(input);
+            MemoryStream stream = new MemoryStream(byteArray);
+            return _dataTableDbfStreamConverter.ToDataTable(context, stream);
+        }
+        #endregion ToDataTable
+    }
+    #endregion DataTableDbfStringConverter
+
+    #region DataTableDbfFileConverter
+    public class DataTableDbfFileConverter : DataTableConverter<String>
+    {
+        #region Private Members
+        DataTableDbfStreamConverter _dataTableDbfStreamConverter = new DataTableDbfStreamConverter();
+        DataTableDbfStringConverter _dataTableDbfStringConverter = new DataTableDbfStringConverter();
+        #endregion Private Members
+
+        #region FromDataTable
+        public override string FromDataTable(DataTableConvertParams context, DataTable dt)
+        {
+            return _dataTableDbfStringConverter.FromDataTable(context, dt);
+        }
+        #endregion FromDataTable
+
+        #region ToDataTable
+        public override DataTable ToDataTable(DataTableConvertParams context, string input)
+        {
+            StreamReader sr = File.OpenText(input);
+            return _dataTableDbfStreamConverter.ToDataTable(context, sr.BaseStream);
+        }
+        #endregion ToDataTable
+    }
+    #endregion DataTableDbfFileConverter
+
     #region DataTableTSqlCommandConverter
     public class DataTableTSqlCommandConverter : DataTableConverter<String>
     {
@@ -362,8 +537,14 @@ namespace SwagOverFlow.Data
                     case "csv":
                     case ".csv":
                         IDataTableConverter csvConverter = new DataTableCsvFileConverter();
-                        DataTableConvertParams csvContext = new DataTableConvertParams();
-                        _converters.TryAdd(extension.ToLower(), new DataTableConvertContext(csvConverter, csvContext));
+                        DataTableConvertParams csvParams = new DataTableConvertParams();
+                        _converters.TryAdd(extension.ToLower(), new DataTableConvertContext(csvConverter, csvParams));
+                        break;
+                    case "dbf":
+                    case ".dbf":
+                        IDataTableConverter dbfConverter = new DataTableDbfFileConverter();
+                        DataTableConvertParams dbfParams = new DataTableConvertParams();
+                        _converters.TryAdd(extension.ToLower(), new DataTableConvertContext(dbfConverter, dbfParams));
                         break;
                 }
 
@@ -372,7 +553,7 @@ namespace SwagOverFlow.Data
                     return null;
                 }
 
-                return _converters[extension];
+                return _converters[extension.ToLower()];
             }
         }
     }

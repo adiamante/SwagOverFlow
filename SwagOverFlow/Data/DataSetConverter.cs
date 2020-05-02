@@ -264,14 +264,14 @@ namespace SwagOverFlow.Data
                     case "xml":
                     case ".xml":
                         IDataSetConverter xmlConverter = new DataSetXmlFileConverter();
-                        DataSetConvertParams xmlContext = new DataSetConvertParams();
-                        _converters.TryAdd(extension.ToLower(), new DataSetConvertContext(xmlConverter, xmlContext));
+                        DataSetConvertParams xmlParams = new DataSetConvertParams();
+                        _converters.TryAdd(extension.ToLower(), new DataSetConvertContext(xmlConverter, xmlParams));
                         break;
                     case "json":
                     case ".json":
                         IDataSetConverter jsonConverter = new DataSetJsonFileConverter();
-                        DataSetConvertParams jsonContext = new DataSetConvertParams();
-                        _converters.TryAdd(extension.ToLower(), new DataSetConvertContext(jsonConverter, jsonContext));
+                        DataSetConvertParams jsonParams = new DataSetConvertParams();
+                        _converters.TryAdd(extension.ToLower(), new DataSetConvertContext(jsonConverter, jsonParams));
                         break;
                 }
 
@@ -280,7 +280,7 @@ namespace SwagOverFlow.Data
                     return null;
                 }
 
-                return _converters[extension];
+                return _converters[extension.ToLower()];
             }
         }
     }
