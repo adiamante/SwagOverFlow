@@ -5,7 +5,6 @@ using SwagOverFlow.Data;
 using SwagOverFlow.Utils;
 using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.Commands;
-using SwagOverflowWPF.Controls;
 using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Iterator;
 using SwagOverflowWPF.Repository;
@@ -18,9 +17,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
-using System.Linq.Expressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -647,6 +644,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion DataColumn
         #region SwagDataTable
         [JsonIgnore]
+        [NotMapped]
         public SwagDataTable SwagDataTable { get; set; }
         #endregion SwagDataTable
         #region ApplySearchFilterCommand
@@ -991,8 +989,10 @@ namespace SwagOverflowWPF.ViewModels
         SwagSettingGroup _settings;
         SwagTabCollection _tabs;
         CollectionViewSource _columnCollectionViewSource, _columnsVisibilityView, _columnsFilterView;
+        SwagDataColumn _selectedColumn;
+        SwagDataRowResult _selectedRow;
         #endregion Private Members
-        
+
         #region Properties
         #region Name
         public String Name
@@ -1265,7 +1265,7 @@ namespace SwagOverflowWPF.ViewModels
                             KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
                             return SearchHelper.Evaluate(
                                 kvp.Key,
-                                _settings["ColumnEditor"]["Visibility"]["Search"]["Value"].GetValue<string>(),
+                                _settings["ColumnEditor"]["Visibility"]["Search"]["Text"].GetValue<string>(),
                                 false,
                                 _settings["ColumnEditor"]["Visibility"]["Search"]["FilterMode"].GetValue<FilterMode>(),
                                 false);
@@ -1321,12 +1321,12 @@ namespace SwagOverflowWPF.ViewModels
                             KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
                             return kvp.Value.HasAppliedFilter && (SearchHelper.Evaluate(
                                 kvp.Key,
-                                _settings["ColumnEditor"]["Filters"]["Search"]["Value"].GetValue<string>(),
+                                _settings["ColumnEditor"]["Filters"]["Search"]["Text"].GetValue<string>(),
                                 false,
                                 _settings["ColumnEditor"]["Filters"]["Search"]["FilterMode"].GetValue<FilterMode>(),
                                 false) || SearchHelper.Evaluate(
                                 kvp.Value.AppliedFilter,
-                                _settings["ColumnEditor"]["Filters"]["Search"]["Value"].GetValue<string>(),
+                                _settings["ColumnEditor"]["Filters"]["Search"]["Text"].GetValue<string>(),
                                 false,
                                 _settings["ColumnEditor"]["Filters"]["Search"]["FilterMode"].GetValue<FilterMode>(),
                                 false));
@@ -1421,18 +1421,17 @@ namespace SwagOverflowWPF.ViewModels
                 if (_settings == null)
                 {
                     _settings = new SwagSettingGroup();
-                    //ViewModel.Settings[ColumnEditor][Visibility][Search][Value]
                     _settings["ColumnEditor"] = new SwagSettingGroup() { Icon = PackIconCustomKind.TableColumnEdit };
                     _settings["ColumnEditor"]["Visibility"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Eye };
                     _settings["ColumnEditor"]["Visibility"]["Search"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Search };
-                    _settings["ColumnEditor"]["Visibility"]["Search"]["Value"] = new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue };
+                    _settings["ColumnEditor"]["Visibility"]["Search"]["Text"] = new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue };
                     _settings["ColumnEditor"]["Visibility"]["Search"]["FilterMode"] = new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) };
                     _settings["ColumnEditor"]["Filters"] = new SwagSettingGroup() { Icon = PackIconCustomKind.TableColumnFilter };
                     _settings["ColumnEditor"]["Filters"]["Search"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Search };
-                    _settings["ColumnEditor"]["Filters"]["Search"]["Value"] = new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue };
+                    _settings["ColumnEditor"]["Filters"]["Search"]["Text"] = new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue };
                     _settings["ColumnEditor"]["Filters"]["Search"]["FilterMode"] = new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) };
                     _settings["Search"] = new SwagSettingGroup() { Icon = PackIconCustomKind.TableSearch };
-                    _settings["Search"]["Value"] = new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue };
+                    _settings["Search"]["Text"] = new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue };
                     _settings["Search"]["FilterMode"] = new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) };
                     _settings["Export"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Export };
                     _settings["Export"]["Type"] = new SwagSetting<SwagTableExportType>() { SettingType = SettingType.DropDown, Value = SwagTableExportType.Csv, Icon = PackIconCustomKind.ExportType, ItemsSource = (SwagTableExportType[])Enum.GetValues(typeof(SwagTableExportType)) };
@@ -1500,6 +1499,24 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _showColumnTotals, value); }
         }
         #endregion ShowColumnTotals
+        #region SelectedColumn
+        [NotMapped]
+        [JsonIgnore]
+        public SwagDataColumn SelectedColumn
+        {
+            get { return _selectedColumn; }
+            set { SetValue(ref _selectedColumn, value); }
+        }
+        #endregion SelectedColumn
+        #region SelectedRow
+        [NotMapped]
+        [JsonIgnore]
+        public SwagDataRowResult SelectedRow
+        {
+            get { return _selectedRow; }
+            set { SetValue(ref _selectedRow, value); }
+        }
+        #endregion SelectedRow
         #endregion Properties
 
         #region Initialization
@@ -1632,6 +1649,7 @@ namespace SwagOverflowWPF.ViewModels
                         {
                             sdcKvp.Value.Sequence = _columns.Count - 1;
                         }
+                        sdcKvp.Value.Parent = this;
                         sdcKvp.Value.SwagDataTable = this;
                         InvalidateRows();
                     }
@@ -1775,7 +1793,6 @@ namespace SwagOverflowWPF.ViewModels
                 }
                 _tabs.SwagItemChanged += _tabs_SwagItemChanged;
                 _tabs.PropertyChangedExtended += _tabs_PropertyChangedExtended;
-                //_tabs.IsInitialized = true;
             }
         }
 
@@ -1866,6 +1883,7 @@ namespace SwagOverflowWPF.ViewModels
         SwagSettingGroup _settings;
         SwagTabCollection _tabs;
         ICommand _filterTabsCommand, _addDataSetCommand, _addDataTableCommand;
+        SwagData _selectedChild;
         #endregion Private Members
 
         #region Properties
@@ -1877,9 +1895,13 @@ namespace SwagOverflowWPF.ViewModels
                 if (_settings == null)
                 {
                     _settings = new SwagSettingGroup();
-                    _settings["Search"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Search };
-                    _settings["Search"]["Tabs"] = new SwagSettingGroup() { Icon = PackIconCustomKind.TableSearch };
-                    _settings["Search"]["Tabs"]["Text"] = new SwagSettingString() { };
+                    _settings["Tabs"] = new SwagSettingGroup() { Icon = PackIconCustomKind.TableSearch };
+                    _settings["Tabs"]["Search"] = new SwagSettingGroup() { Icon = PackIconCustomKind.Search };
+                    _settings["Tabs"]["Search"]["Text"] = new SwagSettingString() { Icon = PackIconCustomKind.KeyValue };
+                    _settings["Tabs"]["Search"]["FilterMode"] = new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) };
+                    _settings["Search"] = new SwagSettingGroup() { Icon = PackIconCustomKind.GlobalSearch };
+                    _settings["Search"]["Text"] = new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue };
+                    _settings["Search"]["FilterMode"] = new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) };
                 }
                 return _settings;
             }
@@ -1897,7 +1919,8 @@ namespace SwagOverflowWPF.ViewModels
                 if (_tabs == null)
                 {
                     _tabs = new SwagTabCollection();
-                    _tabs["SearchTabs"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSearch, ViewModel = this };
+                    _tabs["Tabs"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSearch, ViewModel = this };
+                    _tabs["Search"] = new SwagTabItem() { Icon = PackIconCustomKind.GlobalSearch, ViewModel = this };
                     _tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.Settings, ViewModel = this };
                 }
                 return _tabs;
@@ -1905,11 +1928,21 @@ namespace SwagOverflowWPF.ViewModels
             set
             {
                 SetValue(ref _tabs, value);
-                _tabs["SearchTabs"].ViewModel = this;
+                _tabs["Tabs"].ViewModel = this;
+                _tabs["Search"].ViewModel = this;
                 _tabs["Settings"].ViewModel = this;
             }
         }
         #endregion Tabs
+        #region SelectedChild
+        [NotMapped]
+        [JsonIgnore]
+        public SwagData SelectedChild
+        {
+            get { return _selectedChild; }
+            set { SetValue(ref _selectedChild, value); }
+        }
+        #endregion SelectedChild
         #region FilterTabsCommand
         public ICommand FilterTabsCommand
         {
@@ -1918,17 +1951,19 @@ namespace SwagOverflowWPF.ViewModels
                 return _filterTabsCommand ?? (_filterTabsCommand =
                     new RelayCommand(() =>
                     {
-                        String filter = _settings["Search"]["Tabs"]["Text"].GetValue<String>();
+                        String filter = _settings["Tabs"]["Search"]["Text"].GetValue<String>();
+                        FilterMode filterMode = _settings["Tabs"]["Search"]["FilterMode"].GetValue<FilterMode>();
                         ChildrenView.Filter = (item) =>
                         {
                             SwagData swagData = (SwagData)item;
-                            Boolean itemMatch = SearchHelper.Evaluate(swagData.Display, filter, false, FilterMode.CONTAINS, false);
+                            Boolean itemMatch = SearchHelper.Evaluate(swagData.Display, filter, false, filterMode, false);
                             Boolean childDataSetMatch = false;
 
                             if (swagData is SwagDataSet)
                             {
                                 SwagDataSet childDataSet = (SwagDataSet)swagData;
-                                childDataSet.Settings["Search"]["Tabs"]["Text"].SetValue(filter);
+                                childDataSet.Settings["Tabs"]["Search"]["Text"].SetValue(filter);
+                                childDataSet.Settings["Tabs"]["Search"]["FilterMode"].SetValue(filterMode);
                                 childDataSet.FilterTabsCommand.Execute(null);
                                 childDataSetMatch = !childDataSet.ChildrenView.IsEmpty;
                             }
@@ -2010,8 +2045,9 @@ namespace SwagOverflowWPF.ViewModels
 
             if (lstSwagDataResults.Count > 0)
             {
-                SwagDataSetResultGroup swagDataSetResultGroup = new SwagDataSetResultGroup() { SwagData = this };
+                SwagDataSetResultGroup swagDataSetResultGroup = new SwagDataSetResultGroup() { SwagData = this, Display = this.Display };
                 swagDataSetResultGroup.Children = new ObservableCollection<SwagDataResult>(lstSwagDataResults);
+                return swagDataSetResultGroup;
             }
 
             return null;

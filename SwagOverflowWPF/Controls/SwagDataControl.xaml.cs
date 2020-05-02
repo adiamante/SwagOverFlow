@@ -1,4 +1,5 @@
 ﻿using Microsoft.WindowsAPICodePack.Shell;
+using SwagOverFlow.Utils;
 using SwagOverflowWPF.UI;
 using SwagOverflowWPF.ViewModels;
 using System;
@@ -118,10 +119,82 @@ namespace SwagOverflowWPF.Controls
 
             if (allFiles.Count > 0)
             {
-                //DockPanel dockPanel = (DockPanel)sender;
-                //SwagDataSet swagDataSet = (SwagDataSet)dockPanel.DataContext;
                 SwagDataSet.LoadFiles(allFiles);
             }
+        }
+
+        private void Search_OnSearch(object sender, RoutedEventArgs e)
+        {
+            SearchTextBox searchTextBox = (SearchTextBox)sender;
+            SwagData swagData = (SwagData)((SwagTabItem)searchTextBox.DataContext).ViewModel;
+            SwagDataResult swagDataResult = SwagDataSet.Search(searchTextBox.Text, searchTextBox.FilterMode,
+                (sdc, sdr, searchValue, filterMode) =>
+                {
+                    String compareTarget = sdr.DataRow[sdc.ColumnName].ToString();
+                    String compareValue = searchValue;
+                    return SearchHelper.Evaluate(compareTarget, compareValue, false, filterMode, false);
+                });
+
+            swagData.SwagDataResult = swagDataResult;
+        }
+
+        private void Search_ResultGo_Click(object sender, RoutedEventArgs e)
+        {
+            SwagDataResult swagDataResult = (SwagDataResult)((MenuItem)sender).DataContext;
+            SwagDataResult currentResult = swagDataResult;
+
+            switch (currentResult)
+            {
+                case SwagDataSetResultGroup setResult:
+                    View((SwagDataSet)setResult.SwagData);
+                    break;
+                case SwagDataTableResultGroup tableResult:
+                    View((SwagDataTable)tableResult.SwagData);
+                    break;
+                case SwagDataColumnResultGroup columnResult:
+                    View((SwagDataColumn)columnResult.SwagData);
+                    break;
+                case SwagDataRowResult rowResult:
+                    View(rowResult);
+                    break;
+            }
+        }
+
+        private void View(SwagDataSet swagDataSet)
+        {
+            if (swagDataSet.Parent != null && swagDataSet.Parent is SwagDataSet)
+            {
+                SwagDataSet parent = (SwagDataSet)swagDataSet.Parent;
+                parent.SelectedChild = swagDataSet;
+                View(parent);
+            }
+        }
+
+        private void View(SwagDataTable swagDataTable)
+        {
+            if (swagDataTable.Parent != null && swagDataTable.Parent is SwagDataSet)
+            {
+                SwagDataSet parent = (SwagDataSet)swagDataTable.Parent;
+                parent.SelectedChild = swagDataTable;
+                View(parent);
+            }
+        }
+
+        private void View(SwagDataColumn swagDataColumn)
+        {
+            if (swagDataColumn.Parent != null && swagDataColumn.Parent is SwagDataTable)
+            {
+                SwagDataTable parent = (SwagDataTable)swagDataColumn.Parent;
+                parent.SelectedColumn = swagDataColumn;
+                View(parent);
+            }
+        }
+
+        private void View(SwagDataRowResult rowResult)
+        {
+            SwagDataColumn swagDataColumn = (SwagDataColumn)rowResult.Parent.SwagData;
+            swagDataColumn.SwagDataTable.SelectedRow = rowResult;
+            View(swagDataColumn);
         }
     }
 }

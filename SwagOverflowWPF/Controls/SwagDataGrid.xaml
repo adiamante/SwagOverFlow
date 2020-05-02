@@ -465,7 +465,7 @@
                 </Style.Triggers>
             </Style>
             <ControlTemplate x:Key="TabItemTemplate" TargetType="{x:Type ContentControl}">
-                <GroupBox Header="{Binding Display}">
+                <GroupBox Header="{Binding Display}" MinWidth="150">
                     <GroupBox.Content>
                         <ContentPresenter />
                     </GroupBox.Content>
@@ -499,7 +499,7 @@
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
                                         <DockPanel>
                                             <local:SearchTextBox DockPanel.Dock="Top" 
-                                                                 Text="{Binding ViewModel.Settings[ColumnEditor][Visibility][Search][Value].Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                                 Text="{Binding ViewModel.Settings[ColumnEditor][Visibility][Search][Text].Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                                                  FilterMode="{Binding ViewModel.Settings[ColumnEditor][Visibility][Search][FilterMode].Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                                                  SearchMode="Instant"
                                                                  MinWidth="100"
@@ -553,7 +553,7 @@
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
                                         <DockPanel>
                                             <local:SearchTextBox DockPanel.Dock="Top" 
-                                                                 Text="{Binding ViewModel.Settings[ColumnEditor][Filters][Search][Value].Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                                 Text="{Binding ViewModel.Settings[ColumnEditor][Filters][Search][Text].Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                                                  FilterMode="{Binding ViewModel.Settings[ColumnEditor][Filters][Search][FilterMode].Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                                                  SearchMode="Instant"
                                                                  MinWidth="100"
@@ -627,7 +627,7 @@
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
                                         <DockPanel>
                                             <local:SearchTextBox DockPanel.Dock="Top" 
-                                                                 Text="{Binding ViewModel.Settings[Search][Value].Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                                 Text="{Binding ViewModel.Settings[Search][Text].Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                                                  FilterMode="{Binding ViewModel.Settings[Search][FilterMode].Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                                                  SearchMode="Delayed"
                                                                  MinWidth="100"

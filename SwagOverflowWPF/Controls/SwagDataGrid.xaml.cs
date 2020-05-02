@@ -116,6 +116,36 @@ namespace SwagOverflowWPF.Controls
             }
         }
         #endregion Columns
+
+        #region SelectedColumn
+        public static DependencyProperty SelectedColumnProperty =
+                DependencyProperty.RegisterAttached("SelectedColumn",
+                                                    typeof(SwagDataColumn),
+                                                    typeof(SwagDataGrid),
+                                                    new UIPropertyMetadata(null, BindableSelectedColumnPropertyChanged));
+
+        private static void BindableSelectedColumnPropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
+        {
+            SwagDataGrid fdgDataGrid = source as SwagDataGrid;
+            fdgDataGrid.View((SwagDataColumn)e.NewValue);
+        }
+        #endregion SelectedColumn
+
+        #region SelectedRow
+        public static DependencyProperty SelectedRowProperty =
+                DependencyProperty.RegisterAttached("SelectedRow",
+                                                    typeof(SwagDataRowResult),
+                                                    typeof(SwagDataGrid),
+                                                    new UIPropertyMetadata(null, BindableSelectedRowPropertyChanged));
+
+        private static void BindableSelectedRowPropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
+        {
+            SwagDataGrid fdgDataGrid = source as SwagDataGrid;
+            SwagDataRowResult rowResult = (SwagDataRowResult)e.NewValue;
+            fdgDataGrid.View(rowResult);
+        }
+        #endregion SelectedRow
+
         #region SelectedTotal
         public static DependencyProperty SelectedTotalProperty =
                 DependencyProperty.Register(
@@ -158,6 +188,8 @@ namespace SwagOverflowWPF.Controls
             InitializeComponent();
 
             BindingOperations.SetBinding(this, SwagDataGrid.ColumnsProperty, new Binding("SwagDataTable.ColumnsView") { RelativeSource = RelativeSource.Self });
+            BindingOperations.SetBinding(this, SwagDataGrid.SelectedColumnProperty, new Binding("SwagDataTable.SelectedColumn") { RelativeSource = RelativeSource.Self });
+            BindingOperations.SetBinding(this, SwagDataGrid.SelectedRowProperty, new Binding("SwagDataTable.SelectedRow") { RelativeSource = RelativeSource.Self });
         }
 
         private void SwagDataGridInstance_Loaded(object sender, RoutedEventArgs e)
@@ -216,16 +248,13 @@ namespace SwagOverflowWPF.Controls
             SwagDataResult swagDataResult = (SwagDataResult)((MenuItem)sender).DataContext;
             SwagDataResult currentResult = swagDataResult;
 
-
             switch (currentResult)
             {
                 case SwagDataColumnResultGroup columnResult:
                     View((SwagDataColumn)columnResult.SwagData);
                     break;
                 case SwagDataRowResult rowResult:
-                    SwagDataColumn swagDataColumn = (SwagDataColumn)rowResult.Parent.SwagData;
-                    SwagDataRow swagDataRow = (SwagDataRow)rowResult.SwagData;
-                    View(swagDataColumn, swagDataRow);
+                    View(rowResult);
                     break;
             }
         }
@@ -243,8 +272,10 @@ namespace SwagOverflowWPF.Controls
             swagDataColumn.IsSelected = true;
         }
 
-        private void View(SwagDataColumn swagDataColumn, SwagDataRow swagDataRow)
+        private void View(SwagDataRowResult rowResult)
         {
+            SwagDataColumn swagDataColumn = (SwagDataColumn)rowResult.Parent.SwagData;
+            SwagDataRow swagDataRow = (SwagDataRow)rowResult.SwagData;
             DataRowView drv = drv = swagDataColumn.SwagDataTable.DataTable.DefaultView[swagDataColumn.SwagDataTable.DataTable.Rows.IndexOf(swagDataRow.DataRow)]; ;
             SwagDataTable swagDataTable = swagDataColumn.SwagDataTable;
             DataGridColumn dataGridColumn = DataGrid.Columns.FirstOrDefault(c => c.Header.ToString() == swagDataColumn.ColumnName);
