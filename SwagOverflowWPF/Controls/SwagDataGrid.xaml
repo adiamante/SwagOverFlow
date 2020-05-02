@@ -744,6 +744,7 @@
                       Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
                       SelectionMode="Extended"
                       SelectionUnit="CellOrRowHeader"
+                      CanUserAddRows="False"
                       CanUserSortColumns="False"
                       AutoGenerateColumns="False"
                       ItemsSource="{Binding SwagDataTable.DataTable.DefaultView}"

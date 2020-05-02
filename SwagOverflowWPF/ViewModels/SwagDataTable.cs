@@ -1528,9 +1528,6 @@ namespace SwagOverflowWPF.ViewModels
 
         public void SetDataTable(DataTable dt, Boolean silent = false)
         {
-            //Stopwatch stopwatch = new Stopwatch();
-            //stopwatch.Start();
-
             //This is not the best place for but cannot put this in the constructor because EF overwrites _columns
             //Also cannot place in setter because it is used to indicate the entity has changed
             _columns.CollectionChanged += viewModel_Columns_CollectionChanged;
@@ -1598,9 +1595,6 @@ namespace SwagOverflowWPF.ViewModels
             _dataTable.RowChanged += dataTable_RowChanged;
             _dataTable.DefaultView.ListChanged += dataView_ListChanged;
             ResetColumns();
-            //stopwatch.Stop();
-            //Message = $"Table Load [{Name}][{stopwatch.Elapsed.ToString("g")}]";
-
             dataView_ListChanged(null, null);
         }
 
