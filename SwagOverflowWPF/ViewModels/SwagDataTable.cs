@@ -1161,7 +1161,7 @@ namespace SwagOverflowWPF.ViewModels
                                 break;
                         }
 
-                        Object output = converter.FromDataTableToObject(new DataTableConvertParameters(), _dataTable);
+                        Object output = converter.FromDataTableToObject(new DataTableConvertParams(), _dataTable);
 
                         switch (Settings["Export"]["Destination"].GetValue<SwagTableDestinationType>())
                         {
@@ -1204,7 +1204,7 @@ namespace SwagOverflowWPF.ViewModels
                     new RelayCommand(() =>
                     {
                         IDataTableConverter converter = null;
-                        DataTableConvertParameters cp = new DataTableConvertParameters();
+                        DataTableConvertParams cp = new DataTableConvertParams();
 
                         string dialogFilter = "";
                         String inputText = "";
@@ -1874,6 +1874,7 @@ namespace SwagOverflowWPF.ViewModels
         ICommand _filterTabsCommand, _addDataSetCommand, _addDataTableCommand;
         #endregion Private Members
 
+        #region Properties
         #region Settings
         public SwagSettingGroup Settings
         {
@@ -1974,7 +1975,24 @@ namespace SwagOverflowWPF.ViewModels
             }
         }
         #endregion AddDataTableCommand
+        #endregion Properties
 
+        #region Initialization
+        public SwagDataSet()
+        {
+
+        }
+
+        public SwagDataSet(DataSet dataSet)
+        {
+            foreach (DataTable dt in dataSet.Tables)
+            {
+                Children.Add(new SwagDataTable(dt) { Display = dt.TableName });
+            }
+        }
+        #endregion Initialization
+
+        #region Methods
         public void LoadFiles(IEnumerable<String> files)
         {
             foreach (String file in files)
@@ -2004,6 +2022,7 @@ namespace SwagOverflowWPF.ViewModels
 
             return null;
         }
+        #endregion Methods
     }
     #endregion SwagDataSet
 
@@ -2014,7 +2033,14 @@ namespace SwagOverflowWPF.ViewModels
         {
             String filename = Path.GetFileName(file);
             String ext = Path.GetExtension(file);
-            var dataTableContext = DataTableConverterHelper.ConverterContexts[ext];
+
+            DataSetConvertContext dataSetContext = DataSetConverterHelper.ConverterFileContexts[ext];
+            if (dataSetContext != null)
+            {
+                return new SwagDataSet(dataSetContext.ToDataSet(file)) { Display = filename };
+            }
+
+            DataTableConvertContext dataTableContext = DataTableConverterHelper.ConverterFileContexts[ext];
             if (dataTableContext != null)
             {
                 return new SwagDataTable(dataTableContext.ToDataTable(file)) { Display = filename };

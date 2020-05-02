@@ -80,7 +80,7 @@ namespace TestWPF
         private void InitCombobox()
         {
             DataTableCsvFileConverter csvFileToDataTable = new DataTableCsvFileConverter();
-            DataTable dt = csvFileToDataTable.ToDataTable(new DataTableConvertParameters(), @"C:\Users\Desktop\Desktop\445.csv");
+            DataTable dt = csvFileToDataTable.ToDataTable(new DataTableConvertParams(), @"C:\Users\Desktop\Desktop\445.csv");
             ComboBoxSource = dt.DefaultView;
             //scbxTest.ItemsSource = dt.DefaultView;
         }
@@ -98,7 +98,7 @@ namespace TestWPF
             foreach (String file in (String [])e.Data.GetData(DataFormats.FileDrop))
             {
                 DataTableCsvFileConverter csvFileToDataTable = new DataTableCsvFileConverter();
-                DataTable dt = csvFileToDataTable.ToDataTable(new DataTableConvertParameters(), file);
+                DataTable dt = csvFileToDataTable.ToDataTable(new DataTableConvertParams(), file);
                 Source.DataTable = dt;
                 BindSourceGrid();
             }
@@ -109,7 +109,7 @@ namespace TestWPF
             foreach (String file in (String[])e.Data.GetData(DataFormats.FileDrop))
             {
                 DataTableCsvFileConverter csvFileToDataTable = new DataTableCsvFileConverter();
-                DataTable dt = csvFileToDataTable.ToDataTable(new DataTableConvertParameters(), file);
+                DataTable dt = csvFileToDataTable.ToDataTable(new DataTableConvertParams(), file);
                 Dest.DataTable = dt;
             }
         }
@@ -227,7 +227,7 @@ namespace TestWPF
         {
             String data = Clipboard.GetText();
             DataTableCsvStringConverter csvStringToDataTable = new DataTableCsvStringConverter();
-            DataTableConvertParameters context = new DataTableConvertParameters();
+            DataTableConvertParams context = new DataTableConvertParams();
             context.FieldDelim = '\t';
             DataTable dt = csvStringToDataTable.ToDataTable(context, data);
             Source.DataTable = dt;
@@ -238,7 +238,7 @@ namespace TestWPF
         {
             String data = Clipboard.GetText();
             DataTableCsvStringConverter csvStringToDataTable = new DataTableCsvStringConverter();
-            DataTableConvertParameters context = new DataTableConvertParameters();
+            DataTableConvertParams context = new DataTableConvertParams();
             context.FieldDelim = '\t';
             DataTable dt = csvStringToDataTable.ToDataTable(context, data);
             Dest.DataTable = dt;
