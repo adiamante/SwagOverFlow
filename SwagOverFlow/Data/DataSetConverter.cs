@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
@@ -154,30 +156,99 @@ namespace SwagOverFlow.Data
     }
     #endregion DataSetXmlFileConverter
 
-    #region DataSetConverterContextCache
-    public class DataSetConverterContextCache
+    #region DataSetJsonStreamConverter
+    public class DataSetJsonStreamConverter : DataSetConverter<Stream>
     {
-        private ConcurrentDictionary<String, DataSetConvertContext> _converters = new ConcurrentDictionary<String, DataSetConvertContext>();
+        #region Private Members
+        DataSetJsonStringConverter _dataSetJsonStringConverter = new DataSetJsonStringConverter();
+        #endregion Private Members
 
-        public DataSetConvertContext this[String extension]
+        #region FromDataSet
+        public override Stream FromDataSet(DataSetConvertParams context, DataSet ds)
         {
-            get
-            {
-                switch (extension.ToLower())
-                {
-                    
-                }
-
-                if (!_converters.ContainsKey(extension.ToLower()))
-                {
-                    return null;
-                }
-
-                return _converters[extension];
-            }
+            String json = _dataSetJsonStringConverter.FromDataSet(context, ds);
+            byte[] byteArray = Encoding.ASCII.GetBytes(json);
+            MemoryStream stream = new MemoryStream(byteArray);
+            return stream;
         }
+        #endregion FromDataSet
+
+        #region ToDataSet
+        public override DataSet ToDataSet(DataSetConvertParams context, Stream input)
+        {
+            StreamReader reader = new StreamReader(input);
+            string text = reader.ReadToEnd();
+            return _dataSetJsonStringConverter.ToDataSet(context, text);
+        }
+        #endregion ToDataSet
     }
-    #endregion DataSetConverterContextCache
+    #endregion DataSetJsonStreamConverter
+
+    #region DataSetJsonStringConverter
+    public class DataSetJsonStringConverter : DataSetConverter<String>
+    {
+        #region Private Members
+        #endregion Private Members
+
+        #region FromDataSet
+        public override string FromDataSet(DataSetConvertParams context, DataSet ds)
+        {
+            string json = JsonConvert.SerializeObject(ds, Newtonsoft.Json.Formatting.Indented);
+            return json;
+        }
+        #endregion FromDataSet
+
+        #region ToDataSet
+        public override DataSet ToDataSet(DataSetConvertParams context, string input)
+        {
+            DataSet ds = new DataSet();
+            //Conversion to JObject is to prevent automatic DateTime columns because they break when the value is an empty string
+            JObject jInput = JsonConvert.DeserializeObject<JObject>(input, new JsonSerializerSettings { DateParseHandling = DateParseHandling.None });
+
+            //Handle Array with one value
+            if (jInput.Count == 1 && jInput["root"] is JArray && ((JArray)jInput["root"]).Count == 1 && ((JArray)jInput["root"])[0] is JValue)
+            {
+                DataTable dt = new DataTable("root");
+                dt.Columns.Add("root_Text");
+                dt.Rows.Add(new object[] { ((JArray)jInput["root"])[0] });
+                ds.Tables.Add(dt);
+                return ds;
+            }
+
+            XmlDocument xmlDocument = (XmlDocument)JsonConvert.DeserializeXmlNode(jInput.ToString(), "root");
+            //We will add try catch with handling later
+            ds.ReadXml(new XmlNodeReader(xmlDocument));
+
+            return ds;
+        }
+        #endregion ToDataSet
+    }
+    #endregion DataSetJsonStringConverter
+
+    #region DataSetJsonFileConverter
+    public class DataSetJsonFileConverter : DataSetConverter<String>
+    {
+        #region Private Members
+        DataSetJsonStreamConverter _dataSetJsonStreamConverter = new DataSetJsonStreamConverter();
+        DataSetJsonStringConverter _dataSetJsonStringConverter = new DataSetJsonStringConverter();
+        #endregion Private Members
+
+        #region FromDataSet
+        public override string FromDataSet(DataSetConvertParams context, DataSet dt)
+        {
+            return _dataSetJsonStringConverter.FromDataSet(context, dt);
+        }
+        #endregion FromDataSet
+
+        #region ToDataSet
+        public override DataSet ToDataSet(DataSetConvertParams context, string input)
+        {
+            StreamReader sr = File.OpenText(input);
+            return _dataSetJsonStreamConverter.ToDataSet(context, sr.BaseStream);
+        }
+        #endregion ToDataSet
+    }
+    #endregion DataSetJsonFileConverter
 
     #region DataSetConverterFileContextCache
     public class DataSetConverterFileContextCache
@@ -192,9 +263,15 @@ namespace SwagOverFlow.Data
                 {
                     case "xml":
                     case ".xml":
-                        IDataSetConverter XmlConverter = new DataSetXmlFileConverter();
-                        DataSetConvertParams XmlContext = new DataSetConvertParams();
-                        _converters.TryAdd(extension.ToLower(), new DataSetConvertContext(XmlConverter, XmlContext));
+                        IDataSetConverter xmlConverter = new DataSetXmlFileConverter();
+                        DataSetConvertParams xmlContext = new DataSetConvertParams();
+                        _converters.TryAdd(extension.ToLower(), new DataSetConvertContext(xmlConverter, xmlContext));
+                        break;
+                    case "json":
+                    case ".json":
+                        IDataSetConverter jsonConverter = new DataSetJsonFileConverter();
+                        DataSetConvertParams jsonContext = new DataSetConvertParams();
+                        _converters.TryAdd(extension.ToLower(), new DataSetConvertContext(jsonConverter, jsonContext));
                         break;
                 }
 
