@@ -14,7 +14,6 @@ namespace SwagOverflowWPF.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-
         protected virtual void SetValue<T>(ref T backingField, T value, [CallerMemberName] string propertyname = null)
         {
             SetValue<T>(ref backingField, value, true, propertyname);

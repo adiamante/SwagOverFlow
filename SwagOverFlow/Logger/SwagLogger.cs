@@ -67,7 +67,7 @@ namespace SwagOverFlow.Logger
             propertyValues.CopyTo(newProps, 1);
             newProps[0] = _dictStopWatches[key].Elapsed;
 
-            Log("[ End  - {Elapsed}] " + messageTemplate, newProps);
+            Log("[End   - {Elapsed}] " + messageTemplate, newProps);
         }
     }
 }

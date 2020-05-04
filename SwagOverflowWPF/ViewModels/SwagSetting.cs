@@ -143,7 +143,7 @@ namespace SwagOverflowWPF.ViewModels
                     }
                 }
 
-                if (_objValue != null && _value == null)
+                if (_objValue != null && (_value == null || !_value.Equals(_objValue)))
                 {
                     _value = (T)_objValue;
                 }
