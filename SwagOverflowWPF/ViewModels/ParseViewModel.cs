@@ -10,7 +10,8 @@ namespace SwagOverflowWPF.ViewModels
         Csv,
         Dbf,
         Xml,
-        Json
+        Json,
+        Sqlite
     }
     #endregion ParseStrategy
 

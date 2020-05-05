@@ -1,9 +1,13 @@
-﻿using Microsoft.WindowsAPICodePack.Shell;
+﻿using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Shell;
+using SwagOverFlow.Data;
 using SwagOverFlow.Utils;
 using SwagOverflowWPF.UI;
 using SwagOverflowWPF.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -258,6 +262,32 @@ namespace SwagOverflowWPF.Controls
                 }
                 swagDataSet.SelectedChild = swagData;
                 swagData.IsSelected = true;
+            }
+        }
+
+        private void SwagDataSetHeader_Export(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement fe = (FrameworkElement)sender;
+            SwagDataSet swagDataSet = (SwagDataSet)fe.DataContext;
+            DataSet ds = swagDataSet.GetDataSet();
+            ParseStrategy parseStrategy = (ParseStrategy)fe.Tag;
+            
+            switch (parseStrategy)
+            {
+                case ParseStrategy.Sqlite:
+                    SaveFileDialog sfd = new SaveFileDialog();
+                    sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                    sfd.FileName = Path.ChangeExtension(swagDataSet.Display, null);
+                    sfd.Filter = "SQLite files (*.db;*.sqlite)|*.db;*.sqlite";
+                    System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        if (sfd.ShowDialog() ?? false)
+                        {
+                            DataSetSqliteFileConverter dsConverter = new DataSetSqliteFileConverter();
+                            dsConverter.FromDataSet(null, ds, sfd.FileName);
+                        }
+                    }));
+                    break;
             }
         }
         #endregion SwagDataHeader ContextMenu

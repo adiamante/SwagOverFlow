@@ -63,6 +63,16 @@
                     <local:IconControl Kind="{x:Static ui:PackIconCustomKind.TableAdd}" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="Export">
+                <MenuItem.Icon>
+                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Export}" />
+                </MenuItem.Icon>
+                <MenuItem Header="Sqlite" Click="SwagDataSetHeader_Export" Tag="{x:Static vm:ParseStrategy.Sqlite}">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaSBox}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
             <MenuItem Header="Close" Command="{Binding RemoveCommand}">
                 <MenuItem.Icon>
                     <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Close}" />

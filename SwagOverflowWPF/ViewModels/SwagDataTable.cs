@@ -57,6 +57,11 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion RemoveCommand
         public abstract SwagDataResult Search(String searchValue, FilterMode filterMode, Func<SwagDataColumn, SwagDataRow, String, FilterMode, bool> searchFunc);
+
+        public virtual DataSet GetDataSet()
+        {
+            return null;
+        }
     }
     #endregion SwagData
 
@@ -1182,7 +1187,7 @@ namespace SwagOverflowWPF.ViewModels
                                     {
                                         DataSetSqliteFileConverter dsConverter = new DataSetSqliteFileConverter();
                                         DataSet ds = new DataSet();
-                                        ds.Tables.Add(_dataTable);
+                                        ds.Tables.Add(_dataTable.Copy());
                                         dsConverter.FromDataSet(null, ds, sfd.FileName);
                                     }
                                 }));
@@ -1904,6 +1909,14 @@ namespace SwagOverflowWPF.ViewModels
                 }
             }
         }
+
+        public override DataSet GetDataSet()
+        {
+            DataSet ds = new DataSet();
+            DataTable dt = _dataTable.Copy();
+            ds.Tables.Add(dt);
+            return ds;
+        }
         #endregion Methods
     }
     #endregion SwagDataTable
@@ -2059,8 +2072,17 @@ namespace SwagOverflowWPF.ViewModels
             foreach (String file in files)
             {
                 SwagLogger.LogStart(this, "Load {file}", file);
-                Children.Add(SwagDataHelper.FromFile(file, parseMappers));
+                SwagData child = SwagDataHelper.FromFile(file, parseMappers);
                 SwagLogger.LogEnd(this, "Load {file}", file);
+
+                if (child != null)
+                {
+                    Children.Add(child);
+                }
+                else
+                {
+                    SwagLogger.Log("Load {file} did not yield data (unsupported extenstion).", file);
+                }
             }
         }
 
@@ -2086,6 +2108,33 @@ namespace SwagOverflowWPF.ViewModels
 
             return null;
         }
+
+        public override DataSet GetDataSet()
+        {
+            DataSet ds = new DataSet(Display);
+            foreach (SwagData swagData in ChildrenView)
+            {
+                switch (swagData)
+                {
+                    case SwagDataTable swagDataTable:
+                        foreach (DataTable dt in swagDataTable.GetDataSet().Tables)
+                        {
+                            DataTable dtCopy = dt.Copy();
+                            ds.Tables.Add(dtCopy);
+                        }
+                        break;
+                    case SwagDataSet swagDataSet:
+                        foreach (DataTable dt in swagDataSet.GetDataSet().Tables)
+                        {
+                            DataTable dtCopy = dt.Copy();
+                            dtCopy.TableName = $"{swagDataSet.Display}.{dt.TableName}";
+                            ds.Tables.Add(dtCopy);
+                        }
+                        break;
+                }
+            }
+            return ds;
+        }
         #endregion Methods
     }
     #endregion SwagDataSet
@@ -2098,7 +2147,7 @@ namespace SwagOverflowWPF.ViewModels
             String filename = Path.GetFileName(file);
             String ext = Path.GetExtension(file).TrimStart('.');
 
-            KeyValuePairViewModel<String, ParseViewModel> parseMapper = parseMappers.FirstOrDefault(pm => pm.Key.ToLower() == ext.ToLower());
+            KeyValuePairViewModel<String, ParseViewModel> parseMapper = parseMappers.FirstOrDefault(pm => pm.Key != null && pm.Key.ToLower() == ext.ToLower());
             if (parseMapper != null)
             {
                 switch (parseMapper.Value.ParseStrategy)
