@@ -33,6 +33,11 @@ namespace SwagOverFlow.Data
         public IDataSetConverter Converter { get; set; }
         public DataSetConvertParams Params { get; set; }
 
+        public DataSetConvertContext()
+        {
+
+        }
+
         public DataSetConvertContext(IDataSetConverter converter, DataSetConvertParams parameters)
         {
             Converter = converter;
@@ -282,6 +287,22 @@ namespace SwagOverFlow.Data
 
                 return _converters[extension.ToLower()];
             }
+            set
+            {
+                if (!_converters.ContainsKey(extension.ToLower()))
+                {
+                    _converters.TryAdd(extension.ToLower(), value);
+                }
+                else
+                {
+                    _converters[extension.ToLower()] = value;
+                }
+            }
+        }
+
+        public Boolean ContainsKey(String key)
+        {
+            return _converters.ContainsKey(key.ToLower());
         }
     }
     #endregion DataSetConverterFileContextCache

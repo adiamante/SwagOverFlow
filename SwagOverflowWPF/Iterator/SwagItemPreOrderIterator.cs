@@ -6,7 +6,7 @@ using System.Linq;
 namespace SwagOverflowWPF.Iterator
 {
     #region Interfaces
-    public interface ISwagItemIterator<TParent, TChild>
+    public interface ISwagItemIterator<TChild>
     {
         TChild First();
         TChild Next();
@@ -15,15 +15,13 @@ namespace SwagOverflowWPF.Iterator
     }
     #endregion Interfaces
 
-    public class SwagItemPreOrderIterator<TParent, TChild> : ISwagItemIterator<TParent, TChild>
-        where TParent : class, ISwagParent<TParent, TChild>
-        where TChild : class, ISwagChild<TParent, TChild>
+    public class SwagItemPreOrderIterator<TChild> : ISwagItemIterator<TChild> where TChild : class, ISwagChild<TChild>
     {
-        private TParent _root;
+        private ISwagParent<TChild> _root;
         private TChild _current;
         private Boolean _isDone = false, _isSecondToLast = false;
 
-        public SwagItemPreOrderIterator(TParent root)
+        public SwagItemPreOrderIterator(ISwagParent<TChild> root)
         {
             _root = root;
         }
@@ -38,7 +36,7 @@ namespace SwagOverflowWPF.Iterator
 
         public TChild Next()
         {
-            TParent composite = _current as TParent;
+            ISwagParent<TChild> composite = _current as ISwagParent<TChild>;
 
             //If parent node, return first child
             if (composite != null && composite.Children != null && composite.Children.Count > 0)
@@ -49,14 +47,14 @@ namespace SwagOverflowWPF.Iterator
             else if (_current.Parent != null) //If leaf node
             {
                 TChild tempCurrent = _current, nextSibling = default(TChild), nextNextSibling = default(TChild);
-                TParent tempParent = _current.Parent;
+                ISwagParent<TChild> tempParent = _current.Parent;
 
                 do
                 {
                     //Find next sibling
                     nextSibling = tempParent.Children.OrderBy(c => c.Sequence).Where(c => c.Sequence > tempCurrent.Sequence).FirstOrDefault();
                     tempCurrent = tempParent as TChild;           //currentNode is now the parent
-                    tempParent = tempParent.Parent;                      //currentParent is now the grandParent
+                    tempParent = tempParent.Parent;                      //currenISwagParent<TChild> is now the grandParent
                 } while (nextSibling == null && tempCurrent != null && tempParent != null);
 
 
@@ -66,7 +64,7 @@ namespace SwagOverflowWPF.Iterator
                     tempCurrent = _current;
                     tempParent = _current.Parent;
 
-                    TParent tempComposite = tempCurrent as TParent;
+                    ISwagParent<TChild> tempComposite = tempCurrent as ISwagParent<TChild>;
 
                     if (tempComposite == null) //leaf node
                     {
@@ -75,7 +73,7 @@ namespace SwagOverflowWPF.Iterator
                             //Evaluate if next next Sibling is the last one
                             nextNextSibling = tempParent.Children.OrderBy(c => c.Sequence).Where(c => c.Sequence > tempCurrent.Sequence).FirstOrDefault();
                             tempCurrent = tempParent as TChild;           //currentNode is now the parent
-                            tempParent = tempParent.Parent;     //currentParent is now the grandParent
+                            tempParent = tempParent.Parent;     //currenISwagParent<TChild> is now the grandParent
                         } while (nextNextSibling == null && tempCurrent != null && tempParent != null);
 
                         if (nextNextSibling == null)

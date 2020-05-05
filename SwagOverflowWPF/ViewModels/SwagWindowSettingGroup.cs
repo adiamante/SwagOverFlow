@@ -51,11 +51,24 @@ namespace SwagOverflowWPF.ViewModels
             _context = context;
         }
 
+        public SwagContext GetContext()
+        {
+            return _context;
+        }
+
+        public void Save()
+        {
+            _context?.SaveChanges();
+        }
+
         private void SwagWindowSettingGroup_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
         {
-            SwagSettingUnitOfWork work = new SwagSettingUnitOfWork(_context);
-            work.Settings.Update((SwagSetting)e.SwagItem);
-            work.Complete();
+            if (_context != null)
+            {
+                SwagSettingUnitOfWork work = new SwagSettingUnitOfWork(_context);
+                work.Settings.Update((SwagSetting)e.SwagItem);
+                work.Complete();
+            }
         }
 
         public Theme GetCurrentTheme()

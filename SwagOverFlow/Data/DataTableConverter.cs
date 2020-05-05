@@ -36,6 +36,11 @@ namespace SwagOverFlow.Data
         public IDataTableConverter Converter { get; set; }
         public DataTableConvertParams Params { get; set; }
 
+        public DataTableConvertContext()
+        {
+
+        }
+
         public DataTableConvertContext(IDataTableConverter converter, DataTableConvertParams parameters)
         {
             Converter = converter;
@@ -555,6 +560,22 @@ namespace SwagOverFlow.Data
 
                 return _converters[extension.ToLower()];
             }
+            set
+            {
+                if (!_converters.ContainsKey(extension.ToLower()))
+                {
+                    _converters.TryAdd(extension.ToLower(), value);
+                }
+                else
+                {
+                    _converters[extension.ToLower()] = value;
+                }
+            }
+        }
+
+        public Boolean ContainsKey(String key)
+        {
+            return _converters.ContainsKey(key.ToLower());
         }
     }
     #endregion DataTableConverterFileContextCache

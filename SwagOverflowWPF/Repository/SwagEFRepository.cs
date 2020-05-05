@@ -86,7 +86,11 @@ namespace SwagOverflowWPF.Repository
         public virtual void Update(TEntity entityToUpdate)
         {
             dbSet.Attach(entityToUpdate);
-            context.Entry(entityToUpdate).State = EntityState.Modified;
+            var entry = context.Entry(entityToUpdate);
+            if (entry.State != EntityState.Added)
+            {
+                entry.State = EntityState.Modified;
+            }
         }
     }
 }

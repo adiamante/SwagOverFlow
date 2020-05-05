@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SwagOverFlow.Data;
+using SwagOverFlow.Logger;
 using SwagOverFlow.Utils;
 using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.Commands;
@@ -18,6 +19,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -31,6 +33,7 @@ namespace SwagOverflowWPF.ViewModels
     public abstract class SwagData : SwagItem<SwagDataGroup, SwagData>
     {
         SwagDataResult _swagDataResult;
+
         [NotMapped]
         [JsonIgnore]
         #region SwagDataResult
@@ -45,7 +48,7 @@ namespace SwagOverflowWPF.ViewModels
     #endregion SwagData
 
     #region SwagDataGroup
-    public abstract class SwagDataGroup : SwagData, ISwagParent<SwagDataGroup, SwagData>
+    public abstract class SwagDataGroup : SwagData, ISwagParent<SwagData>
     {
         #region Private/Protected Members
         protected Boolean _listening = true;
@@ -1753,9 +1756,9 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Context Methods
 
         #region Iterator
-        public SwagItemPreOrderIterator<SwagDataGroup, SwagData> CreateIterator()
+        public SwagItemPreOrderIterator<SwagData> CreateIterator()
         {
-            return new SwagItemPreOrderIterator<SwagDataGroup, SwagData>(this);
+            return new SwagItemPreOrderIterator<SwagData>(this);
         }
         #endregion Iterator
 
@@ -1786,7 +1789,7 @@ namespace SwagOverflowWPF.ViewModels
         {
             if (_tabs != null)
             {
-                SwagItemPreOrderIterator<SwagTabCollection, SwagTabItem> iterator = _tabs.CreateIterator();
+                SwagItemPreOrderIterator<SwagTabItem> iterator = _tabs.CreateIterator();
                 for (SwagTabItem tabItem = iterator.First(); !iterator.IsDone; tabItem = iterator.Next())
                 {
                     tabItem.ViewModel = this;
@@ -2022,11 +2025,13 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
 
         #region Methods
-        public void LoadFiles(IEnumerable<String> files)
+        public void LoadFiles(IEnumerable<String> files, IEnumerable<KeyValuePairViewModel<String, ParseViewModel>> parseMappers)
         {
             foreach (String file in files)
             {
-                Children.Add(SwagDataHelper.FromFile(file));
+                SwagLogger.LogStart(this, "Load {file}", file);
+                Children.Add(SwagDataHelper.FromFile(file, parseMappers));
+                SwagLogger.LogEnd(this, "Load {file}", file);
             }
         }
 
@@ -2059,10 +2064,50 @@ namespace SwagOverflowWPF.ViewModels
     #region SwagDataHelper
     public static class SwagDataHelper
     {
-        public static SwagData FromFile(String file, Dictionary<string, string> extensionMappings = null)
+        public static SwagData FromFile(String file, IEnumerable<KeyValuePairViewModel<String, ParseViewModel>> parseMappers)
         {
             String filename = Path.GetFileName(file);
-            String ext = Path.GetExtension(file);
+            String ext = Path.GetExtension(file).TrimStart('.');
+
+            KeyValuePairViewModel<String, ParseViewModel> parseMapper = parseMappers.FirstOrDefault(pm => pm.Key.ToLower() == ext.ToLower());
+            if (parseMapper != null)
+            {
+                switch (parseMapper.Value.ParseStrategy)
+                {
+                    case ParseStrategy.Csv:
+                    case ParseStrategy.Dbf:
+                        DataTableConvertContext dataTableConvertContext = new DataTableConvertContext();
+                        switch (parseMapper.Value.ParseStrategy)
+                        {
+                            case ParseStrategy.Csv:
+                                dataTableConvertContext.Converter = new DataTableCsvFileConverter();
+                                break;
+                            case ParseStrategy.Dbf:
+                                dataTableConvertContext.Converter = new DataTableDbfFileConverter();
+                                break;
+                        }
+                        dataTableConvertContext.Params = new DataTableConvertParams();
+                        PropertyCopy.Copy(parseMapper.Value, dataTableConvertContext.Params);
+                        DataTableConverterHelper.ConverterFileContexts[ext] = dataTableConvertContext;
+                        break;
+                    case ParseStrategy.Xml:
+                    case ParseStrategy.Json:
+                        DataSetConvertContext dataSetConvertContext = new DataSetConvertContext();
+                        switch (parseMapper.Value.ParseStrategy)
+                        {
+                            case ParseStrategy.Xml:
+                                dataSetConvertContext.Converter = new DataSetXmlFileConverter();
+                                break;
+                            case ParseStrategy.Json:
+                                dataSetConvertContext.Converter = new DataSetJsonFileConverter();
+                                break;
+                        }
+                        dataSetConvertContext.Params = new DataSetConvertParams();
+                        PropertyCopy.Copy(parseMapper.Value, dataSetConvertContext.Params);
+                        DataSetConverterHelper.ConverterFileContexts[ext] = dataSetConvertContext;
+                        break;
+                }
+            }
 
             DataSetConvertContext dataSetContext = DataSetConverterHelper.ConverterFileContexts[ext];
             if (dataSetContext != null)
@@ -2089,7 +2134,7 @@ namespace SwagOverflowWPF.ViewModels
     #endregion SwagDataResult
 
     #region SwagDataResultGroup
-    public class SwagDataResultGroup : SwagDataResult, ISwagParent<SwagDataResultGroup, SwagDataResult>
+    public class SwagDataResultGroup : SwagDataResult, ISwagParent<SwagDataResult>
     {
         #region Private/Protected Members
         CollectionViewSource _childrenCollectionViewSource;

@@ -93,7 +93,7 @@ namespace SwagOverflowWPF.Services
                 windowSettings = new SwagWindowSettingGroup(true);
                 windowSettings.Name = windowSettings.AlternateId = groupName;
                 work.SettingGroups.Insert(windowSettings);
-                SwagItemPreOrderIterator<SwagSettingGroup, SwagSetting> iterator = windowSettings.CreateIterator();
+                SwagItemPreOrderIterator<SwagSetting> iterator = windowSettings.CreateIterator();
                 for (SwagSetting setting = iterator.First(); !iterator.IsDone; setting = iterator.Next())
                 {
                     //Mark these properites as modified to have them save properly

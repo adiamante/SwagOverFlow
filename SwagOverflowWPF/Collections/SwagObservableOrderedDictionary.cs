@@ -71,7 +71,22 @@ namespace SwagOverflowWPF.Collections
 
         public ICollection<TValue> Values => ((IDictionary<TKey, TValue>)_dict).Values;
 
-        public TValue this[TKey key] { get => ((IDictionary<TKey, TValue>)_dict)[key]; set => ((IDictionary<TKey, TValue>)_dict)[key] = value; }
+        public KeyValuePair<TKey, TValue> this[int index] { get => ((IList<KeyValuePair<TKey, TValue>>)_list)[index]; set => ((IList<KeyValuePair<TKey, TValue>>)_list)[index] = value; }
+        public TValue this[TKey key] 
+        {
+            get { return _dict[key]; }
+            set
+            {
+                if (!_dict.ContainsKey(key))
+                {
+                    Add(key, value);
+                }
+                else
+                {
+                    _dict[key] = value;
+                }
+            }
+        }
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
@@ -155,5 +170,6 @@ namespace SwagOverflowWPF.Collections
             return -1;
         }
         #endregion Methods
+
     }
 }

@@ -99,7 +99,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Methods
     }
 
-    public class SwagTabCollection : SwagTabItem, ISwagParent<SwagTabCollection, SwagTabItem>
+    public class SwagTabCollection : SwagTabItem, ISwagParent<SwagTabItem>
     {
         #region Private/Protected Members
         Boolean _showChildText = false, _isInitialized = false;
@@ -258,9 +258,9 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
 
         #region Iterator
-        public SwagItemPreOrderIterator<SwagTabCollection, SwagTabItem> CreateIterator()
+        public SwagItemPreOrderIterator<SwagTabItem> CreateIterator()
         {
-            return new SwagItemPreOrderIterator<SwagTabCollection, SwagTabItem>(this);
+            return new SwagItemPreOrderIterator<SwagTabItem>(this);
         }
         #endregion Iterator
     }

@@ -204,7 +204,7 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
     }
 
-    public class SwagSettingGroup : SwagSetting, ISwagParent<SwagSettingGroup, SwagSetting>
+    public class SwagSettingGroup : SwagSetting, ISwagParent<SwagSetting>
     {
         #region Private/Protected Members
         String _name;
@@ -306,7 +306,6 @@ namespace SwagOverflowWPF.ViewModels
                     {
                         _dict.Add(newItem.Key, newItem);
                     }
-                    
                 }
             }
 
@@ -323,11 +322,18 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
 
         #region Iterator
-        public SwagItemPreOrderIterator<SwagSettingGroup, SwagSetting> CreateIterator()
+        public SwagItemPreOrderIterator<SwagSetting> CreateIterator()
         {
-            return new SwagItemPreOrderIterator<SwagSettingGroup, SwagSetting>(this);
+            return new SwagItemPreOrderIterator<SwagSetting>(this);
         }
         #endregion Iterator
+
+        #region Methods
+        public Boolean ContainsKey(String key)
+        {
+            return _dict.ContainsKey(key);
+        }
+        #endregion Methods
     }
 
     public class SwagSettingString : SwagSetting<String>

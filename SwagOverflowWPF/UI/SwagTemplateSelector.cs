@@ -6,11 +6,13 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using SwagOverflowWPF.Controls;
 using SwagOverflowWPF.Utilities;
 using SwagOverflowWPF.ViewModels;
 
 namespace SwagOverflowWPF.UI
 {
+    //https://www.codeproject.com/Tips/873562/Markup-Extension-for-Generic-Classes-2
     /// <summary>
     /// Provides a link between a value and a <see cref="DataTemplate"/>
     /// for the <see cref="DynamicTemplateSelector"/>
@@ -159,7 +161,7 @@ namespace SwagOverflowWPF.UI
                     if (propInfo.CanRead)
                     {
                         Object targetType = propInfo.GetValue(item);
-                        if (targetType.Equals(template.Type))
+                        if (targetType != null && targetType.Equals(template.Type))
                         {
                             return template.DataTemplate;
                         }

@@ -78,7 +78,7 @@
                                 <controls:IconControl Text="Settings" Kind="{x:Static iconPacks:PackIconMaterialKind.Settings}" />
                             </StackPanel>
                         </metro:Flyout.Header>
-                        <controls:SettingsControl Settings="{Binding Settings}" />
+                        <controls:SettingsControl Settings="{Binding Settings}" SettingCustomTemplates="{Binding SettingCustomTemplates}" />
                     </metro:Flyout>
                 </metro:FlyoutsControl>
             </Setter.Value>

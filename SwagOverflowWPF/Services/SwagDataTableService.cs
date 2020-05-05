@@ -43,7 +43,7 @@ namespace SwagOverflowWPF.Services
                     }
                 }
 
-                SwagItemPreOrderIterator<SwagDataGroup, SwagData> iterator = sdtDataTable.CreateIterator();
+                SwagItemPreOrderIterator<SwagData> iterator = sdtDataTable.CreateIterator();
                 for (SwagData swagData = iterator.First(); !iterator.IsDone; swagData = iterator.Next())
                 {
                     if (swagData is SwagDataRow)

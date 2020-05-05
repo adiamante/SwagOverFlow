@@ -14,17 +14,15 @@ using System.Windows.Data;
 namespace SwagOverflowWPF.ViewModels
 {
     #region Interfaces
-    public interface ISwagIndexedChild<TParent, TChild> : ISwagChild<TParent, TChild>
-            where TParent : class, ISwagParent<TParent, TChild>
-            where TChild : class, ISwagChild<TParent, TChild>
+    public interface ISwagIndexedChild<TChild> : ISwagChild<TChild> where TChild : class, ISwagIndexedChild<TChild>
     {
         String Key { get; set; }
     }
     #endregion Interfaces
 
-    public abstract class SwagIndexedItem<TParent, TChild> : SwagItemBase, ISwagIndexedChild<TParent, TChild>
-        where TParent : class, ISwagParent<TParent, TChild>
-        where TChild : class, ISwagIndexedChild<TParent, TChild>
+    public abstract class SwagIndexedItem<TParent, TChild> : SwagItemBase, ISwagIndexedChild<TChild>
+        where TChild : class, ISwagIndexedChild<TChild>
+        where TParent : class, ISwagParent<TChild>
     {
         #region Private/Protected Members
         TParent _parent;
@@ -44,6 +42,12 @@ namespace SwagOverflowWPF.ViewModels
         {
             get { return _parent; }
             set { SetValue(ref _parent, value); }
+        }
+
+        ISwagParent<TChild> ISwagChild<TChild>.Parent
+        {
+            get { return (ISwagParent<TChild>)_parent; }
+            set { SetValue(ref _parent, (TParent)value); }
         }
         #endregion Parent
         #region Path
@@ -92,8 +96,8 @@ namespace SwagOverflowWPF.ViewModels
     }
 
     public abstract class SwagIndexedItem<TParent, TChild, T> : SwagIndexedItem<TParent, TChild>
-        where TParent : class, ISwagParent<TParent, TChild>
-        where TChild : class, ISwagIndexedChild<TParent, TChild>
+        where TChild : class, ISwagIndexedChild<TChild>
+        where TParent : class, ISwagParent<TChild>
     {
         #region Private/Protected Members
         protected T _value;
@@ -145,9 +149,8 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
     }
 
-    public abstract class SwagIndexedItemGroup<TParent, TChild> : SwagIndexedItem<TParent, TChild>, ISwagParent<TParent, TChild>
-        where TParent : class, ISwagParent<TParent, TChild>
-        where TChild : class, ISwagIndexedChild<TParent, TChild>
+    public abstract class SwagIndexedItemGroup<TChild> : SwagIndexedItem<SwagIndexedItemGroup<TChild>, TChild>, ISwagParent<TChild>
+        where TChild : class, ISwagIndexedChild<TChild>
     {
         #region Private/Protected Members
         String _name;
@@ -161,7 +164,7 @@ namespace SwagOverflowWPF.ViewModels
 
         public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
         {
-            SwagIndexedItem<TParent, TChild> swagSetting = (SwagIndexedItem<TParent, TChild>)swagItem;
+            SwagIndexedItem<SwagIndexedItemGroup<TChild>, TChild> swagSetting = (SwagIndexedItem<SwagIndexedItemGroup<TChild>, TChild>)swagItem;
             SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e, Message = $"{swagSetting.Path}({e.OldValue}) => {e.NewValue}" });
             Parent?.OnSwagItemChanged(swagItem, e);
         }
@@ -235,7 +238,7 @@ namespace SwagOverflowWPF.ViewModels
             {
                 foreach (TChild newItem in e.NewItems)
                 {
-                    newItem.Parent = this as TParent;
+                    newItem.Parent = this;
                     if (newItem.Sequence <= 0)
                     {
                         newItem.Sequence = this.Children.Count;
@@ -257,9 +260,9 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
 
         #region Iterator
-        public SwagItemPreOrderIterator<TParent, TChild> CreateIterator()
+        public SwagItemPreOrderIterator<TChild> CreateIterator()
         {
-            return new SwagItemPreOrderIterator<TParent, TChild>(this as TParent);
+            return new SwagItemPreOrderIterator<TChild>(this);
         }
         #endregion Iterator
     }

@@ -71,7 +71,6 @@ namespace SwagOverflowWPF.Controls
         }
         #endregion CustomDefaultItemContainerStyle
 
-
         #region ItemContainerStyles
         public static readonly DependencyProperty ItemContainerStylesProperty =
             DependencyProperty.Register("ItemContainerStyles", typeof(SwagStyleCollection), typeof(SwagItemsControl),

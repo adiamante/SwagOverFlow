@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SwagOverflowWPF.Controls" xmlns:ui="clr-namespace:SwagOverflowWPF.UI"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
+             x:Name="ControlInstance"
              d:DesignHeight="450" d:DesignWidth="800">
     <local:SwagControlBase.Resources>
         <CollectionViewSource x:Key="ItemTemplates" Source="{Binding ItemTemplates, RelativeSource={RelativeSource AncestorType={x:Type local:SwagItemsControl}}}" />
@@ -43,8 +44,8 @@
         <TreeView ItemsSource="{Binding SwagItemsSource.ChildrenView, RelativeSource={RelativeSource AncestorType={x:Type local:SwagItemsControl}}}"
                   ItemTemplateSelector="{StaticResource SwagTemplateSelector}"
                   ItemContainerStyleSelector="{StaticResource SwagStyleSelector}"
-                  ui:SwagTemplateSelector.CustomDefaultTemplate="{Binding CustomDefaultItemTemplate, RelativeSource={RelativeSource AncestorType={x:Type local:SwagItemsControl}}}"
-                  ui:SwagStyleSelector.CustomDefaultStyle="{Binding CustomDefaultItemContainerStyle, RelativeSource={RelativeSource AncestorType={x:Type local:SwagItemsControl}}}">
+                  ui:SwagTemplateSelector.CustomDefaultTemplate="{Binding CustomDefaultItemTemplate, ElementName=ControlInstance}"
+                  ui:SwagStyleSelector.CustomDefaultStyle="{Binding CustomDefaultItemContainerStyle, ElementName=ControlInstance}">
             <ui:SwagTemplateSelector.CustomTemplates>
                 <CompositeCollection>
                     <CollectionContainer Collection="{Binding Source={StaticResource ItemTemplates}}" />

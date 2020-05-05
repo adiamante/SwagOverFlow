@@ -1,5 +1,6 @@
 ﻿using Microsoft.WindowsAPICodePack.Shell;
 using SwagOverFlow.Utils;
+using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.UI;
 using SwagOverflowWPF.ViewModels;
 using System;
@@ -53,6 +54,16 @@ namespace SwagOverflowWPF.Controls
         }
         #endregion DataTemplates
 
+        #region ParseMapper
+        public SwagItemGroup<KeyValuePairViewModel<String, ParseViewModel>> ParseMapper
+        {
+            get
+            {
+                return SwagWindow.Settings["SwagData"]["ParseMapper"].GetValue<SwagItemGroup<KeyValuePairViewModel<String, ParseViewModel>>>();
+            }
+        }
+        #endregion ParseMapper
+
         public SwagDataControl()
         {
             InitializeComponent();
@@ -60,31 +71,41 @@ namespace SwagOverflowWPF.Controls
 
         private void ControlInstance_Loaded(object sender, RoutedEventArgs e)
         {
-            //SwagDataSet set = new SwagDataSet();
-            //SwagDataTable t1 = new SwagDataTable() { Display = "T1X" };
-            //t1.InitSettings();
-            //t1.InitTabs();
-            //SwagDataTable t2 = new SwagDataTable() { Display = "T2" };
-            //t2.InitSettings();
-            //t2.InitTabs();
-            //set.Children.Add(t1);
-            //set.Children.Add(t2);
+            Initialize();
+        }
 
+        public void Initialize()
+        {
+            if (!((SwagSettingGroup)SwagWindow.Settings).ContainsKey("SwagData"))
+            {
+                SwagSettingGroup swagDataSetting = new SwagSettingGroup() { Icon = PackIconCustomKind.Dataset };
+                SwagWindow.Settings["SwagData"] = swagDataSetting;
+                swagDataSetting.IconString = swagDataSetting.IconString;
+                swagDataSetting.IconTypeString = swagDataSetting.IconTypeString;
+                ((SwagWindowSettingGroup)SwagWindow.Settings).Save();
+            }
 
-            //SwagDataSet s1 = new SwagDataSet() { Display = "S1" };
-            //SwagDataTable s1t1 = new SwagDataTable() { Display = "S1T1" };
-            //s1t1.InitSettings();
-            //s1t1.InitTabs();
-            //SwagDataTable s1t2 = new SwagDataTable() { Display = "S1T2" };
-            //s1t2.InitSettings();
-            //s1t2.InitTabs();
-            //s1.Children.Add(s1t1);
-            //s1.Children.Add(s1t2);
+            if (!((SwagSettingGroup)SwagWindow.Settings["SwagData"]).ContainsKey("ParseMapper"))
+            {
+                SwagSetting<SwagItemGroup<KeyValuePairViewModel<String, ParseViewModel>>> ssParseMapper =
+                    new SwagSetting<SwagItemGroup<KeyValuePairViewModel<string, ParseViewModel>>>()
+                    {
+                        Icon = PackIconCustomKind.ArrowMultipleSweepRight,
+                        Value = new SwagItemGroup<KeyValuePairViewModel<string, ParseViewModel>>()
+                    };
 
-            //set.Children.Add(s1);
+                ssParseMapper.IconString = ssParseMapper.IconString;
+                ssParseMapper.IconTypeString = ssParseMapper.IconTypeString;
+                ssParseMapper.ValueTypeString = ssParseMapper.ValueTypeString;
+                ssParseMapper.ObjValue = ssParseMapper.ObjValue;
+                SwagWindow.Settings["SwagData"]["ParseMapper"] = ssParseMapper;
+                ((SwagWindowSettingGroup)SwagWindow.Settings).Save();
+            }
 
-            //SwagDataSet = set;
-            //SwagDataSet = new SwagDataSet();
+            ParseMapper.SwagItemChanged += (s, e) =>
+            {
+                SwagWindow.Settings.OnSwagItemChanged(SwagWindow.Settings["SwagData"]["ParseMapper"], e.PropertyChangedArgs);
+            };
         }
 
         private void SwagData_Drop(object sender, DragEventArgs e)
@@ -119,7 +140,8 @@ namespace SwagOverflowWPF.Controls
 
             if (allFiles.Count > 0)
             {
-                SwagDataSet.LoadFiles(allFiles);
+                List<KeyValuePairViewModel<String, ParseViewModel>> parseMappers = ParseMapper.Children.Select(pm => pm.Value).ToList();
+                SwagDataSet.LoadFiles(allFiles, parseMappers);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using SwagOverflowWPF.ViewModels;
+﻿using SwagOverflowWPF.UI;
+using SwagOverflowWPF.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -19,6 +20,18 @@ namespace SwagOverflowWPF.Controls
             set { SetValue(SettingsProperty, value); }
         }
         #endregion Settings
+
+        #region SettingCustomTemplates
+        public static readonly DependencyProperty SettingCustomTemplatesProperty =
+            DependencyProperty.Register("SettingCustomTemplates", typeof(SwagTemplateCollection), typeof(SettingsControl),
+            new FrameworkPropertyMetadata(new SwagTemplateCollection(), FrameworkPropertyMetadataOptions.Inherits));
+
+        public SwagTemplateCollection SettingCustomTemplates
+        {
+            get { return (SwagTemplateCollection)GetValue(SettingCustomTemplatesProperty); }
+            set { SetValue(SettingCustomTemplatesProperty, value); }
+        }
+        #endregion SettingCustomTemplates
 
         public SettingsControl()
         {
