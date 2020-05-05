@@ -24,6 +24,7 @@ namespace SwagOverflowWPF.Controls
     /// </summary>
     public partial class SwagDataControl : SwagControlBase
     {
+        #region Properties
         #region SwagDataSet
         public static DependencyProperty SwagDataSetProperty =
                 DependencyProperty.Register(
@@ -41,7 +42,6 @@ namespace SwagOverflowWPF.Controls
             }
         }
         #endregion SwagDataSet
-
         #region DataTemplates
         public static readonly DependencyProperty DataTemplatesProperty =
             DependencyProperty.Register("DataTemplates", typeof(SwagTemplateCollection), typeof(SwagDataControl),
@@ -53,7 +53,6 @@ namespace SwagOverflowWPF.Controls
             set { SetValue(DataTemplatesProperty, value); }
         }
         #endregion DataTemplates
-
         #region ParseMapper
         public SwagItemGroup<KeyValuePairViewModel<String, ParseViewModel>> ParseMapper
         {
@@ -63,7 +62,9 @@ namespace SwagOverflowWPF.Controls
             }
         }
         #endregion ParseMapper
+        #endregion Properties
 
+        #region Initialization
         public SwagDataControl()
         {
             InitializeComponent();
@@ -107,7 +108,9 @@ namespace SwagOverflowWPF.Controls
                 SwagWindow.Settings.OnSwagItemChanged(SwagWindow.Settings["SwagData"]["ParseMapper"], e.PropertyChangedArgs);
             };
         }
+        #endregion Initialization
 
+        #region Drop
         private void SwagData_Drop(object sender, DragEventArgs e)
         {
             List<String> allFiles = new List<string>();
@@ -144,7 +147,9 @@ namespace SwagOverflowWPF.Controls
                 SwagDataSet.LoadFiles(allFiles, parseMappers);
             }
         }
+        #endregion Drop
 
+        #region Search
         private void Search_OnSearch(object sender, RoutedEventArgs e)
         {
             SearchTextBox searchTextBox = (SearchTextBox)sender;
@@ -218,5 +223,52 @@ namespace SwagOverflowWPF.Controls
             swagDataColumn.SwagDataTable.SelectedRow = rowResult;
             View(swagDataColumn);
         }
+        #endregion Search
+
+        #region SwagDataHeader ContextMenu
+        private void SwagDataHeader_CloseSiblings(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show(SwagWindow, "Are you sure you want to close all siblings?", "Warning", MessageBoxButton.YesNo);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                SwagData swagData = (SwagData)((FrameworkElement)sender).DataContext;
+                if (swagData.Parent != null)
+                {
+                    swagData.Parent.Children.Clear();
+                    swagData.Parent.Children.Add(swagData);
+                }
+            }
+        }
+
+        private void SwagDataHeader_CloseAll(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show(SwagWindow, "Are you sure you want to close all in set?", "Warning", MessageBoxButton.YesNo);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                SwagData swagData = (SwagData)((FrameworkElement)sender).DataContext;
+                if (swagData.Parent != null)
+                {
+                    swagData.Parent.Children.Clear();
+                }
+            }
+        }
+
+        private void SwagDataHeader_ContextMenuOpened(object sender, RoutedEventArgs e)
+        {
+            SwagData swagData = (SwagData)((FrameworkElement)sender).DataContext;
+            if (swagData.Parent != null && swagData.Parent is SwagDataSet)
+            {
+                SwagDataSet swagDataSet = (SwagDataSet)swagData.Parent;
+                if (swagDataSet.SelectedChild != null)
+                {
+                    swagDataSet.SelectedChild.IsSelected = false;
+                }
+                swagDataSet.SelectedChild = swagData;
+                swagData.IsSelected = true;
+            }
+        }
+        #endregion SwagDataHeader ContextMenu
     }
 }

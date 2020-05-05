@@ -52,7 +52,7 @@
         <DataTemplate x:Key="DataHeaderTemplate">
             <TextBlock Text="{Binding Display}" />
         </DataTemplate>
-        <ContextMenu x:Key="SwagDataSetHeaderContextMenu">
+        <ContextMenu x:Key="SwagDataSetHeaderContextMenu" Opened="SwagDataHeader_ContextMenuOpened">
             <MenuItem Header="Add Set" Command="{Binding AddDataSetCommand}">
                 <MenuItem.Icon>
                     <local:IconControl Kind="{x:Static ui:PackIconCustomKind.DatasetAdd}" />
@@ -63,6 +63,38 @@
                     <local:IconControl Kind="{x:Static ui:PackIconCustomKind.TableAdd}" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="Close" Command="{Binding RemoveCommand}">
+                <MenuItem.Icon>
+                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Close}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Close Siblings" Click="SwagDataHeader_CloseSiblings">
+                <MenuItem.Icon>
+                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.CloseBoxMultiple}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Close All in Set" Click="SwagDataHeader_CloseAll">
+                <MenuItem.Icon>
+                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.CloseBoxMultiple}" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+        <ContextMenu x:Key="SwagDataTableHeaderContextMenu" Opened="SwagDataHeader_ContextMenuOpened">
+            <MenuItem Header="Close" Command="{Binding RemoveCommand}">
+                <MenuItem.Icon>
+                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Close}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Close Siblings" Click="SwagDataHeader_CloseSiblings">
+                <MenuItem.Icon>
+                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.CloseBoxMultiple}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Close All in Set" Click="SwagDataHeader_CloseAll">
+                <MenuItem.Icon>
+                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.CloseBoxMultiple}" />
+                </MenuItem.Icon>
+            </MenuItem>
         </ContextMenu>
         <ui:SwagStyleSelector x:Key="SwagHeaderStyleSelector">
             <ui:SwagStyleSelector.StaticStyles>
@@ -71,6 +103,13 @@
                         <ui:SwagStyle.Style>
                             <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
                                 <Setter Property="ContextMenu" Value="{StaticResource SwagDataSetHeaderContextMenu}" />
+                            </Style>
+                        </ui:SwagStyle.Style>
+                    </ui:SwagStyle>
+                    <ui:SwagStyle Type="{x:Type vm:SwagDataTable}">
+                        <ui:SwagStyle.Style>
+                            <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
+                                <Setter Property="ContextMenu" Value="{StaticResource SwagDataTableHeaderContextMenu}" />
                             </Style>
                         </ui:SwagStyle.Style>
                     </ui:SwagStyle>

@@ -32,16 +32,30 @@ namespace SwagOverflowWPF.ViewModels
     public abstract class SwagData : SwagItem<SwagDataGroup, SwagData>
     {
         SwagDataResult _swagDataResult;
+        ICommand _removeCommand;
 
+        #region SwagDataResult
         [NotMapped]
         [JsonIgnore]
-        #region SwagDataResult
         public SwagDataResult SwagDataResult
         {
             get { return _swagDataResult; }
             set { SetValue(ref _swagDataResult, value); }
         }
         #endregion SwagDataResult
+        #region RemoveCommand
+        public ICommand RemoveCommand
+        {
+            get
+            {
+                return _removeCommand ?? (_removeCommand =
+                    new RelayCommand(() =>
+                    {
+                        Parent.Children.Remove(this);
+                    }));
+            }
+        }
+        #endregion RemoveCommand
         public abstract SwagDataResult Search(String searchValue, FilterMode filterMode, Func<SwagDataColumn, SwagDataRow, String, FilterMode, bool> searchFunc);
     }
     #endregion SwagData
