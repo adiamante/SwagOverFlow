@@ -1,4 +1,5 @@
-﻿using SwagOverflowWPF.ViewModels;
+﻿using SwagOverflow.ViewModels;
+using SwagOverflowWPF.ViewModels;
 using System;
 using System.Collections;
 using System.Collections.Generic;

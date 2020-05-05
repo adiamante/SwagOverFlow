@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using SwagOverflow.ViewModels;
 using SwagOverFlow.Utils;
 using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.ViewModels;
@@ -19,7 +20,6 @@ namespace SwagOverflowWPF.Data
     {
         static string _dataSource = "localhost";
         public DbSet<SwagItemBase> SwagItems { get; set; }
-        //public DbSet<SwagItemBase> SwagIndexedItems { get; set; }
         public DbSet<SwagSetting> SwagSettings { get; set; }
         public DbSet<SwagSettingGroup> SwagSettingGroups { get; set; }
         public DbSet<SwagSettingString> SwagSettingStrings { get; set; }

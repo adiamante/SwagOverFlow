@@ -1,16 +1,15 @@
 ﻿using Newtonsoft.Json;
+using SwagOverflow.Commands;
 using SwagOverFlow.Utils;
-using SwagOverflowWPF.Commands;
-using SwagOverflowWPF.Iterator;
+using SwagOverflow.Iterator;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Windows.Data;
 using System.Windows.Input;
 
-namespace SwagOverflowWPF.ViewModels
+namespace SwagOverflow.ViewModels
 {
     #region Interfaces
     public interface ISwagChild<TChild> where TChild : class, ISwagChild<TChild>
@@ -298,87 +297,89 @@ namespace SwagOverflowWPF.ViewModels
         #endregion Initialization
     }
 
-    public class SwagItemGroup<TParent, TChild> : SwagItem<TParent, TChild>, ISwagParent<TChild>
-        where TChild : class, ISwagChild<TChild>
-        where TParent : class, ISwagParent<TChild>
-    {
-        #region Private/Protected Members
-        String _name;
-        protected ObservableCollection<TChild> _children = new ObservableCollection<TChild>();
-        CollectionViewSource _childrenCollectionViewSource;
-        #endregion Private/Protected Members
+    #region SwagItemGroup (OLD)
+    //public class SwagItemGroup<TParent, TChild> : SwagItem<TParent, TChild>, ISwagParent<TChild>
+    //    where TChild : class, ISwagChild<TChild>
+    //    where TParent : class, ISwagParent<TChild>
+    //{
+    //    #region Private/Protected Members
+    //    String _name;
+    //    protected ObservableCollection<TChild> _children = new ObservableCollection<TChild>();
+    //    CollectionViewSource _childrenCollectionViewSource;
+    //    #endregion Private/Protected Members
 
-        #region Events
-        public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
+    //    #region Events
+    //    public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
 
-        public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
-        {
-            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
-        }
-        #endregion Events
+    //    public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+    //    {
+    //        SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+    //    }
+    //    #endregion Events
 
-        #region Properties
-        #region Name
-        public String Name
-        {
-            get { return _name; }
-            set { SetValue(ref _name, value); }
-        }
-        #endregion Name
-        #region ChildrenView
-        public ICollectionView ChildrenView
-        {
-            get { return _childrenCollectionViewSource.View; }
-        }
-        #endregion ChildrenView
-        #region Children
-        public ObservableCollection<TChild> Children
-        {
-            get { return _children; }
-            set { SetValue(ref _children, value); }
-        }
-        #endregion Children
-        #region HasChildren
-        public Boolean HasChildren
-        {
-            get { return _children.Count > 0; }
-        }
-        #endregion HasChildren
-        #endregion Properties
+    //    #region Properties
+    //    #region Name
+    //    public String Name
+    //    {
+    //        get { return _name; }
+    //        set { SetValue(ref _name, value); }
+    //    }
+    //    #endregion Name
+    //    #region ChildrenView
+    //    public ICollectionView ChildrenView
+    //    {
+    //        get { return _childrenCollectionViewSource.View; }
+    //    }
+    //    #endregion ChildrenView
+    //    #region Children
+    //    public ObservableCollection<TChild> Children
+    //    {
+    //        get { return _children; }
+    //        set { SetValue(ref _children, value); }
+    //    }
+    //    #endregion Children
+    //    #region HasChildren
+    //    public Boolean HasChildren
+    //    {
+    //        get { return _children.Count > 0; }
+    //    }
+    //    #endregion HasChildren
+    //    #endregion Properties
 
-        #region Initialization
-        public SwagItemGroup() : base()
-        {
-            _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
-            _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
-            _children.CollectionChanged += _children_CollectionChanged;
-        }
+    //    #region Initialization
+    //    public SwagItemGroup() : base()
+    //    {
+    //        _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
+    //        _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
+    //        _children.CollectionChanged += _children_CollectionChanged;
+    //    }
 
-        private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.NewItems != null)
-            {
-                foreach (TChild newItem in e.NewItems)
-                {
-                    newItem.Parent = this;
-                    if (newItem.Sequence <= 0)
-                    {
-                        newItem.Sequence = this.Children.Count;
-                    }
-                }
-            }
+    //    private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    //    {
+    //        if (e.NewItems != null)
+    //        {
+    //            foreach (TChild newItem in e.NewItems)
+    //            {
+    //                newItem.Parent = this;
+    //                if (newItem.Sequence <= 0)
+    //                {
+    //                    newItem.Sequence = this.Children.Count;
+    //                }
+    //            }
+    //        }
 
-            _childrenCollectionViewSource.View.Refresh();
-        }
-        #endregion Initialization
+    //        _childrenCollectionViewSource.View.Refresh();
+    //    }
+    //    #endregion Initialization
 
-        #region Iterator
-        public SwagItemPreOrderIterator<TChild> CreateIterator()
-        {
-            return new SwagItemPreOrderIterator<TChild>(this);
-        }
-        #endregion Iterator
-    }
+    //    #region Iterator
+    //    public SwagItemPreOrderIterator<TChild> CreateIterator()
+    //    {
+    //        return new SwagItemPreOrderIterator<TChild>(this);
+    //    }
+    //    #endregion Iterator
+    //}
+    #endregion SwagItemGroup (OLD)
 
     public class SwagItem<T> : SwagItem<SwagItemGroup<T>, SwagItem<T>, T>
     {
@@ -390,7 +391,6 @@ namespace SwagOverflowWPF.ViewModels
         #region Private/Protected Members
         String _name;
         protected ObservableCollection<SwagItem<T>> _children = new ObservableCollection<SwagItem<T>>();
-        CollectionViewSource _childrenCollectionViewSource;
         ICommand _addDefaultCommand;
         #endregion Private/Protected Members
 
@@ -411,14 +411,6 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _name, value); }
         }
         #endregion Name
-        #region ChildrenView
-        [JsonIgnore]
-        [NotMapped]
-        public ICollectionView ChildrenView
-        {
-            get { return _childrenCollectionViewSource.View; }
-        }
-        #endregion ChildrenView
         #region Children
         public ObservableCollection<SwagItem<T>> Children
         {
@@ -453,8 +445,6 @@ namespace SwagOverflowWPF.ViewModels
         #region Initialization
         public SwagItemGroup() : base()
         {
-            _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
-            _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
             _children.CollectionChanged += _children_CollectionChanged;
         }
 
@@ -469,28 +459,8 @@ namespace SwagOverflowWPF.ViewModels
                     {
                         newItem.Sequence = this.Children.Count;
                     }
-
-                    //Will probably hard to troubleshoot. It's the price of transparency
-                    if (typeof(T).IsSubclassOf(typeof(ViewModelBaseExtended)))
-                    {
-                        ViewModelBaseExtended vm = newItem.Value as ViewModelBaseExtended;
-                        vm.PropertyChangedExtended += (s, e) =>
-                        {
-                            OnSwagItemChanged(newItem, e);
-                        };
-
-                        newItem.PropertyChangedExtended += (s, e) =>
-                        {
-                            if (e.PropertyName == "ObjValue" || e.PropertyName == "Value")
-                            {
-                                OnSwagItemChanged(newItem, e);
-                            };
-                        };
-                    }
                 }
             }
-
-            _childrenCollectionViewSource.View.Refresh();
         }
 
         #endregion Initialization

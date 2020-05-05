@@ -1,13 +1,15 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SwagOverflow.Commands;
+using SwagOverflow.Iterator;
+using SwagOverflow.ViewModels;
 using SwagOverFlow.Data;
 using SwagOverFlow.Logger;
 using SwagOverFlow.Utils;
 using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.Commands;
 using SwagOverflowWPF.Data;
-using SwagOverflowWPF.Iterator;
 using SwagOverflowWPF.Repository;
 using SwagOverflowWPF.UI;
 using System;

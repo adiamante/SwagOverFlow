@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Input;
 
-namespace SwagOverflowWPF.Commands
+namespace SwagOverflow.Commands
 {
     public class RelayCommand : ICommand
     {
@@ -43,11 +41,7 @@ namespace SwagOverflowWPF.Commands
         ///<summary>
         ///Occurs when changes occur that affect whether or not the command should execute.
         ///</summary>
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
+        public event EventHandler CanExecuteChanged;
 
         ///<summary>
         ///Defines the method to be called when the command is invoked.
@@ -115,11 +109,7 @@ namespace SwagOverflowWPF.Commands
         ///<summary>
         ///Occurs when changes occur that affect whether or not the command should execute.
         ///</summary>
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
+        public event EventHandler CanExecuteChanged;
 
         ///<summary>
         ///Defines the method to be called when the command is invoked.

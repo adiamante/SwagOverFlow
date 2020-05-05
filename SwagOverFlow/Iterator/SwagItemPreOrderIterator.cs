@@ -1,9 +1,8 @@
-﻿using SwagOverflowWPF.Interface;
-using SwagOverflowWPF.ViewModels;
+﻿using SwagOverflow.ViewModels;
 using System;
 using System.Linq;
 
-namespace SwagOverflowWPF.Iterator
+namespace SwagOverflow.Iterator
 {
     #region Interfaces
     public interface ISwagItemIterator<TChild>

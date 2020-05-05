@@ -4,6 +4,7 @@ using System.Windows;
 using ControlzEx.Theming;
 using MahApps.Metro;
 using MahApps.Metro.IconPacks;
+using SwagOverflow.ViewModels;
 using SwagOverflowWPF.Controls;
 using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Repository;

@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SwagOverflowWPF.Controls"
              xmlns:ui="clr-namespace:SwagOverflowWPF.UI"
+             xmlns:swagvm="clr-namespace:SwagOverflow.ViewModels;assembly=SwagOverFlow"
              xmlns:vm="clr-namespace:SwagOverflowWPF.ViewModels"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
@@ -105,7 +106,7 @@
                 </ui:SwagTemplate>
                 <ui:SwagTemplate TypePath="ValueType">
                     <ui:SwagTemplate.Type>
-                        <ui:GenericType BaseTypeName="vm:SwagItemGroup">
+                        <ui:GenericType BaseTypeName="vm:SwagItemGroupWPF">
                             <ui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
                                 <x:Type TypeName="sys:String"/>
                                 <x:Type TypeName="vm:ParseViewModel"/>
@@ -133,7 +134,7 @@
                                         <ui:SwagTemplateCollection>
                                             <ui:SwagTemplate>
                                                 <ui:SwagTemplate.Type>
-                                                    <ui:GenericType BaseTypeName="vm:SwagItem">
+                                                    <ui:GenericType BaseTypeName="swagvm:SwagItem">
                                                         <ui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
                                                             <x:Type TypeName="sys:String"/>
                                                             <x:Type TypeName="vm:ParseViewModel"/>
