@@ -1,21 +1,12 @@
 ﻿using Microsoft.WindowsAPICodePack.Shell;
 using SwagOverFlow.Utils;
-using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.UI;
 using SwagOverflowWPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SwagOverflowWPF.Controls
 {
@@ -58,7 +49,7 @@ namespace SwagOverflowWPF.Controls
         {
             get
             {
-                return SwagWindow.Settings["SwagData"]["ParseMapper"].GetValue<SwagItemGroup<KeyValuePairViewModel<String, ParseViewModel>>>();
+                return SwagWindow.GlobalSettings["SwagData"]["ParseMapper"].GetValue<SwagItemGroup<KeyValuePairViewModel<String, ParseViewModel>>>();
             }
         }
         #endregion ParseMapper
@@ -77,16 +68,16 @@ namespace SwagOverflowWPF.Controls
 
         public void Initialize()
         {
-            if (!((SwagSettingGroup)SwagWindow.Settings).ContainsKey("SwagData"))
+            if (!((SwagSettingGroup)SwagWindow.GlobalSettings).ContainsKey("SwagData"))
             {
                 SwagSettingGroup swagDataSetting = new SwagSettingGroup() { Icon = PackIconCustomKind.Dataset };
-                SwagWindow.Settings["SwagData"] = swagDataSetting;
+                SwagWindow.GlobalSettings["SwagData"] = swagDataSetting;
                 swagDataSetting.IconString = swagDataSetting.IconString;
                 swagDataSetting.IconTypeString = swagDataSetting.IconTypeString;
-                ((SwagWindowSettingGroup)SwagWindow.Settings).Save();
+                ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
             }
 
-            if (!((SwagSettingGroup)SwagWindow.Settings["SwagData"]).ContainsKey("ParseMapper"))
+            if (!((SwagSettingGroup)SwagWindow.GlobalSettings["SwagData"]).ContainsKey("ParseMapper"))
             {
                 SwagSetting<SwagItemGroup<KeyValuePairViewModel<String, ParseViewModel>>> ssParseMapper =
                     new SwagSetting<SwagItemGroup<KeyValuePairViewModel<string, ParseViewModel>>>()
@@ -99,13 +90,13 @@ namespace SwagOverflowWPF.Controls
                 ssParseMapper.IconTypeString = ssParseMapper.IconTypeString;
                 ssParseMapper.ValueTypeString = ssParseMapper.ValueTypeString;
                 ssParseMapper.ObjValue = ssParseMapper.ObjValue;
-                SwagWindow.Settings["SwagData"]["ParseMapper"] = ssParseMapper;
-                ((SwagWindowSettingGroup)SwagWindow.Settings).Save();
+                SwagWindow.GlobalSettings["SwagData"]["ParseMapper"] = ssParseMapper;
+                ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
             }
 
             ParseMapper.SwagItemChanged += (s, e) =>
             {
-                SwagWindow.Settings.OnSwagItemChanged(SwagWindow.Settings["SwagData"]["ParseMapper"], e.PropertyChangedArgs);
+               SwagWindow.GlobalSettings.OnSwagItemChanged(SwagWindow.GlobalSettings["SwagData"]["ParseMapper"], e.PropertyChangedArgs);
             };
         }
         #endregion Initialization
@@ -228,7 +219,7 @@ namespace SwagOverflowWPF.Controls
         #region SwagDataHeader ContextMenu
         private void SwagDataHeader_CloseSiblings(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show(SwagWindow, "Are you sure you want to close all siblings?", "Warning", MessageBoxButton.YesNo);
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to close all siblings?", "Warning", MessageBoxButton.YesNo);
 
             if (result == MessageBoxResult.Yes)
             {
@@ -243,7 +234,7 @@ namespace SwagOverflowWPF.Controls
 
         private void SwagDataHeader_CloseAll(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show(SwagWindow, "Are you sure you want to close all in set?", "Warning", MessageBoxButton.YesNo);
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to close all in set?", "Warning", MessageBoxButton.YesNo);
 
             if (result == MessageBoxResult.Yes)
             {

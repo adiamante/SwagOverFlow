@@ -27,10 +27,6 @@ namespace SwagDataWPF
         {
             InitializeComponent();
 
-            SwagWPFServices.Context.Database.EnsureCreated();
-            String settingGoupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Settings";
-            this.Settings = SwagWPFServices.SettingsService.GetWindowSettingGroupByName(settingGoupName);
-
             SwagDataSet = new SwagDataSet();
         }
     }

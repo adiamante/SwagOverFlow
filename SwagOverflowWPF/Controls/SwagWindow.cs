@@ -1,11 +1,13 @@
 ﻿using MahApps.Metro.Controls;
 using SwagOverFlow.Logger;
 using SwagOverflowWPF.Commands;
+using SwagOverflowWPF.Services;
 using SwagOverflowWPF.UI;
 using SwagOverflowWPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,15 +18,37 @@ namespace SwagOverflowWPF.Controls
 {
     public class SwagWindow : MetroWindow, INotifyPropertyChanged
     {
+        static SwagWindowSettingGroup _settings;
+
+        static SwagWindow()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(SwagWindow), new FrameworkPropertyMetadata(typeof(SwagWindow)));
+
+            SwagWPFServices.Context.Database.EnsureCreated();
+            String settingGoupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Settings";
+            _settings = SwagWPFServices.SettingsService.GetWindowSettingGroupByName(settingGoupName);
+        }
+
         #region Settings
         private static readonly DependencyProperty SettingsProperty =
-            DependencyProperty.Register("Settings", typeof(SwagWindowSettingGroup), typeof(SwagWindow));
+            DependencyProperty.Register("Settings", typeof(SwagWindowSettingGroup), typeof(SwagWindow), new PropertyMetadata(_settings));
 
         public SwagWindowSettingGroup Settings
         {
-            get { return (SwagWindowSettingGroup)GetValue(SettingsProperty); }
+            get 
+            {
+                SwagWindowSettingGroup settings = (SwagWindowSettingGroup)GetValue(SettingsProperty);
+                if (settings == null)
+                {
+                    SetValue(SettingsProperty, _settings);
+                    settings = _settings;
+                }
+                return settings; 
+            }
             set { SetValue(SettingsProperty, value); }
         }
+
+        public static SwagWindowSettingGroup GlobalSettings => _settings;
         #endregion Settings
 
         #region SettingCustomTemplates
@@ -94,10 +118,6 @@ namespace SwagOverflowWPF.Controls
         #endregion INotifyPropertyChanged
 
         #region Initialization
-        static SwagWindow()
-        {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(SwagWindow), new FrameworkPropertyMetadata(typeof(SwagWindow)));
-        }
 
         public SwagWindow()
         {

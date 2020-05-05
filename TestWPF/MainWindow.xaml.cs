@@ -20,7 +20,6 @@ namespace TestWPF
     /// </summary>
     public partial class MainWindow : SwagWindow
     {
-        
         SwagDataTable _sdtSource = null, _sdtDest = null;
         String descriptionField = "FullDescription";
         IEnumerable _comboboxSource = null;
@@ -61,10 +60,6 @@ namespace TestWPF
         public MainWindow()
         {
             InitializeComponent();
-
-            SwagWPFServices.Context.Database.EnsureCreated();
-            String settingGoupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Settings";
-            this.Settings = SwagWPFServices.SettingsService.GetWindowSettingGroupByName(settingGoupName);
 
             String sourceTableGroupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Table_Source";
             Source = SwagWPFServices.DataTableService.GetDataTableByName(sourceTableGroupName);

@@ -30,15 +30,7 @@ namespace SwagOverflowWPF.Controls
 
         #region Private Properties
         Theme _theme = ThemeManager.Current.GetTheme("Light.Blue");
-        SwagWindow _swagWindow = null;
         #endregion Private Properties
-
-        #region SwagWindow
-        public SwagWindow SwagWindow
-        {
-            get { return _swagWindow; }
-        }
-        #endregion SwagWindow
 
         #region Initialization
         public SwagControlBase()
@@ -48,16 +40,9 @@ namespace SwagOverflowWPF.Controls
 
         private void SwagControlBase_Loaded(object sender, RoutedEventArgs e)
         {
-            Window window = Application.Current.MainWindow;
-
-            if (window is SwagWindow)
-            {
-                SwagWindow swagWindow = (SwagWindow)window;
-                swagWindow.Settings["Window"]["Theme"]["Base"].PropertyChanged += SwagWindowThemPropertyChanged; ;
-                swagWindow.Settings["Window"]["Theme"]["Accent"].PropertyChanged += SwagWindowThemPropertyChanged;
-                _swagWindow = swagWindow;
-                ApplyTheme();
-            }
+            SwagWindow.GlobalSettings["Window"]["Theme"]["Base"].PropertyChanged += SwagWindowThemPropertyChanged; ;
+            SwagWindow.GlobalSettings["Window"]["Theme"]["Accent"].PropertyChanged += SwagWindowThemPropertyChanged;
+            ApplyTheme();
         }
         #endregion Initialization
 
@@ -71,15 +56,12 @@ namespace SwagOverflowWPF.Controls
         #region Methods
         private void ApplyTheme()
         {
-            if (_swagWindow != null)
-            {
-                Theme currentWindowTheme = _swagWindow.Settings.GetCurrentTheme();
+            Theme currentWindowTheme = SwagWindow.GlobalSettings.GetCurrentTheme();
 
-                if (_theme.Name != currentWindowTheme.Name)
-                {
-                    ThemeManager.Current.ChangeTheme(this, this.Resources, currentWindowTheme);
-                    _theme = currentWindowTheme;
-                }
+            if (_theme.Name != currentWindowTheme.Name)
+            {
+                ThemeManager.Current.ChangeTheme(this, this.Resources, currentWindowTheme);
+                _theme = currentWindowTheme;
             }
         }
         #endregion Methods
