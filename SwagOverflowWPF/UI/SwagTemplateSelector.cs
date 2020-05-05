@@ -6,8 +6,8 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using SwagOverFlow.Utils;
 using SwagOverflowWPF.Controls;
-using SwagOverflowWPF.Utilities;
 using SwagOverflowWPF.ViewModels;
 
 namespace SwagOverflowWPF.UI

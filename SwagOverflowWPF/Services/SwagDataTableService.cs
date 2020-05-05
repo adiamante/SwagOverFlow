@@ -1,15 +1,11 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SwagOverflowWPF.Controls;
+﻿using Newtonsoft.Json.Linq;
 using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Iterator;
 using SwagOverflowWPF.Repository;
-using SwagOverflowWPF.Utilities;
 using SwagOverflowWPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
 
 namespace SwagOverflowWPF.Services

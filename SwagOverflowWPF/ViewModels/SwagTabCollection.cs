@@ -1,15 +1,12 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using SwagOverflowWPF.Collections;
+using SwagOverFlow.Utils;
 using SwagOverflowWPF.Iterator;
-using SwagOverflowWPF.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 using System.Windows.Data;
 
 namespace SwagOverflowWPF.ViewModels

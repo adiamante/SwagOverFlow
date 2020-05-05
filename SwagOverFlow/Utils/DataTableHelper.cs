@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
-namespace SwagOverflowWPF.Utilities
+namespace SwagOverFlow.Utils
 {
     public static class DataTableHelper
     {

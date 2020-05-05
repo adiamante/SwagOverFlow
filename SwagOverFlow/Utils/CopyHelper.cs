@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 //https://stackoverflow.com/questions/930433/apply-properties-values-from-one-object-to-another-of-the-same-type-automaticall
-namespace SwagOverflowWPF.Utilities
+namespace SwagOverFlow.Utils
 {
     /// <summary>
     /// Non-generic class allowing properties to be copied from one instance

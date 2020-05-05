@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.Iterator;
-using SwagOverflowWPF.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

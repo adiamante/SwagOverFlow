@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace SwagOverflowWPF.Utilities
+namespace SwagOverFlow.Utils
 {
     public static class ReflectionHelper
     {

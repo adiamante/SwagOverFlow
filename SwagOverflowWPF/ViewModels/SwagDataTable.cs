@@ -10,7 +10,6 @@ using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Iterator;
 using SwagOverflowWPF.Repository;
 using SwagOverflowWPF.UI;
-using SwagOverflowWPF.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

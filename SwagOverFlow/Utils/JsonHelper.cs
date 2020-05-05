@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using System;
 
-namespace SwagOverflowWPF.Utilities
+namespace SwagOverFlow.Utils
 {
     public static class JsonHelper
     {
