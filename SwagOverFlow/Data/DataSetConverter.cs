@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SwagOverFlow.Clients;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace SwagOverFlow.Data
     #region IDataSetConverter
     public interface IDataSetConverter
     {
-        Object FromDataSetToObject(DataSetConvertParams cnvParams, DataSet ds);
+        Object FromDataSetToObject(DataSetConvertParams cnvParams, DataSet ds, params object[] args);
         DataSet ToDataSet(DataSetConvertParams cnvParams, params object[] args);
     }
     #endregion IDataSetConverter
@@ -45,9 +46,9 @@ namespace SwagOverFlow.Data
         }
 
         #region FromDataSetToObject
-        public object FromDataSet(DataSet dt)
+        public object FromDataSet(DataSet ds)
         {
-            return Converter.FromDataSetToObject(Params, dt);
+            return Converter.FromDataSetToObject(Params, ds);
         }
         #endregion FromDataSetToObject
 
@@ -64,12 +65,12 @@ namespace SwagOverFlow.Data
     public abstract class DataSetConverter<T> : IDataSetConverter
     {
         #region FromDataSet
-        public virtual Object FromDataSetToObject(DataSetConvertParams context, DataSet dt)
+        public virtual Object FromDataSetToObject(DataSetConvertParams context, DataSet ds, params object [] args)
         {
-            return (Object)FromDataSet(context, dt);
+            return (Object)FromDataSet(context, ds, args);
         }
 
-        abstract public T FromDataSet(DataSetConvertParams context, DataSet dt);
+        abstract public T FromDataSet(DataSetConvertParams context, DataSet dt, params object[] args);
         #endregion FromDataSet
 
         #region ToDataSet
@@ -90,7 +91,7 @@ namespace SwagOverFlow.Data
         #endregion Private Members
 
         #region FromDataSet
-        public override Stream FromDataSet(DataSetConvertParams context, DataSet ds)
+        public override Stream FromDataSet(DataSetConvertParams context, DataSet ds, params object[] args)
         {
             MemoryStream ms = new MemoryStream();
             ds.WriteXml(ms);
@@ -118,7 +119,7 @@ namespace SwagOverFlow.Data
         #endregion Private Members
 
         #region FromDataSet
-        public override string FromDataSet(DataSetConvertParams context, DataSet ds)
+        public override string FromDataSet(DataSetConvertParams context, DataSet ds, params object[] args)
         {
             StreamReader sr = new StreamReader(_dataSetXmlStreamConverter.FromDataSet(context, ds));
             return sr.ReadToEnd();
@@ -145,9 +146,9 @@ namespace SwagOverFlow.Data
         #endregion Private Members
 
         #region FromDataSet
-        public override string FromDataSet(DataSetConvertParams context, DataSet dt)
+        public override string FromDataSet(DataSetConvertParams context, DataSet ds, params object[] args)
         {
-            return _dataSetXmlStringConverter.FromDataSet(context, dt);
+            return _dataSetXmlStringConverter.FromDataSet(context, ds);
         }
         #endregion FromDataSet
 
@@ -155,7 +156,9 @@ namespace SwagOverFlow.Data
         public override DataSet ToDataSet(DataSetConvertParams context, string input)
         {
             StreamReader sr = File.OpenText(input);
-            return _dataSetXmlStreamConverter.ToDataSet(context, sr.BaseStream);
+            DataSet ds = _dataSetXmlStreamConverter.ToDataSet(context, sr.BaseStream);
+            ds.DataSetName = Path.GetFileName(input);
+            return ds;
         }
         #endregion ToDataSet
     }
@@ -169,7 +172,7 @@ namespace SwagOverFlow.Data
         #endregion Private Members
 
         #region FromDataSet
-        public override Stream FromDataSet(DataSetConvertParams context, DataSet ds)
+        public override Stream FromDataSet(DataSetConvertParams context, DataSet ds, params object[] args)
         {
             String json = _dataSetJsonStringConverter.FromDataSet(context, ds);
             byte[] byteArray = Encoding.ASCII.GetBytes(json);
@@ -196,7 +199,7 @@ namespace SwagOverFlow.Data
         #endregion Private Members
 
         #region FromDataSet
-        public override string FromDataSet(DataSetConvertParams context, DataSet ds)
+        public override string FromDataSet(DataSetConvertParams context, DataSet ds, params object[] args)
         {
             string json = JsonConvert.SerializeObject(ds, Newtonsoft.Json.Formatting.Indented);
             return json;
@@ -239,9 +242,9 @@ namespace SwagOverFlow.Data
         #endregion Private Members
 
         #region FromDataSet
-        public override string FromDataSet(DataSetConvertParams context, DataSet dt)
+        public override string FromDataSet(DataSetConvertParams context, DataSet ds, params object[] args)
         {
-            return _dataSetJsonStringConverter.FromDataSet(context, dt);
+            return _dataSetJsonStringConverter.FromDataSet(context, ds);
         }
         #endregion FromDataSet
 
@@ -249,11 +252,76 @@ namespace SwagOverFlow.Data
         public override DataSet ToDataSet(DataSetConvertParams context, string input)
         {
             StreamReader sr = File.OpenText(input);
-            return _dataSetJsonStreamConverter.ToDataSet(context, sr.BaseStream);
+            DataSet ds = _dataSetJsonStreamConverter.ToDataSet(context, sr.BaseStream);
+            ds.DataSetName = Path.GetFileName(input);
+            return ds;
         }
         #endregion ToDataSet
     }
     #endregion DataSetJsonFileConverter
+
+    #region DataSetSqliteClientConverter
+    public class DataSetSqliteClientConverter : DataSetConverter<SqliteClient>
+    {
+        #region Private Members
+        #endregion Private Members
+
+        #region FromDataSet
+        public override SqliteClient FromDataSet(DataSetConvertParams context, DataSet ds, params object[] args)
+        {
+            SqliteClient sqliteClient = new SqliteClient();
+            sqliteClient.OpenConnection();
+            foreach (DataTable dt in ds.Tables)
+            {
+                sqliteClient.AddTables(dt);
+            }
+            //sqliteClient.CloseConnection();
+            return sqliteClient;
+        }
+        #endregion FromDataSet
+
+        #region ToDataSet
+        public override DataSet ToDataSet(DataSetConvertParams context, SqliteClient input)
+        {
+            return input.GetDataSet();
+        }
+        #endregion ToDataSet
+    }
+    #endregion DataSetSqliteClientConverter
+
+    #region DataSetSqliteFileConverter
+    public class DataSetSqliteFileConverter : DataSetConverter<String>
+    {
+        #region Private Members
+        DataSetSqliteClientConverter _dataSetSqliteClientConverter = new DataSetSqliteClientConverter();
+        #endregion Private Members
+
+        #region FromDataSet
+        public override String FromDataSet(DataSetConvertParams context, DataSet ds, params object[] args)
+        {
+            SqliteClient sqliteClient = _dataSetSqliteClientConverter.FromDataSet(context, ds);
+            sqliteClient.OpenConnection();
+            String dbPath = args.Length > 0 ? args[0].ToString() : $"{ds.DataSetName}.db";
+            sqliteClient.BackupDatabase(dbPath);
+            sqliteClient.CloseConnection();
+            return dbPath;
+        }
+        #endregion FromDataSet
+
+        #region ToDataSet
+        public override DataSet ToDataSet(DataSetConvertParams context, String input)
+        {
+            String dbPath = $"Data Source={input};Version=3;";
+            SqliteClient sqliteClient = new SqliteClient(dbPath);
+            sqliteClient.OpenConnection();
+            DataSet ds = sqliteClient.GetDataSet();
+            ds.DataSetName = Path.GetFileName(input);
+            sqliteClient.CloseConnection();
+            return ds;
+        }
+        #endregion ToDataSet
+    }
+    #endregion DataSetSqliteFileConverter
 
     #region DataSetConverterFileContextCache
     public class DataSetConverterFileContextCache
@@ -264,19 +332,26 @@ namespace SwagOverFlow.Data
         {
             get
             {
+                DataSetConvertParams convertParams = new DataSetConvertParams();
+
                 switch (extension.ToLower())
                 {
                     case "xml":
                     case ".xml":
                         IDataSetConverter xmlConverter = new DataSetXmlFileConverter();
-                        DataSetConvertParams xmlParams = new DataSetConvertParams();
-                        _converters.TryAdd(extension.ToLower(), new DataSetConvertContext(xmlConverter, xmlParams));
+                        _converters.TryAdd(extension.ToLower(), new DataSetConvertContext(xmlConverter, convertParams));
                         break;
                     case "json":
                     case ".json":
                         IDataSetConverter jsonConverter = new DataSetJsonFileConverter();
-                        DataSetConvertParams jsonParams = new DataSetConvertParams();
-                        _converters.TryAdd(extension.ToLower(), new DataSetConvertContext(jsonConverter, jsonParams));
+                        _converters.TryAdd(extension.ToLower(), new DataSetConvertContext(jsonConverter, convertParams));
+                        break;
+                    case "db":
+                    case ".db":
+                    case "sqlite":
+                    case ".sqlite":
+                        IDataSetConverter sqliteConverter = new DataSetSqliteFileConverter();
+                        _converters.TryAdd(extension.ToLower(), new DataSetConvertContext(sqliteConverter, convertParams));
                         break;
                 }
 

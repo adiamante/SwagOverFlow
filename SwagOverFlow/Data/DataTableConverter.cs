@@ -304,7 +304,9 @@ namespace SwagOverFlow.Data
         public override DataTable ToDataTable(DataTableConvertParams context, string input)
         {
             StreamReader sr = File.OpenText(input);
-            return _dataTableCsvStreamConverter.ToDataTable(context, sr.BaseStream);
+            DataTable dt = _dataTableCsvStreamConverter.ToDataTable(context, sr.BaseStream);
+            dt.TableName = Path.GetFileName(input);
+            return dt;
         }
         #endregion ToDataTable
     }
@@ -478,7 +480,9 @@ namespace SwagOverFlow.Data
         public override DataTable ToDataTable(DataTableConvertParams context, string input)
         {
             StreamReader sr = File.OpenText(input);
-            return _dataTableDbfStreamConverter.ToDataTable(context, sr.BaseStream);
+            DataTable dt = _dataTableDbfStreamConverter.ToDataTable(context, sr.BaseStream);
+            dt.TableName = Path.GetFileName(input);
+            return dt;
         }
         #endregion ToDataTable
     }

@@ -1146,7 +1146,8 @@ namespace SwagOverflowWPF.ViewModels
                     {
                         IDataTableConverter converter = null;
                         string dialogFilter = "";
-                        switch (Settings["Export"]["Type"].GetValue<SwagTableExportType>())
+                        SwagTableExportType exportType = Settings["Export"]["Type"].GetValue<SwagTableExportType>();
+                        switch (exportType)
                         {
                             case SwagTableExportType.Csv:
                                 converter = new DataTableCsvStringConverter();
@@ -1157,9 +1158,24 @@ namespace SwagOverflowWPF.ViewModels
                                 dialogFilter = "SQL files (*.sql)|*.sql";
                                 break;
                             case SwagTableExportType.Sqlite:
+                                SaveFileDialog sfd = new SaveFileDialog();
+                                sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                                sfd.FileName = Path.ChangeExtension(_dataTable.TableName, null);
+                                sfd.Filter = "SQLite files (*.db;*.sqlite)|*.db;*.sqlite";
+                                System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+                                {
+                                    if (sfd.ShowDialog() ?? false)
+                                    {
+                                        DataSetSqliteFileConverter dsConverter = new DataSetSqliteFileConverter();
+                                        DataSet ds = new DataSet();
+                                        ds.Tables.Add(_dataTable);
+                                        dsConverter.FromDataSet(null, ds, sfd.FileName);
+                                    }
+                                }));
+                                return;
                             case SwagTableExportType.Sqlite_Command:
                                 converter = new DataTableSqliteCommandConverter();
-                                dialogFilter = "SQLite files (*.sqlite)|*.sqlite";
+                                dialogFilter = "SQLite command files (*.cmd)|*.cmd";
                                 break;
                         }
 
