@@ -313,8 +313,7 @@ namespace SwagOverflowWPF.Controls
         #region SwagColumnHeader
         private void SwagColumnHeader_ConvertClick(object sender, RoutedEventArgs e)
         {
-            FlogDetail flogDetail = GetFlogDetail("Convert Column", null);
-            flogDetail.StartTimer();
+            SwagLogger.LogStart(this, "Convert Column");
 
             MenuItem menuItem = (MenuItem)sender;
             MenuItem miParent = (MenuItem)menuItem.Parent;
@@ -381,13 +380,12 @@ namespace SwagOverflowWPF.Controls
             }
             swagDataTable.Save();
 
-            flogDetail.EndTimer();
+            SwagLogger.LogEnd(this, "Convert Column");
         }
 
         private void SwagColumnHeader_MoveClick(object sender, RoutedEventArgs e)
         {
-            FlogDetail flogDetail = GetFlogDetail("Move Column", null);
-            flogDetail.StartTimer();
+            SwagLogger.LogStart(this, "Move Column");
 
             MenuItem menuItem = (MenuItem)sender;
             SwagDataColumn swagDataColumn = (SwagDataColumn)menuItem.DataContext;
@@ -403,13 +401,13 @@ namespace SwagOverflowWPF.Controls
             }
             swagDataColumn.SetSequence(targetSequence);
             swagDataColumn.SwagDataTable.ResetColumns();
-            flogDetail.EndTimer();
+
+            SwagLogger.LogEnd(this, "Convert Move");
         }
 
         private void SwagColumnHeader_RenameClick(object sender, RoutedEventArgs e)
         {
-            FlogDetail flogDetail = GetFlogDetail("Rename Convert", null);
-            flogDetail.StartTimer();
+            SwagLogger.LogStart(this, "Convert Rename");
 
             Button btnRename = (Button)sender;
             MenuItem miParent = (MenuItem)((MenuItem)((Grid)btnRename.Parent).Parent).Parent;
@@ -420,7 +418,8 @@ namespace SwagOverflowWPF.Controls
             String newColName = grid.FindVisualChild<TextBox>().Text;
             swagDataColumn.Rename(newColName);
             contextMenu.IsOpen = false;
-            flogDetail.EndTimer();
+
+            SwagLogger.LogEnd(this, "Convert Rename");
         }
 
         private void SwagColumnHeader_TextBoxLoad(object sender, RoutedEventArgs e)
@@ -531,20 +530,5 @@ namespace SwagOverflowWPF.Controls
         }
 
         #endregion SwagColumnHeader
-
-        #region Logging (currently experimenting)
-        private static FlogDetail GetFlogDetail(String message, Exception ex)
-        {
-            return new FlogDetail
-            {
-                Product = "SwagDataGrid",
-                UserName = Environment.UserName,
-                Hostname = Environment.MachineName,
-                Message = message,
-                Exception = ex
-            };
-        }
-        #endregion Logging (currently experimenting)
-
     }
 }
