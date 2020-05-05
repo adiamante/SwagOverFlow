@@ -2,15 +2,18 @@
 using Microsoft.WindowsAPICodePack.Shell;
 using SwagOverFlow.Data;
 using SwagOverFlow.Utils;
+using SwagOverflowWPF.Commands;
 using SwagOverflowWPF.UI;
 using SwagOverflowWPF.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace SwagOverflowWPF.Controls
 {
@@ -34,6 +37,7 @@ namespace SwagOverflowWPF.Controls
             {
                 SetValue(SwagDataSetProperty, value);
                 OnPropertyChanged();
+                InitDataSet();
             }
         }
         #endregion SwagDataSet
@@ -68,6 +72,7 @@ namespace SwagOverflowWPF.Controls
         private void ControlInstance_Loaded(object sender, RoutedEventArgs e)
         {
             Initialize();
+            InitDataSet();
         }
 
         public void Initialize()
@@ -102,6 +107,30 @@ namespace SwagOverflowWPF.Controls
             {
                SwagWindow.GlobalSettings.OnSwagItemChanged(SwagWindow.GlobalSettings["SwagData"]["ParseMapper"], e.PropertyChangedArgs);
             };
+        }
+
+        public void InitDataSet()
+        {
+            if (SwagDataSet != null)
+            {
+                SwagDataSet.Children.CollectionChanged += Children_CollectionChanged;
+            }
+        }
+
+        private void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            foreach (SwagData swagData in e.NewItems)
+            {
+                switch (swagData)
+                {
+                    case SwagDataSet swagDataSet:
+                        swagDataSet.Children.CollectionChanged += Children_CollectionChanged;
+                        break;
+                    case SwagDataTable swagDataTable:
+                        SwagWindow.CommandManager.Attach(swagDataTable);
+                        break;
+                }
+            }
         }
         #endregion Initialization
 

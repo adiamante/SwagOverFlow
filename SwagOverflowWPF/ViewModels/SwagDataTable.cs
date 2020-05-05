@@ -1717,10 +1717,11 @@ namespace SwagOverflowWPF.ViewModels
             if (!DelaySave)
             {
                 SwagDataRow row = _dictChildren[e.Row];
+                row.ObjValue = row.ObjValue;
+
                 if (_context != null)
                 {
                     SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
-                    row.ObjValue = row.ObjValue;
                     work.DataRows.Update(row);
                     work.Complete();
                 }

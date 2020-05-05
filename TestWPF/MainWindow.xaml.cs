@@ -260,7 +260,7 @@ namespace TestWPF
 
         private void SwagWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            this.CommandManager.Attach(Source);
+            SwagWindow.CommandManager.Attach(Source);
         }
 
     }

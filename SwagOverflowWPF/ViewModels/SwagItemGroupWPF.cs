@@ -12,6 +12,7 @@ namespace SwagOverflowWPF.ViewModels
         CollectionViewSource _childrenCollectionViewSource;
         #endregion Private/Protected Members
 
+        #region Properties
         #region ChildrenView
         [JsonIgnore]
         [NotMapped]
@@ -20,7 +21,9 @@ namespace SwagOverflowWPF.ViewModels
             get { return _childrenCollectionViewSource.View; }
         }
         #endregion ChildrenView
+        #endregion Properties
 
+        #region Initialization
         public SwagItemGroupWPF() : base()
         {
             _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
@@ -56,5 +59,6 @@ namespace SwagOverflowWPF.ViewModels
 
             _childrenCollectionViewSource.View.Refresh();
         }
+        #endregion Initialization
     }
 }

@@ -19,7 +19,7 @@ namespace SwagOverflowWPF.Controls
     public class SwagWindow : MetroWindow, INotifyPropertyChanged
     {
         static SwagWindowSettingGroup _settings;
-
+        static SwagCommandManager _swagCommandManager;
         static SwagWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SwagWindow), new FrameworkPropertyMetadata(typeof(SwagWindow)));
@@ -27,6 +27,7 @@ namespace SwagOverflowWPF.Controls
             SwagWPFServices.Context.Database.EnsureCreated();
             String settingGoupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Settings";
             _settings = SwagWPFServices.SettingsService.GetWindowSettingGroupByName(settingGoupName);
+            _swagCommandManager = new SwagCommandManager();
         }
 
         #region Settings
@@ -88,15 +89,16 @@ namespace SwagOverflowWPF.Controls
         #endregion IsBusy
 
         #region CommandManager
-        private static readonly DependencyProperty CommandManagerProperty =
-            DependencyProperty.Register("CommandManager", typeof(SwagCommandManager), typeof(SwagWindow),
-                new PropertyMetadata(new SwagCommandManager()));
+        public static SwagCommandManager CommandManager => _swagCommandManager;
+        //private static readonly DependencyProperty CommandManagerProperty =
+        //    DependencyProperty.Register("CommandManager", typeof(SwagCommandManager), typeof(SwagWindow),
+        //        new PropertyMetadata(new SwagCommandManager()));
 
-        public SwagCommandManager CommandManager
-        {
-            get { return (SwagCommandManager)GetValue(CommandManagerProperty); }
-            set { SetValue(CommandManagerProperty, value); }
-        }
+        //public SwagCommandManager CommandManager
+        //{
+        //    get { return (SwagCommandManager)GetValue(CommandManagerProperty); }
+        //    set { SetValue(CommandManagerProperty, value); }
+        //}
         #endregion CommandManager
 
         #region INotifyPropertyChanged
