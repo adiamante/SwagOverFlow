@@ -1,0 +1,13 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:controls="clr-namespace:SwagOverflow.WPF.Controls"
+    xmlns:local="clr-namespace:SwagOverflow.WPF"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:ui="clr-namespace:SwagOverflow.WPF.UI">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/SwagOverflow.WPF;component/Controls/SwagWindow.xaml"/>
+        <!--<ResourceDictionary Source="/SwagOverflow.WPF;component/Controls/SearchTextBox.xaml"/>-->
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

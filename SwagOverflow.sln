@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwagOverflowWPF", "SwagOverflowWPF\SwagOverflowWPF.csproj", "{8C87CB2D-0C4D-434A-837D-770B82E8DC2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwagOverFlow.WPF", "SwagOverflow.WPF\SwagOverFlow.WPF.csproj", "{8C87CB2D-0C4D-434A-837D-770B82E8DC2A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestWPF", "TestWPF\TestWPF.csproj", "{3AAA4EB8-2B60-461D-9442-8EFA104D0DA7}"
 EndProject
@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwagOverFlow", "SwagOverFlo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwagDataWPF", "SwagDataWPF\SwagDataWPF.csproj", "{11111E07-4537-4E2F-9D3E-92517D8A06D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dreamporter", "Dreamporter\Dreamporter.csproj", "{7C208144-72C5-4772-BC29-F084873802FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dreamporter", "Dreamporter\Dreamporter.csproj", "{7C208144-72C5-4772-BC29-F084873802FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamporterWPF", "DreamporterWPF\DreamporterWPF.csproj", "{FAFF981B-F60B-4AAC-B97D-9FDC0216F230}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DreamporterWPF", "DreamporterWPF\DreamporterWPF.csproj", "{FAFF981B-F60B-4AAC-B97D-9FDC0216F230}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

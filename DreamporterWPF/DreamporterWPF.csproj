@@ -8,8 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Dreamporter\Dreamporter.csproj" />
-    <ProjectReference Include="..\SwagDataWPF\SwagDataWPF.csproj" />
-    <ProjectReference Include="..\SwagOverFlow\SwagOverFlow.csproj" />
+    <ProjectReference Include="..\SwagOverflow.WPF\SwagOverFlow.WPF.csproj" />
   </ItemGroup>
 
 </Project>

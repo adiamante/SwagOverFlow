@@ -1,6 +1,6 @@
-﻿using SwagOverflowWPF.Controls;
-using SwagOverflowWPF.Services;
-using SwagOverflowWPF.ViewModels;
+﻿using SwagOverflow.WPF.Controls;
+using SwagOverflow.WPF.Services;
+using SwagOverflow.WPF.ViewModels;
 using System;
 using System.Reflection;
 using System.Windows;

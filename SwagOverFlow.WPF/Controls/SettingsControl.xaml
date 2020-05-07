@@ -1,0 +1,211 @@
+﻿<local:SwagControlBase x:Class="SwagOverflow.WPF.Controls.SettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SwagOverflow.WPF.Controls"
+             xmlns:ui="clr-namespace:SwagOverflow.WPF.UI"
+             xmlns:swagvm="clr-namespace:SwagOverflow.ViewModels;assembly=SwagOverFlow"
+             xmlns:vm="clr-namespace:SwagOverflow.WPF.ViewModels"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             x:Name="ControlInstance"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/SwagOverflow.WPF;component/Themes/Common.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <ObjectDataProvider x:Key="ParseStrategyEnumValues"
+                MethodName="GetValues"
+                ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type Type="{x:Type vm:ParseStrategy}" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <ui:SwagTemplate x:Key="ParseMapperHeaderTemplate">
+                <ui:SwagTemplate.DataTemplate>
+                    <DataTemplate>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding Display}" />
+                    </DataTemplate>
+                </ui:SwagTemplate.DataTemplate>
+            </ui:SwagTemplate>
+            <CollectionViewSource x:Key="SettingCustomTemplates" Source="{Binding SettingCustomTemplates, RelativeSource={RelativeSource AncestorType={x:Type local:SettingsControl}}}" />
+            <BooleanToVisibilityConverter  x:Key="BooleanToVisibilityConverter"/>
+            <ui:EnumMatchToVisibilityConverter x:Key="EnumMatchToVisibilityInverseConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+            <ControlTemplate x:Key="SettingControlTemplate" TargetType="ContentControl">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition SharedSizeGroup="Icon" Width="Auto" />
+                        <ColumnDefinition SharedSizeGroup="Name" Width="Auto" />
+                        <ColumnDefinition SharedSizeGroup="Value" Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Height="20" Width="20" ContentTemplate="{Binding Path=Icon, Converter={ui:PackIconKindOrCustomToDataTemplateConverter}}" />
+                    <TextBlock HorizontalAlignment="Left" Margin="0,0,10,0" Grid.Column="1" Text="{Binding Display}" FontWeight="Bold" Foreground="{DynamicResource MahApps.Brushes.AccentBase}" VerticalAlignment="Center" />
+                    <ContentPresenter HorizontalAlignment="Left" Grid.Column="2" />
+                </Grid>
+            </ControlTemplate>
+            <ui:SwagTemplateCollection x:Key="SettingTemplateCollection">
+                <ui:SwagTemplate CompareValue="{x:Static vm:SettingType.DropDown}">
+                    <ui:SwagTemplate.DataTemplate>
+                        <DataTemplate>
+                            <ContentControl Template="{StaticResource SettingControlTemplate}">
+                                <ComboBox ItemsSource="{Binding ItemsSource}" SelectedValue="{Binding Value}" />
+                            </ContentControl>
+                        </DataTemplate>
+                    </ui:SwagTemplate.DataTemplate>
+                </ui:SwagTemplate>
+                <ui:SwagTemplate Type="{x:Type vm:SwagSettingGroup}">
+                    <ui:SwagTemplate.DataTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <DockPanel Grid.Row="0">
+                                    <ToggleButton IsChecked="{Binding IsExpanded}" VerticalAlignment="Center" Visibility="{Binding HasChildren, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <ContentControl DockPanel.Dock="Left" Template="{StaticResource SettingControlTemplate}">
+
+                                        </ContentControl>
+                                    </ToggleButton>
+                                </DockPanel>
+                                <ListView Grid.Row="1" ItemsSource="{Binding ChildrenView}" Grid.IsSharedSizeScope="True" Visibility="{Binding IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                      Focusable="False" ItemTemplateSelector="{DynamicResource SwagTemplateSelector}">
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListViewItem}">
+                                            <Setter Property="HorizontalAlignment" Value="Left" />
+                                            <Setter Property="Visibility" Value="{Binding SettingType, Converter={StaticResource EnumMatchToVisibilityInverseConverter}, ConverterParameter={x:Static vm:SettingType.Hidden}}" />
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                </ListView>
+                            </Grid>
+                        </DataTemplate>
+                    </ui:SwagTemplate.DataTemplate>
+                </ui:SwagTemplate>
+                <ui:SwagTemplate TypePath="ValueType" Type="{x:Type sys:String}">
+                    <ui:SwagTemplate.DataTemplate>
+                        <DataTemplate>
+                            <ContentControl Template="{StaticResource SettingControlTemplate}">
+                                <TextBox Text="{Binding Value, Delay=250, UpdateSourceTrigger=PropertyChanged}" MinWidth="100" />
+                            </ContentControl>
+                        </DataTemplate>
+                    </ui:SwagTemplate.DataTemplate>
+                </ui:SwagTemplate>
+                <ui:SwagTemplate TypePath="ValueType" Type="{x:Type sys:Boolean}">
+                    <ui:SwagTemplate.DataTemplate>
+                        <DataTemplate>
+                            <ContentControl Template="{StaticResource SettingControlTemplate}">
+                                <metro:ToggleSwitch IsOn="{Binding Value}" VerticalAlignment="Center" />
+                            </ContentControl>
+                        </DataTemplate>
+                    </ui:SwagTemplate.DataTemplate>
+                </ui:SwagTemplate>
+                <ui:SwagTemplate TypePath="ValueType">
+                    <ui:SwagTemplate.Type>
+                        <ui:GenericType BaseTypeName="vm:SwagItemGroupWPF">
+                            <ui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
+                                <x:Type TypeName="sys:String"/>
+                                <x:Type TypeName="vm:ParseViewModel"/>
+                            </ui:GenericType>
+                        </ui:GenericType>
+                    </ui:SwagTemplate.Type>
+                    <ui:SwagTemplate.DataTemplate>
+                        <DataTemplate>
+                            <GroupBox>
+                                <GroupBox.Header>
+                                    <local:IconControl Text="{Binding Display}" Kind="{Binding Icon}">
+                                        <local:IconControl.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Add" Command="{Binding ObjValue.AddDefaultCommand}">
+                                                    <MenuItem.Icon>
+                                                        <local:IconControl Kind="{x:Static ui:PackIconCustomKind.Plus}" />
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                            </ContextMenu>
+                                        </local:IconControl.ContextMenu>
+                                    </local:IconControl>
+                                </GroupBox.Header>
+                                <local:SwagItemsControl SwagItemsSource="{Binding ObjValue}" CustomDefaultItemTemplate="{StaticResource ParseMapperHeaderTemplate}">
+                                    <local:SwagItemsControl.ItemTemplates>
+                                        <ui:SwagTemplateCollection>
+                                            <ui:SwagTemplate>
+                                                <ui:SwagTemplate.Type>
+                                                    <ui:GenericType BaseTypeName="swagvm:SwagItem">
+                                                        <ui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
+                                                            <x:Type TypeName="sys:String"/>
+                                                            <x:Type TypeName="vm:ParseViewModel"/>
+                                                        </ui:GenericType>
+                                                    </ui:GenericType>
+                                                </ui:SwagTemplate.Type>
+                                                <ui:SwagTemplate.DataTemplate>
+                                                    <DataTemplate>
+                                                        <Expander ExpandDirection="Down">
+                                                            <Expander.Header>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Puzzle}" Text="{Binding Value.Key}" />
+                                                                    <local:IconControl Margin="5,0,0,0" Kind="{x:Static iconPacks:PackIconMaterialKind.Strategy}" Text="{Binding Value.Value.ParseStrategy}" />
+                                                                </StackPanel>
+                                                            </Expander.Header>
+                                                            <Grid>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                </Grid.RowDefinitions>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <GridSplitter Grid.Column="1" HorizontalAlignment="Right" Width="5" Background="Transparent" />
+                                                                <local:IconControl Grid.Row="0" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.Puzzle}" Text="Extension" />
+                                                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Value.Key, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                                                <local:IconControl Grid.Row="1" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.Strategy}" Text="Strategy" />
+                                                                <ComboBox Grid.Row="1" Grid.Column="2" SelectedValue="{Binding Value.Value.ParseStrategy}"
+                                                                      ItemsSource="{Binding Source={StaticResource ParseStrategyEnumValues}}" />
+                                                                <local:IconControl Grid.Row="2" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaHBox}" Text="HasHeaders" />
+                                                                <CheckBox Grid.Row="2" Grid.Column="2" IsChecked="{Binding Value.Value.HasHeaders, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                                                <local:IconControl Grid.Row="3" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.TableRow}" Text="RecordDelim" />
+                                                                <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding Value.Value.RecordDelim, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" AcceptsReturn="True" AcceptsTab="True" />
+                                                                <local:IconControl Grid.Row="4" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumn}" Text="FieldDelim" />
+                                                                <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding Value.Value.FieldDelim, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" AcceptsReturn="True" AcceptsTab="True" />
+                                                            </Grid>
+                                                        </Expander>
+                                                    </DataTemplate>
+                                                </ui:SwagTemplate.DataTemplate>
+                                            </ui:SwagTemplate>
+                                        </ui:SwagTemplateCollection>
+                                    </local:SwagItemsControl.ItemTemplates>
+                                </local:SwagItemsControl>
+                            </GroupBox>
+                        </DataTemplate>
+                    </ui:SwagTemplate.DataTemplate>
+                </ui:SwagTemplate>
+            </ui:SwagTemplateCollection>
+            <ui:SwagTemplateSelector x:Key="SwagTemplateSelector" ComparePath="SettingType" StaticTemplates="{StaticResource SettingTemplateCollection}" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <ListView Grid.Row="1" ItemsSource="{Binding Settings.ChildrenView, RelativeSource={RelativeSource AncestorType={x:Type local:SettingsControl}}}"
+                  Grid.IsSharedSizeScope="True" Focusable="False" ItemTemplateSelector="{StaticResource SwagTemplateSelector}">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                    <Setter Property="Visibility" Value="{Binding SettingType, Converter={StaticResource EnumMatchToVisibilityInverseConverter}, ConverterParameter={x:Static vm:SettingType.Hidden}}" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ui:SwagTemplateSelector.CustomTemplates>
+                <CompositeCollection>
+                    <CollectionContainer Collection="{Binding Source={StaticResource SettingCustomTemplates}}" />
+                </CompositeCollection>
+            </ui:SwagTemplateSelector.CustomTemplates>
+        </ListView>
+    </Grid>
+</local:SwagControlBase>

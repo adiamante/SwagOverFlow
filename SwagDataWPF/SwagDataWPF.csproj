@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SwagOverflowWPF\SwagOverflowWPF.csproj" />
+    <ProjectReference Include="..\SwagOverflow.WPF\SwagOverFlow.WPF.csproj" />
   </ItemGroup>
 
 </Project>

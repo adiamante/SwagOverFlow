@@ -1,13 +1,13 @@
-﻿using SwagOverflowWPF.Services;
-using SwagOverflowWPF.Controls;
-using SwagOverflowWPF.Data;
+﻿using SwagOverflow.WPF.Services;
+using SwagOverflow.WPF.Controls;
+using SwagOverflow.WPF.Data;
 using System;
 using System.Reflection;
 using System.Windows;
 using System.Data;
 using System.Windows.Data;
 using Microsoft.Extensions.DependencyInjection;
-using SwagOverflowWPF.ViewModels;
+using SwagOverflow.WPF.ViewModels;
 using System.Text;
 using System.Collections;
 using SwagOverFlow.Data;
@@ -133,7 +133,7 @@ namespace TestWPF
                                 xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
                                 xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
                                 xmlns:local='clr-namespace:TestWPF;assembly=TestWPF'
-                                xmlns:swag='clr-namespace:SwagOverflowWPF.Controls;assembly=SwagOverflowWPF'>
+                                xmlns:swag='clr-namespace:SwagOverflow.WPF.Controls;assembly=SwagOverflow.WPF'>
                                 <swag:SwagComboBox 
                                     DisplayMemberProperty ='{{descriptionField}}' 
                                     ItemsSource='{Binding Dest.DataTable.DefaultView, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}'
