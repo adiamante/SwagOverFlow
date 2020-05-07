@@ -193,7 +193,7 @@ namespace SwagOverflow.ViewModels
         where TParent : class, ISwagParent<TChild>
     {
         #region Private/Protected Members
-        TParent _parent;
+        protected TParent _parent;
         Int32? _parentId;
         #endregion Private/Protected Members
 

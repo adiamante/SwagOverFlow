@@ -846,6 +846,15 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _total, value); }
         }
         #endregion Total
+        #region Parent
+        [NotMapped]
+        [JsonIgnore]
+        public override SwagDataGroup Parent
+        {
+            get { return _parent; }
+            set { SetValue(ref _parent, value); }
+        }
+        #endregion Parent
         #endregion Properties
 
         #region Initialization
@@ -1073,6 +1082,8 @@ namespace SwagOverflowWPF.ViewModels
         }
         #endregion Columns
         #region ColumnsView
+        [NotMapped]
+        [JsonIgnore]
         public ICollectionView ColumnsView
         {
             get { return _columnCollectionViewSource.View; }

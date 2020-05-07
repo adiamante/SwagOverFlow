@@ -38,7 +38,7 @@ namespace SwagOverflowWPF.Services
             //services.AddDbContext<SwagContext>(options => SwagContext.SetSqlServerOptions(options));
             services.AddTransient<SwagWindowSettingService>();
             services.AddTransient<SwagDataTableService>();
-
+            
             serviceProvider = services.BuildServiceProvider();
         }
     }
