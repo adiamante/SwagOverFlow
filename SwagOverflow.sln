@@ -9,11 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestWPF", "TestWPF\TestWPF.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwagOverFlow", "SwagOverFlow\SwagOverFlow.csproj", "{E5BE7AEF-4A5A-48DE-A9B1-97AFD8C3A071}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwagOverFlow.WPF.SwagDataWindow", "SwagDataWPF\SwagOverFlow.WPF.SwagDataWindow.csproj", "{11111E07-4537-4E2F-9D3E-92517D8A06D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwagOverFlow.WPF.SwagDataWindow", "SwagOverFlow.WPF.SwagDataWindow\SwagOverFlow.WPF.SwagDataWindow.csproj", "{11111E07-4537-4E2F-9D3E-92517D8A06D9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dreamporter", "Dreamporter\Dreamporter.csproj", "{7C208144-72C5-4772-BC29-F084873802FF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DreamporterWPF", "DreamporterWPF\DreamporterWPF.csproj", "{FAFF981B-F60B-4AAC-B97D-9FDC0216F230}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dreamporter.WPF", "Dreamporter.WPF\Dreamporter.WPF.csproj", "{FAFF981B-F60B-4AAC-B97D-9FDC0216F230}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
