@@ -1,7 +1,7 @@
-﻿<Application x:Class="SwagDataWPF.App"
+﻿<Application x:Class="SwagOverflow.WPF.SwagDataWindow.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:SwagDataWPF"
+             xmlns:local="clr-namespace:SwagOverflow.WPF.SwagDataWindow"
              StartupUri="SwagDataWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>

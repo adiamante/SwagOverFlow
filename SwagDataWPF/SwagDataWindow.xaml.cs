@@ -1,11 +1,8 @@
 ﻿using SwagOverflow.WPF.Controls;
-using SwagOverflow.WPF.Services;
 using SwagOverflow.WPF.ViewModels;
-using System;
-using System.Reflection;
 using System.Windows;
 
-namespace SwagDataWPF
+namespace SwagOverflow.WPF.SwagDataWindow
 {
     /// <summary>
     /// Interaction logic for SwagDataWindow.xaml
