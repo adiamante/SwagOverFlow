@@ -22,6 +22,7 @@ namespace SwagOverflow.WPF.Data
         public DbSet<SwagItemBase> SwagItems { get; set; }
         public DbSet<SwagSetting> SwagSettings { get; set; }
         public DbSet<SwagSettingGroup> SwagSettingGroups { get; set; }
+        public DbSet<SwagSettingWPFGroup> SwagSettingWPFGroups { get; set; }
         public DbSet<SwagSettingString> SwagSettingStrings { get; set; }
         public DbSet<SwagSettingBoolean> SwagSettingBooleans { get; set; }
         public DbSet<SwagWindowSettingGroup> SwagWindowSettingGroups { get; set; }

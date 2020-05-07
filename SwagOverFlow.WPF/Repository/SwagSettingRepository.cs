@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using SwagOverflow.ViewModels;
 using SwagOverflow.WPF.Data;
 using SwagOverflow.WPF.Interface;
-using SwagOverflow.WPF.ViewModels;
 using System;
-using System.Linq;
 
 namespace SwagOverflow.WPF.Repository
 {

@@ -1,7 +1,6 @@
-﻿using SwagOverflow.WPF.UI;
-using SwagOverflow.WPF.ViewModels;
+﻿using SwagOverflow.ViewModels;
+using SwagOverflow.WPF.UI;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace SwagOverflow.WPF.Controls
 {

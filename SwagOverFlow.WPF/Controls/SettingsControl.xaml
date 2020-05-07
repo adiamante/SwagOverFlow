@@ -49,7 +49,7 @@
                 </Grid>
             </ControlTemplate>
             <ui:SwagTemplateCollection x:Key="SettingTemplateCollection">
-                <ui:SwagTemplate CompareValue="{x:Static vm:SettingType.DropDown}">
+                <ui:SwagTemplate CompareValue="{x:Static swagvm:SettingType.DropDown}">
                     <ui:SwagTemplate.DataTemplate>
                         <DataTemplate>
                             <ContentControl Template="{StaticResource SettingControlTemplate}">
@@ -58,7 +58,7 @@
                         </DataTemplate>
                     </ui:SwagTemplate.DataTemplate>
                 </ui:SwagTemplate>
-                <ui:SwagTemplate Type="{x:Type vm:SwagSettingGroup}">
+                <ui:SwagTemplate Type="{x:Type swagvm:SwagSettingGroup}">
                     <ui:SwagTemplate.DataTemplate>
                         <DataTemplate>
                             <Grid>
@@ -78,7 +78,7 @@
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="{x:Type ListViewItem}">
                                             <Setter Property="HorizontalAlignment" Value="Left" />
-                                            <Setter Property="Visibility" Value="{Binding SettingType, Converter={StaticResource EnumMatchToVisibilityInverseConverter}, ConverterParameter={x:Static vm:SettingType.Hidden}}" />
+                                            <Setter Property="Visibility" Value="{Binding SettingType, Converter={StaticResource EnumMatchToVisibilityInverseConverter}, ConverterParameter={x:Static swagvm:SettingType.Hidden}}" />
                                         </Style>
                                     </ListView.ItemContainerStyle>
                                 </ListView>
@@ -198,7 +198,7 @@
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
                     <Setter Property="HorizontalAlignment" Value="Left" />
-                    <Setter Property="Visibility" Value="{Binding SettingType, Converter={StaticResource EnumMatchToVisibilityInverseConverter}, ConverterParameter={x:Static vm:SettingType.Hidden}}" />
+                    <Setter Property="Visibility" Value="{Binding SettingType, Converter={StaticResource EnumMatchToVisibilityInverseConverter}, ConverterParameter={x:Static swagvm:SettingType.Hidden}}" />
                 </Style>
             </ListView.ItemContainerStyle>
             <ui:SwagTemplateSelector.CustomTemplates>

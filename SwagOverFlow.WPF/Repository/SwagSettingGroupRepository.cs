@@ -1,6 +1,6 @@
-﻿using SwagOverflow.WPF.Data;
+﻿using SwagOverflow.ViewModels;
+using SwagOverflow.WPF.Data;
 using SwagOverflow.WPF.Interface;
-using SwagOverflow.WPF.ViewModels;
 
 namespace SwagOverflow.WPF.Repository
 {

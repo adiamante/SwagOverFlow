@@ -9,9 +9,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Windows.Data;
 
-namespace SwagOverflow.WPF.ViewModels
+namespace SwagOverflow.ViewModels
 {
     #region SettingType
     public enum SettingType
@@ -208,7 +207,6 @@ namespace SwagOverflow.WPF.ViewModels
     {
         #region Private/Protected Members
         String _name;
-        CollectionViewSource _childrenCollectionViewSource;
         protected ObservableCollection<SwagSetting> _children = new ObservableCollection<SwagSetting>();
         Dictionary<String, SwagSetting> _dict = new Dictionary<string, SwagSetting>();
         #endregion Private/Protected Members
@@ -239,14 +237,6 @@ namespace SwagOverflow.WPF.ViewModels
             set { SetValue(ref _children, value); }
         }
         #endregion Children
-        #region ChildrenView
-        [JsonIgnore]
-        [NotMapped]
-        public ICollectionView ChildrenView
-        {
-            get { return _childrenCollectionViewSource.View; }
-        }
-        #endregion ChildrenView
         #region HasChildren
         public Boolean HasChildren
         {
@@ -283,8 +273,6 @@ namespace SwagOverflow.WPF.ViewModels
         #region Initialization
         public SwagSettingGroup() : base()
         {
-            _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
-            _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
             _children.CollectionChanged += _children_CollectionChanged;
         }
 
@@ -317,8 +305,6 @@ namespace SwagOverflow.WPF.ViewModels
                     _dict.Remove(oldItems.Key);
                 }
             }
-
-            _childrenCollectionViewSource.View.Refresh();
         }
         #endregion Initialization
 
@@ -346,6 +332,5 @@ namespace SwagOverflow.WPF.ViewModels
     {
 
     }
-
 }
 

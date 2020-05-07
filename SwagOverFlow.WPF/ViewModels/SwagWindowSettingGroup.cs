@@ -12,7 +12,7 @@ using SwagOverflow.WPF.UI;
 
 namespace SwagOverflow.WPF.ViewModels
 {
-    public class SwagWindowSettingGroup : SwagSettingGroup
+    public class SwagWindowSettingGroup : SwagSettingWPFGroup
     {
         SwagContext _context;
         public SwagWindowSettingGroup() : base()
@@ -24,15 +24,15 @@ namespace SwagOverflow.WPF.ViewModels
         {
             if (doInit)
             {
-                this["Window"] = new SwagSettingGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.SettingsOutline };
-                this["Window"]["Status"] = new SwagSettingGroup() { SettingType = SettingType.Hidden };
+                this["Window"] = new SwagSettingWPFGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.SettingsOutline };
+                this["Window"]["Status"] = new SwagSettingWPFGroup() { SettingType = SettingType.Hidden };
                 this["Window"]["Status"]["Message"] = new SwagSettingString() { SettingType = SettingType.Hidden };
                 this["Window"]["Status"]["IsBusy"] = new SwagSettingBoolean() { SettingType = SettingType.Hidden, Value = false };
-                this["Window"]["Settings"] = new SwagSettingGroup() { SettingType = SettingType.Hidden };
+                this["Window"]["Settings"] = new SwagSettingWPFGroup() { SettingType = SettingType.Hidden };
                 this["Window"]["Settings"]["IsOpen"] = new SwagSettingBoolean() { Value = false, SettingType = SettingType.Hidden, CanUndo = false };
-                this["Window"]["CommandHistory"] = new SwagSettingGroup() { SettingType = SettingType.Hidden };
+                this["Window"]["CommandHistory"] = new SwagSettingWPFGroup() { SettingType = SettingType.Hidden };
                 this["Window"]["CommandHistory"]["IsOpen"] = new SwagSettingBoolean() { Value = false, SettingType = SettingType.Hidden, CanUndo = false };
-                this["Window"]["Theme"] = new SwagSettingGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.PaletteOutline };
+                this["Window"]["Theme"] = new SwagSettingWPFGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.PaletteOutline };
                 this["Window"]["Theme"]["Base"] = new SwagSettingString() { Value = "Light", Icon = PackIconMaterialKind.PaletteSwatchOutline, ItemsSource = new[] { "Light", "Dark" }, SettingType = SettingType.DropDown };
                 this["Window"]["Theme"]["Accent"] = new SwagSettingString() { Value = "Blue", Icon = PackIconMaterialKind.Brush, ItemsSource = new[] { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" }, SettingType = SettingType.DropDown };
             }

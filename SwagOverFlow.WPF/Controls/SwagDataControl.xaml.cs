@@ -2,7 +2,6 @@
 using Microsoft.WindowsAPICodePack.Shell;
 using SwagOverFlow.Data;
 using SwagOverFlow.Utils;
-using SwagOverflow.WPF.Commands;
 using SwagOverflow.WPF.UI;
 using SwagOverflow.WPF.ViewModels;
 using System;
@@ -13,7 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using SwagOverflow.ViewModels;
 
 namespace SwagOverflow.WPF.Controls
 {

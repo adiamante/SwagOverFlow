@@ -5,6 +5,7 @@ using SwagOverflow.WPF.Repository;
 using SwagOverflow.WPF.ViewModels;
 using System;
 using System.Linq;
+using SwagOverflow.ViewModels;
 
 namespace SwagOverflow.WPF.Services
 {
