@@ -1,13 +1,10 @@
 ﻿using Newtonsoft.Json;
-using SwagOverflow.Commands;
 using SwagOverFlow.Utils;
 using SwagOverflow.Iterator;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Windows.Input;
 
 namespace SwagOverflow.ViewModels
 {
@@ -51,7 +48,6 @@ namespace SwagOverflow.ViewModels
         String _key;
         protected Object _objValue;
         protected Type _valueType = null;
-        ICommand _selectCommand;
         #endregion Private/Protected Members
 
         #region Properties
@@ -157,21 +153,6 @@ namespace SwagOverflow.ViewModels
             set { SetValue(ref _objValue, value, false); }
         }
         #endregion ObjValue
-        #region SelectCommand
-        [JsonIgnore]
-        [NotMapped]
-        public ICommand SelectCommand
-        {
-            get
-            {
-                return _selectCommand ?? (_selectCommand =
-                    new RelayCommand(() =>
-                    {
-                        IsSelected = true;
-                    }));
-            }
-        }
-        #endregion SelectCommand
         #endregion Properties
 
         #region Methods
@@ -391,7 +372,6 @@ namespace SwagOverflow.ViewModels
         #region Private/Protected Members
         String _name;
         protected ObservableCollection<SwagItem<T>> _children = new ObservableCollection<SwagItem<T>>();
-        ICommand _addDefaultCommand;
         #endregion Private/Protected Members
 
         #region Events
@@ -424,22 +404,6 @@ namespace SwagOverflow.ViewModels
             get { return _children.Count > 0; }
         }
         #endregion HasChildren
-        #region AddDefaultCommand
-        [JsonIgnore]
-        [NotMapped]
-        public ICommand AddDefaultCommand
-        {
-            get
-            {
-                return _addDefaultCommand ?? (_addDefaultCommand =
-                    new RelayCommand(() =>
-                    {
-                        T val = typeof(T).GetConstructor(Type.EmptyTypes) != null ? (T)Activator.CreateInstance(typeof(T)) : default(T);
-                        Children.Add(new SwagItem<T>() { Value = val });
-                    }));
-            }
-        }
-        #endregion AddDefaultCommand
         #endregion Properties
 
         #region Initialization

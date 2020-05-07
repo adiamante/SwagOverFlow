@@ -1,14 +1,13 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SwagOverflow.Commands;
 using SwagOverflow.Iterator;
 using SwagOverflow.ViewModels;
 using SwagOverFlow.Data;
 using SwagOverFlow.Logger;
 using SwagOverFlow.Utils;
-using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.Commands;
+using SwagOverflowWPF.Collections;
 using SwagOverflowWPF.Data;
 using SwagOverflowWPF.Repository;
 using SwagOverflowWPF.UI;
@@ -34,6 +33,7 @@ namespace SwagOverflowWPF.ViewModels
     public abstract class SwagData : SwagItem<SwagDataGroup, SwagData>
     {
         SwagDataResult _swagDataResult;
+        ICommand _selectCommand;
         ICommand _removeCommand;
 
         #region SwagDataResult
@@ -45,6 +45,21 @@ namespace SwagOverflowWPF.ViewModels
             set { SetValue(ref _swagDataResult, value); }
         }
         #endregion SwagDataResult
+        #region SelectCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand SelectCommand
+        {
+            get
+            {
+                return _selectCommand ?? (_selectCommand =
+                    new RelayCommand(() =>
+                    {
+                        IsSelected = true;
+                    }));
+            }
+        }
+        #endregion SelectCommand
         #region RemoveCommand
         public ICommand RemoveCommand
         {
@@ -2221,7 +2236,24 @@ namespace SwagOverflowWPF.ViewModels
     #region SwagDataResult
     public class SwagDataResult : SwagItem<SwagDataResultGroup, SwagDataResult>
     {
+        ICommand _selectCommand;
         public SwagData SwagData { get; set; }
+
+        #region SelectCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand SelectCommand
+        {
+            get
+            {
+                return _selectCommand ?? (_selectCommand =
+                    new RelayCommand(() =>
+                    {
+                        IsSelected = true;
+                    }));
+            }
+        }
+        #endregion SelectCommand
     }
     #endregion SwagDataResult
 

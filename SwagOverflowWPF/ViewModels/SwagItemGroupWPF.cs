@@ -3,6 +3,9 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Windows.Data;
 using Newtonsoft.Json;
+using System.Windows.Input;
+using SwagOverflowWPF.Commands;
+using System;
 
 namespace SwagOverflowWPF.ViewModels
 {
@@ -10,6 +13,7 @@ namespace SwagOverflowWPF.ViewModels
     {
         #region Private/Protected Members
         CollectionViewSource _childrenCollectionViewSource;
+        ICommand _addDefaultCommand;
         #endregion Private/Protected Members
 
         #region Properties
@@ -21,6 +25,22 @@ namespace SwagOverflowWPF.ViewModels
             get { return _childrenCollectionViewSource.View; }
         }
         #endregion ChildrenView
+        #region AddDefaultCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand AddDefaultCommand
+        {
+            get
+            {
+                return _addDefaultCommand ?? (_addDefaultCommand =
+                    new RelayCommand(() =>
+                    {
+                        T val = typeof(T).GetConstructor(Type.EmptyTypes) != null ? (T)Activator.CreateInstance(typeof(T)) : default(T);
+                        Children.Add(new SwagItem<T>() { Value = val });
+                    }));
+            }
+        }
+        #endregion AddDefaultCommand
         #endregion Properties
 
         #region Initialization
