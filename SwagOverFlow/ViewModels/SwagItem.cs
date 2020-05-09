@@ -41,13 +41,13 @@ namespace SwagOverflow.ViewModels
     public abstract class SwagItemBase : ViewModelBaseExtended
     {
         #region Private/Protected Members
-        String _display, _alternateId;
+        protected String _display, _alternateId;
+        protected Type _valueType = null;
         protected String _valueTypeString;
-        Int32 _itemId, _sequence;
+        Int32 _itemId, _sequence = -1;
         Boolean _isExpanded, _isSelected, _canUndo = true;
         String _key;
         protected Object _objValue;
-        protected Type _valueType = null;
         #endregion Private/Protected Members
 
         #region Properties

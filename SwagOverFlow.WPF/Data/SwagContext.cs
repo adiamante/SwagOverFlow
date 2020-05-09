@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Reflection;
+using SwagOverFlow.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace SwagOverflow.WPF.Data
 {
@@ -26,8 +28,11 @@ namespace SwagOverflow.WPF.Data
         public DbSet<SwagSettingString> SwagSettingStrings { get; set; }
         public DbSet<SwagSettingBoolean> SwagSettingBooleans { get; set; }
         public DbSet<SwagWindowSettingGroup> SwagWindowSettingGroups { get; set; }
+        public DbSet<SwagData> SwagData { get; set; }
+        public DbSet<SwagDataGroup> SwagDataGroups { get; set; }
         public DbSet<SwagDataTable> SwagDataTables { get; set; }
         public DbSet<SwagDataRow> SwagDataRows { get; set; }
+        public DbSet<SwagDataColumn> SwagDataColumns { get; set; }
         public DbSet<SwagTabItem> SwagTabItems { get; set; }
         public SwagContext() : base() { }
 
@@ -40,6 +45,7 @@ namespace SwagOverflow.WPF.Data
             modelBuilder.ApplyConfiguration(new SwagSettingGroupEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingStringEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingBooleanEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagDataGroupEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataTableEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataRowEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagTabItemEntityConfiguration());
@@ -56,6 +62,7 @@ namespace SwagOverflow.WPF.Data
             string migrationConnectionString = $"Data Source = { _dataSource }; Initial Catalog = SwagOverflow; Integrated Security = True";
             optionsBuilder.UseSqlServer(migrationConnectionString);
             optionsBuilder.EnableSensitiveDataLogging();
+            
         }
 
         public static void SetSqliteOptions(DbContextOptionsBuilder optionsBuilder)
@@ -63,6 +70,7 @@ namespace SwagOverflow.WPF.Data
             string connectionString = "Data Source=settings.db";
             optionsBuilder.UseSqlite(connectionString);
             optionsBuilder.EnableSensitiveDataLogging();
+            optionsBuilder.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()));
         }
 
         public override void Dispose()
@@ -129,6 +137,18 @@ namespace SwagOverflow.WPF.Data
         }
     }
 
+    public class SwagDataGroupEntityConfiguration : IEntityTypeConfiguration<SwagDataGroup>
+    {
+        public void Configure(EntityTypeBuilder<SwagDataGroup> builder)
+        {
+            //SwagSetting Children =>  One to many
+            builder.HasMany(sdg => sdg.Children)
+                .WithOne(sd => sd.Parent)
+                .HasForeignKey(sd => sd.ParentId)
+                .OnDelete(DeleteBehavior.NoAction);
+        }
+    }
+
     public class SwagDataTableEntityConfiguration : IEntityTypeConfiguration<SwagDataTable>
     {
         public void Configure(EntityTypeBuilder<SwagDataTable> builder)
@@ -136,35 +156,37 @@ namespace SwagOverflow.WPF.Data
             //SwagDataTable DataTable => Ignore
             builder.Ignore(sdt => sdt.DataTable);
 
-            Func<String, SwagObservableOrderedDictionary<String, SwagDataColumn>> stringToSwagDict = (str) =>
-            {
-                KeyValuePair<String, SwagDataColumn>[] cols = JsonConvert.DeserializeObject<KeyValuePair<String, SwagDataColumn>[]>(str, new SwagDataTableConverter());
-                SwagObservableOrderedDictionary<string, SwagDataColumn> dict = new SwagObservableOrderedDictionary<string, SwagDataColumn>();
-                foreach (KeyValuePair<String, SwagDataColumn> kvp in cols)
-                {
-                    dict.Add(kvp.Key, kvp.Value);
-                }
-                return dict;
-            };
+            //Func<String, SwagObservableOrderedDictionary<String, SwagDataColumn>> stringToSwagDict = (str) =>
+            //{
+            //    KeyValuePair<String, SwagDataColumn>[] cols = JsonConvert.DeserializeObject<KeyValuePair<String, SwagDataColumn>[]>(str, new SwagDataTableConverter());
+            //    SwagObservableOrderedDictionary<string, SwagDataColumn> dict = new SwagObservableOrderedDictionary<string, SwagDataColumn>();
+            //    foreach (KeyValuePair<String, SwagDataColumn> kvp in cols)
+            //    {
+            //        dict.Add(kvp.Key, kvp.Value);
+            //    }
+            //    return dict;
+            //};
 
             //SwagDataTable Columns
-            builder.Property(sdt => sdt.Columns)
-                .HasConversion(
-                    sdc => JsonConvert.SerializeObject(sdc, Formatting.Indented),
-                    sdc => stringToSwagDict(sdc)
-             );
+            //builder.Property(sdt => sdt.Columns)
+            //    .HasConversion(
+            //        sdc => JsonConvert.SerializeObject(sdc, Formatting.Indented),
+            //        sdc => stringToSwagDict(sdc)
+            // );
 
+            //TODO: Fix
             //SwagDataTable Settings
-            builder.Property(si => si.Settings)
-                .HasConversion(
-                    si => JsonHelper.ToJsonString(si),
-                    si => JsonHelper.ToObject<SwagSettingGroup>(si));
+            //builder.Property(si => si.Settings)
+            //    .HasConversion(
+            //        si => JsonHelper.ToJsonString(si),
+            //        si => JsonHelper.ToObject<SwagSettingGroup>(si));
 
+            //TODO: Fix
             //SwagDataTable Tabs
-            builder.Property(si => si.Tabs)
-                .HasConversion(
-                    si => JsonHelper.ToJsonString(si),
-                    si => JsonHelper.ToObject<SwagTabCollection>(si));
+            //builder.Property(si => si.Tabs)
+            //    .HasConversion(
+            //        si => JsonHelper.ToJsonString(si),
+            //        si => JsonHelper.ToObject<SwagTabCollection>(si));
         }
     }
 
@@ -301,7 +323,8 @@ namespace SwagOverflow.WPF.Data
                             }
                         }
 
-                        sdc.Binding = binding;
+                        //TODO: FIX
+                        //sdc.Binding = binding;
                     }
                 }
 

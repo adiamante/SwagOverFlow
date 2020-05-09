@@ -13,6 +13,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using SwagOverflow.ViewModels;
+using SwagOverFlow.ViewModels;
 
 namespace SwagOverflow.WPF.Controls
 {
@@ -26,12 +27,12 @@ namespace SwagOverflow.WPF.Controls
         public static DependencyProperty SwagDataSetProperty =
                 DependencyProperty.Register(
                     "SwagDataSet",
-                    typeof(SwagDataSet),
+                    typeof(SwagDataSetWPF),
                     typeof(SwagDataControl));
 
-        public SwagDataSet SwagDataSet
+        public SwagDataSetWPF SwagDataSet
         {
-            get { return (SwagDataSet)GetValue(SwagDataSetProperty); }
+            get { return (SwagDataSetWPF)GetValue(SwagDataSetProperty); }
             set
             {
                 SetValue(SwagDataSetProperty, value);
@@ -196,10 +197,10 @@ namespace SwagOverflow.WPF.Controls
             switch (currentResult)
             {
                 case SwagDataSetResultGroup setResult:
-                    View((SwagDataSet)setResult.SwagData);
+                    View((SwagDataSetWPF)setResult.SwagData);
                     break;
                 case SwagDataTableResultGroup tableResult:
-                    View((SwagDataTable)tableResult.SwagData);
+                    View((SwagDataTableWPF)tableResult.SwagData);
                     break;
                 case SwagDataColumnResultGroup columnResult:
                     View((SwagDataColumn)columnResult.SwagData);
@@ -210,21 +211,21 @@ namespace SwagOverflow.WPF.Controls
             }
         }
 
-        private void View(SwagDataSet swagDataSet)
+        private void View(SwagDataSetWPF swagDataSet)
         {
-            if (swagDataSet.Parent != null && swagDataSet.Parent is SwagDataSet)
+            if (swagDataSet.Parent != null && swagDataSet.Parent is SwagDataSetWPF)
             {
-                SwagDataSet parent = (SwagDataSet)swagDataSet.Parent;
+                SwagDataSetWPF parent = (SwagDataSetWPF)swagDataSet.Parent;
                 parent.SelectedChild = swagDataSet;
                 View(parent);
             }
         }
 
-        private void View(SwagDataTable swagDataTable)
+        private void View(SwagDataTableWPF swagDataTable)
         {
-            if (swagDataTable.Parent != null && swagDataTable.Parent is SwagDataSet)
+            if (swagDataTable.Parent != null && swagDataTable.Parent is SwagDataSetWPF)
             {
-                SwagDataSet parent = (SwagDataSet)swagDataTable.Parent;
+                SwagDataSetWPF parent = (SwagDataSetWPF)swagDataTable.Parent;
                 parent.SelectedChild = swagDataTable;
                 View(parent);
             }
@@ -232,9 +233,9 @@ namespace SwagOverflow.WPF.Controls
 
         private void View(SwagDataColumn swagDataColumn)
         {
-            if (swagDataColumn.Parent != null && swagDataColumn.Parent is SwagDataTable)
+            if (swagDataColumn.Parent != null && swagDataColumn.Parent is SwagDataTableWPF)
             {
-                SwagDataTable parent = (SwagDataTable)swagDataColumn.Parent;
+                SwagDataTableWPF parent = (SwagDataTableWPF)swagDataColumn.Parent;
                 parent.SelectedColumn = swagDataColumn;
                 View(parent);
             }
@@ -243,7 +244,7 @@ namespace SwagOverflow.WPF.Controls
         private void View(SwagDataRowResult rowResult)
         {
             SwagDataColumn swagDataColumn = (SwagDataColumn)rowResult.Parent.SwagData;
-            swagDataColumn.SwagDataTable.SelectedRow = rowResult;
+            ((SwagDataTableWPF)swagDataColumn.SwagDataTable).SelectedRow = rowResult;
             View(swagDataColumn);
         }
         #endregion Search
@@ -281,9 +282,9 @@ namespace SwagOverflow.WPF.Controls
         private void SwagDataHeader_ContextMenuOpened(object sender, RoutedEventArgs e)
         {
             SwagData swagData = (SwagData)((FrameworkElement)sender).DataContext;
-            if (swagData.Parent != null && swagData.Parent is SwagDataSet)
+            if (swagData.Parent != null && swagData.Parent is SwagDataSetWPF)
             {
-                SwagDataSet swagDataSet = (SwagDataSet)swagData.Parent;
+                SwagDataSetWPF swagDataSet = (SwagDataSetWPF)swagData.Parent;
                 if (swagDataSet.SelectedChild != null)
                 {
                     swagDataSet.SelectedChild.IsSelected = false;

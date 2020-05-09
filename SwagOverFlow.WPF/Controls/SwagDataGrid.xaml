@@ -7,6 +7,7 @@
              xmlns:ui="clr-namespace:SwagOverflow.WPF.UI"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:cmd="clr-namespace:SwagOverflow.WPF.Commands"
+             xmlns:swagvm="clr-namespace:SwagOverFlow.ViewModels;assembly=SwagOverFlow"
              xmlns:vm="clr-namespace:SwagOverflow.WPF.ViewModels"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:SwagOverflow.WPF.Controls"
@@ -428,7 +429,7 @@
                                         </GroupBox.Header>
                                         <StackPanel>
                                             <local:IconControl Text="{Binding DataType}" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ShapeOutline}}" />
-                                            <local:IconControl Text="{Binding Sequence}" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Numeric}}" />
+                                            <local:IconControl Text="{Binding ColSeq}" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Numeric}}" />
                                         </StackPanel>
                                     </GroupBox>
                                 </Grid>
@@ -471,7 +472,7 @@
                     </GroupBox.Content>
                 </GroupBox>
             </ControlTemplate>
-            <ContextMenu x:Key="SwagDataResultContextMenu" cmd:CommandBehavior.Event="Opened" cmd:CommandBehavior.Command="{Binding SelectCommand}">
+            <ContextMenu x:Key="SwagDataResultContextMenu" Opened="Search_ResultGo_Opened">
                 <MenuItem Click="Search_ResultGo_Click" Header="View">
                     <MenuItem.Icon>
                         <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Eye}}" />
@@ -644,21 +645,21 @@
                                                 </local:SwagItemsControl.CustomDefaultItemTemplate>
                                                 <local:SwagItemsControl.ItemTemplates>
                                                     <ui:SwagTemplateCollection>
-                                                        <ui:SwagTemplate Type="{x:Type vm:SwagDataTableResultGroup}">
+                                                        <ui:SwagTemplate Type="{x:Type swagvm:SwagDataTableResultGroup}">
                                                             <ui:SwagTemplate.DataTemplate>
                                                                 <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
                                                                     <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Table}}" Text="{Binding Display}" />
                                                                 </HierarchicalDataTemplate>
                                                             </ui:SwagTemplate.DataTemplate>
                                                         </ui:SwagTemplate>
-                                                        <ui:SwagTemplate Type="{x:Type vm:SwagDataColumnResultGroup}">
+                                                        <ui:SwagTemplate Type="{x:Type swagvm:SwagDataColumnResultGroup}">
                                                             <ui:SwagTemplate.DataTemplate>
                                                                 <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
                                                                     <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.TableColumn}}" Text="{Binding Display}" />
                                                                 </HierarchicalDataTemplate>
                                                             </ui:SwagTemplate.DataTemplate>
                                                         </ui:SwagTemplate>
-                                                        <ui:SwagTemplate Type="{x:Type vm:SwagDataRowResult}">
+                                                        <ui:SwagTemplate Type="{x:Type swagvm:SwagDataRowResult}">
                                                             <ui:SwagTemplate.DataTemplate>
                                                                 <DataTemplate>
                                                                     <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.TableRow}}" Text="{Binding Display}" />

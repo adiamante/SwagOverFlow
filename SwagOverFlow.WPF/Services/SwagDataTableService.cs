@@ -3,6 +3,7 @@ using SwagOverflow.Iterator;
 using SwagOverflow.WPF.Data;
 using SwagOverflow.WPF.Repository;
 using SwagOverflow.WPF.ViewModels;
+using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,78 +17,79 @@ namespace SwagOverflow.WPF.Services
 
         public SwagDataTableService(SwagContext context) => this._context = context;
 
-        public SwagDataTable GetDataTableByName(String groupName)
+        public SwagDataTableWPF GetDataTableByName(String groupName)
         {
-            SwagDataTable sdtDataTable = null;
+            SwagDataTableWPF sdtDataTable = null;
             SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
+            SwagDataTable sdtStored = work.DataTables.Get(sg => sg.Name == groupName, null).FirstOrDefault();
 
-            sdtDataTable = work.DataTables.Get(sg => sg.Name == groupName, null).FirstOrDefault();
-            if (sdtDataTable != null)
+            if (sdtStored != null)
             {
+                sdtDataTable = new SwagDataTableWPF(sdtStored);
+
+                work.DataTables.Delete(sdtStored);
+                work.DataTables.Insert(sdtDataTable);
+
                 sdtDataTable.DelaySave = true;
 
                 #region Load SwagDataTableUnitOfWork
                 work.DataTables.LoadChildren(sdtDataTable);
                 DataTable dt = new DataTable();
 
-                if (sdtDataTable.Columns != null)
-                {
-                    foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in sdtDataTable.Columns)
-                    {
-                        dt.Columns.Add(sdcKvp.Value.DataColumn);
-                        sdcKvp.Value.SwagDataTable = sdtDataTable;
-                    }
-                }
-
+                //Find all the columns first
                 SwagItemPreOrderIterator<SwagData> iterator = sdtDataTable.CreateIterator();
+                List<SwagData> dataToRemove = new List<SwagData>();
+                List<SwagData> dataToAdd = new List<SwagData>();
                 for (SwagData swagData = iterator.First(); !iterator.IsDone; swagData = iterator.Next())
                 {
-                    if (swagData is SwagDataRow)
+                    switch (swagData)
                     {
-                        SwagDataRow swagDataRow = (SwagDataRow)swagData;
-
-                        JObject rowValues = (JObject)swagDataRow.ObjValue;
-                        DataRow dr = dt.NewRow();
-
-                        foreach (KeyValuePair<String, JToken> kvp in rowValues)
-                        {
-                            if (kvp.Value.Type != JTokenType.Null)
+                        case SwagDataColumn swagDataColumn:
+                            SwagDataColumnWPF swagDataColumnWpf = new SwagDataColumnWPF(swagDataColumn);
+                            dataToRemove.Add(swagDataColumn);
+                            dataToAdd.Add(swagDataColumnWpf);
+                            sdtDataTable.Columns.Add(swagDataColumnWpf.ColumnName, swagDataColumnWpf);
+                            dt.Columns.Add(swagDataColumnWpf.DataColumn);
+                            if (swagDataColumnWpf.ColSeq < dt.Columns.Count)
                             {
-                                dr[kvp.Key] = kvp.Value;
+                                dt.Columns[swagDataColumnWpf.ColumnName].SetOrdinal(swagDataColumnWpf.ColSeq);
                             }
-                        }
-
-                        swagDataRow.DataRow = dr;
-                        dt.Rows.Add(dr);
+                            break;
                     }
-                    
-                    #region OLD
-                    //if (!String.IsNullOrEmpty(swagDataRow.ValueTypeString) && swagDataRow.Parent != null)
-                    //{
-                    //    sdtDataTable.Descendants.Remove(swagDataRow);
-                    //    work.DataRows.Delete(swagDataRow);
+                }
+                for (SwagData swagData = iterator.First(); !iterator.IsDone; swagData = iterator.Next())
+                {
+                    switch (swagData)
+                    {
+                        case SwagDataRow swagDataRow:
+                            dataToRemove.Add(swagDataRow);
+                            dataToAdd.Add(swagDataRow);
+                            JObject rowValues = (JObject)swagDataRow.ObjValue;
+                            DataRow dr = dt.NewRow();
 
-                    //    SwagDataRow newRow = (SwagDataRow)Activator.CreateInstance(typeof(SwagDataRow), swagDataRow);
-                    //    newRow.Children = swagDataRow.Children;
-                    //    swagDataRow.Parent.Children.Remove(swagDataRow);
-                    //    swagDataRow.Parent.Children.Add(newRow);
+                            foreach (KeyValuePair<String, JToken> kvp in rowValues)
+                            {
+                                if (kvp.Value.Type != JTokenType.Null)
+                                {
+                                    dr[kvp.Key] = kvp.Value;
+                                }
+                            }
 
-                    //    JObject rowValues = JsonConvert.DeserializeObject<JObject>(swagDataRow.Value.ToString());
-                    //    DataRow dr = dt.NewRow();
+                            swagDataRow.DataRow = dr;
+                            dt.Rows.Add(dr);
+                            break;
+                    }
+                }
+                iterator = sdtDataTable.CreateIterator();
 
-                    //    foreach (KeyValuePair<String, JToken> kvp in rowValues)
-                    //    {
-                    //        if (kvp.Value.Type != JTokenType.Null)
-                    //        {
-                    //            dr[kvp.Key] = kvp.Value;
-                    //        }
-                    //    }
+                
+                work.Complete();    //This clears the Children
 
-                    //    newRow.DataRow = dr;
-                    //    dt.Rows.Add(dr);
-                    //    work.DataRows.Insert(newRow);
-                    //}
-                    #endregion Name
+                for (int i = 0; i < dataToRemove.Count; i++)    //Fills the Children
+                {
+                    work.Data.Delete(dataToRemove[i]);
+                    work.Data.Detach(dataToRemove[i]);
+                    work.Data.Attach(dataToAdd[i]);
                 }
 
                 sdtDataTable.SetDataTable(dt, true);
@@ -99,7 +101,7 @@ namespace SwagOverflow.WPF.Services
             if (sdtDataTable == null)
             {
                 #region Create SwagDataTable
-                sdtDataTable = new SwagDataTable();
+                sdtDataTable = new SwagDataTableWPF();
                 sdtDataTable.Name = sdtDataTable.AlternateId = groupName;
                 work.DataTables.Insert(sdtDataTable);
                 work.Complete();

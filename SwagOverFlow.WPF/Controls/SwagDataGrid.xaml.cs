@@ -18,6 +18,7 @@ using System.Data;
 using System.Diagnostics;
 using SwagOverFlow.Logger;
 using System.Windows.Controls.Primitives;
+using SwagOverFlow.ViewModels;
 
 namespace SwagOverflow.WPF.Controls
 {
@@ -31,12 +32,12 @@ namespace SwagOverflow.WPF.Controls
         public static DependencyProperty SwagDataTableProperty =
                 DependencyProperty.Register(
                     "SwagDataTable",
-                    typeof(SwagDataTable),
+                    typeof(SwagDataTableWPF),
                     typeof(SwagDataGrid));
 
-        public SwagDataTable SwagDataTable
+        public SwagDataTableWPF SwagDataTable
         {
-            get { return (SwagDataTable)GetValue(SwagDataTableProperty); }
+            get { return (SwagDataTableWPF)GetValue(SwagDataTableProperty); }
             set
             {
                 SetValue(SwagDataTableProperty, value);
@@ -70,7 +71,7 @@ namespace SwagOverflow.WPF.Controls
 
                     foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in columns)
                     {
-                        dataGrid.Columns.Add(sdcKvp.Value.DataGridColumn);
+                        dataGrid.Columns.Add(((SwagDataColumnWPF)sdcKvp.Value).DataGridColumn);
                     }
 
                     if (e.OldValue == null)
@@ -86,20 +87,20 @@ namespace SwagOverflow.WPF.Controls
                                     dataGrid.Columns.Clear();
                                     foreach (KeyValuePair<String, SwagDataColumn> kvp in columns)
                                     {
-                                        dataGrid.Columns.Add(kvp.Value.DataGridColumn);
+                                        dataGrid.Columns.Add(((SwagDataColumnWPF)kvp.Value).DataGridColumn);
                                     }
                                     break;
                                 case NotifyCollectionChangedAction.Add:
                                     foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
                                     {
-                                        dataGrid.Columns.Insert(ne.NewStartingIndex, kvp.Value.DataGridColumn);
+                                        dataGrid.Columns.Add(((SwagDataColumnWPF)kvp.Value).DataGridColumn);
                                     }
                                     break;
                                 case NotifyCollectionChangedAction.Move:
                                     foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
                                     {
                                         dataGrid.Columns.RemoveAt(ne.OldStartingIndex);
-                                        dataGrid.Columns.Insert(ne.NewStartingIndex, kvp.Value.DataGridColumn);
+                                        dataGrid.Columns.Add(((SwagDataColumnWPF)kvp.Value).DataGridColumn);
                                     }
                                     //dataGrid.Columns.Move(ne.OldStartingIndex, ne.NewStartingIndex);
                                     break;
@@ -116,7 +117,6 @@ namespace SwagOverflow.WPF.Controls
             }
         }
         #endregion Columns
-
         #region SelectedColumn
         public static DependencyProperty SelectedColumnProperty =
                 DependencyProperty.RegisterAttached("SelectedColumn",
@@ -130,7 +130,6 @@ namespace SwagOverflow.WPF.Controls
             fdgDataGrid.View((SwagDataColumn)e.NewValue);
         }
         #endregion SelectedColumn
-
         #region SelectedRow
         public static DependencyProperty SelectedRowProperty =
                 DependencyProperty.RegisterAttached("SelectedRow",
@@ -145,7 +144,6 @@ namespace SwagOverflow.WPF.Controls
             fdgDataGrid.View(rowResult);
         }
         #endregion SelectedRow
-
         #region SelectedTotal
         public static DependencyProperty SelectedTotalProperty =
                 DependencyProperty.Register(
@@ -202,7 +200,7 @@ namespace SwagOverflow.WPF.Controls
         #region DataGrid Events
         private void DataGrid_ColumnReordered(object sender, DataGridColumnEventArgs e)
         {
-            SwagDataTable.Columns[e.Column.Header.ToString()].SetSequence(e.Column.DisplayIndex);
+            ((SwagDataColumnWPF)SwagDataTable.Columns[e.Column.Header.ToString()]).SetSequence(e.Column.DisplayIndex);
         }
 
         private void DataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
@@ -311,14 +309,19 @@ namespace SwagOverflow.WPF.Controls
         #endregion ColumnEditor
 
         #region SwagColumnHeader
+        private void Search_ResultGo_Opened(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement frameworkElement = (FrameworkElement)sender;
+            SwagDataResult swagDataResult = (SwagDataResult)frameworkElement.DataContext;
+            swagDataResult.IsSelected = true;
+        }
+
         private void SwagColumnHeader_ConvertClick(object sender, RoutedEventArgs e)
         {
-            SwagLogger.LogStart(this, "Convert Column");
-
             MenuItem menuItem = (MenuItem)sender;
             MenuItem miParent = (MenuItem)menuItem.Parent;
-            SwagDataColumn originalSwagDataColumn = (SwagDataColumn)menuItem.DataContext;
-            SwagDataTable swagDataTable = originalSwagDataColumn.SwagDataTable;
+            SwagDataColumnWPF originalSwagDataColumn = (SwagDataColumnWPF)menuItem.DataContext;
+            SwagDataTableWPF swagDataTable = (SwagDataTableWPF)originalSwagDataColumn.SwagDataTable;
             Type targetType = (Type)menuItem.Tag;
             Grid grid = miParent.FindLogicalChild<Grid>("gridConvertOptions");
             Boolean keepOriginal = grid.FindVisualChild<CheckBox>().IsChecked ?? false;
@@ -327,6 +330,8 @@ namespace SwagOverflow.WPF.Controls
             String newColName = $"{originalSwagDataColumn.ColumnName}{targetType.Name}";
             swagDataTable.DelaySave = true;
 
+            SwagLogger.LogStart(this, "Convert Column |col={Column}|", originalSwagDataColumn.ColumnName);
+
             Int32 count = 1;
             while (dt.Columns.Contains(newColName))
             {
@@ -334,7 +339,7 @@ namespace SwagOverflow.WPF.Controls
                 count++;
             }
 
-            SwagDataColumn newSwagDataColumn = new SwagDataColumn() { ColumnName = newColName, DataType = targetType };
+            SwagDataColumnWPF newSwagDataColumn = new SwagDataColumnWPF() { ColumnName = newColName, DataType = targetType };
             swagDataTable.Columns.Add(newSwagDataColumn.ColumnName, newSwagDataColumn);
 
             #region Resolve defaultValue
@@ -374,23 +379,23 @@ namespace SwagOverflow.WPF.Controls
 
             if (!keepOriginal)
             {
-                newSwagDataColumn.SetSequence(originalSwagDataColumn.Sequence);
+                newSwagDataColumn.SetSequence(originalSwagDataColumn.ColSeq);
                 originalSwagDataColumn.Remove();
                 newSwagDataColumn.Rename(originalSwagDataColumn.ColumnName);
             }
             swagDataTable.Save();
 
-            SwagLogger.LogEnd(this, "Convert Column");
+            SwagLogger.LogEnd(this, "Convert Column |col={Column}|", originalSwagDataColumn.ColumnName);
         }
 
         private void SwagColumnHeader_MoveClick(object sender, RoutedEventArgs e)
         {
-            SwagLogger.LogStart(this, "Move Column");
-
             MenuItem menuItem = (MenuItem)sender;
-            SwagDataColumn swagDataColumn = (SwagDataColumn)menuItem.DataContext;
+            SwagDataColumnWPF swagDataColumn = (SwagDataColumnWPF)menuItem.DataContext;
+            SwagLogger.LogStart(this, "Move Column |col={Column}|", swagDataColumn.ColumnName);
+
             Int32 offSet = Int32.Parse(menuItem.Tag.ToString());
-            Int32 targetSequence = swagDataColumn.Sequence + offSet;
+            Int32 targetSequence = swagDataColumn.ColSeq + offSet;
             if (targetSequence < 0)
             {
                 targetSequence = 0;
@@ -400,26 +405,26 @@ namespace SwagOverflow.WPF.Controls
                 targetSequence = swagDataColumn.SwagDataTable.Columns.Count - 1;
             }
             swagDataColumn.SetSequence(targetSequence);
-            swagDataColumn.SwagDataTable.ResetColumns();
+            ((SwagDataTableWPF)swagDataColumn.SwagDataTable).ResetColumns();
 
-            SwagLogger.LogEnd(this, "Convert Move");
+            SwagLogger.LogEnd(this, "Move Column |col={Column}|", swagDataColumn.ColumnName);
         }
 
         private void SwagColumnHeader_RenameClick(object sender, RoutedEventArgs e)
         {
-            SwagLogger.LogStart(this, "Convert Rename");
-
             Button btnRename = (Button)sender;
             MenuItem miParent = (MenuItem)((MenuItem)((Grid)btnRename.Parent).Parent).Parent;
-            SwagDataColumn swagDataColumn = (SwagDataColumn)btnRename.DataContext;
+            SwagDataColumnWPF swagDataColumn = (SwagDataColumnWPF)btnRename.DataContext;
             ContextMenu contextMenu = DependencyObjectHelper.TryFindParent<ContextMenu>(btnRename);
 
             Grid grid = miParent.FindLogicalChild<Grid>("gridRename");
+            String originalName = swagDataColumn.ColumnName;
             String newColName = grid.FindVisualChild<TextBox>().Text;
+            SwagLogger.LogStart(this, "Column Rename |orig={Column}|new={NewColName}|", originalName, newColName);
             swagDataColumn.Rename(newColName);
             contextMenu.IsOpen = false;
 
-            SwagLogger.LogEnd(this, "Convert Rename");
+            SwagLogger.LogEnd(this, "Column Rename |orig={Column}|new={NewColName}|", originalName, newColName);
         }
 
         private void SwagColumnHeader_TextBoxLoad(object sender, RoutedEventArgs e)
@@ -444,10 +449,11 @@ namespace SwagOverflow.WPF.Controls
         {
             MenuItem menuItem = (MenuItem)sender;
             SwagDataColumn swagDataColumn = (SwagDataColumn)menuItem.DataContext;
-            SwagDataTable swagDataTable = swagDataColumn.SwagDataTable;
+            SwagDataTableWPF swagDataTable = (SwagDataTableWPF)swagDataColumn.SwagDataTable;
             String colName = swagDataColumn.ColumnName;
             Type targetType = swagDataColumn.DataType;
 
+            SwagLogger.LogStart(this, "Fill Column with Default |col={Column}|", swagDataColumn.ColumnName);
             swagDataTable.DelaySave = true;
             foreach (DataRowView drv in swagDataTable.DataTable.DefaultView)
             {
@@ -458,7 +464,7 @@ namespace SwagOverflow.WPF.Controls
             }
             swagDataTable.DelaySave = false;
             swagDataTable.Save();
-
+            
         }
 
         private void SwagColumnHeader_FillEmptyInputClick(object sender, RoutedEventArgs e)
@@ -466,13 +472,15 @@ namespace SwagOverflow.WPF.Controls
             Button btnFill = (Button)sender;
             MenuItem miParent = (MenuItem)((MenuItem)((Grid)btnFill.Parent).Parent).Parent;
             SwagDataColumn swagDataColumn = (SwagDataColumn)btnFill.DataContext;
-            SwagDataTable swagDataTable = swagDataColumn.SwagDataTable;
+            SwagDataTableWPF swagDataTable = (SwagDataTableWPF)swagDataColumn.SwagDataTable;
             ContextMenu contextMenu = DependencyObjectHelper.TryFindParent<ContextMenu>(btnFill);
             String colName = swagDataColumn.ColumnName;
             Type targetType = swagDataColumn.DataType;
 
             Grid grid = miParent.FindLogicalChild<Grid>("gridFillEmptyInput");
             String defaultValueText = grid.FindVisualChild<TextBox>().Text;
+
+            SwagLogger.LogStart(this, "Fill Column with Input |col={Column}|inpt={Input}|", swagDataColumn.ColumnName, defaultValueText);
 
             if (defaultValueText != "")
             {
@@ -508,6 +516,7 @@ namespace SwagOverflow.WPF.Controls
             }
 
             contextMenu.IsOpen = false;
+            SwagLogger.LogEnd(this, "Fill Column with Input |col={Column}|inpt={Input}|", swagDataColumn.ColumnName, defaultValueText);
         }
 
         private void SwagColumnHeader_SelectColumnValueClick(object sender, RoutedEventArgs e)
@@ -518,6 +527,7 @@ namespace SwagOverflow.WPF.Controls
             DataGridColumnHeader dataGridColumnHeader = DependencyObjectHelper.TryFindParent<DataGridColumnHeader>(placementTarget);
             SwagDataColumn swagDataColumn = (SwagDataColumn)menuItem.DataContext;
             SwagDataTable swagDataTable = swagDataColumn.SwagDataTable;
+            SwagLogger.LogStart(this, "Select Column |col={Column}|", swagDataColumn.ColumnName);
 
             DataGrid.SelectedCellsChanged -= DataGrid_SelectedCellsChanged;
             DataGrid.SelectedCells.Clear();
@@ -527,8 +537,11 @@ namespace SwagOverflow.WPF.Controls
             }
             DataGrid.SelectedCellsChanged += DataGrid_SelectedCellsChanged;
             DataGrid_SelectedCellsChanged(null, null);
+            SwagLogger.LogStart(this, "Select Column |col={Column}|", swagDataColumn.ColumnName);
         }
 
         #endregion SwagColumnHeader
+
+
     }
 }

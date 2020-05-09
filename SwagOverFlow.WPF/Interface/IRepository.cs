@@ -24,5 +24,7 @@ namespace SwagOverflow.WPF.Interface
             params object[] parameters);
         void Insert(TEntity entity);
         void Update(TEntity entityToUpdate);
+        void Attach(TEntity entityToAttach);
+        void Detach(TEntity entityToDetach);
     }
 }

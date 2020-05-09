@@ -106,6 +106,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0-preview.3.20215.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
   </ItemGroup>

@@ -7,6 +7,7 @@
              xmlns:ui="clr-namespace:SwagOverflow.WPF.UI"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:swagvm="clr-namespace:SwagOverFlow.ViewModels;assembly=SwagOverFlow"
              xmlns:vm="clr-namespace:SwagOverflow.WPF.ViewModels"
              xmlns:cmd="clr-namespace:SwagOverflow.WPF.Commands"
              mc:Ignorable="d" 
@@ -18,14 +19,14 @@
         <ui:SwagTemplateSelector x:Key="SwagTemplateSelector">
             <ui:SwagTemplateSelector.StaticTemplates>
                 <ui:SwagTemplateCollection>
-                    <ui:SwagTemplate Type="{x:Type vm:SwagDataTable}" >
+                    <ui:SwagTemplate Type="{x:Type swagvm:SwagDataTable}" >
                         <ui:SwagTemplate.DataTemplate>
                             <DataTemplate>
                                 <local:SwagDataGrid SwagDataTable="{Binding}" />
                             </DataTemplate>
                         </ui:SwagTemplate.DataTemplate>
                     </ui:SwagTemplate>
-                    <ui:SwagTemplate Type="{x:Type vm:SwagDataSet}" >
+                    <ui:SwagTemplate Type="{x:Type swagvm:SwagDataSet}" >
                         <ui:SwagTemplate.DataTemplate>
                             <DataTemplate>
                                 <DockPanel>
@@ -109,14 +110,14 @@
         <ui:SwagStyleSelector x:Key="SwagHeaderStyleSelector">
             <ui:SwagStyleSelector.StaticStyles>
                 <ui:SwagStyleCollection>
-                    <ui:SwagStyle Type="{x:Type vm:SwagDataSet}">
+                    <ui:SwagStyle Type="{x:Type swagvm:SwagDataSet}">
                         <ui:SwagStyle.Style>
                             <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
                                 <Setter Property="ContextMenu" Value="{StaticResource SwagDataSetHeaderContextMenu}" />
                             </Style>
                         </ui:SwagStyle.Style>
                     </ui:SwagStyle>
-                    <ui:SwagStyle Type="{x:Type vm:SwagDataTable}">
+                    <ui:SwagStyle Type="{x:Type swagvm:SwagDataTable}">
                         <ui:SwagStyle.Style>
                             <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
                                 <Setter Property="ContextMenu" Value="{StaticResource SwagDataTableHeaderContextMenu}" />
@@ -177,7 +178,7 @@
                                             <local:SwagItemsControl.CustomDefaultItemTemplate>
                                                 <ui:SwagTemplate>
                                                     <ui:SwagTemplate.DataTemplate>
-                                                        <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
+                                                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                                                             <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Dataset}}" Text="{Binding Display}" />
                                                         </HierarchicalDataTemplate>
                                                     </ui:SwagTemplate.DataTemplate>
@@ -185,21 +186,21 @@
                                             </local:SwagItemsControl.CustomDefaultItemTemplate>
                                             <local:SwagItemsControl.ItemTemplates>
                                                 <ui:SwagTemplateCollection>
-                                                    <ui:SwagTemplate Type="{x:Type vm:SwagDataTableResultGroup}">
+                                                    <ui:SwagTemplate Type="{x:Type swagvm:SwagDataTableResultGroup}">
                                                         <ui:SwagTemplate.DataTemplate>
-                                                            <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
+                                                            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                                                                 <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.Table}}" Text="{Binding Display}" />
                                                             </HierarchicalDataTemplate>
                                                         </ui:SwagTemplate.DataTemplate>
                                                     </ui:SwagTemplate>
-                                                    <ui:SwagTemplate Type="{x:Type vm:SwagDataColumnResultGroup}">
+                                                    <ui:SwagTemplate Type="{x:Type swagvm:SwagDataColumnResultGroup}">
                                                         <ui:SwagTemplate.DataTemplate>
-                                                            <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
+                                                            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                                                                 <local:IconControl Kind="{Binding Source={x:Static ui:PackIconCustomKind.TableColumn}}" Text="{Binding Display}" />
                                                             </HierarchicalDataTemplate>
                                                         </ui:SwagTemplate.DataTemplate>
                                                     </ui:SwagTemplate>
-                                                    <ui:SwagTemplate Type="{x:Type vm:SwagDataRowResult}">
+                                                    <ui:SwagTemplate Type="{x:Type swagvm:SwagDataRowResult}">
                                                         <ui:SwagTemplate.DataTemplate>
                                                             <DataTemplate>
                                                                 <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.TableRow}}" Text="{Binding Display}" />

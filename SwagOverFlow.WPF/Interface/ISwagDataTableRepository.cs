@@ -1,4 +1,4 @@
-﻿using SwagOverflow.WPF.ViewModels;
+﻿using SwagOverFlow.ViewModels;
 
 namespace SwagOverflow.WPF.Interface
 {

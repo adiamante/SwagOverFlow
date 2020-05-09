@@ -1,5 +1,6 @@
 ﻿using SwagOverflow.WPF.Controls;
 using SwagOverflow.WPF.ViewModels;
+using SwagOverFlow.ViewModels;
 using System.Windows;
 
 namespace SwagOverflow.WPF.SwagDataWindow

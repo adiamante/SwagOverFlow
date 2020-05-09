@@ -10,11 +10,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
                  Loaded="SwagWindow_Loaded">
-    <swag:SwagWindow.Resources>
-        <!--<Style TargetType="{x:Type swag:SwagComboBox}">
+    <!--<swag:SwagWindow.Resources>
+        --><!--<Style TargetType="{x:Type swag:SwagComboBox}">
             <EventSetter Event="ValueChanged" Handler="SwagComboBox_ValueChanged" />
-        </Style>-->
-    </swag:SwagWindow.Resources>
+        </Style>--><!--
+    </swag:SwagWindow.Resources>-->
     <TabControl>
         <!--<TabItem Header="IconControl">
             <swag:IconControl Text="Test" TextDock="Left" Kind="{x:Static iconPacks:PackIconMaterialKind.ClipboardText}" />

@@ -12,6 +12,7 @@ using System.Text;
 using System.Collections;
 using SwagOverFlow.Data;
 using Microsoft.Extensions.Logging;
+using SwagOverFlow.ViewModels;
 
 namespace TestWPF
 {
@@ -20,13 +21,13 @@ namespace TestWPF
     /// </summary>
     public partial class MainWindow : SwagWindow
     {
-        SwagDataTable _sdtSource = null, _sdtDest = null;
+        SwagDataTableWPF _sdtSource = null, _sdtDest = null;
         String descriptionField = "FullDescription";
         IEnumerable _comboboxSource = null;
         String _combobxText = "";
 
         #region Source
-        public SwagDataTable Source
+        public SwagDataTableWPF Source
         {
             get { return _sdtSource; }
             set { SetValue(ref _sdtSource, value); }
@@ -34,7 +35,7 @@ namespace TestWPF
         #endregion Source
 
         #region Dest
-        public SwagDataTable Dest
+        public SwagDataTableWPF Dest
         {
             get { return _sdtDest; }
             set { SetValue(ref _sdtDest, value); }
@@ -116,9 +117,11 @@ namespace TestWPF
                 #region DestID
                 if (!Source.Columns.ContainsKey("DestID"))
                 {
-                    SwagDataColumn sdc = new SwagDataColumn()
+                    SwagDataColumnWPF sdc = new SwagDataColumnWPF()
                     {
                         ColumnName = "DestID",
+                        DataType = typeof(string),
+                        //Saving a binding is currently not working
                         Binding = new Binding("[DestID]") { TargetNullValue = "----------", FallbackValue = "----------" }
                     };
 
@@ -143,9 +146,10 @@ namespace TestWPF
                             </DataTemplate>";
                     mappingTemplate = mappingTemplate.Replace("{{descriptionField}}", descriptionField);
 
-                    SwagDataColumn sdc = new SwagDataColumn()
+                    SwagDataColumnWPF sdc = new SwagDataColumnWPF()
                     {
                         ColumnName = "Mapping",
+                        DataType = typeof(string),
                         DataTemplate = mappingTemplate
                     };
 
@@ -154,16 +158,18 @@ namespace TestWPF
                 #endregion Mapping
 
                 #region (Source, Dest)
-                if (!Source.Columns.ContainsKey("Source, Dest"))
-                {
-                    SwagDataColumn sdc = new SwagDataColumn()
-                    {
-                        ColumnName = "Source, Dest",
-                        Expression = "'(' + ItemID + ', ' + DestID + ')'"
-                    };
+                //Need to load in proper order because of dependence on other Columns
+                //if (!Source.Columns.ContainsKey("Source, Dest"))
+                //{
+                //    SwagDataColumnWPF sdc = new SwagDataColumnWPF()
+                //    {
+                //        ColumnName = "Source, Dest",
+                //        DataType = typeof(string),
+                //        Expression = "'(' + ItemID + ', ' + DestID + ')'"
+                //    };
 
-                    Source.Columns.Add("Source, Dest", sdc);
-                }
+                //    Source.Columns.Add("Source, Dest", sdc);
+                //}
                 #endregion (Source, Dest)
 
                 Source.Save();

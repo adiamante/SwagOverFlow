@@ -92,5 +92,15 @@ namespace SwagOverflow.WPF.Repository
                 entry.State = EntityState.Modified;
             }
         }
+
+        public virtual void Attach(TEntity entityToAttach)
+        {
+            dbSet.Attach(entityToAttach);
+        }
+
+        public virtual void Detach(TEntity entityToDetach)
+        {
+            context.Entry(entityToDetach).State = EntityState.Detached;
+        }
     }
 }

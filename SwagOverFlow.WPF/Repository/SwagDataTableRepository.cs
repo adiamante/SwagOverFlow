@@ -1,6 +1,6 @@
 ﻿using SwagOverflow.WPF.Data;
 using SwagOverflow.WPF.Interface;
-using SwagOverflow.WPF.ViewModels;
+using SwagOverFlow.ViewModels;
 
 namespace SwagOverflow.WPF.Repository
 {
