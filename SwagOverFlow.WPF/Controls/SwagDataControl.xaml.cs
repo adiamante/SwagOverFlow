@@ -119,16 +119,19 @@ namespace SwagOverFlow.WPF.Controls
 
         private void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            foreach (SwagData swagData in e.NewItems)
+            if (e.NewItems != null)
             {
-                switch (swagData)
+                foreach (SwagData swagData in e.NewItems)
                 {
-                    case SwagDataSet swagDataSet:
-                        swagDataSet.Children.CollectionChanged += Children_CollectionChanged;
-                        break;
-                    case SwagDataTable swagDataTable:
-                        SwagWindow.CommandManager.Attach(swagDataTable);
-                        break;
+                    switch (swagData)
+                    {
+                        case SwagDataSet swagDataSet:
+                            swagDataSet.Children.CollectionChanged += Children_CollectionChanged;
+                            break;
+                        case SwagDataTable swagDataTable:
+                            SwagWindow.CommandManager.Attach(swagDataTable);
+                            break;
+                    }
                 }
             }
         }
@@ -250,6 +253,13 @@ namespace SwagOverFlow.WPF.Controls
         #endregion Search
 
         #region SwagDataHeader ContextMenu
+
+        private void SwagDataHeader_Close(object sender, RoutedEventArgs e)
+        {
+            SwagData swagData = (SwagData)((FrameworkElement)sender).DataContext;
+            swagData.Parent.Children.Remove(swagData);
+        }
+
         private void SwagDataHeader_CloseSiblings(object sender, RoutedEventArgs e)
         {
             MessageBoxResult result = MessageBox.Show("Are you sure you want to close all siblings?", "Warning", MessageBoxButton.YesNo);
@@ -319,6 +329,14 @@ namespace SwagOverFlow.WPF.Controls
                     break;
             }
         }
+
+        private void Search_ResultGo_Opened(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement fe = (FrameworkElement)sender;
+            SwagDataResult swagResult = (SwagDataResult)fe.DataContext;
+            swagResult.IsSelected = true;
+        }
         #endregion SwagDataHeader ContextMenu
+
     }
 }

@@ -1669,7 +1669,7 @@ namespace SwagOverFlow.WPF.ViewModels
                 return _addDataSetCommand ?? (_addDataSetCommand =
                     new RelayCommand(() =>
                     {
-                        SwagDataSet newDataSet = new SwagDataSet();
+                        SwagDataSetWPF newDataSet = new SwagDataSetWPF();
                         newDataSet.Display = $"Set {this.Children.Count + 1}";
                         Children.Add(newDataSet);
                     }));
@@ -1684,7 +1684,7 @@ namespace SwagOverFlow.WPF.ViewModels
                 return _addDataTableCommand ?? (_addDataTableCommand =
                     new RelayCommand(() =>
                     {
-                        SwagDataTable newDataTable = new SwagDataTable();
+                        SwagDataTableWPF newDataTable = new SwagDataTableWPF();
                         newDataTable.Display = $"Table {this.Children.Count + 1}";
                         Children.Add(newDataTable);
                     }));
@@ -1699,7 +1699,7 @@ namespace SwagOverFlow.WPF.ViewModels
             _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
         }
 
-        public SwagDataSetWPF(DataSet dataSet)
+        public SwagDataSetWPF(DataSet dataSet) : this()
         {
             foreach (DataTable dt in dataSet.Tables)
             {

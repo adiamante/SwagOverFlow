@@ -10,12 +10,10 @@ using System.Collections.Specialized;
 using System.Windows.Data;
 using System.Linq;
 using System.Windows.Threading;
-using MahApps.Metro.Controls;
 using SwagOverFlow.WPF.UI;
 using SwagOverFlow.Utils;
 using System.Windows.Input;
 using System.Data;
-using System.Diagnostics;
 using SwagOverFlow.Logger;
 using System.Windows.Controls.Primitives;
 using SwagOverFlow.ViewModels;
@@ -127,7 +125,11 @@ namespace SwagOverFlow.WPF.Controls
         private static void BindableSelectedColumnPropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
         {
             SwagDataGrid fdgDataGrid = source as SwagDataGrid;
-            fdgDataGrid.View((SwagDataColumn)e.NewValue);
+
+            if (e.NewValue != null)
+            {
+                fdgDataGrid.View((SwagDataColumn)e.NewValue);
+            }
         }
         #endregion SelectedColumn
         #region SelectedRow
@@ -140,8 +142,12 @@ namespace SwagOverFlow.WPF.Controls
         private static void BindableSelectedRowPropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
         {
             SwagDataGrid fdgDataGrid = source as SwagDataGrid;
-            SwagDataRowResult rowResult = (SwagDataRowResult)e.NewValue;
-            fdgDataGrid.View(rowResult);
+
+            if (e.NewValue != null)
+            {
+                SwagDataRowResult rowResult = (SwagDataRowResult)e.NewValue;
+                fdgDataGrid.View(rowResult);
+            }
         }
         #endregion SelectedRow
         #region SelectedTotal
