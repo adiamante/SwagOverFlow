@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SwagOverflow.ViewModels
+namespace SwagOverFlow.ViewModels
 {
     #region Interfaces
     public interface ISwagIndexedChild<TChild> : ISwagChild<TChild> where TChild : class, ISwagIndexedChild<TChild>

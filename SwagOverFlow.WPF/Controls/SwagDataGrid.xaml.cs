@@ -1,17 +1,17 @@
 ﻿using System;
-using SwagOverflow.WPF.ViewModels;
+using SwagOverFlow.WPF.ViewModels;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using SwagOverflow.WPF.Collections;
+using SwagOverFlow.WPF.Collections;
 using System.Collections.Specialized;
 using System.Windows.Data;
 using System.Linq;
 using System.Windows.Threading;
 using MahApps.Metro.Controls;
-using SwagOverflow.WPF.UI;
+using SwagOverFlow.WPF.UI;
 using SwagOverFlow.Utils;
 using System.Windows.Input;
 using System.Data;
@@ -20,7 +20,7 @@ using SwagOverFlow.Logger;
 using System.Windows.Controls.Primitives;
 using SwagOverFlow.ViewModels;
 
-namespace SwagOverflow.WPF.Controls
+namespace SwagOverFlow.WPF.Controls
 {
     /// <summary>
     /// Interaction logic for SwagDataGrid.xaml

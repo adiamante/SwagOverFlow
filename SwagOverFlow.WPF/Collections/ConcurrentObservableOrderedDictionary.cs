@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
 
 	/// <summary>

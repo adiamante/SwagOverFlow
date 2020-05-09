@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SwagOverflow.WPF.UI
+namespace SwagOverFlow.WPF.UI
 {
     public enum PackIconCustomKind
     {

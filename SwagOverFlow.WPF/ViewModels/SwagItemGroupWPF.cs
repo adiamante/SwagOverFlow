@@ -1,13 +1,13 @@
-﻿using SwagOverflow.ViewModels;
+﻿using SwagOverFlow.ViewModels;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Windows.Data;
 using Newtonsoft.Json;
 using System.Windows.Input;
-using SwagOverflow.WPF.Commands;
+using SwagOverFlow.WPF.Commands;
 using System;
 
-namespace SwagOverflow.WPF.ViewModels
+namespace SwagOverFlow.WPF.ViewModels
 {
     public class SwagItemGroupWPF<T> : SwagItemGroup<T>
     {

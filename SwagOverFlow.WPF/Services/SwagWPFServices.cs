@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SwagOverflow.WPF.Data;
+using SwagOverFlow.WPF.Data;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SwagOverflow.WPF.Services
+namespace SwagOverFlow.WPF.Services
 {
     public static class SwagWPFServices
     {

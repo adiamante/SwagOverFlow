@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwagOverflow.WPF.Collections {
+namespace SwagOverFlow.WPF.Collections {
 
    /// <summary>
    /// This class allows reflecting changes between 2 ObservableCollection objects, with an

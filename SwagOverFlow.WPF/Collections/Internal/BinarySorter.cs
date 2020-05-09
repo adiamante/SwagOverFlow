@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SwagOverflow.WPF.Collections {
+namespace SwagOverFlow.WPF.Collections {
 
   /// <summary>
   /// This class is a helper for creating binary sorted lists

@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
 
     /// <summary>

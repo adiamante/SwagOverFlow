@@ -1,6 +1,6 @@
 ﻿using SwagOverFlow.ViewModels;
 
-namespace SwagOverflow.WPF.Interface
+namespace SwagOverFlow.WPF.Interface
 {
     public interface ISwagDataTableRepository : IRepository<SwagDataTable>
     {

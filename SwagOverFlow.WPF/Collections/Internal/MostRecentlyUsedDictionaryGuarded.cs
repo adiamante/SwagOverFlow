@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SwagOverflow.WPF.Collections {
+namespace SwagOverFlow.WPF.Collections {
   /// <summary>
   /// A variant on MostRecentlyUsedDictionaryGuarded that uses a lock to limit access to 1 thread at a time
   /// </summary>

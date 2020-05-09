@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Data;
 
-namespace SwagOverflow.WPF.UI
+namespace SwagOverFlow.WPF.UI
 {
     public enum LogicalOperator { AND, OR }
 

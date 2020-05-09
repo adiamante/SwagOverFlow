@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Markup;
 
-namespace SwagOverflow.WPF.UI
+namespace SwagOverFlow.WPF.UI
 {
 	//https://www.codeproject.com/Tips/873562/Markup-Extension-for-Generic-Classes-2
 	public class TypeArgumentsConverter : TypeConverter

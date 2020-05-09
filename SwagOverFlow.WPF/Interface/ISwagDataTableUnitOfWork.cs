@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SwagOverflow.WPF.Interface
+namespace SwagOverFlow.WPF.Interface
 {
     public interface ISwagDataTableUnitOfWork : IDisposable
     {

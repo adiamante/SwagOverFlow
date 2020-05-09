@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
   public static class ConcurrentObservableExtensions
   {

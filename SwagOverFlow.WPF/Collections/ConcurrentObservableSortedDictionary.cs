@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 //https://github.com/stewienj/SwordfishCollections
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
   [Serializable]
   public class ConcurrentObservableSortedDictionary<TKey, TValue> : ConcurrentObservableDictionary<TKey, TValue>, ISerializable

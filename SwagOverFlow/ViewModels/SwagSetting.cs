@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SwagOverflow.Iterator;
-using SwagOverflow.ViewModels;
+using SwagOverFlow.Iterator;
+using SwagOverFlow.ViewModels;
 using SwagOverFlow.Utils;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SwagOverflow.ViewModels
+namespace SwagOverFlow.ViewModels
 {
     #region SettingType
     public enum SettingType

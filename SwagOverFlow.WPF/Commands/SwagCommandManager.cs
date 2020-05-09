@@ -1,10 +1,10 @@
-﻿using SwagOverflow.ViewModels;
+﻿using SwagOverFlow.ViewModels;
 using SwagOverFlow.Utils;
-using SwagOverflow.WPF.Collections;
+using SwagOverFlow.WPF.Collections;
 using System;
 using System.Windows.Input;
 
-namespace SwagOverflow.WPF.Commands
+namespace SwagOverFlow.WPF.Commands
 {
     public class SwagCommandManager : ViewModelBase
     {

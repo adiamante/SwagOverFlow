@@ -8,7 +8,7 @@ using System.Windows.Markup;
 using System.Xaml;
 using System.Xaml.Schema;
 
-namespace SwagOverflow.WPF.UI
+namespace SwagOverFlow.WPF.UI
 {
 	[ContentProperty("TypeArguments")]
 	[MarkupExtensionReturnType(typeof(Type))]

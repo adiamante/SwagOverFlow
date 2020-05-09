@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-namespace SwagOverflow.WPF.UI
+namespace SwagOverFlow.WPF.UI
 {
     public static class DependencyObjectHelper
     {

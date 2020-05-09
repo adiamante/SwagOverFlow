@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwagOverflow.WPF.Collections {
+namespace SwagOverFlow.WPF.Collections {
   /// <summary>
   /// Generates ObservableCollectionDeduplicator objects. Takes a base-source collection and a
   /// converter function to build up a map to convert back and forth between another source

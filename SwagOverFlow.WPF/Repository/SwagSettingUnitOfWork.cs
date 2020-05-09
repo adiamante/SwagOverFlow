@@ -1,7 +1,7 @@
-﻿using SwagOverflow.WPF.Data;
-using SwagOverflow.WPF.Interface;
+﻿using SwagOverFlow.WPF.Data;
+using SwagOverFlow.WPF.Interface;
 
-namespace SwagOverflow.WPF.Repository
+namespace SwagOverFlow.WPF.Repository
 {
     public class SwagSettingUnitOfWork : ISwagSettingUnitOfWork
     {

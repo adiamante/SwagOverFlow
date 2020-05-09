@@ -1,4 +1,4 @@
-﻿using SwagOverflow.WPF.Collections.Numerics;
+﻿using SwagOverFlow.WPF.Collections.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
 
   public class ImmutableDictionaryListPair<TKey, TValue>

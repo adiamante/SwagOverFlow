@@ -10,7 +10,7 @@ using System.Threading;
 using System.Collections.Concurrent;
 using System.Runtime.Serialization;
 
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
   /// <summary>
   /// A collection that can be updated from multiple threads, and can be bound to an items control in the user interface.

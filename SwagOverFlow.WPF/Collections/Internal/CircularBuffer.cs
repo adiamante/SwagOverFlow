@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SwagOverflow.WPF.Collections {
+namespace SwagOverFlow.WPF.Collections {
   public class CircularBuffer<T> : ICollection<T>, IEnumerable<T>, ICollection, IEnumerable {
     private int _capacity;
     private int _size;

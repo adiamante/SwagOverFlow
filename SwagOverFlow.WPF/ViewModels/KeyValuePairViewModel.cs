@@ -1,9 +1,9 @@
-﻿using SwagOverflow.ViewModels;
+﻿using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SwagOverflow.WPF.ViewModels
+namespace SwagOverFlow.WPF.ViewModels
 {
     public class KeyValuePairViewModel<TKey, TValue> : ViewModelBaseExtended
     {

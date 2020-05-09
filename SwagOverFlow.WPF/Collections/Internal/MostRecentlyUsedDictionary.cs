@@ -14,7 +14,7 @@ using System.Text;
 using System.Collections.ObjectModel;
 using System.Collections;
 
-namespace SwagOverflow.WPF.Collections {
+namespace SwagOverFlow.WPF.Collections {
   public class MostRecentlyUsedDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>> {
 
     // ************************************************************************

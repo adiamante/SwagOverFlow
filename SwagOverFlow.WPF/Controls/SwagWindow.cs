@@ -1,9 +1,9 @@
 ﻿using MahApps.Metro.Controls;
 using SwagOverFlow.Logger;
-using SwagOverflow.WPF.Commands;
-using SwagOverflow.WPF.Services;
-using SwagOverflow.WPF.UI;
-using SwagOverflow.WPF.ViewModels;
+using SwagOverFlow.WPF.Commands;
+using SwagOverFlow.WPF.Services;
+using SwagOverFlow.WPF.UI;
+using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace SwagOverflow.WPF.Controls
+namespace SwagOverFlow.WPF.Controls
 {
     public class SwagWindow : MetroWindow, INotifyPropertyChanged
     {
@@ -126,7 +126,7 @@ namespace SwagOverflow.WPF.Controls
             Loaded += SwagWindow_Loaded;
 
             ResourceDictionary rdSwagWindow = new ResourceDictionary();
-            rdSwagWindow.Source = new Uri("/SwagOverflow.WPF;component/Controls/SwagWindow.xaml", UriKind.RelativeOrAbsolute);
+            rdSwagWindow.Source = new Uri("/SwagOverFlow.WPF;component/Controls/SwagWindow.xaml", UriKind.RelativeOrAbsolute);
             this.Resources.MergedDictionaries.Add(rdSwagWindow);
         }
 

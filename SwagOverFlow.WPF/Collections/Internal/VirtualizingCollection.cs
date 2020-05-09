@@ -10,7 +10,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.ComponentModel;
 
-namespace SwagOverflow.WPF.Collections {
+namespace SwagOverFlow.WPF.Collections {
   /// <summary>
   /// Specialized list implementation that provides data virtualization. The collection is divided up into pages,
   /// and pages are dynamically fetched from the IItemsProvider when required. Stale pages are removed after a

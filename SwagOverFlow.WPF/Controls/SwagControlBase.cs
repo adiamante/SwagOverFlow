@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace SwagOverflow.WPF.Controls
+namespace SwagOverFlow.WPF.Controls
 {
     public class SwagControlBase : UserControl, INotifyPropertyChanged
     {

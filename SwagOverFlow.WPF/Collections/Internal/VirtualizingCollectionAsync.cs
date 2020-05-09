@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Collections;
 
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
     /// <summary>
     /// Derived VirtualizatingCollection, performing loading asychronously.

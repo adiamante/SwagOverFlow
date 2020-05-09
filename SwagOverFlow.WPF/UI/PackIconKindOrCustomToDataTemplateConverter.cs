@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Xml;
 
-namespace SwagOverflow.WPF.UI
+namespace SwagOverFlow.WPF.UI
 {
     public class PackIconKindOrCustomToDataTemplateConverter : MarkupConverter
     {

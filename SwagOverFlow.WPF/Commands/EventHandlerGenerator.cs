@@ -2,7 +2,7 @@
 using System.Reflection.Emit;
 using System.Reflection;
 
-namespace SwagOverflow.WPF.Commands
+namespace SwagOverFlow.WPF.Commands
 {
     /// <summary>
     /// Generates delegates according to the specified signature on runtime

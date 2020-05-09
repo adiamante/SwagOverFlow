@@ -1,13 +1,13 @@
-﻿using SwagOverflow.Iterator;
+﻿using SwagOverFlow.Iterator;
 using SwagOverFlow.Logger;
-using SwagOverflow.WPF.Data;
-using SwagOverflow.WPF.Repository;
-using SwagOverflow.WPF.ViewModels;
+using SwagOverFlow.WPF.Data;
+using SwagOverFlow.WPF.Repository;
+using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Linq;
-using SwagOverflow.ViewModels;
+using SwagOverFlow.ViewModels;
 
-namespace SwagOverflow.WPF.Services
+namespace SwagOverFlow.WPF.Services
 {
     public class SwagWindowSettingService
     {

@@ -8,7 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-namespace SwagOverflow.WPF.Controls
+namespace SwagOverFlow.WPF.Controls
 {
     /// <summary>
     /// Interaction logic for SearchTextBox.xaml

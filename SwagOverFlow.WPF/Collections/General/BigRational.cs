@@ -30,7 +30,7 @@
 ** O(n(log n)^5 (log log n)) steps as n -> +infinity
 ============================================================*/
 
-namespace SwagOverflow.WPF.Collections.Numerics
+namespace SwagOverFlow.WPF.Collections.Numerics
 {
     using System;
     using System.Collections.Generic;

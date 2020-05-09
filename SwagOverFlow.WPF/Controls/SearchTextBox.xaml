@@ -1,11 +1,11 @@
-﻿<local:SwagControlBase x:Class="SwagOverflow.WPF.Controls.SearchTextBox"
+﻿<local:SwagControlBase x:Class="SwagOverFlow.WPF.Controls.SearchTextBox"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:util="clr-namespace:SwagOverFlow.Utils;assembly=SwagOverFlow"
-             xmlns:local="clr-namespace:SwagOverflow.WPF.Controls"
-             xmlns:ui="clr-namespace:SwagOverflow.WPF.UI"
+             xmlns:local="clr-namespace:SwagOverFlow.WPF.Controls"
+             xmlns:ui="clr-namespace:SwagOverFlow.WPF.UI"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks" xmlns:Converters="http://metro.mahapps.com/winfx/xaml/shared"
              mc:Ignorable="d" 
@@ -14,7 +14,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/SwagOverflow.WPF;component/Themes/Common.xaml"/>
+                <ResourceDictionary Source="/SwagOverFlow.WPF;component/Themes/Common.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <ui:EnumMatchToBooleanConverter x:Key="EnumMatchToBooleanConverter" />
             <ui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />

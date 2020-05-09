@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using SwagOverflow.Iterator;
-using SwagOverflow.ViewModels;
+using SwagOverFlow.Iterator;
+using SwagOverFlow.ViewModels;
 using SwagOverFlow.Utils;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Windows.Data;
 
-namespace SwagOverflow.WPF.ViewModels
+namespace SwagOverFlow.WPF.ViewModels
 {
     public class SwagTabItem : SwagIndexedItem<SwagTabCollection, SwagTabItem>
     {

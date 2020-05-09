@@ -1,8 +1,8 @@
-﻿using SwagOverflow.WPF.Controls;
+﻿using SwagOverFlow.WPF.Controls;
 using System;
 using System.Windows.Data;
 
-namespace SwagOverflow.WPF.UI
+namespace SwagOverFlow.WPF.UI
 {
 
     public class SwagColumnConverter : IMultiValueConverter

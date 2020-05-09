@@ -7,10 +7,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using SwagOverFlow.Utils;
-using SwagOverflow.WPF.Controls;
-using SwagOverflow.WPF.ViewModels;
+using SwagOverFlow.WPF.Controls;
+using SwagOverFlow.WPF.ViewModels;
 
-namespace SwagOverflow.WPF.UI
+namespace SwagOverFlow.WPF.UI
 {
     //https://www.codeproject.com/Tips/873562/Markup-Extension-for-Generic-Classes-2
     /// <summary>

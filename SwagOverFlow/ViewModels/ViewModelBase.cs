@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace SwagOverflow.ViewModels
+namespace SwagOverFlow.ViewModels
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {

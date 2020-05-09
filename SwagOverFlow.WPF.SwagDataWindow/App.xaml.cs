@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace SwagOverflow.WPF.SwagDataWindow
+namespace SwagOverFlow.WPF.SwagDataWindow
 {
     /// <summary>
     /// Interaction logic for App.xaml

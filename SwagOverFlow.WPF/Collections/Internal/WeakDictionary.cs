@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
   // Adds strong typing to WeakReference.Target using generics. Also,
   // the Create factory method is used in place of a constructor

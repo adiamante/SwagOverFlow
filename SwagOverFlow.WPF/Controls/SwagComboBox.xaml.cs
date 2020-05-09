@@ -14,7 +14,7 @@ using System.Windows.Markup;
 using System.Windows.Threading;
 using System.Xml;
 
-namespace SwagOverflow.WPF.Controls
+namespace SwagOverFlow.WPF.Controls
 {
     /// <summary>
     /// Interaction logic for SwagComboBox.xaml

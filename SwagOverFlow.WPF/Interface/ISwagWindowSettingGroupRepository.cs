@@ -1,6 +1,6 @@
-﻿using SwagOverflow.WPF.ViewModels;
+﻿using SwagOverFlow.WPF.ViewModels;
 
-namespace SwagOverflow.WPF.Interface
+namespace SwagOverFlow.WPF.Interface
 {
     public interface ISwagWindowSettingGroupRepository : IRepository<SwagWindowSettingGroup>
     {

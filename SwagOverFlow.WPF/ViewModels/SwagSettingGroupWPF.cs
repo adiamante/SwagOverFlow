@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using SwagOverflow.Iterator;
-using SwagOverflow.ViewModels;
+using SwagOverFlow.Iterator;
+using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Windows.Data;
 
-namespace SwagOverflow.WPF.ViewModels
+namespace SwagOverFlow.WPF.ViewModels
 {
     public class SwagSettingWPFGroup : SwagSettingGroup
     {

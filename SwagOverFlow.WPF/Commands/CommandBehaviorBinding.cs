@@ -3,7 +3,7 @@ using System.Windows.Input;
 using System.Reflection;
 using System.Windows;
 
-namespace SwagOverflow.WPF.Commands
+namespace SwagOverFlow.WPF.Commands
 {
     /// <summary>
     /// Defines the command behavior binding

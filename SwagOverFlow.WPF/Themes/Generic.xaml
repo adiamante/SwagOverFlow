@@ -2,12 +2,12 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
-    xmlns:controls="clr-namespace:SwagOverflow.WPF.Controls"
-    xmlns:local="clr-namespace:SwagOverflow.WPF"
+    xmlns:controls="clr-namespace:SwagOverFlow.WPF.Controls"
+    xmlns:local="clr-namespace:SwagOverFlow.WPF"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-    xmlns:ui="clr-namespace:SwagOverflow.WPF.UI">
+    xmlns:ui="clr-namespace:SwagOverFlow.WPF.UI">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/SwagOverflow.WPF;component/Controls/SwagWindow.xaml"/>
-        <!--<ResourceDictionary Source="/SwagOverflow.WPF;component/Controls/SearchTextBox.xaml"/>-->
+        <ResourceDictionary Source="/SwagOverFlow.WPF;component/Controls/SwagWindow.xaml"/>
+        <!--<ResourceDictionary Source="/SwagOverFlow.WPF;component/Controls/SearchTextBox.xaml"/>-->
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

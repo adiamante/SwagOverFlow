@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
   public class WatchedRecursiveFileList : IDisposable
   {

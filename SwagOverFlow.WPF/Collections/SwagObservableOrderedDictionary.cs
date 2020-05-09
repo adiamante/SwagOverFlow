@@ -1,5 +1,5 @@
-﻿using SwagOverflow.ViewModels;
-using SwagOverflow.WPF.ViewModels;
+﻿using SwagOverFlow.ViewModels;
+using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
     public class SwagObservableOrderedDictionary<TKey, TValue> : ViewModelBaseExtended, ICollection<KeyValuePair<TKey, TValue>>, IDictionary<TKey, TValue>, INotifyCollectionChanged
     {

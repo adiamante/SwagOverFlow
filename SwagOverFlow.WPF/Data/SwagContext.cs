@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using SwagOverflow.ViewModels;
+using SwagOverFlow.ViewModels;
 using SwagOverFlow.Utils;
-using SwagOverflow.WPF.Collections;
-using SwagOverflow.WPF.ViewModels;
+using SwagOverFlow.WPF.Collections;
+using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,7 +16,7 @@ using System.Reflection;
 using SwagOverFlow.ViewModels;
 using Microsoft.Extensions.Logging;
 
-namespace SwagOverflow.WPF.Data
+namespace SwagOverFlow.WPF.Data
 {
     public class SwagContext : DbContext
     {
@@ -59,7 +59,7 @@ namespace SwagOverflow.WPF.Data
 
         public static void SetSqlServerOptions(DbContextOptionsBuilder optionsBuilder)
         {
-            string migrationConnectionString = $"Data Source = { _dataSource }; Initial Catalog = SwagOverflow; Integrated Security = True";
+            string migrationConnectionString = $"Data Source = { _dataSource }; Initial Catalog = SwagOverFlow; Integrated Security = True";
             optionsBuilder.UseSqlServer(migrationConnectionString);
             optionsBuilder.EnableSensitiveDataLogging();
             

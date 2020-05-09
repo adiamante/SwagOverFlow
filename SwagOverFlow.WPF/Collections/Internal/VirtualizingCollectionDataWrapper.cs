@@ -2,7 +2,7 @@
 
 using System.ComponentModel;
 
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
     public class VirtualizingCollectionDataWrapper<T> : INotifyPropertyChanged where T : class
     {

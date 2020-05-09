@@ -9,7 +9,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.IO;
 
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
   /// <summary>
   /// Reads in the header information of the Portable Executable format.

@@ -1,6 +1,6 @@
-﻿using SwagOverflow.ViewModels;
-using SwagOverflow.WPF.UI;
-using SwagOverflow.WPF.ViewModels;
+﻿using SwagOverFlow.ViewModels;
+using SwagOverFlow.WPF.UI;
+using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SwagOverflow.WPF.Controls
+namespace SwagOverFlow.WPF.Controls
 {
     /// <summary>
     /// Interaction logic for SwagItemsControl.xaml

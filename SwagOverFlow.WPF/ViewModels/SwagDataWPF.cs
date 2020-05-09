@@ -1,16 +1,16 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SwagOverflow.Iterator;
-using SwagOverflow.ViewModels;
+using SwagOverFlow.Iterator;
+using SwagOverFlow.ViewModels;
 using SwagOverFlow.Data;
 using SwagOverFlow.Logger;
 using SwagOverFlow.Utils;
-using SwagOverflow.WPF.Commands;
-using SwagOverflow.WPF.Collections;
-using SwagOverflow.WPF.Data;
-using SwagOverflow.WPF.Repository;
-using SwagOverflow.WPF.UI;
+using SwagOverFlow.WPF.Commands;
+using SwagOverFlow.WPF.Collections;
+using SwagOverFlow.WPF.Data;
+using SwagOverFlow.WPF.Repository;
+using SwagOverFlow.WPF.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,7 +29,7 @@ using System.Xml;
 using SwagOverFlow.ViewModels;
 using SwagOverFlow.Collections;
 
-namespace SwagOverflow.WPF.ViewModels
+namespace SwagOverFlow.WPF.ViewModels
 {
     #region SwagData
     //public abstract class SwagData : SwagItem<SwagDataGroup, SwagData>

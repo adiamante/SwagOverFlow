@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SwagOverflow.WPF.Data;
+using SwagOverFlow.WPF.Data;
 
-namespace SwagOverflow.WPF.Migrations
+namespace SwagOverFlow.WPF.Migrations
 {
     [DbContext(typeof(SwagContext))]
     [Migration("20200508032933_M3")]
@@ -18,7 +18,7 @@ namespace SwagOverflow.WPF.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.2");
 
-            modelBuilder.Entity("SwagOverflow.ViewModels.SwagItemBase", b =>
+            modelBuilder.Entity("SwagOverFlow.ViewModels.SwagItemBase", b =>
                 {
                     b.Property<int>("ItemId")
                         .ValueGeneratedOnAdd()
@@ -67,7 +67,7 @@ namespace SwagOverflow.WPF.Migrations
 
             modelBuilder.Entity("SwagOverFlow.ViewModels.SwagData", b =>
                 {
-                    b.HasBaseType("SwagOverflow.ViewModels.SwagItemBase");
+                    b.HasBaseType("SwagOverFlow.ViewModels.SwagItemBase");
 
                     b.Property<int?>("ParentId")
                         .HasColumnType("INTEGER");
@@ -77,9 +77,9 @@ namespace SwagOverflow.WPF.Migrations
                     b.HasDiscriminator().HasValue("SwagData");
                 });
 
-            modelBuilder.Entity("SwagOverflow.ViewModels.SwagSetting", b =>
+            modelBuilder.Entity("SwagOverFlow.ViewModels.SwagSetting", b =>
                 {
-                    b.HasBaseType("SwagOverflow.ViewModels.SwagItemBase");
+                    b.HasBaseType("SwagOverFlow.ViewModels.SwagItemBase");
 
                     b.Property<string>("IconString")
                         .HasColumnType("TEXT");
@@ -106,9 +106,9 @@ namespace SwagOverflow.WPF.Migrations
                     b.HasDiscriminator().HasValue("SwagSetting");
                 });
 
-            modelBuilder.Entity("SwagOverflow.WPF.ViewModels.SwagTabItem", b =>
+            modelBuilder.Entity("SwagOverFlow.WPF.ViewModels.SwagTabItem", b =>
                 {
-                    b.HasBaseType("SwagOverflow.ViewModels.SwagItemBase");
+                    b.HasBaseType("SwagOverFlow.ViewModels.SwagItemBase");
 
                     b.Property<string>("IconString")
                         .HasColumnName("SwagTabItem_IconString")
@@ -199,16 +199,16 @@ namespace SwagOverflow.WPF.Migrations
                     b.HasDiscriminator().HasValue("SwagDataRow");
                 });
 
-            modelBuilder.Entity("SwagOverflow.ViewModels.SwagSettingBoolean", b =>
+            modelBuilder.Entity("SwagOverFlow.ViewModels.SwagSettingBoolean", b =>
                 {
-                    b.HasBaseType("SwagOverflow.ViewModels.SwagSetting");
+                    b.HasBaseType("SwagOverFlow.ViewModels.SwagSetting");
 
                     b.HasDiscriminator().HasValue("SwagSettingBoolean");
                 });
 
-            modelBuilder.Entity("SwagOverflow.ViewModels.SwagSettingGroup", b =>
+            modelBuilder.Entity("SwagOverFlow.ViewModels.SwagSettingGroup", b =>
                 {
-                    b.HasBaseType("SwagOverflow.ViewModels.SwagSetting");
+                    b.HasBaseType("SwagOverFlow.ViewModels.SwagSetting");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
@@ -216,16 +216,16 @@ namespace SwagOverflow.WPF.Migrations
                     b.HasDiscriminator().HasValue("SwagSettingGroup");
                 });
 
-            modelBuilder.Entity("SwagOverflow.ViewModels.SwagSettingString", b =>
+            modelBuilder.Entity("SwagOverFlow.ViewModels.SwagSettingString", b =>
                 {
-                    b.HasBaseType("SwagOverflow.ViewModels.SwagSetting");
+                    b.HasBaseType("SwagOverFlow.ViewModels.SwagSetting");
 
                     b.HasDiscriminator().HasValue("SwagSettingString");
                 });
 
-            modelBuilder.Entity("SwagOverflow.WPF.ViewModels.SwagTabCollection", b =>
+            modelBuilder.Entity("SwagOverFlow.WPF.ViewModels.SwagTabCollection", b =>
                 {
-                    b.HasBaseType("SwagOverflow.WPF.ViewModels.SwagTabItem");
+                    b.HasBaseType("SwagOverFlow.WPF.ViewModels.SwagTabItem");
 
                     b.Property<bool>("IsInitialized")
                         .HasColumnType("INTEGER");
@@ -239,7 +239,7 @@ namespace SwagOverflow.WPF.Migrations
                     b.HasDiscriminator().HasValue("SwagTabCollection");
                 });
 
-            modelBuilder.Entity("SwagOverflow.WPF.ViewModels.SwagDataTable", b =>
+            modelBuilder.Entity("SwagOverFlow.WPF.ViewModels.SwagDataTable", b =>
                 {
                     b.HasBaseType("SwagOverFlow.ViewModels.SwagDataGroup");
 
@@ -259,16 +259,16 @@ namespace SwagOverflow.WPF.Migrations
                     b.HasDiscriminator().HasValue("SwagDataTable");
                 });
 
-            modelBuilder.Entity("SwagOverflow.WPF.ViewModels.SwagSettingWPFGroup", b =>
+            modelBuilder.Entity("SwagOverFlow.WPF.ViewModels.SwagSettingWPFGroup", b =>
                 {
-                    b.HasBaseType("SwagOverflow.ViewModels.SwagSettingGroup");
+                    b.HasBaseType("SwagOverFlow.ViewModels.SwagSettingGroup");
 
                     b.HasDiscriminator().HasValue("SwagSettingWPFGroup");
                 });
 
-            modelBuilder.Entity("SwagOverflow.WPF.ViewModels.SwagWindowSettingGroup", b =>
+            modelBuilder.Entity("SwagOverFlow.WPF.ViewModels.SwagWindowSettingGroup", b =>
                 {
-                    b.HasBaseType("SwagOverflow.WPF.ViewModels.SwagSettingWPFGroup");
+                    b.HasBaseType("SwagOverFlow.WPF.ViewModels.SwagSettingWPFGroup");
 
                     b.HasDiscriminator().HasValue("SwagWindowSettingGroup");
                 });
@@ -280,17 +280,17 @@ namespace SwagOverflow.WPF.Migrations
                         .HasForeignKey("ParentId");
                 });
 
-            modelBuilder.Entity("SwagOverflow.ViewModels.SwagSetting", b =>
+            modelBuilder.Entity("SwagOverFlow.ViewModels.SwagSetting", b =>
                 {
-                    b.HasOne("SwagOverflow.ViewModels.SwagSettingGroup", "Parent")
+                    b.HasOne("SwagOverFlow.ViewModels.SwagSettingGroup", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.NoAction);
                 });
 
-            modelBuilder.Entity("SwagOverflow.WPF.ViewModels.SwagTabItem", b =>
+            modelBuilder.Entity("SwagOverFlow.WPF.ViewModels.SwagTabItem", b =>
                 {
-                    b.HasOne("SwagOverflow.WPF.ViewModels.SwagTabCollection", "Parent")
+                    b.HasOne("SwagOverFlow.WPF.ViewModels.SwagTabCollection", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId");
                 });

@@ -4,13 +4,13 @@ using System.Windows;
 using ControlzEx.Theming;
 using MahApps.Metro;
 using MahApps.Metro.IconPacks;
-using SwagOverflow.ViewModels;
-using SwagOverflow.WPF.Controls;
-using SwagOverflow.WPF.Data;
-using SwagOverflow.WPF.Repository;
-using SwagOverflow.WPF.UI;
+using SwagOverFlow.ViewModels;
+using SwagOverFlow.WPF.Controls;
+using SwagOverFlow.WPF.Data;
+using SwagOverFlow.WPF.Repository;
+using SwagOverFlow.WPF.UI;
 
-namespace SwagOverflow.WPF.ViewModels
+namespace SwagOverFlow.WPF.ViewModels
 {
     public class SwagWindowSettingGroup : SwagSettingWPFGroup
     {

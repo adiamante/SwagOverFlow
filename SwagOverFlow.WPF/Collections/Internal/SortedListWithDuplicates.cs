@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SwagOverflow.WPF.Collections {
+namespace SwagOverFlow.WPF.Collections {
   public class SortedListWithDuplicates<T> : IList<T> {
     private IList<T> _list;
     private BinarySorter<T> _sorter;

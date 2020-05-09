@@ -1,15 +1,15 @@
 ﻿using Newtonsoft.Json.Linq;
-using SwagOverflow.Iterator;
-using SwagOverflow.WPF.Data;
-using SwagOverflow.WPF.Repository;
-using SwagOverflow.WPF.ViewModels;
+using SwagOverFlow.Iterator;
+using SwagOverFlow.WPF.Data;
+using SwagOverFlow.WPF.Repository;
+using SwagOverFlow.WPF.ViewModels;
 using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace SwagOverflow.WPF.Services
+namespace SwagOverFlow.WPF.Services
 {
     public class SwagDataTableService
     {

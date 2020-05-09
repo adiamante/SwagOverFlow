@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace SwagOverflow.WPF.Migrations
+namespace SwagOverFlow.WPF.Migrations
 {
     public partial class M3 : Migration
     {

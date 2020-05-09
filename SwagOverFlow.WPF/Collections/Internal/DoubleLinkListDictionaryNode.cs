@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SwagOverflow.WPF.Collections {
+namespace SwagOverFlow.WPF.Collections {
   public class DoubleLinkListDictionaryNode<TKey,TValue> {
     public DoubleLinkListDictionaryNode<TKey, TValue> Next;
     public DoubleLinkListDictionaryNode<TKey, TValue> Previous;

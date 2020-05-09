@@ -1,8 +1,8 @@
-﻿using SwagOverflow.ViewModels;
-using SwagOverflow.WPF.UI;
+﻿using SwagOverFlow.ViewModels;
+using SwagOverFlow.WPF.UI;
 using System.Windows;
 
-namespace SwagOverflow.WPF.Controls
+namespace SwagOverFlow.WPF.Controls
 {
     /// <summary>
     /// Interaction logic for WindowSettings.xaml

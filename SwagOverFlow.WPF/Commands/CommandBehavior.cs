@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 
-namespace SwagOverflow.WPF.Commands
+namespace SwagOverFlow.WPF.Commands
 {
     /// <summary>
     /// Defines the attached properties to create a CommandBehaviorBinding

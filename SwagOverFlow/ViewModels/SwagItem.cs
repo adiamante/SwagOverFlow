@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json;
 using SwagOverFlow.Utils;
-using SwagOverflow.Iterator;
+using SwagOverFlow.Iterator;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SwagOverflow.ViewModels
+namespace SwagOverFlow.ViewModels
 {
     #region Interfaces
     public interface ISwagChild<TChild> where TChild : class, ISwagChild<TChild>

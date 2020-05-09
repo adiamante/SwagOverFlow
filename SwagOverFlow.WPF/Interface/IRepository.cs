@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwagOverflow.WPF.Interface
+namespace SwagOverFlow.WPF.Interface
 {
     //https://codewithshadman.com/repository-pattern-csharp/
     //https://www.youtube.com/watch?v=rtXpYpZdOzM&feature=youtu.be

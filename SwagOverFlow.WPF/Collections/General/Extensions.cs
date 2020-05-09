@@ -17,7 +17,7 @@ using System.Text;
 
 
 
-namespace SwagOverflow.WPF.Collections
+namespace SwagOverFlow.WPF.Collections
 {
   /// <summary>
   ///     Contains general purpose extention methods.

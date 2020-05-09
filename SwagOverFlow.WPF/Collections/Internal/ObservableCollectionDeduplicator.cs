@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwagOverflow.WPF.Collections {
+namespace SwagOverFlow.WPF.Collections {
   
   /// <summary>
   /// This class has 2 ObservableCollection objects. One (source) holds arbitrary objects, the second holds

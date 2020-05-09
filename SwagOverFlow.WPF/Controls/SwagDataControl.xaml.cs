@@ -2,8 +2,8 @@
 using Microsoft.WindowsAPICodePack.Shell;
 using SwagOverFlow.Data;
 using SwagOverFlow.Utils;
-using SwagOverflow.WPF.UI;
-using SwagOverflow.WPF.ViewModels;
+using SwagOverFlow.WPF.UI;
+using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -12,10 +12,10 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using SwagOverflow.ViewModels;
+using SwagOverFlow.ViewModels;
 using SwagOverFlow.ViewModels;
 
-namespace SwagOverflow.WPF.Controls
+namespace SwagOverFlow.WPF.Controls
 {
     /// <summary>
     /// Interaction logic for SwagDataControl.xaml
