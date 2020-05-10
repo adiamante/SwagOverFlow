@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
+using SwagOverFlow.Iterator;
 
 namespace SwagOverFlow.ViewModels
 {
@@ -576,6 +577,11 @@ namespace SwagOverFlow.ViewModels
         #endregion Properties
 
         #region Methods
+        public SwagItemPreOrderIterator<SwagData> CreateIterator()
+        {
+            return new SwagItemPreOrderIterator<SwagData>(this);
+        }
+
         public override SwagDataResult Search(String searchValue, FilterMode filterMode, Func<SwagDataColumn, SwagDataRow, String, FilterMode, bool> searchFunc)
         {
             List<SwagDataColumnResultGroup> lstColumnResults = new List<SwagDataColumnResultGroup>();
