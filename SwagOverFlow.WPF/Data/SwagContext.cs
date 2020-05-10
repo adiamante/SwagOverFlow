@@ -6,14 +6,12 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using SwagOverFlow.ViewModels;
 using SwagOverFlow.Utils;
-using SwagOverFlow.WPF.Collections;
 using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Reflection;
-using SwagOverFlow.ViewModels;
 using Microsoft.Extensions.Logging;
 
 namespace SwagOverFlow.WPF.Data
@@ -24,10 +22,8 @@ namespace SwagOverFlow.WPF.Data
         public DbSet<SwagItemBase> SwagItems { get; set; }
         public DbSet<SwagSetting> SwagSettings { get; set; }
         public DbSet<SwagSettingGroup> SwagSettingGroups { get; set; }
-        public DbSet<SwagSettingWPFGroup> SwagSettingWPFGroups { get; set; }
         public DbSet<SwagSettingString> SwagSettingStrings { get; set; }
         public DbSet<SwagSettingBoolean> SwagSettingBooleans { get; set; }
-        public DbSet<SwagWindowSettingGroup> SwagWindowSettingGroups { get; set; }
         public DbSet<SwagData> SwagData { get; set; }
         public DbSet<SwagDataGroup> SwagDataGroups { get; set; }
         public DbSet<SwagDataTable> SwagDataTables { get; set; }

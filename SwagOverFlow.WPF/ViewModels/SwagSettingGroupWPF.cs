@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SwagOverFlow.Iterator;
+using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.ObjectModel;
@@ -33,6 +34,20 @@ namespace SwagOverFlow.WPF.ViewModels
             _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
             _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
             _children.CollectionChanged += _children_CollectionChanged;
+        }
+
+        public SwagSettingWPFGroup(SwagSettingGroup swagSettingGroup) : this()
+        {
+            PropertyCopy.Copy(swagSettingGroup, this);
+            foreach (SwagSetting child in Children)
+            {
+                if (!_dict.ContainsKey(child.Key))
+                {
+                    _dict.Add(child.Key, child);
+                }
+            }
+            _childrenCollectionViewSource.Source = _children;
+            _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
         }
 
         private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

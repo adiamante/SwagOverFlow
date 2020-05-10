@@ -7,7 +7,6 @@ namespace SwagOverFlow.WPF.Repository
     {
         private readonly SwagContext _context;
 
-        public ISwagWindowSettingGroupRepository WindowSettingGroups { get; private set; }
         public ISwagSettingGroupRepository SettingGroups { get; private set; }
         public ISwagSettingRepository Settings { get; private set; }
 
@@ -16,7 +15,6 @@ namespace SwagOverFlow.WPF.Repository
             _context = context;
             SettingGroups = new SwagSettingGroupRepository(_context);
             Settings = new SwagSettingRepository(_context);
-            WindowSettingGroups = new SwagWindowSettingGroupRepository(_context);
         }
 
         public int Complete()

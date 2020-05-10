@@ -1,23 +1,58 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Windows;
+using System.Windows.Data;
 using ControlzEx.Theming;
-using MahApps.Metro;
 using MahApps.Metro.IconPacks;
+using Newtonsoft.Json;
+using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
-using SwagOverFlow.WPF.Controls;
 using SwagOverFlow.WPF.Data;
 using SwagOverFlow.WPF.Repository;
-using SwagOverFlow.WPF.UI;
 
 namespace SwagOverFlow.WPF.ViewModels
 {
-    public class SwagWindowSettingGroup : SwagSettingWPFGroup
+    public class SwagWindowSettingGroup : SwagSettingGroup
     {
+        #region Private/Protected Members
         SwagContext _context;
+        CollectionViewSource _childrenCollectionViewSource;
+        #endregion Private/Protected Members
+
+        #region Properties
+        #region ChildrenView
+        [JsonIgnore]
+        [NotMapped]
+        public ICollectionView ChildrenView
+        {
+            get { return _childrenCollectionViewSource.View; }
+        }
+        #endregion ChildrenView
+        #endregion Properties
+
+        #region Initialization
         public SwagWindowSettingGroup() : base()
         {
-            
+            _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
+            _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
+            _children.CollectionChanged += _children_CollectionChanged;
+        }
+
+        public SwagWindowSettingGroup(SwagSettingGroup swagSettingGroup) : this()
+        {
+            PropertyCopy.Copy(swagSettingGroup, this);
+            foreach (SwagSetting child in Children)
+            {
+                if (!_dict.ContainsKey(child.Key))
+                {
+                    _dict.Add(child.Key, child);
+                }
+            }
+
+            _childrenCollectionViewSource.Source = _children;
+            _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
         }
 
         public SwagWindowSettingGroup(Boolean doInit) : this()
@@ -47,6 +82,13 @@ namespace SwagOverFlow.WPF.ViewModels
             SwagItemChanged += SwagWindowSettingGroup_SwagItemChanged;
         }
 
+        private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            _childrenCollectionViewSource.View.Refresh();
+        }
+        #endregion Initialization
+
+        #region Methods
         public void SetContext(SwagContext context)
         {
             _context = context;
@@ -117,6 +159,7 @@ namespace SwagOverFlow.WPF.ViewModels
                 #endregion OLD - Theme switching is now handled in SwagControlBase.cs
             }
         }
+        #endregion Methods
     }
 
 }

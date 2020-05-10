@@ -63,22 +63,17 @@ namespace SwagOverFlow.Iterator
                     tempCurrent = _current;
                     tempParent = _current.Parent;
 
-                    ISwagParent<TChild> tempComposite = tempCurrent as ISwagParent<TChild>;
-
-                    if (tempComposite == null) //leaf node
+                    do
                     {
-                        do
-                        {
-                            //Evaluate if next next Sibling is the last one
-                            nextNextSibling = tempParent.Children.OrderBy(c => c.Sequence).Where(c => c.Sequence > tempCurrent.Sequence).FirstOrDefault();
-                            tempCurrent = tempParent as TChild;           //currentNode is now the parent
-                            tempParent = tempParent.Parent;     //currenISwagParent<TChild> is now the grandParent
-                        } while (nextNextSibling == null && tempCurrent != null && tempParent != null);
+                        //Evaluate if next next Sibling is the last one
+                        nextNextSibling = tempParent.Children.OrderBy(c => c.Sequence).Where(c => c.Sequence > tempCurrent.Sequence).FirstOrDefault();
+                        tempCurrent = tempParent as TChild;           //currentNode is now the parent
+                        tempParent = tempParent.Parent;     //currenISwagParent<TChild> is now the grandParent
+                    } while (nextNextSibling == null && tempCurrent != null && tempParent != null);
 
-                        if (nextNextSibling == null)
-                        {
-                            _isSecondToLast = true;
-                        }
+                    if (nextNextSibling == null)
+                    {
+                        _isSecondToLast = true;
                     }
                 }
                 else if (_isSecondToLast == true)

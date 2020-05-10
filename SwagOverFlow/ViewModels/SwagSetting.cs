@@ -208,7 +208,7 @@ namespace SwagOverFlow.ViewModels
         #region Private/Protected Members
         String _name;
         protected ObservableCollection<SwagSetting> _children = new ObservableCollection<SwagSetting>();
-        Dictionary<String, SwagSetting> _dict = new Dictionary<string, SwagSetting>();
+        protected Dictionary<String, SwagSetting> _dict = new Dictionary<string, SwagSetting>();
         #endregion Private/Protected Members
 
         #region Events
@@ -283,9 +283,9 @@ namespace SwagOverFlow.ViewModels
                 foreach (SwagSetting newItem in e.NewItems)
                 {
                     newItem.Parent = this;
-                    if (newItem.Sequence <= 0)
+                    if (newItem.Sequence < 0)
                     {
-                        newItem.Sequence = this.Children.Count;
+                        newItem.Sequence = this.Children.Count - 1;
                     }
                     if (_dict.ContainsKey(newItem.Key))
                     {
