@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Controls;
 using SwagOverFlow.ViewModels;
 using SwagOverFlow.ViewModels;
+using System.ComponentModel;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -77,9 +78,16 @@ namespace SwagOverFlow.WPF.Controls
 
         public void Initialize()
         {
+            #region Prevents Designer Error
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            {
+                return;
+            }
+            #endregion Prevents Designer Error
+
             if (!((SwagSettingGroup)SwagWindow.GlobalSettings).ContainsKey("SwagData"))
             {
-                SwagSettingGroup swagDataSetting = new SwagSettingGroup() { Icon = PackIconCustomKind.Dataset };
+                SwagSettingWPFGroup swagDataSetting = new SwagSettingWPFGroup() { Icon = PackIconCustomKind.Dataset };
                 SwagWindow.GlobalSettings["SwagData"] = swagDataSetting;
                 swagDataSetting.IconString = swagDataSetting.IconString;
                 swagDataSetting.IconTypeString = swagDataSetting.IconTypeString;

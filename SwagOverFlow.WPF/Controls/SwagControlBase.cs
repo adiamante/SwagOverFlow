@@ -40,7 +40,14 @@ namespace SwagOverFlow.WPF.Controls
 
         private void SwagControlBase_Loaded(object sender, RoutedEventArgs e)
         {
-            SwagWindow.GlobalSettings["Window"]["Theme"]["Base"].PropertyChanged += SwagWindowThemPropertyChanged; ;
+            #region Prevents Designer Error
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            {
+                return;
+            }
+            #endregion Prevents Designer Error
+
+            SwagWindow.GlobalSettings["Window"]["Theme"]["Base"].PropertyChanged += SwagWindowThemPropertyChanged;
             SwagWindow.GlobalSettings["Window"]["Theme"]["Accent"].PropertyChanged += SwagWindowThemPropertyChanged;
             ApplyTheme();
         }
