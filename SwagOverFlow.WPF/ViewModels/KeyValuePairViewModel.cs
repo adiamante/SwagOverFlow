@@ -51,6 +51,7 @@ namespace SwagOverFlow.WPF.ViewModels
         {
             _key = key;
             _value = value;
+            Init();
         }
         #endregion Initialization
 

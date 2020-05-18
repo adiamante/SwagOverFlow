@@ -25,7 +25,7 @@
                     <x:Type Type="{x:Type vm:ParseStrategy}" />
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
-            <ui:SwagTemplate x:Key="ParseMapperHeaderTemplate">
+            <ui:SwagTemplate x:Key="NonHierarchyHeaderTemplate">
                 <ui:SwagTemplate.DataTemplate>
                     <DataTemplate>
                         <TextBlock VerticalAlignment="Center" Text="{Binding Display}" />
@@ -129,7 +129,7 @@
                                         </local:IconControl.ContextMenu>
                                     </local:IconControl>
                                 </GroupBox.Header>
-                                <local:SwagItemsControl SwagItemsSource="{Binding ObjValue}" CustomDefaultItemTemplate="{StaticResource ParseMapperHeaderTemplate}">
+                                <local:SwagItemsControl SwagItemsSource="{Binding ObjValue}" CustomDefaultItemTemplate="{StaticResource NonHierarchyHeaderTemplate}">
                                     <local:SwagItemsControl.ItemTemplates>
                                         <ui:SwagTemplateCollection>
                                             <ui:SwagTemplate>
@@ -178,6 +178,69 @@
                                                                 <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding Value.Value.FieldDelim, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" AcceptsReturn="True" AcceptsTab="True" />
                                                             </Grid>
                                                         </Expander>
+                                                    </DataTemplate>
+                                                </ui:SwagTemplate.DataTemplate>
+                                            </ui:SwagTemplate>
+                                        </ui:SwagTemplateCollection>
+                                    </local:SwagItemsControl.ItemTemplates>
+                                </local:SwagItemsControl>
+                            </GroupBox>
+                        </DataTemplate>
+                    </ui:SwagTemplate.DataTemplate>
+                </ui:SwagTemplate>
+                <ui:SwagTemplate TypePath="ValueType">
+                    <ui:SwagTemplate.Type>
+                        <ui:GenericType BaseTypeName="vm:SwagItemGroupWPF">
+                            <ui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
+                                <x:Type TypeName="sys:String"/>
+                                <x:Type TypeName="sys:String"/>
+                            </ui:GenericType>
+                        </ui:GenericType>
+                    </ui:SwagTemplate.Type>
+                    <ui:SwagTemplate.DataTemplate>
+                        <DataTemplate>
+                            <GroupBox>
+                                <GroupBox.Header>
+                                    <local:IconControl Text="{Binding Display}" Kind="{Binding Icon}">
+                                        <local:IconControl.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Add" Command="{Binding ObjValue.AddDefaultCommand}">
+                                                    <MenuItem.Icon>
+                                                        <local:IconControl Kind="{x:Static ui:PackIconCustomKind.Plus}" />
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                            </ContextMenu>
+                                        </local:IconControl.ContextMenu>
+                                    </local:IconControl>
+                                </GroupBox.Header>
+                                <local:SwagItemsControl SwagItemsSource="{Binding ObjValue}" CustomDefaultItemTemplate="{StaticResource NonHierarchyHeaderTemplate}">
+                                    <local:SwagItemsControl.ItemTemplates>
+                                        <ui:SwagTemplateCollection>
+                                            <ui:SwagTemplate>
+                                                <ui:SwagTemplate.Type>
+                                                    <ui:GenericType BaseTypeName="swagvm:SwagItem">
+                                                        <ui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
+                                                            <x:Type TypeName="sys:String"/>
+                                                            <x:Type TypeName="sys:String"/>
+                                                        </ui:GenericType>
+                                                    </ui:GenericType>
+                                                </ui:SwagTemplate.Type>
+                                                <ui:SwagTemplate.DataTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto" />
+                                                                <RowDefinition Height="Auto" />
+                                                            </Grid.RowDefinitions>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <local:IconControl Grid.Row="0" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
+                                                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Value.Key, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                                            <local:IconControl Grid.Row="1" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaX}" />
+                                                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Value.Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                                        </Grid>
                                                     </DataTemplate>
                                                 </ui:SwagTemplate.DataTemplate>
                                             </ui:SwagTemplate>

@@ -140,10 +140,10 @@ namespace SwagOverFlow.WPF.Controls
                 InputBindings.Add(new KeyBinding() { Modifiers = ModifierKeys.Control, Key = Key.Z, Command = CommandManager.UndoCommand });
                 InputBindings.Add(new KeyBinding() { Modifiers = ModifierKeys.Control, Key = Key.Y, Command = CommandManager.RedoCommand });
 
-                //SwagLogger.SwagSinkEvent += (sse) =>
-                //{
-                //    Settings["Window"]["Status"]["Message"].SetValue(sse.Message);
-                //};
+                SwagLogger.SwagSinkEvent += (sse) =>
+                {
+                    Settings["Window"]["Status"]["Message"].SetValue(sse.Message);
+                };
             }
         }
         #endregion Initialization

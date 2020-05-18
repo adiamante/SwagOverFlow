@@ -15,6 +15,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dreamporter", "Dreamporter\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dreamporter.WPF", "Dreamporter.WPF\Dreamporter.WPF.csproj", "{FAFF981B-F60B-4AAC-B97D-9FDC0216F230}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{C236765B-244D-4925-8D1B-519151CBB459}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwagOverFlow.Test.MessageTemplate.WPF", "SwagOverFlow.Test.MessageTemplate.WPF\SwagOverFlow.Test.MessageTemplate.WPF.csproj", "{EE2A3BD2-88EF-4337-86B7-837FA3333923}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,9 +49,16 @@ Global
 		{FAFF981B-F60B-4AAC-B97D-9FDC0216F230}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAFF981B-F60B-4AAC-B97D-9FDC0216F230}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAFF981B-F60B-4AAC-B97D-9FDC0216F230}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE2A3BD2-88EF-4337-86B7-837FA3333923}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE2A3BD2-88EF-4337-86B7-837FA3333923}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE2A3BD2-88EF-4337-86B7-837FA3333923}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE2A3BD2-88EF-4337-86B7-837FA3333923}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EE2A3BD2-88EF-4337-86B7-837FA3333923} = {C236765B-244D-4925-8D1B-519151CBB459}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4D3F37F2-4FFF-48B5-87CA-031B47251ED1}
