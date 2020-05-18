@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SwagOverFlow.WPF.Interface
+namespace SwagOverFlow.Data.Persistence
 {
     //https://codewithshadman.com/repository-pattern-csharp/
     //https://www.youtube.com/watch?v=rtXpYpZdOzM&feature=youtu.be

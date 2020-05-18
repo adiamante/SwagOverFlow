@@ -1,9 +1,7 @@
-﻿using SwagOverFlow.ViewModels;
-using SwagOverFlow.WPF.Data;
-using SwagOverFlow.WPF.Interface;
-using System;
+﻿using System;
+using SwagOverFlow.ViewModels;
 
-namespace SwagOverFlow.WPF.Repository
+namespace SwagOverFlow.Data.Persistence
 {
     public class SwagSettingRepository : SwagEFRepository<SwagSetting>, ISwagSettingRepository
     {

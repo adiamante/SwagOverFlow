@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SwagOverFlow.WPF.Data;
+using SwagOverFlow.Data.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Text;

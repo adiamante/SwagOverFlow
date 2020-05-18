@@ -6,112 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20200302160055_M0.cs" />
-    <Compile Remove="Migrations\20200302160055_M0.Designer.cs" />
-    <Compile Remove="Migrations\20200305204253_M1.cs" />
-    <Compile Remove="Migrations\20200305204253_M1.Designer.cs" />
-    <Compile Remove="Migrations\20200305214911_M2.cs" />
-    <Compile Remove="Migrations\20200305214911_M2.Designer.cs" />
-    <Compile Remove="Migrations\20200306004302_M3.cs" />
-    <Compile Remove="Migrations\20200306004302_M3.Designer.cs" />
-    <Compile Remove="Migrations\20200306004850_M4.cs" />
-    <Compile Remove="Migrations\20200306004850_M4.Designer.cs" />
-    <Compile Remove="Migrations\20200306005055_M5.cs" />
-    <Compile Remove="Migrations\20200306005055_M5.Designer.cs" />
-    <Compile Remove="Migrations\20200306005441_M6.cs" />
-    <Compile Remove="Migrations\20200306005441_M6.Designer.cs" />
-    <Compile Remove="Migrations\20200306005933_M0.cs" />
-    <Compile Remove="Migrations\20200306005933_M0.Designer.cs" />
-    <Compile Remove="Migrations\20200306012016_M0.cs" />
-    <Compile Remove="Migrations\20200306012016_M0.Designer.cs" />
-    <Compile Remove="Migrations\20200306013633_M1.cs" />
-    <Compile Remove="Migrations\20200306013633_M1.Designer.cs" />
-    <Compile Remove="Migrations\20200306015757_M2.cs" />
-    <Compile Remove="Migrations\20200306015757_M2.Designer.cs" />
-    <Compile Remove="Migrations\20200306021031_M3.cs" />
-    <Compile Remove="Migrations\20200306021031_M3.Designer.cs" />
-    <Compile Remove="Migrations\20200306021227_M4.cs" />
-    <Compile Remove="Migrations\20200306021227_M4.Designer.cs" />
-    <Compile Remove="Migrations\20200306021408_M5.cs" />
-    <Compile Remove="Migrations\20200306021408_M5.Designer.cs" />
-    <Compile Remove="Migrations\20200306023656_M6.cs" />
-    <Compile Remove="Migrations\20200306023656_M6.Designer.cs" />
-    <Compile Remove="Migrations\20200306024254_M7.cs" />
-    <Compile Remove="Migrations\20200306024254_M7.Designer.cs" />
-    <Compile Remove="Migrations\20200306145006_m0.cs" />
-    <Compile Remove="Migrations\20200306145006_m0.Designer.cs" />
-    <Compile Remove="Migrations\20200306213508_m1.cs" />
-    <Compile Remove="Migrations\20200306213508_m1.Designer.cs" />
-    <Compile Remove="Migrations\20200306215600_m2.cs" />
-    <Compile Remove="Migrations\20200306215600_m2.Designer.cs" />
-    <Compile Remove="Migrations\20200306215658_m2.cs" />
-    <Compile Remove="Migrations\20200306215658_m2.Designer.cs" />
-    <Compile Remove="Migrations\20200306223254_m3.cs" />
-    <Compile Remove="Migrations\20200306223254_m3.Designer.cs" />
-    <Compile Remove="Migrations\20200306223914_m3.cs" />
-    <Compile Remove="Migrations\20200306223914_m3.Designer.cs" />
-    <Compile Remove="Migrations\20200306224344_M0.cs" />
-    <Compile Remove="Migrations\20200306224344_M0.Designer.cs" />
-    <Compile Remove="Migrations\20200306225048_M1.cs" />
-    <Compile Remove="Migrations\20200306225048_M1.Designer.cs" />
-    <Compile Remove="Migrations\20200306230004_M0.cs" />
-    <Compile Remove="Migrations\20200306230004_M0.Designer.cs" />
-    <Compile Remove="Migrations\20200306231032_M1.cs" />
-    <Compile Remove="Migrations\20200306231032_M1.Designer.cs" />
-    <Compile Remove="Migrations\20200306231225_M2.cs" />
-    <Compile Remove="Migrations\20200306231225_M2.Designer.cs" />
-    <Compile Remove="Migrations\20200306231801_M0.cs" />
-    <Compile Remove="Migrations\20200306231801_M0.Designer.cs" />
-    <Compile Remove="Migrations\20200306232557_M1.cs" />
-    <Compile Remove="Migrations\20200306232557_M1.Designer.cs" />
-    <Compile Remove="Migrations\20200306232858_M2.cs" />
-    <Compile Remove="Migrations\20200306232858_M2.Designer.cs" />
-    <Compile Remove="Migrations\20200306233156_M3.cs" />
-    <Compile Remove="Migrations\20200306233156_M3.Designer.cs" />
-    <Compile Remove="Migrations\20200306233742_M4.cs" />
-    <Compile Remove="Migrations\20200306233742_M4.Designer.cs" />
-    <Compile Remove="Migrations\20200307032829_M0.cs" />
-    <Compile Remove="Migrations\20200307032829_M0.Designer.cs" />
-    <Compile Remove="Migrations\20200307035120_M1.cs" />
-    <Compile Remove="Migrations\20200307035120_M1.Designer.cs" />
-    <Compile Remove="Migrations\20200308000131_M0.cs" />
-    <Compile Remove="Migrations\20200308000131_M0.Designer.cs" />
-    <Compile Remove="Migrations\20200308001502_M1.cs" />
-    <Compile Remove="Migrations\20200308001502_M1.Designer.cs" />
-    <Compile Remove="Migrations\20200308021317_M2.cs" />
-    <Compile Remove="Migrations\20200308021317_M2.Designer.cs" />
-    <Compile Remove="Migrations\20200308032000_M0.cs" />
-    <Compile Remove="Migrations\20200308032000_M0.Designer.cs" />
-    <Compile Remove="Migrations\20200308234218_M1.cs" />
-    <Compile Remove="Migrations\20200308234218_M1.Designer.cs" />
-    <Compile Remove="Migrations\20200318135535_M0.cs" />
-    <Compile Remove="Migrations\20200318135535_M0.Designer.cs" />
-    <Compile Remove="Migrations\20200318143315_M0.cs" />
-    <Compile Remove="Migrations\20200318143315_M0.Designer.cs" />
-    <Compile Remove="Migrations\20200318185428_M1.cs" />
-    <Compile Remove="Migrations\20200318185428_M1.Designer.cs" />
-    <Compile Remove="Migrations\20200318211007_M1.cs" />
-    <Compile Remove="Migrations\20200318211007_M1.Designer.cs" />
-    <Compile Remove="Migrations\20200329034128_M3.cs" />
-    <Compile Remove="Migrations\20200329034128_M3.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MahApps.Metro" Version="2.0.0-alpha0775" />
     <PackageReference Include="MahApps.Metro.IconPacks" Version="3.3.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0-preview.3.20215.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SwagOverFlow.Data\SwagOverFlow.Data.csproj" />
     <ProjectReference Include="..\SwagOverFlow\SwagOverFlow.csproj" />
   </ItemGroup>
 

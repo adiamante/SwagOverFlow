@@ -1,13 +1,11 @@
 ﻿using SwagOverFlow.Iterator;
 using SwagOverFlow.Logger;
-using SwagOverFlow.WPF.Data;
-using SwagOverFlow.WPF.Repository;
 using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Linq;
 using SwagOverFlow.ViewModels;
-using System.Windows.Documents;
 using System.Collections.Generic;
+using SwagOverFlow.Data.Persistence;
 
 namespace SwagOverFlow.WPF.Services
 {

@@ -1,19 +1,15 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SwagOverFlow.Iterator;
 using SwagOverFlow.ViewModels;
-using SwagOverFlow.Data;
+using SwagOverFlow.Data.Converters;
 using SwagOverFlow.Logger;
 using SwagOverFlow.Utils;
 using SwagOverFlow.WPF.Commands;
 using SwagOverFlow.WPF.Collections;
-using SwagOverFlow.WPF.Data;
-using SwagOverFlow.WPF.Repository;
 using SwagOverFlow.WPF.UI;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -26,8 +22,8 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xml;
-using SwagOverFlow.ViewModels;
 using SwagOverFlow.Collections;
+using SwagOverFlow.Data.Persistence;
 
 namespace SwagOverFlow.WPF.ViewModels
 {

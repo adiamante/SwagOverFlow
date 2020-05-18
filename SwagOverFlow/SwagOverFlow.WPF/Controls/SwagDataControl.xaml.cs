@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Controls;
 using SwagOverFlow.ViewModels;
 using System.ComponentModel;
+using SwagOverFlow.Data.Converters;
 
 namespace SwagOverFlow.WPF.Controls
 {

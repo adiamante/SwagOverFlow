@@ -1,8 +1,8 @@
 ﻿using SwagOverFlow.ViewModels;
 
-namespace SwagOverFlow.WPF.Interface
+namespace SwagOverFlow.Data.Persistence
 {
-    public interface ISwagSettingRepository : IRepository<SwagSetting>
+    public interface ISwagSettingGroupRepository : IRepository<SwagSettingGroup>
     {
         void RecursiveLoadChildren(SwagSetting swagSettingViewModel);
     }

@@ -1,7 +1,6 @@
-﻿using SwagOverFlow.WPF.Data;
-using SwagOverFlow.WPF.Interface;
+﻿
 
-namespace SwagOverFlow.WPF.Repository
+namespace SwagOverFlow.Data.Persistence
 {
     public class SwagDataTableUnitOfWork : ISwagDataTableUnitOfWork
     {

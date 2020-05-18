@@ -2,19 +2,15 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using SwagOverFlow.ViewModels;
 using SwagOverFlow.Utils;
-using SwagOverFlow.WPF.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 
-namespace SwagOverFlow.WPF.Data
+namespace SwagOverFlow.Data.Persistence
 {
     public class SwagContext : DbContext
     {
@@ -29,7 +25,6 @@ namespace SwagOverFlow.WPF.Data
         public DbSet<SwagDataTable> SwagDataTables { get; set; }
         public DbSet<SwagDataRow> SwagDataRows { get; set; }
         public DbSet<SwagDataColumn> SwagDataColumns { get; set; }
-        public DbSet<SwagTabItem> SwagTabItems { get; set; }
         public SwagContext() : base() { }
 
         public SwagContext(DbContextOptions<SwagContext> options) : base (options) { }
@@ -44,7 +39,6 @@ namespace SwagOverFlow.WPF.Data
             modelBuilder.ApplyConfiguration(new SwagDataGroupEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataTableEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataRowEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new SwagTabItemEntityConfiguration());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -223,114 +217,105 @@ namespace SwagOverFlow.WPF.Data
         }
     }
 
-    public class SwagTabItemEntityConfiguration : IEntityTypeConfiguration<SwagTabItem>
-    {
-        public void Configure(EntityTypeBuilder<SwagTabItem> builder)
-        {
-            //SwagSetting Icon => Ignore
-            builder.Ignore(ss => ss.Icon);
-        }
-    }
+    ////https://www.jerriepelser.com/blog/custom-converters-in-json-net-case-study-1/
+    //public class SwagDataTableConverter : JsonConverter
+    //{
+    //    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    //    {
+    //        throw new System.NotImplementedException();
+    //    }
 
-    //https://www.jerriepelser.com/blog/custom-converters-in-json-net-case-study-1/
-    public class SwagDataTableConverter : JsonConverter
-    {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            throw new System.NotImplementedException();
-        }
+    //    public override bool CanConvert(Type objectType)
+    //    {
+    //        return typeof(KeyValuePair<String, SwagDataColumn>[]).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
+    //    }
 
-        public override bool CanConvert(Type objectType)
-        {
-            return typeof(KeyValuePair<String, SwagDataColumn>[]).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
-        }
+    //    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    //    {
+    //        JObject jObject = JObject.Load(reader);
+    //        KeyValuePair<String, SwagDataColumn>[] pairs = new KeyValuePair<string, SwagDataColumn>[jObject.Count];
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            JObject jObject = JObject.Load(reader);
-            KeyValuePair<String, SwagDataColumn>[] pairs = new KeyValuePair<string, SwagDataColumn>[jObject.Count];
+    //        Int32 cIndex = 0;
+    //        foreach (KeyValuePair<String, JToken> kvp in jObject)
+    //        {
+    //            String key = kvp.Key;
+    //            JObject jColumn = (JObject)kvp.Value;
 
-            Int32 cIndex = 0;
-            foreach (KeyValuePair<String, JToken> kvp in jObject)
-            {
-                String key = kvp.Key;
-                JObject jColumn = (JObject)kvp.Value;
+    //            SwagDataColumn sdc = new SwagDataColumn();
 
-                SwagDataColumn sdc = new SwagDataColumn();
+    //            foreach (KeyValuePair<String, JToken> cProp in jColumn)
+    //            {
+    //                if (cProp.Value is JValue)
+    //                {
+    //                    JValue jVal = (JValue)cProp.Value;
+    //                    PropertyInfo propertyInfo = ReflectionHelper.PropertyInfoCollection[typeof(SwagDataColumn)][cProp.Key];
+    //                    if (propertyInfo.SetMethod != null)
+    //                    {
+    //                        TypeConverter converter = ReflectionHelper.TypeConverterCache[propertyInfo.PropertyType];
 
-                foreach (KeyValuePair<String, JToken> cProp in jColumn)
-                {
-                    if (cProp.Value is JValue)
-                    {
-                        JValue jVal = (JValue)cProp.Value;
-                        PropertyInfo propertyInfo = ReflectionHelper.PropertyInfoCollection[typeof(SwagDataColumn)][cProp.Key];
-                        if (propertyInfo.SetMethod != null)
-                        {
-                            TypeConverter converter = ReflectionHelper.TypeConverterCache[propertyInfo.PropertyType];
+    //                        if (jVal.Value != null && converter.CanConvertFrom(jVal.Value.GetType()))
+    //                        {
+    //                            propertyInfo.SetValue(sdc, converter.ConvertFrom(jVal.Value));
+    //                        }
+    //                        else if (jVal.Value != null && converter.CanConvertFrom(typeof(String))) //Try converting from string
+    //                        {
+    //                            propertyInfo.SetValue(sdc, converter.ConvertFrom(jVal.Value.ToString()));
+    //                        }
+    //                        else if (jVal.Value != null && propertyInfo.PropertyType == typeof(Type))
+    //                        {
+    //                            propertyInfo.SetValue(sdc, Type.GetType(jVal.Value.ToString()));
+    //                        }
+    //                        else
+    //                        {
+    //                            propertyInfo.SetValue(sdc, jVal.Value);
+    //                        }
+    //                    }
+    //                }
 
-                            if (jVal.Value != null && converter.CanConvertFrom(jVal.Value.GetType()))
-                            {
-                                propertyInfo.SetValue(sdc, converter.ConvertFrom(jVal.Value));
-                            }
-                            else if (jVal.Value != null && converter.CanConvertFrom(typeof(String))) //Try converting from string
-                            {
-                                propertyInfo.SetValue(sdc, converter.ConvertFrom(jVal.Value.ToString()));
-                            }
-                            else if (jVal.Value != null && propertyInfo.PropertyType == typeof(Type))
-                            {
-                                propertyInfo.SetValue(sdc, Type.GetType(jVal.Value.ToString()));
-                            }
-                            else
-                            {
-                                propertyInfo.SetValue(sdc, jVal.Value);
-                            }
-                        }
-                    }
+    //                //if (cProp.Value is JObject && cProp.Key == "Binding")
+    //                //{
+    //                //    JObject jBinding = (JObject)cProp.Value;
+    //                //    System.Windows.Data.Binding binding = new System.Windows.Data.Binding();
 
-                    if (cProp.Value is JObject && cProp.Key == "Binding")
-                    {
-                        JObject jBinding = (JObject)cProp.Value;
-                        System.Windows.Data.Binding binding = new System.Windows.Data.Binding();
+    //                //    foreach (KeyValuePair<String, JToken> bProp in jBinding)
+    //                //    {
+    //                //        JValue jVal = (JValue)bProp.Value;
+    //                //        Object val = jVal.Value;
 
-                        foreach (KeyValuePair<String, JToken> bProp in jBinding)
-                        {
-                            JValue jVal = (JValue)bProp.Value;
-                            Object val = jVal.Value;
+    //                //        if (val != null)
+    //                //        {
+    //                //            switch (bProp.Key)
+    //                //            {
+    //                //                case "Path":
+    //                //                    val = new System.Windows.PropertyPath(jVal.Value.ToString());
+    //                //                    break;
+    //                //                case "Mode":
+    //                //                    val = (System.Windows.Data.BindingMode)Convert.ToInt32(jVal.Value);
+    //                //                    break;
+    //                //                case "UpdateSourceTrigger":
+    //                //                    val = (System.Windows.Data.UpdateSourceTrigger)Convert.ToInt32(jVal.Value);
+    //                //                    break;
+    //                //                case "Delay":
+    //                //                    val = Convert.ToInt32(jVal.Value);
+    //                //                    break;
+    //                //            }
 
-                            if (val != null)
-                            {
-                                switch (bProp.Key)
-                                {
-                                    case "Path":
-                                        val = new System.Windows.PropertyPath(jVal.Value.ToString());
-                                        break;
-                                    case "Mode":
-                                        val = (System.Windows.Data.BindingMode)Convert.ToInt32(jVal.Value);
-                                        break;
-                                    case "UpdateSourceTrigger":
-                                        val = (System.Windows.Data.UpdateSourceTrigger)Convert.ToInt32(jVal.Value);
-                                        break;
-                                    case "Delay":
-                                        val = Convert.ToInt32(jVal.Value);
-                                        break;
-                                }
+    //                //            ReflectionHelper.PropertyInfoCollection[typeof(System.Windows.Data.Binding)][bProp.Key].SetValue(binding, val);
+    //                //        }
+    //                //    }
 
-                                ReflectionHelper.PropertyInfoCollection[typeof(System.Windows.Data.Binding)][bProp.Key].SetValue(binding, val);
-                            }
-                        }
+    //                    //TODO: FIX
+    //                    //sdc.Binding = binding;
+    //                }
+    //            }
 
-                        //TODO: FIX
-                        //sdc.Binding = binding;
-                    }
-                }
+    //            pairs[cIndex] = new KeyValuePair<string, SwagDataColumn>(key, sdc);
+    //            cIndex++;
+    //        }
 
-                pairs[cIndex] = new KeyValuePair<string, SwagDataColumn>(key, sdc);
-                cIndex++;
-            }
-
-            return pairs;
-        }
-    }
+    //        return pairs;
+    //    }
+    //}
 
     public class ShouldSerializeContractResolver : DefaultContractResolver
     {

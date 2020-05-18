@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json.Linq;
 using SwagOverFlow.Iterator;
-using SwagOverFlow.WPF.Data;
-using SwagOverFlow.WPF.Repository;
 using SwagOverFlow.WPF.ViewModels;
 using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using SwagOverFlow.Data.Persistence;
 
 namespace SwagOverFlow.WPF.Services
 {

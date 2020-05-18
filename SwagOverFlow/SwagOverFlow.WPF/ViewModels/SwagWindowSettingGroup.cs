@@ -7,10 +7,9 @@ using System.Windows.Data;
 using ControlzEx.Theming;
 using MahApps.Metro.IconPacks;
 using Newtonsoft.Json;
+using SwagOverFlow.Data.Persistence;
 using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
-using SwagOverFlow.WPF.Data;
-using SwagOverFlow.WPF.Repository;
 
 namespace SwagOverFlow.WPF.ViewModels
 {

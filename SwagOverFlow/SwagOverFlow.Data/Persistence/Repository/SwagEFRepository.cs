@@ -1,12 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SwagOverFlow.WPF.Data;
-using SwagOverFlow.WPF.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace SwagOverFlow.WPF.Repository
+namespace SwagOverFlow.Data.Persistence
 {
     //https://codewithshadman.com/repository-pattern-csharp/
     public class SwagEFRepository<TEntity> : IRepository<TEntity> where TEntity : class

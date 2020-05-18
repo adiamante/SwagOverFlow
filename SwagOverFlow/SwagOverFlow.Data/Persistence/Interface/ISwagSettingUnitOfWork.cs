@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SwagOverFlow.WPF.Interface
+namespace SwagOverFlow.Data.Persistence
 {
     public interface ISwagSettingUnitOfWork : IDisposable
     {

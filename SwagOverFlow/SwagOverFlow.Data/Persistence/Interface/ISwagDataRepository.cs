@@ -1,6 +1,6 @@
 ﻿using SwagOverFlow.ViewModels;
 
-namespace SwagOverFlow.WPF.Interface
+namespace SwagOverFlow.Data.Persistence
 {
     public interface ISwagDataRepository : IRepository<SwagData>
     {

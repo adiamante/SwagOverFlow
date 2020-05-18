@@ -1,7 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using DbfDataReader;
-using SwagOverFlow.Clients;
+using SwagOverFlow.Data.Clients;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace SwagOverFlow.Data
+namespace SwagOverFlow.Data.Converters
 {
     #region IDataTableConverter
     public interface IDataTableConverter

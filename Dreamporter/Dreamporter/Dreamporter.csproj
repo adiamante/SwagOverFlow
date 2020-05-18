@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SwagOverFlow\SwagOverFlow.csproj" />
+    <ProjectReference Include="..\..\SwagOverFlow\SwagOverFlow\SwagOverFlow.csproj" />
   </ItemGroup>
 
 </Project>

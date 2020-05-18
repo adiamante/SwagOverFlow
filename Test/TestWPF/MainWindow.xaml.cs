@@ -1,18 +1,14 @@
 ﻿using SwagOverFlow.WPF.Services;
 using SwagOverFlow.WPF.Controls;
-using SwagOverFlow.WPF.Data;
 using System;
 using System.Reflection;
 using System.Windows;
 using System.Data;
 using System.Windows.Data;
-using Microsoft.Extensions.DependencyInjection;
 using SwagOverFlow.WPF.ViewModels;
 using System.Text;
 using System.Collections;
-using SwagOverFlow.Data;
-using Microsoft.Extensions.Logging;
-using SwagOverFlow.ViewModels;
+using SwagOverFlow.Data.Converters;
 
 namespace TestWPF
 {
