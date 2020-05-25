@@ -2,12 +2,15 @@
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SwagOverFlow.Utils
 {
     public static class JsonHelper
     {
+        public static List<JsonConverter> Converters { get; set; } = new List<JsonConverter>();
+
         public static T Clone<T>(T target)
         {
             String targetJsonString = JsonConvert.SerializeObject(target, Formatting.Indented, new JsonSerializerSettings()
@@ -21,10 +24,15 @@ namespace SwagOverFlow.Utils
 
         public static String ToJsonString(Object obj)
         {
+            //String jsonString = JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings()
+            //{
+            //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            //    TypeNameHandling = TypeNameHandling.All
+            //});
+
             String jsonString = JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings()
             {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.All
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore, Converters = Converters
             });
 
             return jsonString;
@@ -32,7 +40,8 @@ namespace SwagOverFlow.Utils
 
         public static T ToObject<T>(String str)
         {
-            return JsonConvert.DeserializeObject<T>(str, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
+            return JsonConvert.DeserializeObject<T>(str, new JsonSerializerSettings() { Converters = Converters });
+            //return JsonConvert.DeserializeObject<T>(str, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
         }
 
         public static String ToJsonString(Object obj, IContractResolver contractResolver)
@@ -101,6 +110,54 @@ namespace SwagOverFlow.Utils
             }
 
             return diff;
+        }
+
+        public static object ToObject(string str, Type type)
+        {
+            return JsonConvert.DeserializeObject(str, type, new JsonSerializerSettings() { Converters = Converters });
+        }
+    }
+
+    //http://www.tomdupont.net/2014/04/deserialize-abstract-classes-with.html
+    public abstract class AbstractJsonConverter<T> : JsonConverter
+    {
+        public override bool CanWrite => false;
+        protected abstract T Create(Type objectType, JObject jObject);
+
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(T).IsAssignableFrom(objectType);
+        }
+
+        public override object ReadJson(
+            JsonReader reader,
+            Type objectType,
+            object existingValue,
+            JsonSerializer serializer)
+        {
+            var jObject = JObject.Load(reader);
+
+            T target = Create(objectType, jObject);
+            serializer.Populate(jObject.CreateReader(), target);
+
+            return target;
+        }
+
+        public override void WriteJson(
+            JsonWriter writer,
+            object value,
+            JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected static bool FieldExists(
+            JObject jObject,
+            string name,
+            JTokenType type)
+        {
+            JToken token;
+            return jObject.TryGetValue(name, out token) && token.Type == type;
         }
     }
 }

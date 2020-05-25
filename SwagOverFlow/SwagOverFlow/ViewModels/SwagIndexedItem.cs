@@ -18,9 +18,17 @@ namespace SwagOverFlow.ViewModels
         #region Private/Protected Members
         TParent _parent;
         Int32? _parentId;
+        String _key;
         #endregion Private/Protected Members
 
         #region Properties
+        #region Key
+        public String Key
+        {
+            get { return _key; }
+            set { SetValue(ref _key, value); }
+        }
+        #endregion Key
         #region ParentId
         public Int32? ParentId
         {

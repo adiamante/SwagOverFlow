@@ -46,7 +46,6 @@ namespace SwagOverFlow.ViewModels
         protected String _valueTypeString;
         Int32 _itemId, _sequence = -1;
         Boolean _isExpanded, _isSelected, _canUndo = true;
-        String _key;
         protected Object _objValue;
         #endregion Private/Protected Members
 
@@ -100,13 +99,6 @@ namespace SwagOverFlow.ViewModels
             set { SetValue(ref _canUndo, value); }
         }
         #endregion CanUndo
-        #region Key
-        public String Key
-        {
-            get { return _key; }
-            set { SetValue(ref _key, value); }
-        }
-        #endregion Key
         #region ValueType
         public virtual Type ValueType
         {
@@ -145,7 +137,8 @@ namespace SwagOverFlow.ViewModels
                     }
                     else
                     {
-                        _objValue = JsonConvert.DeserializeObject(_objValue.ToString(), ValueType);
+                        //_objValue = JsonConvert.DeserializeObject(_objValue.ToString(), ValueType);
+                        _objValue = JsonHelper.ToObject(_objValue.ToString(), ValueType);
                     }
                 }
                 return _objValue; 
@@ -204,10 +197,10 @@ namespace SwagOverFlow.ViewModels
         #region Initialization
         public SwagItem()
         {
-            PropertyChangedExtended += SwagIndexedItem_PropertyChangedExtended;
+            PropertyChangedExtended += SwagItem_PropertyChangedExtended;
         }
 
-        private void SwagIndexedItem_PropertyChangedExtended(object sender, PropertyChangedExtendedEventArgs e)
+        private void SwagItem_PropertyChangedExtended(object sender, PropertyChangedExtendedEventArgs e)
         {
             Parent?.OnSwagItemChanged(this, e);
         }
@@ -426,7 +419,6 @@ namespace SwagOverFlow.ViewModels
                 }
             }
         }
-
         #endregion Initialization
 
         #region Iterator

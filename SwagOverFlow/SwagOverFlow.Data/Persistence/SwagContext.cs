@@ -73,16 +73,16 @@ namespace SwagOverFlow.Data.Persistence
     {
         public void Configure(EntityTypeBuilder<SwagItemBase> builder)
         {
-            //SwagIndexedItemViewModel Key + Id (AutoIncrement) => Key
+            //SwagItemBase Key + Id (AutoIncrement) => Key
             //Sqlite does not play too well with composite keys
             //builder.HasKey(si => new { si.GroupId, si.ItemId });
             builder.HasKey(si => si.ItemId);
             builder.Property(si => si.ItemId).ValueGeneratedOnAdd();
 
-            //SwagIndexedItemViewModel AlternateId => Unique
+            //SwagItemBase AlternateId => Unique
             builder.HasIndex(si => si.AlternateId).IsUnique();
 
-            //SwagIndexedItemViewModel Value
+            //SwagItemBase Value
             builder.Property(si => si.ObjValue)
                 .HasConversion(
                     si => JsonHelper.ToJsonString(si),
@@ -336,4 +336,8 @@ namespace SwagOverFlow.Data.Persistence
             return property;
         }
     }
+
+    //automatic Property json conversion
+    //https://stackoverflow.com/questions/48449887/custom-type-with-automatic-serialization-deserialization-in-ef-core
+
 }

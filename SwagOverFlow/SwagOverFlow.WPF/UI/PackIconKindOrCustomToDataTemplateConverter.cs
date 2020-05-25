@@ -73,7 +73,7 @@ namespace SwagOverFlow.WPF.UI
             //drawingImage.Freeze();
             //return drawingImage;
 
-            Decimal baseWidth = 20m, baseHeight = 20m;
+            Decimal baseWidth = 20m, baseHeight = 20m, centerX = 0.0m, centerY = 0.0m, scaleX = 1.0m, scaleY = 1.0m;
             switch (iconKind)
             {
                 default:
@@ -81,6 +81,26 @@ namespace SwagOverFlow.WPF.UI
                     baseWidth = 25m;
                     baseHeight = 25m;
                     break;
+                case PackIconMaterialDesignKind materialDesignKind:
+                    baseWidth = 500m;
+                    baseHeight = 500m;
+                    break;
+                case PackIconModernKind modrenKind:
+                    baseWidth = 65m;
+                    baseHeight = 65m;
+                    scaleX = 1.3m;
+                    scaleY = 1.3m;
+                    break;
+            }
+
+            if (centerX == 0)
+            {
+                centerX = baseWidth / 2.0m;
+            }
+
+            if (centerY == 0)
+            {
+                centerY = baseHeight / 2.0m;
             }
 
             String fill = UseForegroundBrush ?
@@ -104,6 +124,9 @@ namespace SwagOverFlow.WPF.UI
                                 <Viewbox xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" Stretch=""Uniform"">
                                     <Canvas Width=""{baseWidth}"" Height=""{baseHeight}"">
                                         <Path Fill=""{fill}"">
+                                            <Path.RenderTransform>
+                                                <ScaleTransform CenterX=""{centerX}"" CenterY=""{centerY}"" ScaleX=""{scaleX}"" ScaleY=""{scaleY}"" />
+                                            </Path.RenderTransform>
                                             <Path.Data>
                                                 <PathGeometry Figures=""{path}"" />
                                             </Path.Data>

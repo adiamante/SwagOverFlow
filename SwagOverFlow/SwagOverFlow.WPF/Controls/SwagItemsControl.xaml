@@ -41,11 +41,17 @@
         </ui:SwagStyleSelector>
     </local:SwagControlBase.Resources>
     <Grid>
-        <TreeView ItemsSource="{Binding SwagItemsSource.ChildrenView, RelativeSource={RelativeSource AncestorType={x:Type local:SwagItemsControl}}}"
+        <TreeView x:Name="ControlTreeView"
+                  ItemsSource="{Binding SwagItemsSource.ChildrenView, RelativeSource={RelativeSource AncestorType={x:Type local:SwagItemsControl}}}"
                   ItemTemplateSelector="{StaticResource SwagTemplateSelector}"
                   ItemContainerStyleSelector="{StaticResource SwagStyleSelector}"
                   ui:SwagTemplateSelector.CustomDefaultTemplate="{Binding CustomDefaultItemTemplate, ElementName=ControlInstance}"
-                  ui:SwagStyleSelector.CustomDefaultStyle="{Binding CustomDefaultItemContainerStyle, ElementName=ControlInstance}">
+                  ui:SwagStyleSelector.CustomDefaultStyle="{Binding CustomDefaultItemContainerStyle, ElementName=ControlInstance}"
+                  PreviewMouseMove="ControlTreeView_PreviewMouseMove"
+                  PreviewMouseLeftButtonDown="ControlTreeView_PreviewMouseLeftButtonDown"
+                  PreviewDragOver="ControlTreeView_PreviewDragOver"
+                  PreviewDragLeave="ControlTreeView_PreviewDragLeave"
+                  Drop="ControlTreeView_Drop">
             <ui:SwagTemplateSelector.CustomTemplates>
                 <CompositeCollection>
                     <CollectionContainer Collection="{Binding Source={StaticResource ItemTemplates}}" />

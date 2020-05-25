@@ -1,0 +1,229 @@
+﻿<swctl:SwagControlBase x:Class="SwagOverFlow.WPF.Controls.BooleanExpressionControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:svm="clr-namespace:SwagOverFlow.ViewModels;assembly=SwagOverFlow"
+             xmlns:swctl="clr-namespace:SwagOverFlow.WPF.Controls"
+             xmlns:swvm="clr-namespace:SwagOverFlow.WPF.ViewModels"
+             xmlns:swui="clr-namespace:SwagOverFlow.WPF.UI"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" 
+             x:Name="ThisControl"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ContextMenu x:Key="OperationContextMenu" Opened="ExpressionContextMenu_Opened">
+            <MenuItem Header="Add OR Expression" Click="AddExpression" Tag="OR">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.LogicOr}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Add AND Expression" Click="AddExpression" Tag="AND">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.LogicAnd}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Add Variable Expression">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Variable}" />
+                </MenuItem.Icon>
+                <MenuItem Header="Boolean" Click="AddExpression" Tag="VAR_BOOL">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.TypeBoolean}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="String" Click="AddExpression" Tag="VAR_STR">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Alphabetical}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Remove" Click="RemoveExpression">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialDesignKind.Clear}" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+        <ContextMenu x:Key="VariableContextMenu" Opened="ExpressionContextMenu_Opened">
+            <MenuItem Header="Remove" Click="RemoveExpression">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialDesignKind.Clear}" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+        <swui:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        <swui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+    <swctl:SwagItemsControl SwagItemsSource="{Binding Expression, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
+                            AllowMove="{Binding AllowMove, ElementName=ThisControl}"
+                            TreeViewItemDropPreview="SwagItemsControl_TreeViewItemDropPreview"
+                            TreeViewItemLeavePreview="SwagItemsControl_TreeViewItemLeavePreview"
+                            TreeViewItemDrop="SwagItemsControl_TreeViewItemDrop">
+        <swctl:SwagItemsControl.ContextMenu>
+            <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                <MenuItem Header="Add" DataContext="{Binding Expression}" Visibility="{Binding HasChildren, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Add}" />
+                    </MenuItem.Icon>
+                    <MenuItem Header="OR" Click="AddExpression" Tag="OR">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.LogicOr}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="AND" Click="AddExpression" Tag="AND">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.LogicAnd}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Variable">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Variable}" />
+                        </MenuItem.Icon>
+                        <MenuItem Header="Boolean" Click="AddExpression" Tag="VAR_BOOL">
+                            <MenuItem.Icon>
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.TypeBoolean}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="String" Click="AddExpression" Tag="VAR_STR">
+                            <MenuItem.Icon>
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Alphabetical}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="AllowMove" IsCheckable="True" IsChecked="{Binding AllowMove}">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.CursorMove}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Debug">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.AndroidDebugBridge}" />
+                    </MenuItem.Icon>
+                    <MenuItem Header="ShowSequence" IsCheckable="True" IsChecked="{Binding ShowSequence}">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.FormatListNumbered}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Clear" Click="RemoveRootExpression" Visibility="{Binding Expression.HasChildren, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialDesignKind.Clear}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </swctl:SwagItemsControl.ContextMenu>
+        <swctl:SwagItemsControl.ItemContainerStyles>
+            <swui:SwagStyleCollection>
+                <swui:SwagStyle Type="{x:Type svm:BooleanAndExpression}">
+                    <swui:SwagStyle.Style>
+                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            <Setter Property="ContextMenu" Value="{StaticResource OperationContextMenu}" />
+                        </Style>
+                    </swui:SwagStyle.Style>
+                </swui:SwagStyle>
+                <swui:SwagStyle Type="{x:Type svm:BooleanOrExpression}">
+                    <swui:SwagStyle.Style>
+                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            <Setter Property="ContextMenu" Value="{StaticResource OperationContextMenu}" />
+                        </Style>
+                    </swui:SwagStyle.Style>
+                </swui:SwagStyle>
+                <swui:SwagStyle Type="{x:Type svm:BooleanBooleanVariableExpression}">
+                    <swui:SwagStyle.Style>
+                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            <Setter Property="ContextMenu" Value="{StaticResource VariableContextMenu}" />
+                        </Style>
+                    </swui:SwagStyle.Style>
+                </swui:SwagStyle>
+                <swui:SwagStyle Type="{x:Type svm:BooleanStringVariableExpression}">
+                    <swui:SwagStyle.Style>
+                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            <Setter Property="ContextMenu" Value="{StaticResource VariableContextMenu}" />
+                        </Style>
+                    </swui:SwagStyle.Style>
+                </swui:SwagStyle>
+            </swui:SwagStyleCollection>
+        </swctl:SwagItemsControl.ItemContainerStyles>
+        <swctl:SwagItemsControl.ItemTemplates>
+            <swui:SwagTemplateCollection>
+                <swui:SwagTemplate Type="{x:Type svm:BooleanAndExpression}">
+                    <swui:SwagTemplate.DataTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
+                            <DockPanel>
+                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={StaticResource BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.LogicAnd}" />
+                            </DockPanel>
+                        </HierarchicalDataTemplate>
+                    </swui:SwagTemplate.DataTemplate>
+                </swui:SwagTemplate>
+                <swui:SwagTemplate Type="{x:Type svm:BooleanOrExpression}">
+                    <swui:SwagTemplate.DataTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
+                            <DockPanel>
+                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={StaticResource BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.LogicOr}" />
+                            </DockPanel>
+                        </HierarchicalDataTemplate>
+                    </swui:SwagTemplate.DataTemplate>
+                </swui:SwagTemplate>
+                <swui:SwagTemplate Type="{x:Type svm:BooleanBooleanVariableExpression}">
+                    <swui:SwagTemplate.DataTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Grid.RowSpan="2" Grid.Column="0" Visibility="{Binding ShowSequence, Converter={StaticResource BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
+                                <swctl:IconControl Grid.Row="0" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
+                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Key, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                <swctl:IconControl Grid.Row="1" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Target}" />
+                                <CheckBox Grid.Row="1" Grid.Column="2" IsChecked="{Binding TargetValue, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                            </Grid>
+                        </DataTemplate>
+                    </swui:SwagTemplate.DataTemplate>
+                </swui:SwagTemplate>
+                <swui:SwagTemplate Type="{x:Type svm:BooleanStringVariableExpression}">
+                    <swui:SwagTemplate.DataTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Grid.RowSpan="2" Grid.Column="0" Visibility="{Binding ShowSequence, Converter={StaticResource BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
+                                <swctl:IconControl Grid.Row="0" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
+                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Key, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                <swctl:IconControl Grid.Row="1" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Target}" />
+                                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding TargetValue, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                            </Grid>
+                        </DataTemplate>
+                    </swui:SwagTemplate.DataTemplate>
+                </swui:SwagTemplate>
+            </swui:SwagTemplateCollection>
+        </swctl:SwagItemsControl.ItemTemplates>
+    </swctl:SwagItemsControl>
+</swctl:SwagControlBase>

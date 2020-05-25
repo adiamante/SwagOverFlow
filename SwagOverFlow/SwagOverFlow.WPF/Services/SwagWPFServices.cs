@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SwagOverFlow.Data.Persistence;
+using SwagOverFlow.Utils;
+using SwagOverFlow.WPF.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SwagOverFlow.WPF.Services
 {
@@ -27,6 +27,10 @@ namespace SwagOverFlow.WPF.Services
 
         static SwagWPFServices()
         {
+            //This is some tight coupling here. WPF assembly depends on JsonHelper utility static class to enable 
+            //BooleanExpression abstract hierarchy conversion between native and wpf classes
+            //SwagContext uses JsonHelper to dynamically convert SwagItem values
+            JsonHelper.Converters.Add(new BooleanExpressionWPFJsonConverter());
             ConfigureServices();
         }
 
