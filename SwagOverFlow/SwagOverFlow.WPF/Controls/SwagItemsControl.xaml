@@ -1,14 +1,16 @@
-﻿<local:SwagControlBase x:Class="SwagOverFlow.WPF.Controls.SwagItemsControl"
+﻿<swctl:SwagControlBase x:Class="SwagOverFlow.WPF.Controls.SwagItemsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:SwagOverFlow.WPF.Controls" xmlns:ui="clr-namespace:SwagOverFlow.WPF.UI"
+             xmlns:swctl="clr-namespace:SwagOverFlow.WPF.Controls" xmlns:ui="clr-namespace:SwagOverFlow.WPF.UI"
+             xmlns:swui="clr-namespace:SwagOverFlow.WPF.UI"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d"
-             x:Name="ControlInstance"
+             x:Name="ThisControl"
              d:DesignHeight="450" d:DesignWidth="800">
-    <local:SwagControlBase.Resources>
-        <CollectionViewSource x:Key="ItemTemplates" Source="{Binding ItemTemplates, RelativeSource={RelativeSource AncestorType={x:Type local:SwagItemsControl}}}" />
+    <swctl:SwagControlBase.Resources>
+        <CollectionViewSource x:Key="ItemTemplates" Source="{Binding ItemTemplates, RelativeSource={RelativeSource AncestorType={x:Type swctl:SwagItemsControl}}}" />
         <ui:SwagTemplateSelector x:Key="SwagTemplateSelector">
             <ui:SwagTemplateSelector.DefaultTemplate>
                 <ui:SwagTemplate>
@@ -20,7 +22,7 @@
                 </ui:SwagTemplate>
             </ui:SwagTemplateSelector.DefaultTemplate>
         </ui:SwagTemplateSelector>
-        <CollectionViewSource x:Key="ItemContainerStyles" Source="{Binding ItemContainerStyles, RelativeSource={RelativeSource AncestorType={x:Type local:SwagItemsControl}}}" />
+        <CollectionViewSource x:Key="ItemContainerStyles" Source="{Binding ItemContainerStyles, RelativeSource={RelativeSource AncestorType={x:Type swctl:SwagItemsControl}}}" />
         <ui:SwagStyleSelector x:Key="SwagStyleSelector">
             <ui:SwagStyleSelector.DefaultStyle>
                 <ui:SwagStyle>
@@ -39,14 +41,37 @@
                 </ui:SwagStyle>
             </ui:SwagStyleSelector.DefaultStyle>
         </ui:SwagStyleSelector>
-    </local:SwagControlBase.Resources>
+        <swui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <!--PlacementTarget here is ThisControl (SwagItemsControl)-->
+        <ContextMenu x:Key="DefaultControlContextMenu" DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+            <MenuItem Header="Save" Command="{Binding SaveCommand}"
+                      Visibility="{Binding ShowShowSaveContextMenuItem, Converter={StaticResource BoolToVisibilityConverter}}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Placeholder">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.VariableBox}" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+    </swctl:SwagControlBase.Resources>
+    <swctl:SwagControlBase.ContextMenu>
+        <Binding Path="ContextMenu" 
+                 ElementName="ThisControl"
+                 FallbackValue="{StaticResource DefaultControlContextMenu}" 
+                 TargetNullValue="{StaticResource DefaultControlContextMenu}">
+            
+        </Binding>
+    </swctl:SwagControlBase.ContextMenu>
     <Grid>
         <TreeView x:Name="ControlTreeView"
-                  ItemsSource="{Binding SwagItemsSource.ChildrenView, RelativeSource={RelativeSource AncestorType={x:Type local:SwagItemsControl}}}"
+                  ItemsSource="{Binding SwagItemsSource.ChildrenView, RelativeSource={RelativeSource AncestorType={x:Type swctl:SwagItemsControl}}}"
                   ItemTemplateSelector="{StaticResource SwagTemplateSelector}"
                   ItemContainerStyleSelector="{StaticResource SwagStyleSelector}"
-                  ui:SwagTemplateSelector.CustomDefaultTemplate="{Binding CustomDefaultItemTemplate, ElementName=ControlInstance}"
-                  ui:SwagStyleSelector.CustomDefaultStyle="{Binding CustomDefaultItemContainerStyle, ElementName=ControlInstance}"
+                  ui:SwagTemplateSelector.CustomDefaultTemplate="{Binding CustomDefaultItemTemplate, ElementName=ThisControl}"
+                  ui:SwagStyleSelector.CustomDefaultStyle="{Binding CustomDefaultItemContainerStyle, ElementName=ThisControl}"
                   PreviewMouseMove="ControlTreeView_PreviewMouseMove"
                   PreviewMouseLeftButtonDown="ControlTreeView_PreviewMouseLeftButtonDown"
                   PreviewDragOver="ControlTreeView_PreviewDragOver"
@@ -63,5 +88,12 @@
                 </CompositeCollection>
             </ui:SwagStyleSelector.CustomStyles>
         </TreeView>
+        <Button 
+            Visibility="{Binding ShowSaveButton, ElementName=ThisControl, Converter={StaticResource BoolToVisibilityConverter}}"
+            VerticalAlignment="{Binding SaveVerticalAlignment, ElementName=ThisControl}" 
+            HorizontalAlignment="{Binding SaveHorizontalAlignment, ElementName=ThisControl}"
+            Command="{Binding SaveCommand, ElementName=ThisControl}">
+            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
+        </Button>
     </Grid>
-</local:SwagControlBase>
+</swctl:SwagControlBase>

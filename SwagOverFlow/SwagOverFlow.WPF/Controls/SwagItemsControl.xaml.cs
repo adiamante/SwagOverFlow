@@ -1,4 +1,5 @@
 ﻿using SwagOverFlow.ViewModels;
+using SwagOverFlow.WPF.Commands;
 using SwagOverFlow.WPF.UI;
 using System;
 using System.Windows;
@@ -15,6 +16,7 @@ namespace SwagOverFlow.WPF.Controls
         #region Private Members
         Point _startPoint;
         bool _isDragging = false;
+        ICommand _saveCommand;
         #endregion Private Members
 
         #region Properties
@@ -138,6 +140,104 @@ namespace SwagOverFlow.WPF.Controls
             remove { RemoveHandler(TreeViewItemDropEvent, value); }
         }
         #endregion TreeViewItemDrop
+        #region Save
+        public static readonly RoutedEvent SaveEvent =
+            EventManager.RegisterRoutedEvent(
+            "Save",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler Save
+        {
+            add { AddHandler(SaveEvent, value); }
+            remove { RemoveHandler(SaveEvent, value); }
+        }
+        #endregion Save
+        #region SaveCommand
+        public ICommand SaveCommand
+        {
+            get 
+            {
+                return _saveCommand ??
+                    (_saveCommand = new RelayCommand<object>((s) =>
+                    {
+                        RaiseEvent(new RoutedEventArgs(SaveEvent, this));
+                    }));
+            }
+        }
+        #endregion SaveCommand
+        #region ShowSaveButton
+        public static DependencyProperty ShowSaveButtonProperty =
+            DependencyProperty.Register(
+                "ShowSaveButton",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowSaveButton
+        {
+            get { return (Boolean)GetValue(ShowSaveButtonProperty); }
+            set 
+            { 
+                SetValue(ShowSaveButtonProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowSaveButton
+        #region ShowShowSaveContextMenuItem
+        public static DependencyProperty ShowShowSaveContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowShowSaveContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowShowSaveContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowShowSaveContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowShowSaveContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowShowSaveContextMenuItem
+        #region SaveVerticalAlignment
+        public static DependencyProperty SaveVerticalAlignmentProperty =
+            DependencyProperty.Register(
+                "SaveVerticalAlignment",
+                typeof(VerticalAlignment),
+                typeof(SwagItemsControl));
+
+        public VerticalAlignment SaveVerticalAlignment
+        {
+            get { return (VerticalAlignment)GetValue(SaveVerticalAlignmentProperty); }
+            set 
+            { 
+                SetValue(SaveVerticalAlignmentProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion SaveVerticalAlignment
+        #region SaveHorizontalAlignment
+        public static DependencyProperty SaveHorizontalAlignmentProperty =
+            DependencyProperty.Register(
+                "SaveHorizontalAlignment",
+                typeof(HorizontalAlignment),
+                typeof(SwagItemsControl));
+
+        public HorizontalAlignment SaveHorizontalAlignment
+        {
+            get { return (HorizontalAlignment)GetValue(SaveHorizontalAlignmentProperty); }
+            set 
+            { 
+                SetValue(SaveHorizontalAlignmentProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion SaveHorizontalAlignment
+
         #endregion Properties
 
         #region Initialization
@@ -196,8 +296,6 @@ namespace SwagOverFlow.WPF.Controls
             _isDragging = false;
         }
 
-
-
         private void ControlTreeView_PreviewDragOver(object sender, DragEventArgs e)
         {
             if (AllowMove)
@@ -240,7 +338,9 @@ namespace SwagOverFlow.WPF.Controls
                 }
             }
         }
+
         #endregion Events
+
     }
 
     #region TreeViewItemDropEventArgs
