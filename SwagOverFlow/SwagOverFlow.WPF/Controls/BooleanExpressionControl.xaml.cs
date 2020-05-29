@@ -52,7 +52,11 @@ namespace SwagOverFlow.WPF.Controls
         public Boolean ShowSequence
         {
             get { return (Boolean)GetValue(ShowSequenceProperty); }
-            set { SetValue(ShowSequenceProperty, value); }
+            set 
+            {
+                SetValue(ShowSequenceProperty, value);
+                OnPropertyChanged();
+            }
         }
         #endregion ShowSequence
 
@@ -69,6 +73,73 @@ namespace SwagOverFlow.WPF.Controls
             set { SetValue(ExpressionProperty, value); }
         }
         #endregion Expression
+
+        #region Save
+        public static readonly RoutedEvent SaveEvent =
+            EventManager.RegisterRoutedEvent(
+            "Save",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(BooleanExpressionControl));
+
+        public event RoutedEventHandler Save
+        {
+            add { AddHandler(SaveEvent, value); }
+            remove { RemoveHandler(SaveEvent, value); }
+        }
+        #endregion Save
+
+        #region ShowSaveButton
+        public static DependencyProperty ShowSaveButtonProperty =
+            DependencyProperty.Register(
+                "ShowSaveButton",
+                typeof(Boolean),
+                typeof(BooleanExpressionControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowSaveButton
+        {
+            get { return (Boolean)GetValue(ShowSaveButtonProperty); }
+            set
+            {
+                SetValue(ShowSaveButtonProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowSaveButton
+
+        #region ShowShowSaveContextMenuItem
+        public static DependencyProperty ShowShowSaveContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowShowSaveContextMenuItem",
+                typeof(Boolean),
+                typeof(BooleanExpressionControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowShowSaveContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowShowSaveContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowShowSaveContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowShowSaveContextMenuItem
+
+        #region SaveCommand
+        public static DependencyProperty SaveCommandProperty =
+            DependencyProperty.Register(
+                "SaveCommand",
+                typeof(ICommand),
+                typeof(BooleanExpressionControl));
+
+        public ICommand SaveCommand
+        {
+            get { return (ICommand)GetValue(SaveCommandProperty); }
+            set { SetValue(SaveCommandProperty, value); }
+        }
+        #endregion SaveCommand
 
         #region Initialization
         public BooleanExpressionControl()
@@ -259,6 +330,11 @@ namespace SwagOverFlow.WPF.Controls
             TreeViewItemDropEventArgs tviea = (TreeViewItemDropEventArgs)e;
             tviea.TargetItem.BorderThickness = new Thickness(0, 0, 0, 0);
         }
+
+        private void SwagItemsControl_Save(object sender, RoutedEventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(SaveEvent));
+        }
         #endregion Events
 
         #region Methods
@@ -317,6 +393,8 @@ namespace SwagOverFlow.WPF.Controls
 
             return moveType;
         }
+
         #endregion Methods
+
     }
 }

@@ -105,10 +105,10 @@ namespace SwagOverFlow.Test.BooleanExpression.WPF
             #endregion Context
 
             #region Expression
-            SwagWindow.GlobalSettings["Test"]["Expression"].GetValue<BooleanOrExpressionWPF>().SwagItemChanged += (s, e) =>
-            {
-                SwagWindow.GlobalSettings.OnSwagItemChanged(SwagWindow.GlobalSettings["Test"]["Expression"], e.PropertyChangedArgs);
-            };
+            //SwagWindow.GlobalSettings["Test"]["Expression"].GetValue<BooleanOrExpressionWPF>().SwagItemChanged += (s, e) =>
+            //{
+            //    SwagWindow.GlobalSettings.OnSwagItemChanged(SwagWindow.GlobalSettings["Test"]["Expression"], e.PropertyChangedArgs);
+            //};
             #endregion Expression
         }
         #endregion Initialization
@@ -136,5 +136,10 @@ namespace SwagOverFlow.Test.BooleanExpression.WPF
             }
         }
         #endregion Events
+
+        private void BooleanExpressionControl_Save(object sender, RoutedEventArgs e)
+        {
+            SwagWindow.GlobalSettings["Test"]["Expression"].SetValue(Expression);
+        }
     }
 }

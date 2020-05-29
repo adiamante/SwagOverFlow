@@ -100,7 +100,7 @@
                     <swctl:IconControl DataContext="{Binding Expression, ElementName=TestWindow}" Text="Expression" Kind="{x:Static swui:PackIconCustomKind.Checked}" />
                 </DockPanel>
             </GroupBox.Header>
-            <swctl:BooleanExpressionControl Expression="{Binding Expression, ElementName=TestWindow}" />
+            <swctl:BooleanExpressionControl Expression="{Binding Expression, ElementName=TestWindow}" ShowSaveButton="True" ShowShowSaveContextMenuItem="True" Save="BooleanExpressionControl_Save" />
         </GroupBox>
     </Grid>
 </swctl:SwagWindow>

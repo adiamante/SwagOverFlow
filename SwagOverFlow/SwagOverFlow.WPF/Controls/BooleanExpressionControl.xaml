@@ -53,15 +53,28 @@
         </ContextMenu>
         <swui:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
         <swui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <swui:ControlReference x:Key="ThisControl" Control="{Binding RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
     </UserControl.Resources>
     <swctl:SwagItemsControl SwagItemsSource="{Binding Expression, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
                             AllowMove="{Binding AllowMove, ElementName=ThisControl}"
                             TreeViewItemDropPreview="SwagItemsControl_TreeViewItemDropPreview"
                             TreeViewItemLeavePreview="SwagItemsControl_TreeViewItemLeavePreview"
-                            TreeViewItemDrop="SwagItemsControl_TreeViewItemDrop">
+                            TreeViewItemDrop="SwagItemsControl_TreeViewItemDrop"
+                            ShowSaveButton="{Binding ShowSaveButton, ElementName=ThisControl}"
+                            Save="SwagItemsControl_Save"
+                            SaveHorizontalAlignment="Right"
+                            SaveVerticalAlignment="Bottom">
         <swctl:SwagItemsControl.ContextMenu>
-            <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
-                <MenuItem Header="Add" DataContext="{Binding Expression}" Visibility="{Binding HasChildren, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+            <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (BooleanExpressionControl)-->
+            <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                <MenuItem Header="Save"
+                          Command="{Binding SaveCommand}"
+                          Visibility="{Binding Tag.ShowShowSaveContextMenuItem, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Add" DataContext="{Binding Tag.Expression}" Visibility="{Binding HasChildren, Converter={StaticResource InverseBoolToVisibilityConverter}}">
                     <MenuItem.Icon>
                         <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Add}" />
                     </MenuItem.Icon>
@@ -91,7 +104,7 @@
                         </MenuItem>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="AllowMove" IsCheckable="True" IsChecked="{Binding AllowMove}">
+                <MenuItem Header="AllowMove" IsCheckable="True" IsChecked="{Binding Tag.AllowMove}">
                     <MenuItem.Icon>
                         <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.CursorMove}" />
                     </MenuItem.Icon>
@@ -100,13 +113,13 @@
                     <MenuItem.Icon>
                         <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.AndroidDebugBridge}" />
                     </MenuItem.Icon>
-                    <MenuItem Header="ShowSequence" IsCheckable="True" IsChecked="{Binding ShowSequence}">
+                    <MenuItem Header="ShowSequence" IsCheckable="True" IsChecked="{Binding Tag.ShowSequence}">
                         <MenuItem.Icon>
                             <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.FormatListNumbered}" />
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Clear" Click="RemoveRootExpression" Visibility="{Binding Expression.HasChildren, Converter={StaticResource BoolToVisibilityConverter}}">
+                <MenuItem Header="Clear" DataContext="{Binding Tag.Expression}" Click="RemoveRootExpression" Visibility="{Binding HasChildren, Converter={StaticResource BoolToVisibilityConverter}}">
                     <MenuItem.Icon>
                         <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialDesignKind.Clear}" />
                     </MenuItem.Icon>
