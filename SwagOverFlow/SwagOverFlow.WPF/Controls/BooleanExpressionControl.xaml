@@ -53,7 +53,6 @@
         </ContextMenu>
         <swui:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
         <swui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <swui:ControlReference x:Key="ThisControl" Control="{Binding RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
     </UserControl.Resources>
     <swctl:SwagItemsControl SwagItemsSource="{Binding Expression, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
                             AllowMove="{Binding AllowMove, ElementName=ThisControl}"

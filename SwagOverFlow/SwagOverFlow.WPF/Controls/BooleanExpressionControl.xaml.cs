@@ -74,6 +74,20 @@ namespace SwagOverFlow.WPF.Controls
         }
         #endregion Expression
 
+        #region RootExpression
+        public BooleanExpression RootExpression
+        {
+            get
+            {
+                if (Expression is BooleanOperationExpression op && op.Children.Count > 0)
+                {
+                    return op.Children[0];
+                }
+                return null;
+            }
+        }
+        #endregion Expression
+
         #region Save
         public static readonly RoutedEvent SaveEvent =
             EventManager.RegisterRoutedEvent(
@@ -313,12 +327,12 @@ namespace SwagOverFlow.WPF.Controls
                             }
                             break;
                     }
-
                     break;
                 case MoveType.Into:
                     if (tviea.TargetItem.DataContext is BooleanOperationExpression opExp)
                     {
                         originalDroppedParent.Children.Remove(droppedExpression);
+                        droppedExpression.Sequence = -1;        //reset sequence
                         opExp.Children.Add(droppedExpression);
                     }
                     break;
@@ -343,8 +357,10 @@ namespace SwagOverFlow.WPF.Controls
             BooleanExpression targetExp = (BooleanExpression)tviea.TargetItem.DataContext;
             BooleanExpression droppedExp = (BooleanExpression)tviea.DroppedItem.DataContext;
             Boolean valid = true;
+            MoveType moveType = GetMoveType(tviea);
 
-            if (targetExp == droppedExp)    //Don't drop to self
+            if ((targetExp == RootExpression && (moveType == MoveType.Above || moveType == MoveType.Below)) ||  //Don't drop as root sibling
+                targetExp == droppedExp)        //Don't drop to self
             {
                 valid = false;
             }
