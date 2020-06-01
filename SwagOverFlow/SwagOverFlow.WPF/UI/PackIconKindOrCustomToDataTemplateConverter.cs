@@ -77,6 +77,14 @@ namespace SwagOverFlow.WPF.UI
             switch (iconKind)
             {
                 default:
+                case PackIconEntypoKind entypoKind:
+                    baseWidth = 20m;
+                    baseHeight = 20m;
+                    break;
+                case PackIconFontAwesomeKind fontAwesomeKind:
+                    baseWidth = 450m;
+                    baseHeight = 450m;
+                    break;
                 case PackIconMaterialKind materialKind:
                     baseWidth = 25m;
                     baseHeight = 25m;
@@ -84,8 +92,9 @@ namespace SwagOverFlow.WPF.UI
                 case PackIconMaterialDesignKind materialDesignKind:
                     baseWidth = 500m;
                     baseHeight = 500m;
+                    scaleY = -1.0m;
                     break;
-                case PackIconModernKind modrenKind:
+                case PackIconModernKind modernKind:
                     baseWidth = 65m;
                     baseHeight = 65m;
                     scaleX = 1.3m;

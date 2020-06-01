@@ -11,95 +11,105 @@ namespace SwagOverFlow.Utils
     {
         private static FieldInfoCollection _fieldInfoCollection = new FieldInfoCollection();
         private static PropertyInfoCollection _propertyInfoCollection = new PropertyInfoCollection();
+        private static MethodInfoCollection _methodInfoCollection = new MethodInfoCollection();
         private static TypeConverterCache _typeConverterCache = new TypeConverterCache();
         //Usage: ReflectionHelper.FieldInfoCollection[type][field] instead of type.GetField(field)
         public static FieldInfoCollection FieldInfoCollection => _fieldInfoCollection;
         //Usage: ReflectionHelper.PropertyInfoCollection[type][property] instead of type.GetProperty(property)  
         public static PropertyInfoCollection PropertyInfoCollection => _propertyInfoCollection;
+        //Usage: ReflectionHelper.MethodInfoCollection[type][method] instead of type.GetMethod(Method)
+        //To properly cache MethodInfo, method subKey needs to be the same reference (this key is of type object; currently only hanling string and object[2])
+        public static MethodInfoCollection MethodInfoCollection => _methodInfoCollection;
         //Usage: ReflectionHelper.TypeConverterCache[type] instead of TypeDescriptor.GetConverter(type)
         public static TypeConverterCache TypeConverterCache => _typeConverterCache;
     }
 
-    public class TypeConverterCache
+    #region TypeConverterCache
+    public class TypeConverterCache : ReflectionCache<Type, TypeConverter>
     {
-        private ConcurrentDictionary<Type, TypeConverter> _typeConverters = new ConcurrentDictionary<Type, TypeConverter>();
-
-        public TypeConverter this[Type type]
+        public override TypeConverter this[Type type]
         {
             get
             {
-                if (!_typeConverters.ContainsKey(type))
+                if (!_cache.ContainsKey(type))
                 {
                     TypeConverter converter = TypeDescriptor.GetConverter(type);
-                    _typeConverters.TryAdd(type, converter);
+                    _cache.TryAdd(type, converter);
                 }
 
-                return _typeConverters[type];
+                return _cache[type];
             }
         }
     }
+    #endregion TypeConverterCache
 
-    public class FieldInfoCollection
+    #region FieldInfoCollection
+    public class FieldInfoCollection : ReflectionCache<Type, iReflectionCache<String, FieldInfo>>
     {
-        private ConcurrentDictionary<Type, iFieldInfoCache> _fieldsInfoCaches = new ConcurrentDictionary<Type, iFieldInfoCache>();
-
-        public iFieldInfoCache this[Type type]
+        public override iReflectionCache<String, FieldInfo> this[Type type]
         {
             get
             {
-                if (!_fieldsInfoCaches.ContainsKey(type))
+                if (!_cache.ContainsKey(type))
                 {
                     Type genericTemplate = typeof(FieldInfoCache<>);
                     Type[] typeArgs = { type };
                     Type genericType = genericTemplate.MakeGenericType(typeArgs);
-                    iFieldInfoCache cache = (iFieldInfoCache)Activator.CreateInstance(genericType);
-                    _fieldsInfoCaches.TryAdd(type, cache);
+                    iReflectionCache<String, FieldInfo> subCache = (iReflectionCache<String, FieldInfo>)Activator.CreateInstance(genericType);
+                    _cache.TryAdd(type, subCache);
                 }
 
-                return _fieldsInfoCaches[type];
+                return _cache[type];
             }
         }
     }
+    #endregion FieldInfoCollection
 
-    public interface iFieldInfoCache : IEnumerable<FieldInfo>
+    #region FieldInfoCache<T>
+    public class FieldInfoCache<T> : ReflectionCache<String, FieldInfo>
     {
-        FieldInfo this[string field] { get; }
-        Boolean IsLoaded { get; }
-        void Load();
-    }
-
-    public class FieldInfoCache<T> : iFieldInfoCache
-    {
-        public Boolean IsLoaded { get; private set; } = false;
-        private ConcurrentDictionary<String, FieldInfo> _fieldInfos = new ConcurrentDictionary<string, FieldInfo>();
-        public FieldInfo this[string field]
+        public override FieldInfo this[string field]
         {
             get
             {
-                if (!_fieldInfos.ContainsKey(field))
+                if (!_cache.ContainsKey(field))
                 {
                     FieldInfo fieldInfo = typeof(T).GetField(field);
-                    _fieldInfos.TryAdd(field, fieldInfo);
+                    _cache.TryAdd(field, fieldInfo);
                 }
-                return _fieldInfos[field];
+                return _cache[field];
             }
         }
+    }
+    #endregion FieldInfoCache<T>
 
-        public void Load()
+    #region iReflectionCache
+    public interface iReflectionCache<TKey, TValue> : IEnumerable<TValue>
+    {
+        TValue this[TKey key] { get; }
+        Boolean IsLoaded { get; }
+        void Load();
+    }
+    #endregion iReflectionCache
+
+    #region ReflectionCache
+    public abstract class ReflectionCache<TKey, TValue> : iReflectionCache<TKey, TValue>
+    {
+        protected ConcurrentDictionary<TKey, TValue> _cache = new ConcurrentDictionary<TKey, TValue>();
+        public Boolean IsLoaded { get; protected set; } = false;
+
+        public abstract TValue this[TKey key] { get; }
+
+        #region Initialization
+        public virtual void Load()
         {
-            foreach (FieldInfo fieldInfo in typeof(T).GetFields(BindingFlags.Public | BindingFlags.Instance))
-            {
-                if (!_fieldInfos.ContainsKey(fieldInfo.Name))
-                {
-                    _fieldInfos.TryAdd(fieldInfo.Name, fieldInfo);
-                }
-            }
-            IsLoaded = true;
         }
+        #endregion Initialization
 
-        public IEnumerator<FieldInfo> GetEnumerator()
+        #region IEnumerator
+        public IEnumerator<TValue> GetEnumerator()
         {
-            foreach (KeyValuePair<String, FieldInfo> kvp in _fieldInfos)
+            foreach (KeyValuePair<TKey, TValue> kvp in _cache)
             {
                 yield return kvp.Value;
             }
@@ -109,78 +119,115 @@ namespace SwagOverFlow.Utils
         {
             return GetEnumerator();
         }
+        #endregion IEnumerator
     }
+    #endregion ReflectionCache
 
-    public class PropertyInfoCollection
+    #region PropertyInfoCollection
+    public class PropertyInfoCollection : ReflectionCache<Type, iReflectionCache<String, PropertyInfo>>
     {
-        private ConcurrentDictionary<Type, iPropertyInfoCache> _propertysInfoCaches = new ConcurrentDictionary<Type, iPropertyInfoCache>();
-
-        public iPropertyInfoCache this[Type type]
+        public override iReflectionCache<String, PropertyInfo> this[Type type]
         {
             get
             {
-                if (!_propertysInfoCaches.ContainsKey(type))
+                if (!_cache.ContainsKey(type))
                 {
                     Type genericTemplate = typeof(PropertyInfoCache<>);
                     Type[] typeArgs = { type };
                     Type genericType = genericTemplate.MakeGenericType(typeArgs);
-                    iPropertyInfoCache cache = (iPropertyInfoCache)Activator.CreateInstance(genericType);
-                    _propertysInfoCaches.TryAdd(type, cache);
+                    iReflectionCache<String, PropertyInfo> subCache = (iReflectionCache<String, PropertyInfo>)Activator.CreateInstance(genericType);
+                    _cache.TryAdd(type, subCache);
                 }
 
-                return _propertysInfoCaches[type];
+                return _cache[type];
             }
         }
     }
+    #endregion PropertyInfoCollection
 
-    public interface iPropertyInfoCache : IEnumerable<PropertyInfo>
+    #region PropertyInfoCache<T>
+    public class PropertyInfoCache<T> : ReflectionCache<String, PropertyInfo>
     {
-        PropertyInfo this[string field] { get; }
-        Boolean IsLoaded { get; }
-        void Load();
-    }
-
-    public class PropertyInfoCache<T> : iPropertyInfoCache
-    {
-        public Boolean IsLoaded { get; private set; } = false;
-
-        private ConcurrentDictionary<String, PropertyInfo> _propertyInfos = new ConcurrentDictionary<string, PropertyInfo>();
-        public PropertyInfo this[string property]
+        public override PropertyInfo this[string key]
         {
             get
             {
-                if (!_propertyInfos.ContainsKey(property))
+                if (!_cache.ContainsKey(key))
                 {
-                    PropertyInfo propertyInfo = typeof(T).GetProperty(property);
-                    _propertyInfos.TryAdd(property, propertyInfo);
+                    PropertyInfo propertyInfo = typeof(T).GetProperty(key);
+                    _cache.TryAdd(key, propertyInfo);
                 }
-                return _propertyInfos[property];
+                return _cache[key];
             }
         }
 
-        public void Load()
+        public override void Load()
         {
             foreach (PropertyInfo propertyInfo in typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                if (!_propertyInfos.ContainsKey(propertyInfo.Name))
+                if (!_cache.ContainsKey(propertyInfo.Name))
                 {
-                    _propertyInfos.TryAdd(propertyInfo.Name, propertyInfo);
+                    _cache.TryAdd(propertyInfo.Name, propertyInfo);
                 }
             }
             IsLoaded = true;
         }
+    }
+    #endregion PropertyInfoCache<T>
 
-        public IEnumerator<PropertyInfo> GetEnumerator()
+    #region MethodInfoCollection
+    public class MethodInfoCollection : ReflectionCache<Type, iReflectionCache<Object, MethodInfo>>
+    {
+        public override iReflectionCache<Object, MethodInfo> this[Type type]
         {
-            foreach (KeyValuePair<String, PropertyInfo> kvp in _propertyInfos)
+            get
             {
-                yield return kvp.Value;
+                if (!_cache.ContainsKey(type))
+                {
+                    Type genericTemplate = typeof(MethodInfoCache<>);
+                    Type[] typeArgs = { type };
+                    Type genericType = genericTemplate.MakeGenericType(typeArgs);
+                    iReflectionCache<Object, MethodInfo> subCache = (iReflectionCache<Object, MethodInfo>)Activator.CreateInstance(genericType);
+                    _cache.TryAdd(type, subCache);
+                }
+
+                return _cache[type];
             }
         }
+    }
+    #endregion MethodInfoCollection
 
-        IEnumerator IEnumerable.GetEnumerator()
+    #region MethodInfoCache<T>
+    public class MethodInfoCache<T> : ReflectionCache<object, MethodInfo>
+    {
+        public override MethodInfo this[object objKey]
         {
-            return GetEnumerator();
+            get
+            {
+                if (!_cache.ContainsKey(objKey))
+                {
+                    MethodInfo methodInfo = null;
+
+                    switch (objKey)
+                    {
+                        case String strKey:
+                            methodInfo = typeof(T).GetMethod(strKey);
+                            break;
+                        case Object [] arr:
+                            if (arr.Length == 2)
+                            {
+                                String methodName = arr[0].ToString();
+                                Type[] types = (Type[])arr[1];
+                                methodInfo = typeof(T).GetMethod(methodName, types);
+                            }
+                            break;
+                    }
+
+                    _cache.TryAdd(objKey, methodInfo);
+                }
+                return _cache[objKey];
+            }
         }
     }
+    #endregion MethodInfoCache<T>
 }

@@ -1,7 +1,10 @@
-﻿using SwagOverFlow.ViewModels;
+﻿using Microsoft.Win32;
+using SwagOverFlow.Utils;
+using SwagOverFlow.ViewModels;
 using SwagOverFlow.WPF.Commands;
 using SwagOverFlow.WPF.UI;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,7 +19,8 @@ namespace SwagOverFlow.WPF.Controls
         #region Private Members
         Point _startPoint;
         bool _isDragging = false;
-        ICommand _saveCommand;
+        ICommand _searchCommand, _saveCommand, _expandCommand, _collapseCommand, _copyCommand, _pasteCommand,
+            _importCommand, _exportCommand, _clearCommand, _removeCommand;
         #endregion Private Members
 
         #region Properties
@@ -140,6 +144,33 @@ namespace SwagOverFlow.WPF.Controls
             remove { RemoveHandler(TreeViewItemDropEvent, value); }
         }
         #endregion TreeViewItemDrop
+        #region Search
+        public static readonly RoutedEvent SearchEvent =
+            EventManager.RegisterRoutedEvent(
+            "Search",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler Search
+        {
+            add { AddHandler(SearchEvent, value); }
+            remove { RemoveHandler(SearchEvent, value); }
+        }
+        #endregion Search
+        #region SearchCommand
+        public ICommand SearchCommand
+        {
+            get
+            {
+                return _searchCommand ??
+                    (_searchCommand = new RelayCommand<object>((s) =>
+                    {
+                        RaiseEvent(new RoutedEventArgs(SearchEvent, s ?? this));
+                    }));
+            }
+        }
+        #endregion SearchCommand
         #region Save
         public static readonly RoutedEvent SaveEvent =
             EventManager.RegisterRoutedEvent(
@@ -162,11 +193,227 @@ namespace SwagOverFlow.WPF.Controls
                 return _saveCommand ??
                     (_saveCommand = new RelayCommand<object>((s) =>
                     {
-                        RaiseEvent(new RoutedEventArgs(SaveEvent, this));
+                        RaiseEvent(new RoutedEventArgs(SaveEvent, s ?? this));
                     }));
             }
         }
         #endregion SaveCommand
+        #region Expand
+        public static readonly RoutedEvent ExpandEvent =
+            EventManager.RegisterRoutedEvent(
+            "Expand",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler Expand
+        {
+            add { AddHandler(ExpandEvent, value); }
+            remove { RemoveHandler(ExpandEvent, value); }
+        }
+        #endregion Expand
+        #region ExpandCommand
+        public ICommand ExpandCommand
+        {
+            get
+            {
+                return _expandCommand ??
+                    (_expandCommand = new RelayCommand<object>((s) =>
+                    {
+                        RaiseEvent(new RoutedEventArgs(ExpandEvent, s ?? this));
+                    }));
+            }
+        }
+        #endregion ExpandCommand
+        #region Collapse
+        public static readonly RoutedEvent CollapseEvent =
+            EventManager.RegisterRoutedEvent(
+            "Collapse",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler Collapse
+        {
+            add { AddHandler(CollapseEvent, value); }
+            remove { RemoveHandler(CollapseEvent, value); }
+        }
+        #endregion Collapse
+        #region CollapseCommand
+        public ICommand CollapseCommand
+        {
+            get
+            {
+                return _collapseCommand ??
+                    (_collapseCommand = new RelayCommand<object>((s) =>
+                    {
+                        RaiseEvent(new RoutedEventArgs(CollapseEvent, s ?? this));
+                    }));
+            }
+        }
+        #endregion CollapseCommand
+        #region Copy
+        public static readonly RoutedEvent CopyEvent =
+            EventManager.RegisterRoutedEvent(
+            "Copy",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler Copy
+        {
+            add { AddHandler(CopyEvent, value); }
+            remove { RemoveHandler(CopyEvent, value); }
+        }
+        #endregion Copy
+        #region CopyCommand
+        public ICommand CopyCommand
+        {
+            get
+            {
+                return _copyCommand ??
+                    (_copyCommand = new RelayCommand<object>((s) =>
+                    {
+                        RaiseEvent(new RoutedEventArgs(CopyEvent, s ?? this));
+                    }));
+            }
+        }
+        #endregion CopyCommand
+        #region Paste
+        public static readonly RoutedEvent PasteEvent =
+            EventManager.RegisterRoutedEvent(
+            "Paste",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler Paste
+        {
+            add { AddHandler(PasteEvent, value); }
+            remove { RemoveHandler(PasteEvent, value); }
+        }
+        #endregion Paste
+        #region PasteCommand
+        public ICommand PasteCommand
+        {
+            get
+            {
+                return _pasteCommand ??
+                    (_pasteCommand = new RelayCommand<object>((s) =>
+                    {
+                        RaiseEvent(new RoutedEventArgs(PasteEvent, s ?? this));
+                    }));
+            }
+        }
+        #endregion PasteCommand
+        #region Export
+        public static readonly RoutedEvent ExportEvent =
+            EventManager.RegisterRoutedEvent(
+            "Export",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler Export
+        {
+            add { AddHandler(ExportEvent, value); }
+            remove { RemoveHandler(ExportEvent, value); }
+        }
+        #endregion Export
+        #region ExportCommand
+        public ICommand ExportCommand
+        {
+            get
+            {
+                return _exportCommand ??
+                    (_exportCommand = new RelayCommand<object>((s) =>
+                    {
+                        RaiseEvent(new RoutedEventArgs(ExportEvent, s ?? this));
+                    }));
+            }
+        }
+        #endregion ExportCommand
+        #region Import
+        public static readonly RoutedEvent ImportEvent =
+            EventManager.RegisterRoutedEvent(
+            "Import",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler Import
+        {
+            add { AddHandler(ImportEvent, value); }
+            remove { RemoveHandler(ImportEvent, value); }
+        }
+        #endregion Import
+        #region ImportCommand
+        public ICommand ImportCommand
+        {
+            get
+            {
+                return _importCommand ??
+                    (_importCommand = new RelayCommand<object>((s) =>
+                    {
+                        RaiseEvent(new RoutedEventArgs(ImportEvent, s ?? this));
+                    }));
+            }
+        }
+        #endregion ImportCommand
+        #region Clear
+        public static readonly RoutedEvent ClearEvent =
+            EventManager.RegisterRoutedEvent(
+            "Clear",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler Clear
+        {
+            add { AddHandler(ClearEvent, value); }
+            remove { RemoveHandler(ClearEvent, value); }
+        }
+        #endregion Clear
+        #region ClearCommand
+        public ICommand ClearCommand
+        {
+            get
+            {
+                return _clearCommand ??
+                    (_clearCommand = new RelayCommand<object>((s) =>
+                    {
+                        RaiseEvent(new RoutedEventArgs(ClearEvent, s ?? this));
+                    }));
+            }
+        }
+        #endregion ClearCommand
+        #region Remove
+        public static readonly RoutedEvent RemoveEvent =
+            EventManager.RegisterRoutedEvent(
+            "Remove",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler Remove
+        {
+            add { AddHandler(RemoveEvent, value); }
+            remove { RemoveHandler(RemoveEvent, value); }
+        }
+        #endregion Remove
+        #region RemoveCommand
+        public ICommand RemoveCommand
+        {
+            get
+            {
+                return _removeCommand ??
+                    (_removeCommand = new RelayCommand<object>((s) =>
+                    {
+                        RaiseEvent(new RoutedEventArgs(RemoveEvent, s ?? this));
+                    }));
+            }
+        }
+        #endregion RemoveCommand
         #region ShowSaveButton
         public static DependencyProperty ShowSaveButtonProperty =
             DependencyProperty.Register(
@@ -185,24 +432,258 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowSaveButton
-        #region ShowShowSaveContextMenuItem
-        public static DependencyProperty ShowShowSaveContextMenuItemProperty =
+        #region ShowSaveContextMenuItem
+        public static DependencyProperty ShowSaveContextMenuItemProperty =
             DependencyProperty.Register(
-                "ShowShowSaveContextMenuItem",
+                "ShowSaveContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(true));
+
+        public Boolean ShowSaveContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowSaveContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowSaveContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowSaveContextMenuItem
+        #region ShowSearchContextMenuItem
+        public static DependencyProperty ShowSearchContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowSearchContextMenuItem",
                 typeof(Boolean),
                 typeof(SwagItemsControl),
                 new PropertyMetadata(false));
 
-        public Boolean ShowShowSaveContextMenuItem
+        public Boolean ShowSearchContextMenuItem
         {
-            get { return (Boolean)GetValue(ShowShowSaveContextMenuItemProperty); }
+            get { return (Boolean)GetValue(ShowSearchContextMenuItemProperty); }
             set
             {
-                SetValue(ShowShowSaveContextMenuItemProperty, value);
+                SetValue(ShowSearchContextMenuItemProperty, value);
                 OnPropertyChanged();
             }
         }
-        #endregion ShowShowSaveContextMenuItem
+        #endregion ShowSearchContextMenuItem
+        #region ShowLevelContextMenuItem
+        public static DependencyProperty ShowLevelContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowLevelContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowLevelContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowLevelContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowLevelContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowLevelContextMenuItem
+        #region ShowCopyContextMenuItem
+        public static DependencyProperty ShowCopyContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowCopyContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowCopyContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowCopyContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowCopyContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowCopyContextMenuItem
+        #region ShowPasteContextMenuItem
+        public static DependencyProperty ShowPasteContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowPasteContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowPasteContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowPasteContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowPasteContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowPasteContextMenuItem
+        #region ShowExportContextMenuItem
+        public static DependencyProperty ShowExportContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowExportContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowExportContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowExportContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowExportContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowExportContextMenuItem
+        #region ShowImportContextMenuItem
+        public static DependencyProperty ShowImportContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowImportContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowImportContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowImportContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowImportContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowImportContextMenuItem
+        #region ShowItemSaveContextMenuItem
+        public static DependencyProperty ShowItemSaveContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowItemSaveContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowItemSaveContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowItemSaveContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowItemSaveContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowItemSaveContextMenuItem
+        #region ShowItemLevelContextMenuItem
+        public static DependencyProperty ShowItemLevelContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowItemLevelContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowItemLevelContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowItemLevelContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowItemLevelContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowItemLevelContextMenuItem
+        #region ShowItemCopyContextMenuItem
+        public static DependencyProperty ShowItemCopyContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowItemCopyContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowItemCopyContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowItemCopyContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowItemCopyContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowItemCopyContextMenuItem
+        #region ShowItemPasteContextMenuItem
+        public static DependencyProperty ShowItemPasteContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowItemPasteContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowItemPasteContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowItemPasteContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowItemPasteContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowItemPasteContextMenuItem
+        #region ShowItemExportContextMenuItem
+        public static DependencyProperty ShowItemExportContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowItemExportContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowItemExportContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowItemExportContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowItemExportContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowItemExportContextMenuItem
+        #region ShowItemImportContextMenuItem
+        public static DependencyProperty ShowItemImportContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowItemImportContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowItemImportContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowItemImportContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowItemImportContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowItemImportContextMenuItem
+        #region ShowItemRemoveContextMenuItem
+        public static DependencyProperty ShowItemRemoveContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowItemRemoveContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowItemRemoveContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowItemRemoveContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowItemRemoveContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowItemRemoveContextMenuItem
         #region SaveVerticalAlignment
         public static DependencyProperty SaveVerticalAlignmentProperty =
             DependencyProperty.Register(
@@ -237,7 +718,6 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion SaveHorizontalAlignment
-
         #endregion Properties
 
         #region Initialization
@@ -339,9 +819,75 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
 
+        private void ItemContextMenu_Opened(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement fe = (FrameworkElement)sender;
+            if (fe.DataContext is SwagItemBase item)
+            {
+                item.IsSelected = true;
+            }
+        }
+
         #endregion Events
 
     }
+
+    #region SwagItemsControlHelper
+    public static class SwagItemsControlHelper
+    {
+        public static void SetClipBoardData<T>(T item)
+        {
+            String json = JsonHelper.ToJsonString(item);
+            Clipboard.SetData(typeof(T).Name, json);
+        }
+
+        public static T GetClipBoardData<T>()
+        {
+            if (Clipboard.ContainsData(typeof(T).Name))
+            {
+                String json = Clipboard.GetData(typeof(T).Name).ToString();
+                T item = JsonHelper.ToObject<T>(json);
+                return item;
+            }
+            return default(T);
+        }
+
+        public static void ExportDataToFile<T>(T item)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            sfd.FileName = typeof(T).Name;
+            sfd.Filter = "JSON files (*.json)|*.json";
+            System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                if (sfd.ShowDialog() ?? false)
+                {
+                    String json = JsonHelper.ToJsonString(item);
+                    File.WriteAllText(sfd.FileName, json);
+                }
+            }));
+        }
+
+        public static T GetDataFromFile<T>()
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            ofd.FileName = typeof(T).Name;
+            ofd.Filter = "JSON files (*.json)|*.json";
+            T item = default(T);
+            System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                if (ofd.ShowDialog() ?? false)
+                {
+                    String json = File.ReadAllText(ofd.FileName);
+                    item = JsonHelper.ToObject<T>(json);
+                }
+            }));
+
+            return item;
+        }
+    }
+    #endregion SwagItemsControlHelper
 
     #region TreeViewItemDropEventArgs
     public class TreeViewItemDropEventArgs : RoutedEventArgs

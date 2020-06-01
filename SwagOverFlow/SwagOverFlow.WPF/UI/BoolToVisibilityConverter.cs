@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
@@ -7,13 +8,13 @@ namespace SwagOverFlow.WPF.UI
 {
     public class BoolToVisibilityConverter : MarkupExtension, IValueConverter
     {
-        public Visibility TrueValue { get; set; }
-        public Visibility FalseValue { get; set; }
+        //Key pattern should be a cartesian product of all available public properties
+        static ConcurrentDictionary<String, BoolToVisibilityConverter> _converters = new ConcurrentDictionary<string, BoolToVisibilityConverter>();
+        public Visibility TrueValue { get; set; } = Visibility.Visible;
+        public Visibility FalseValue { get; set; } = Visibility.Collapsed;
 
         public BoolToVisibilityConverter()
         {
-            TrueValue = Visibility.Visible;
-            FalseValue = Visibility.Collapsed;
         }
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -29,7 +30,13 @@ namespace SwagOverFlow.WPF.UI
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            return this;
+            var anonKey = new { TrueValue = TrueValue, FalseValue = FalseValue };
+            String key = anonKey.ToString();
+            if (!_converters.ContainsKey(key))
+            {
+                _converters.TryAdd(key, this);
+            }
+            return _converters[key];
         }
     }
 }
