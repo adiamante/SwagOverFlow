@@ -98,10 +98,10 @@ namespace SwagOverFlow.Test.BooleanExpression.WPF
                 ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
             }
 
-            SwagWindow.GlobalSettings["Test"]["Context"].GetValue<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>>().SwagItemChanged += (s, e) =>
-            {
-                SwagWindow.GlobalSettings.OnSwagItemChanged(SwagWindow.GlobalSettings["Test"]["Context"], e.PropertyChangedArgs);
-            };
+            //SwagWindow.GlobalSettings["Test"]["Context"].GetValue<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>>().SwagItemChanged += (s, e) =>
+            //{
+            //    SwagWindow.GlobalSettings.OnSwagItemChanged(SwagWindow.GlobalSettings["Test"]["Context"], e.PropertyChangedArgs);
+            //};
             #endregion Context
 
             #region Expression

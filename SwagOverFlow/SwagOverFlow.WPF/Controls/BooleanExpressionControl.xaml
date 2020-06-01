@@ -13,29 +13,34 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ContextMenu x:Key="OperationContextMenu" Opened="ExpressionContextMenu_Opened">
-            <MenuItem Header="Add OR Expression" Click="AddExpression" Tag="OR">
+            <MenuItem Header="Add">
                 <MenuItem.Icon>
-                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.LogicOr}" />
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Add}" />
                 </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Add AND Expression" Click="AddExpression" Tag="AND">
-                <MenuItem.Icon>
-                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.LogicAnd}" />
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Add Variable Expression">
-                <MenuItem.Icon>
-                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Variable}" />
-                </MenuItem.Icon>
-                <MenuItem Header="Boolean" Click="AddExpression" Tag="VAR_BOOL">
+                <MenuItem Header="OR" Click="AddExpression" Tag="OR">
                     <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.TypeBoolean}" />
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.LogicOr}" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="String" Click="AddExpression" Tag="VAR_STR">
+                <MenuItem Header="AND" Click="AddExpression" Tag="AND">
                     <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Alphabetical}" />
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.LogicAnd}" />
                     </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Variable">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Variable}" />
+                    </MenuItem.Icon>
+                    <MenuItem Header="Boolean" Click="AddExpression" Tag="VAR_BOOL">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.TypeBoolean}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="String" Click="AddExpression" Tag="VAR_STR">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Alphabetical}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Remove" Click="RemoveExpression">
@@ -52,7 +57,6 @@
             </MenuItem>
         </ContextMenu>
         <swui:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
-        <swui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
     <swctl:SwagItemsControl SwagItemsSource="{Binding Expression, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
                             AllowMove="{Binding AllowMove, ElementName=ThisControl}"
@@ -61,6 +65,11 @@
                             TreeViewItemDrop="SwagItemsControl_TreeViewItemDrop"
                             ShowSaveButton="{Binding ShowSaveButton, ElementName=ThisControl}"
                             Save="SwagItemsControl_Save"
+                            Copy="SwagItemsControl_Copy"
+                            Paste="SwagItemsControl_Paste"
+                            Export="SwagItemsControl_Export"
+                            Import="SwagItemsControl_Import"
+                            Clear="RemoveRootExpression"
                             SaveHorizontalAlignment="Right"
                             SaveVerticalAlignment="Bottom">
         <swctl:SwagItemsControl.ContextMenu>
@@ -68,14 +77,14 @@
             <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                 <MenuItem Header="Save"
                           Command="{Binding SaveCommand}"
-                          Visibility="{Binding Tag.ShowShowSaveContextMenuItem, Converter={StaticResource BoolToVisibilityConverter}}">
+                          Visibility="{Binding Tag.ShowSaveContextMenuItem, Converter={swui:BoolToVisibilityConverter}}">
                     <MenuItem.Icon>
                         <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Add" DataContext="{Binding Tag.Expression}" Visibility="{Binding HasChildren, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                <MenuItem Header="Root" DataContext="{Binding Tag.Expression}" Visibility="{Binding HasChildren, Converter={StaticResource InverseBoolToVisibilityConverter}}">
                     <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Add}" />
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconEntypoKind.FlowTree}" />
                     </MenuItem.Icon>
                     <MenuItem Header="OR" Click="AddExpression" Tag="OR">
                         <MenuItem.Icon>
@@ -118,7 +127,31 @@
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Clear" DataContext="{Binding Tag.Expression}" Click="RemoveRootExpression" Visibility="{Binding HasChildren, Converter={StaticResource BoolToVisibilityConverter}}">
+                <MenuItem Header="Copy" Command="{Binding CopyCommand}" CommandParameter="{Binding Tag}"
+                          Visibility="{Binding Tag.ShowCopyContextMenuItem, Converter={swui:BoolToVisibilityConverter}}">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Clipboard}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Paste" Command="{Binding PasteCommand}" CommandParameter="{Binding Tag}"
+                          Visibility="{Binding Tag.ShowPasteContextMenuItem, Converter={swui:BoolToVisibilityConverter}}">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.ClipboardPaste}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Export" Command="{Binding ExportCommand}" CommandParameter="{Binding Tag}"
+                          Visibility="{Binding Tag.ShowExportContextMenuItem, Converter={swui:BoolToVisibilityConverter}}">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Export}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Import" Command="{Binding ImportCommand}" CommandParameter="{Binding Tag}"
+                          Visibility="{Binding Tag.ShowImportContextMenuItem, Converter={swui:BoolToVisibilityConverter}}">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Import}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Clear" Command="{Binding ClearCommand}" CommandParameter="{Binding Tag}" Visibility="{Binding Tag.Expression.HasChildren, Converter={swui:BoolToVisibilityConverter}}">
                     <MenuItem.Icon>
                         <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialDesignKind.Clear}" />
                     </MenuItem.Icon>
@@ -171,7 +204,7 @@
                     <swui:SwagTemplate.DataTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
                             <DockPanel>
-                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={StaticResource BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
+                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
                                 <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.LogicAnd}" />
                             </DockPanel>
                         </HierarchicalDataTemplate>
@@ -181,7 +214,7 @@
                     <swui:SwagTemplate.DataTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
                             <DockPanel>
-                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={StaticResource BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
+                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
                                 <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.LogicOr}" />
                             </DockPanel>
                         </HierarchicalDataTemplate>
@@ -202,7 +235,7 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Grid.RowSpan="2" Grid.Column="0" Visibility="{Binding ShowSequence, Converter={StaticResource BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
+                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Grid.RowSpan="2" Grid.Column="0" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
                                 <swctl:IconControl Grid.Row="0" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
                                 <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Key, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
                                 <swctl:IconControl Grid.Row="1" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Target}" />
@@ -226,7 +259,7 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Grid.RowSpan="2" Grid.Column="0" Visibility="{Binding ShowSequence, Converter={StaticResource BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
+                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Grid.RowSpan="2" Grid.Column="0" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:BooleanExpressionControl}}}" />
                                 <swctl:IconControl Grid.Row="0" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
                                 <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Key, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
                                 <swctl:IconControl Grid.Row="1" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Target}" />

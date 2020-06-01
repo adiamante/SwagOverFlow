@@ -7,6 +7,7 @@ using System.Windows.Markup.Localizer;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using MahApps.Metro.Controls;
+using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
 using SwagOverFlow.WPF.UI;
 using SwagOverFlow.WPF.ViewModels;
@@ -41,7 +42,6 @@ namespace SwagOverFlow.WPF.Controls
             set { SetValue(AllowMoveProperty, value); }
         }
         #endregion AllowMove
-
         #region ShowSequence
         public static DependencyProperty ShowSequenceProperty =
             DependencyProperty.Register(
@@ -59,7 +59,6 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowSequence
-
         #region Expression
         public static DependencyProperty ExpressionProperty =
             DependencyProperty.Register(
@@ -73,7 +72,6 @@ namespace SwagOverFlow.WPF.Controls
             set { SetValue(ExpressionProperty, value); }
         }
         #endregion Expression
-
         #region RootExpression
         public BooleanExpression RootExpression
         {
@@ -87,7 +85,6 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion Expression
-
         #region Save
         public static readonly RoutedEvent SaveEvent =
             EventManager.RegisterRoutedEvent(
@@ -102,7 +99,19 @@ namespace SwagOverFlow.WPF.Controls
             remove { RemoveHandler(SaveEvent, value); }
         }
         #endregion Save
+        #region SaveCommand
+        public static DependencyProperty SaveCommandProperty =
+            DependencyProperty.Register(
+                "SaveCommand",
+                typeof(ICommand),
+                typeof(BooleanExpressionControl));
 
+        public ICommand SaveCommand
+        {
+            get { return (ICommand)GetValue(SaveCommandProperty); }
+            set { SetValue(SaveCommandProperty, value); }
+        }
+        #endregion SaveCommand
         #region ShowSaveButton
         public static DependencyProperty ShowSaveButtonProperty =
             DependencyProperty.Register(
@@ -121,39 +130,96 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowSaveButton
-
-        #region ShowShowSaveContextMenuItem
-        public static DependencyProperty ShowShowSaveContextMenuItemProperty =
+        #region ShowSaveContextMenuItem
+        public static DependencyProperty ShowSaveContextMenuItemProperty =
             DependencyProperty.Register(
-                "ShowShowSaveContextMenuItem",
+                "ShowSaveContextMenuItem",
                 typeof(Boolean),
                 typeof(BooleanExpressionControl),
                 new PropertyMetadata(false));
 
-        public Boolean ShowShowSaveContextMenuItem
+        public Boolean ShowSaveContextMenuItem
         {
-            get { return (Boolean)GetValue(ShowShowSaveContextMenuItemProperty); }
+            get { return (Boolean)GetValue(ShowSaveContextMenuItemProperty); }
             set
             {
-                SetValue(ShowShowSaveContextMenuItemProperty, value);
+                SetValue(ShowSaveContextMenuItemProperty, value);
                 OnPropertyChanged();
             }
         }
-        #endregion ShowShowSaveContextMenuItem
-
-        #region SaveCommand
-        public static DependencyProperty SaveCommandProperty =
+        #endregion ShowSaveContextMenuItem
+        #region ShowCopyContextMenuItem
+        public static DependencyProperty ShowCopyContextMenuItemProperty =
             DependencyProperty.Register(
-                "SaveCommand",
-                typeof(ICommand),
-                typeof(BooleanExpressionControl));
+                "ShowCopyContextMenuItem",
+                typeof(Boolean),
+                typeof(BooleanExpressionControl),
+                new PropertyMetadata(false));
 
-        public ICommand SaveCommand
+        public Boolean ShowCopyContextMenuItem
         {
-            get { return (ICommand)GetValue(SaveCommandProperty); }
-            set { SetValue(SaveCommandProperty, value); }
+            get { return (Boolean)GetValue(ShowCopyContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowCopyContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
         }
-        #endregion SaveCommand
+        #endregion ShowCopyContextMenuItem
+        #region ShowPasteContextMenuItem
+        public static DependencyProperty ShowPasteContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowPasteContextMenuItem",
+                typeof(Boolean),
+                typeof(BooleanExpressionControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowPasteContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowPasteContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowPasteContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowPasteContextMenuItem
+        #region ShowExportContextMenuItem
+        public static DependencyProperty ShowExportContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowExportContextMenuItem",
+                typeof(Boolean),
+                typeof(BooleanExpressionControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowExportContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowExportContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowExportContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowExportContextMenuItem
+        #region ShowImportContextMenuItem
+        public static DependencyProperty ShowImportContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowImportContextMenuItem",
+                typeof(Boolean),
+                typeof(BooleanExpressionControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowImportContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowImportContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowImportContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowImportContextMenuItem
 
         #region Initialization
         public BooleanExpressionControl()
@@ -191,8 +257,8 @@ namespace SwagOverFlow.WPF.Controls
 
         private void RemoveRootExpression(object sender, RoutedEventArgs e)
         {
-            FrameworkElement fe = (FrameworkElement)sender;
-            BooleanOperationExpression exp = (BooleanOperationExpression)fe.DataContext;
+            BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
+            BooleanOperationExpression exp = (BooleanOperationExpression)bec.Expression;
             exp.Children.Clear();
         }
 
@@ -349,6 +415,40 @@ namespace SwagOverFlow.WPF.Controls
         {
             RaiseEvent(new RoutedEventArgs(SaveEvent));
         }
+
+        private void SwagItemsControl_Copy(object sender, RoutedEventArgs e)
+        {
+            BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
+            BooleanOperationExpression exp = (BooleanOperationExpression)bec.Expression;
+            SwagItemsControlHelper.SetClipBoardData<BooleanExpression>(exp);
+        }
+
+        private void SwagItemsControl_Paste(object sender, RoutedEventArgs e)
+        {
+            BooleanExpression exp = SwagItemsControlHelper.GetClipBoardData<BooleanExpression>();
+            if (exp != null)
+            {
+                BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
+                bec.Expression = exp;
+            }
+        }
+
+        private void SwagItemsControl_Export(object sender, RoutedEventArgs e)
+        {
+            BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
+            BooleanOperationExpression exp = (BooleanOperationExpression)bec.Expression;
+            SwagItemsControlHelper.ExportDataToFile<BooleanExpression>(exp);
+        }
+
+        private void SwagItemsControl_Import(object sender, RoutedEventArgs e)
+        {
+            BooleanExpression exp = SwagItemsControlHelper.GetDataFromFile<BooleanExpression>();
+            if (exp != null)
+            {
+                BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
+                bec.Expression = exp;
+            }
+        }
         #endregion Events
 
         #region Methods
@@ -409,6 +509,8 @@ namespace SwagOverFlow.WPF.Controls
 
             return moveType;
         }
+
+
 
         #endregion Methods
 
