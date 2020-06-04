@@ -1,7 +1,12 @@
-﻿using SwagOverFlow.Iterator;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SwagOverFlow.Iterator;
+using SwagOverFlow.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace SwagOverFlow.ViewModels
@@ -11,7 +16,11 @@ namespace SwagOverFlow.ViewModels
     {
         public String Name { get; set; }
         public String StringFormat { get; set; }
+        [NotMapped]
+        [JsonIgnore]
         public abstract String Value { get; }
+        [NotMapped]
+        [JsonIgnore]
         public virtual Dictionary<String, String> Dict
         { 
             get 
@@ -19,6 +28,7 @@ namespace SwagOverFlow.ViewModels
                 return new Dictionary<string, string>() { { Name, Value } }; 
             }
         }
+        public abstract Type Type { get; }
     }
     #endregion SwagOption
 
@@ -40,6 +50,8 @@ namespace SwagOverFlow.ViewModels
     #region StringOption
     public class StringOption : SwagOption<String>
     {
+
+        public override Type Type { get { return typeof(StringOption); } }
         public override string Value
         {
             get { return ValueT; }
@@ -50,6 +62,8 @@ namespace SwagOverFlow.ViewModels
     #region DateOption
     public class DateOption : SwagOption<DateTime>
     {
+
+        public override Type Type { get { return typeof(DateOption); } }
         public override string Value
         {
             get { return ValueT.ToString(StringFormat); }
@@ -60,6 +74,7 @@ namespace SwagOverFlow.ViewModels
     #region BooleanOption
     public class BooleanOption : SwagOption<Boolean>
     {
+        public override Type Type { get { return typeof(BooleanOption); } }
         public override string Value
         {
             get { return ValueT.ToString(); }
@@ -75,13 +90,15 @@ namespace SwagOverFlow.ViewModels
         {
             get { return Dict.ToString(); }
         }
+        public override Type Type { get { return typeof(SwagOptionGroup); } }
 
         #region SwagItemChanged
         public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
 
         public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
         {
-            throw new NotImplementedException();
+            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+            Parent?.OnSwagItemChanged(swagItem, e);
         }
         #endregion SwagItemChanged
 
@@ -131,6 +148,47 @@ namespace SwagOverFlow.ViewModels
         }
         #endregion Iterator
 
+        #region Initialization
+        public SwagOptionGroup() : base()
+        {
+            _children.CollectionChanged += _children_CollectionChanged;
+        }
+
+        private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (SwagOption item in e.NewItems)
+                {
+                    item.Parent = this;
+                    if (item.Sequence < 0)
+                    {
+                        item.Sequence = this.Children.Count - 1;
+                    }
+                }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (SwagOption item in e.OldItems)
+                {
+                    foreach (SwagOption sibling in Children)
+                    {
+                        if (item.Sequence < sibling.Sequence)
+                        {
+                            sibling.Sequence--;
+                        }
+                    }
+                }
+            }
+
+            OnPropertyChanged("HasChildren");
+
+            //TODO: This probably get's called twice when adding so need to check on that sometime
+            OnSwagItemChanged(this, new PropertyChangedExtendedEventArgs("Children", Children, null, null));
+        }
+        #endregion Initialization
     }
     #endregion SwagOptionGroup
+
 }

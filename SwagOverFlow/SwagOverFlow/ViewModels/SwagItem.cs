@@ -135,7 +135,7 @@ namespace SwagOverFlow.ViewModels
                     {
                         _objValue = _objValue.ToString();
                     }
-                    else
+                    else if (!ValueType.IsAssignableFrom(_objValue.GetType()))
                     {
                         //_objValue = JsonConvert.DeserializeObject(_objValue.ToString(), ValueType);
                         _objValue = JsonHelper.ToObject(_objValue.ToString(), ValueType);

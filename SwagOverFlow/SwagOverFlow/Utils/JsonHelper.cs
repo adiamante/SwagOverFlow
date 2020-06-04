@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using SwagOverFlow.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace SwagOverFlow.Utils
 {
     public static class JsonHelper
     {
-        public static List<JsonConverter> Converters { get; set; } = new List<JsonConverter>();
+        public static IJsonConverterProviderService JsonConverterProviderService { get; set; }
 
         public static T Clone<T>(T target)
         {
@@ -32,7 +33,7 @@ namespace SwagOverFlow.Utils
 
             String jsonString = JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings()
             {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore, Converters = Converters
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore, Converters = JsonConverterProviderService.GetConverters().ToList()
             });
 
             return jsonString;
@@ -40,7 +41,7 @@ namespace SwagOverFlow.Utils
 
         public static T ToObject<T>(String str)
         {
-            return JsonConvert.DeserializeObject<T>(str, new JsonSerializerSettings() { Converters = Converters });
+            return JsonConvert.DeserializeObject<T>(str, new JsonSerializerSettings() { Converters = JsonConverterProviderService.GetConverters().ToList() });
             //return JsonConvert.DeserializeObject<T>(str, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
         }
 
@@ -114,7 +115,7 @@ namespace SwagOverFlow.Utils
 
         public static object ToObject(string str, Type type)
         {
-            return JsonConvert.DeserializeObject(str, type, new JsonSerializerSettings() { Converters = Converters });
+            return JsonConvert.DeserializeObject(str, type, new JsonSerializerSettings() { Converters = JsonConverterProviderService.GetConverters().ToList() });
         }
     }
 

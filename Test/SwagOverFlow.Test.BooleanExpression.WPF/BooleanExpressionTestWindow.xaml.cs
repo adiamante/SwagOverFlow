@@ -46,6 +46,47 @@ namespace SwagOverFlow.Test.BooleanExpression.WPF
         }
         #endregion Expression
 
+        #region Options
+
+        public SwagOptionGroupWPF Options
+        {
+            get
+            {
+                if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Options"))
+                {
+                    SwagSetting<SwagOptionGroup> ssOpt = new SwagSetting<SwagOptionGroup>()
+                    {
+                        Icon = PackIconCustomKind.Variable,
+                        Value = new SwagOptionGroupWPF()
+                    };
+
+                    ssOpt.IconString = ssOpt.IconString;
+                    ssOpt.IconTypeString = ssOpt.IconTypeString;
+                    ssOpt.ValueTypeString = ssOpt.ValueTypeString;
+                    ssOpt.ObjValue = ssOpt.ObjValue;
+                    SwagWindow.GlobalSettings["Test"]["Options"] = ssOpt;
+
+                    //SwagSetting<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>> ssContext =
+                    //    new SwagSetting<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>>()
+                    //    {
+                    //        Icon = PackIconCustomKind.Variable,
+                    //        Value = new SwagItemGroupWPF<KeyValuePairViewModel<String, String>>()
+                    //    };
+
+                    //ssContext.IconString = ssContext.IconString;
+                    //ssContext.IconTypeString = ssContext.IconTypeString;
+                    //ssContext.ValueTypeString = ssContext.ValueTypeString;
+                    //ssContext.ObjValue = ssContext.ObjValue;
+                    //SwagWindow.GlobalSettings["Test"]["Context"] = ssContext;
+                    ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                }
+
+                return (SwagOptionGroupWPF)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
+            }
+        }
+
+        #endregion Option
+
         #region Context
         public SwagItemGroupWPF<KeyValuePairViewModel<String, String>> Context
         {
@@ -80,36 +121,9 @@ namespace SwagOverFlow.Test.BooleanExpression.WPF
             }
             #endregion Test
 
-            #region Context
-            if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Context"))
-            {
-                SwagSetting<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>> ssContext =
-                    new SwagSetting<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>>()
-                    {
-                        Icon = PackIconCustomKind.Variable,
-                        Value = new SwagItemGroupWPF<KeyValuePairViewModel<String, String>>()
-                    };
-
-                ssContext.IconString = ssContext.IconString;
-                ssContext.IconTypeString = ssContext.IconTypeString;
-                ssContext.ValueTypeString = ssContext.ValueTypeString;
-                ssContext.ObjValue = ssContext.ObjValue;
-                SwagWindow.GlobalSettings["Test"]["Context"] = ssContext;
-                ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-            }
-
-            //SwagWindow.GlobalSettings["Test"]["Context"].GetValue<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>>().SwagItemChanged += (s, e) =>
-            //{
-            //    SwagWindow.GlobalSettings.OnSwagItemChanged(SwagWindow.GlobalSettings["Test"]["Context"], e.PropertyChangedArgs);
-            //};
-            #endregion Context
-
-            #region Expression
-            //SwagWindow.GlobalSettings["Test"]["Expression"].GetValue<BooleanOrExpressionWPF>().SwagItemChanged += (s, e) =>
-            //{
-            //    SwagWindow.GlobalSettings.OnSwagItemChanged(SwagWindow.GlobalSettings["Test"]["Expression"], e.PropertyChangedArgs);
-            //};
-            #endregion Expression
+            #region Options
+            
+            #endregion Options
         }
         #endregion Initialization
 
@@ -140,6 +154,11 @@ namespace SwagOverFlow.Test.BooleanExpression.WPF
         private void BooleanExpressionControl_Save(object sender, RoutedEventArgs e)
         {
             SwagWindow.GlobalSettings["Test"]["Expression"].SetValue(Expression);
+        }
+
+        private void SwagOptionControl_Save(object sender, RoutedEventArgs e)
+        {
+            SwagWindow.GlobalSettings["Test"]["Options"].SetValue(Options);
         }
     }
 }

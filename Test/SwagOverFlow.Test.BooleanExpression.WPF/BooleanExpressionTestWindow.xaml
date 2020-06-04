@@ -89,10 +89,24 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <ContentControl Grid.Row="0" Grid.Column="0" MinWidth="200"
+        <!--<ContentControl Grid.Row="0" Grid.Column="0" MinWidth="200"
                         DataContext="{Binding Settings[Test][Context], ElementName=TestWindow}"
                         ContentTemplate="{StaticResource KeyValuePairGroupDataTemplate}">
-        </ContentControl>
+        </ContentControl>-->
+        <swctl:SwagOptionControl Grid.Row="0" Grid.Column="0" MinWidth="200"
+                                 ShowSaveButton="True" 
+                                ShowSaveContextMenuItem="True" 
+                                ShowAddContextMenuItem="True"
+                                ShowCopyContextMenuItem="True"
+                                ShowPasteContextMenuItem="True"
+                                ShowExportContextMenuItem="True"
+                                 ShowImportContextMenuItem="True"
+                                ShowItemAddContextMenuItem="True"
+                                ShowItemRemoveContextMenuItem="True"
+                                 RootOption="{Binding Options, ElementName=TestWindow}"
+                                 Save="SwagOptionControl_Save">
+            
+        </swctl:SwagOptionControl>
         <GroupBox Grid.Row="0" Grid.Column="1">
             <GroupBox.Header>
                 <DockPanel>

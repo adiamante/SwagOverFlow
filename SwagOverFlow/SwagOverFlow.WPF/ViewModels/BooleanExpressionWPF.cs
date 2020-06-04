@@ -109,6 +109,8 @@ namespace SwagOverFlow.WPF.ViewModels
     #region BooleanExpressionWPFJsonConverter
     public class BooleanExpressionWPFJsonConverter : AbstractJsonConverter<BooleanExpression>
     {
+        public static BooleanExpressionWPFJsonConverter Instance = new BooleanExpressionWPFJsonConverter();
+
         protected override BooleanExpression Create(Type objectType, JObject jObject)
         {
             String nativeType = jObject["Type"].ToString();
@@ -119,17 +121,16 @@ namespace SwagOverFlow.WPF.ViewModels
             Type type = Type.GetType(assemblyType) ?? Type.GetType(nativeType);
             JArray jaChildren = null;
 
-            if (jObject.ContainsKey("Parent"))
+            if (jObject.ContainsKey("Parent"))  //Prevent ReadJson Null error
             {
                 jObject.Remove("Parent");
             }
 
-            if (jObject.ContainsKey("Children"))
+            if (jObject.ContainsKey("Children")) //Children are handled below
             {
                 jaChildren = (JArray)jObject["Children"];
                 jObject.Remove("Children");
             }
-
 
             BooleanExpression exp = (BooleanExpression)JsonConvert.DeserializeObject(jObject.ToString(), type);
 
@@ -139,7 +140,7 @@ namespace SwagOverFlow.WPF.ViewModels
                     foreach (JToken token in jaChildren)
                     {
                         JObject jChild = (JObject)token;
-                        BooleanExpression child = (BooleanExpression)JsonConvert.DeserializeObject(jChild.ToString(), typeof(BooleanExpression), new BooleanExpressionWPFJsonConverter());
+                        BooleanExpression child = (BooleanExpression)JsonConvert.DeserializeObject(jChild.ToString(), typeof(BooleanExpression), BooleanExpressionWPFJsonConverter.Instance);
                         op.Children.Add(child);
                     }
                     break;
