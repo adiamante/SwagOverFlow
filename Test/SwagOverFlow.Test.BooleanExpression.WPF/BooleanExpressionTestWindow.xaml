@@ -20,66 +20,6 @@
                 </DataTemplate>
             </swui:SwagTemplate.DataTemplate>
         </swui:SwagTemplate>
-        <DataTemplate x:Key="KeyValuePairGroupDataTemplate">
-            <GroupBox DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}">
-                <GroupBox.Header>
-                    <DockPanel>
-                        <Button DockPanel.Dock="Right" Click="Evaluate">
-                            <swctl:IconControl Text="Evaluate" Kind="{x:Static swui:PackIconCustomKind.Play}" />
-                        </Button>
-                        <swctl:IconControl Text="{Binding Display}" Kind="{Binding Icon}">
-                            <swctl:IconControl.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Add" Command="{Binding ObjValue.AddDefaultCommand}">
-                                        <MenuItem.Icon>
-                                            <swctl:IconControl Kind="{x:Static swui:PackIconCustomKind.Plus}" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                </ContextMenu>
-                            </swctl:IconControl.ContextMenu>
-                        </swctl:IconControl>
-                    </DockPanel>
-                </GroupBox.Header>
-                <swctl:SwagItemsControl SwagItemsSource="{Binding ObjValue}" CustomDefaultItemTemplate="{StaticResource NonHierarchyHeaderTemplate}">
-                    <swctl:SwagItemsControl.ItemTemplates>
-                        <swui:SwagTemplateCollection>
-                            <swui:SwagTemplate>
-                                <swui:SwagTemplate.Type>
-                                    <swui:GenericType BaseTypeName="svm:SwagItem">
-                                        <swui:GenericType BaseTypeName="swvm:KeyValuePairViewModel">
-                                            <x:Type TypeName="sys:String"/>
-                                            <x:Type TypeName="sys:String"/>
-                                        </swui:GenericType>
-                                    </swui:GenericType>
-                                </swui:SwagTemplate.Type>
-                                <swui:SwagTemplate.DataTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <swctl:IconControl Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                                            <TextBox Grid.Column="1" Text="{Binding Value.Key, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
-                                            <swctl:IconControl Grid.Column="2" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaX}" />
-                                            <TextBox Grid.Column="3" Text="{Binding Value.Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </swui:SwagTemplate.DataTemplate>
-                            </swui:SwagTemplate>
-                        </swui:SwagTemplateCollection>
-                    </swctl:SwagItemsControl.ItemTemplates>
-                </swctl:SwagItemsControl>
-            </GroupBox>
-        </DataTemplate>
     </swctl:SwagWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -89,11 +29,26 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <!--<ContentControl Grid.Row="0" Grid.Column="0" MinWidth="200"
-                        DataContext="{Binding Settings[Test][Context], ElementName=TestWindow}"
-                        ContentTemplate="{StaticResource KeyValuePairGroupDataTemplate}">
-        </ContentControl>-->
-        <swctl:SwagOptionControl Grid.Row="0" Grid.Column="0" MinWidth="200"
+        <GroupBox Grid.Row="0" Grid.Column="0" MinWidth="200" DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}">
+            <GroupBox.Header>
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Click="Evaluate">
+                        <swctl:IconControl Text="Evaluate" Kind="{x:Static swui:PackIconCustomKind.Play}" />
+                    </Button>
+                    <swctl:IconControl Text="{Binding Display}" Kind="{Binding Icon}">
+                        <swctl:IconControl.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Add" Command="{Binding ObjValue.AddDefaultCommand}">
+                                    <MenuItem.Icon>
+                                        <swctl:IconControl Kind="{x:Static swui:PackIconCustomKind.Plus}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </swctl:IconControl.ContextMenu>
+                    </swctl:IconControl>
+                </DockPanel>
+            </GroupBox.Header>
+            <swctl:SwagOptionControl 
                                  ShowSaveButton="True" 
                                 ShowSaveContextMenuItem="True" 
                                 ShowAddContextMenuItem="True"
@@ -105,8 +60,10 @@
                                 ShowItemRemoveContextMenuItem="True"
                                  RootOption="{Binding Options, ElementName=TestWindow}"
                                  Save="SwagOptionControl_Save">
-            
-        </swctl:SwagOptionControl>
+
+            </swctl:SwagOptionControl>
+        </GroupBox>
+        
         <GroupBox Grid.Row="0" Grid.Column="1">
             <GroupBox.Header>
                 <DockPanel>

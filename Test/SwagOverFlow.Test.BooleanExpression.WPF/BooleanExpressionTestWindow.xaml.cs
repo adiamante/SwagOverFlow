@@ -130,14 +130,7 @@ namespace SwagOverFlow.Test.BooleanExpression.WPF
         #region Events
         private void Evaluate(object sender, RoutedEventArgs e)
         {
-            Dictionary<String, String> variables = new Dictionary<string, string>();
-
-            foreach (SwagItem<KeyValuePairViewModel<String, String>> variable in Context.Children)
-            {
-                variables.Add(variable.Value.Key, variable.Value.Value);
-            }
-
-            bool result = Expression.Evaluate(variables);
+            bool result = Expression.Evaluate(Options.Dict);
             txtResult.Text = result.ToString();
 
             if (result)
