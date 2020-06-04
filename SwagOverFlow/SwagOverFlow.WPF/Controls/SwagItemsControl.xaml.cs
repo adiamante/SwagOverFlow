@@ -19,8 +19,8 @@ namespace SwagOverFlow.WPF.Controls
         #region Private Members
         Point _startPoint;
         bool _isDragging = false;
-        ICommand _searchCommand, _saveCommand, _expandCommand, _collapseCommand, _copyCommand, _pasteCommand,
-            _importCommand, _exportCommand, _clearCommand, _removeCommand;
+        ICommand _searchCommand, _saveCommand, _expandCommand, _collapseCommand, _addCommand, _copyCommand, _pasteCommand,
+            _importCommand, _exportCommand, _clearCommand, _itemContextMenuOpenedCommand, _removeCommand;
         #endregion Private Members
 
         #region Properties
@@ -252,6 +252,33 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion CollapseCommand
+        #region Add
+        public static readonly RoutedEvent AddEvent =
+            EventManager.RegisterRoutedEvent(
+            "Add",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler Add
+        {
+            add { AddHandler(AddEvent, value); }
+            remove { RemoveHandler(AddEvent, value); }
+        }
+        #endregion Add
+        #region AddCommand
+        public ICommand AddCommand
+        {
+            get
+            {
+                return _addCommand ??
+                    (_addCommand = new RelayCommand<object>((s) =>
+                    {
+                        RaiseEvent(new RoutedEventArgs(AddEvent, s ?? this));
+                    }));
+            }
+        }
+        #endregion AddCommand
         #region Copy
         public static readonly RoutedEvent CopyEvent =
             EventManager.RegisterRoutedEvent(
@@ -387,6 +414,58 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ClearCommand
+        #region ItemContextMenuOpened
+        public static readonly RoutedEvent ItemContextMenuOpenedEvent =
+            EventManager.RegisterRoutedEvent(
+            "ItemContextMenuOpened",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler ItemContextMenuOpened
+        {
+            add { AddHandler(ItemContextMenuOpenedEvent, value); }
+            remove { RemoveHandler(ItemContextMenuOpenedEvent, value); }
+        }
+        #endregion ItemContextMenuOpened
+        #region UseDefaultItemContextMenuOpened
+        public static DependencyProperty UseDefaultItemContextMenuOpenedProperty =
+            DependencyProperty.Register(
+                "UseDefaultItemContextMenuOpened",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean UseDefaultItemContextMenuOpened
+        {
+            get { return (Boolean)GetValue(UseDefaultItemContextMenuOpenedProperty); }
+            set { SetValue(UseDefaultItemContextMenuOpenedProperty, value); }
+        }
+        #endregion UseDefaultItemContextMenuOpened
+        #region ItemContextMenuOpenedCommand
+        public ICommand ItemContextMenuOpenedCommand
+        {
+            get
+            {
+                return _itemContextMenuOpenedCommand ??
+                    (_itemContextMenuOpenedCommand = new RelayCommand<object>((s) =>
+                    {
+                        if (UseDefaultItemContextMenuOpened)
+                        {
+                            FrameworkElement fe = (FrameworkElement)s ?? this;
+                            if (fe.DataContext is SwagItemBase item)
+                            {
+                                item.IsSelected = true;
+                            }
+                        }
+                        else
+                        {
+                            RaiseEvent(new RoutedEventArgs(ItemContextMenuOpenedEvent, s ?? this));
+                        }
+                    }));
+            }
+        }
+        #endregion ItemContextMenuOpenedCommand
         #region Remove
         public static readonly RoutedEvent RemoveEvent =
             EventManager.RegisterRoutedEvent(
@@ -504,6 +583,24 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowCopyContextMenuItem
+        #region ShowAddContextMenuItem
+        public static DependencyProperty ShowAddContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowAddContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowAddContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowAddContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowAddContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowAddContextMenuItem
         #region ShowPasteContextMenuItem
         public static DependencyProperty ShowPasteContextMenuItemProperty =
             DependencyProperty.Register(
@@ -594,6 +691,24 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowItemLevelContextMenuItem
+        #region ShowItemAddContextMenuItem
+        public static DependencyProperty ShowItemAddContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowItemAddContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowItemAddContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowItemAddContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowItemAddContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowItemAddContextMenuItem
         #region ShowItemCopyContextMenuItem
         public static DependencyProperty ShowItemCopyContextMenuItemProperty =
             DependencyProperty.Register(

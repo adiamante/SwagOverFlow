@@ -85,6 +85,12 @@ namespace SwagOverFlow.WPF.UI
                     baseWidth = 450m;
                     baseHeight = 450m;
                     break;
+                case PackIconIoniconsKind ioniconsKind:
+                    baseWidth = 350m;
+                    baseHeight = 350m;
+                    scaleX = 0.7m;
+                    scaleY = 0.7m;
+                    break;
                 case PackIconMaterialKind materialKind:
                     baseWidth = 25m;
                     baseHeight = 25m;

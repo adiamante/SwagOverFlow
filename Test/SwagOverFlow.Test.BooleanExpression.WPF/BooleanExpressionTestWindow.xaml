@@ -103,8 +103,11 @@
             <swctl:BooleanExpressionControl Expression="{Binding Expression, ElementName=TestWindow}" 
                                             ShowSaveButton="True" 
                                             ShowSaveContextMenuItem="True" 
+                                            ShowAddContextMenuItem="True"
                                             ShowCopyContextMenuItem="True"
                                             ShowPasteContextMenuItem="True"
+                                            ShowItemAddContextMenuItem="True"
+                                            ShowItemRemoveContextMenuItem="True"
                                             Save="BooleanExpressionControl_Save" />
         </GroupBox>
     </Grid>

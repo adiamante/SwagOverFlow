@@ -29,6 +29,7 @@ namespace SwagOverFlow.WPF.Controls
         }
         #endregion MoveType
 
+        #region Properties
         #region AllowMove
         public static DependencyProperty AllowMoveProperty =
             DependencyProperty.Register(
@@ -52,7 +53,7 @@ namespace SwagOverFlow.WPF.Controls
         public Boolean ShowSequence
         {
             get { return (Boolean)GetValue(ShowSequenceProperty); }
-            set 
+            set
             {
                 SetValue(ShowSequenceProperty, value);
                 OnPropertyChanged();
@@ -148,6 +149,24 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowSaveContextMenuItem
+        #region ShowAddContextMenuItem
+        public static DependencyProperty ShowAddContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowAddContextMenuItem",
+                typeof(Boolean),
+                typeof(BooleanExpressionControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowAddContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowAddContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowAddContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowAddContextMenuItem
         #region ShowCopyContextMenuItem
         public static DependencyProperty ShowCopyContextMenuItemProperty =
             DependencyProperty.Register(
@@ -220,6 +239,43 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowImportContextMenuItem
+        #region ShowItemAddContextMenuItem
+        public static DependencyProperty ShowItemAddContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowItemAddContextMenuItem",
+                typeof(Boolean),
+                typeof(BooleanExpressionControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowItemAddContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowItemAddContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowItemAddContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowItemAddContextMenuItem
+        #region ShowItemRemoveContextMenuItem
+        public static DependencyProperty ShowItemRemoveContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowItemRemoveContextMenuItem",
+                typeof(Boolean),
+                typeof(BooleanExpressionControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowItemRemoveContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowItemRemoveContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowItemRemoveContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowItemRemoveContextMenuItem
+        #endregion Properties
 
         #region Initialization
         public BooleanExpressionControl()
@@ -229,9 +285,9 @@ namespace SwagOverFlow.WPF.Controls
         #endregion Initialization
 
         #region Events
-        private void AddExpression(object sender, RoutedEventArgs e)
+        private void SwagItemsControl_Add(object sender, RoutedEventArgs e)
         {
-            FrameworkElement fe = (FrameworkElement)sender;
+            FrameworkElement fe = (FrameworkElement)e.OriginalSource;
             BooleanOperationExpression exp = (BooleanOperationExpression)fe.DataContext;
 
             BooleanExpression newExp = null;
@@ -255,25 +311,18 @@ namespace SwagOverFlow.WPF.Controls
             exp.Children.Add(newExp);
         }
 
-        private void RemoveRootExpression(object sender, RoutedEventArgs e)
+        private void SwagItemsControl_Clear(object sender, RoutedEventArgs e)
         {
             BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
             BooleanOperationExpression exp = (BooleanOperationExpression)bec.Expression;
             exp.Children.Clear();
         }
 
-        private void RemoveExpression(object sender, RoutedEventArgs e)
+        private void SwagItemsControl_Remove(object sender, RoutedEventArgs e)
         {
-            FrameworkElement fe = (FrameworkElement)sender;
+            FrameworkElement fe = (FrameworkElement)e.OriginalSource;
             BooleanExpression exp = (BooleanExpression)fe.DataContext;
             exp.Parent.Children.Remove(exp);
-        }
-
-        private void ExpressionContextMenu_Opened(object sender, RoutedEventArgs e)
-        {
-            FrameworkElement fe = (FrameworkElement)sender;
-            BooleanExpression exp = (BooleanExpression)fe.DataContext;
-            exp.IsSelected = true;
         }
 
         private void SwagItemsControl_TreeViewItemDropPreview(object sender, RoutedEventArgs e)
@@ -509,7 +558,6 @@ namespace SwagOverFlow.WPF.Controls
 
             return moveType;
         }
-
 
 
         #endregion Methods
