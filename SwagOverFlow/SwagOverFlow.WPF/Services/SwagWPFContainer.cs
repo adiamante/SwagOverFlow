@@ -9,30 +9,30 @@ namespace SwagOverFlow.WPF.Services
 {
     public static class SwagWPFContainer
     {
-        private static IServiceProvider serviceProvider;
+        private static IServiceProvider _serviceProvider;
 
         public static SwagContext Context
         {
-            get { return serviceProvider.GetService<SwagContext>(); }
+            get { return _serviceProvider.GetService<SwagContext>(); }
         }
 
         public static SwagWindowSettingService SettingsService
         {
-            get { return serviceProvider.GetService<SwagWindowSettingService>(); }
+            get { return _serviceProvider.GetService<SwagWindowSettingService>(); }
         }
 
         public static SwagDataTableService DataTableService
         {
-            get { return serviceProvider.GetService<SwagDataTableService>(); }
+            get { return _serviceProvider.GetService<SwagDataTableService>(); }
         }
 
         static SwagWPFContainer()
         {
             ConfigureServices();
-            //This is some tight coupling here. WPF assembly depends on JsonHelper utility static class to enable 
+            //WPF assembly depends on JsonHelper utility static class to enable 
             //BooleanExpression abstract hierarchy conversion between native and wpf classes
             //SwagContext uses JsonHelper to dynamically convert SwagItem values
-            JsonHelper.JsonConverterProviderService = serviceProvider.GetService<IJsonConverterProviderService>();
+            JsonHelper.ResolveServices(_serviceProvider);
         }
 
         private static void ConfigureServices()
@@ -44,7 +44,7 @@ namespace SwagOverFlow.WPF.Services
             services.AddTransient<SwagWindowSettingService>();
             services.AddTransient<SwagDataTableService>();
             services.AddSingleton<IJsonConverterProviderService, JsonConverterProviderServiceWPF>();
-            serviceProvider = services.BuildServiceProvider();
+            _serviceProvider = services.BuildServiceProvider();
         }
     }
 }
