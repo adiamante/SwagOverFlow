@@ -7,7 +7,7 @@ using System;
 
 namespace SwagOverFlow.WPF.Services
 {
-    public static class SwagWPFServices
+    public static class SwagWPFContainer
     {
         private static IServiceProvider serviceProvider;
 
@@ -26,7 +26,7 @@ namespace SwagOverFlow.WPF.Services
             get { return serviceProvider.GetService<SwagDataTableService>(); }
         }
 
-        static SwagWPFServices()
+        static SwagWPFContainer()
         {
             ConfigureServices();
             //This is some tight coupling here. WPF assembly depends on JsonHelper utility static class to enable 

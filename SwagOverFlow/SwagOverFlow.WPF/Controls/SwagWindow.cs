@@ -24,9 +24,9 @@ namespace SwagOverFlow.WPF.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SwagWindow), new FrameworkPropertyMetadata(typeof(SwagWindow)));
 
-            SwagWPFServices.Context.Database.EnsureCreated();
+            SwagWPFContainer.Context.Database.EnsureCreated();
             String settingGoupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Settings";
-            _settings = SwagWPFServices.SettingsService.GetWindowSettingGroupByName(settingGoupName);
+            _settings = SwagWPFContainer.SettingsService.GetWindowSettingGroupByName(settingGoupName);
             _swagCommandManager = new SwagCommandManager();
         }
 

@@ -59,7 +59,7 @@ namespace TestWPF
             InitializeComponent();
 
             String sourceTableGroupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Table_Source";
-            Source = SwagWPFServices.DataTableService.GetDataTableByName(sourceTableGroupName);
+            Source = SwagWPFContainer.DataTableService.GetDataTableByName(sourceTableGroupName);
             String destTableGroupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Table_Dest";
             //Dest = SwagWPFServices.DataTableService.GetDataTableByName(destTableGroupName);
 
@@ -194,7 +194,7 @@ namespace TestWPF
                 }
             });
 
-            Source.SetContext(SwagWPFServices.Context);
+            Source.SetContext(SwagWPFContainer.Context);
             Source.DataTable = dt;
         }
 
