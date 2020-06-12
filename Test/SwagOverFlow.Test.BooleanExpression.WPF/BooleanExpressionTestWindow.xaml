@@ -12,15 +12,6 @@
         mc:Ignorable="d"
         x:Name="TestWindow"
         Title="BooleanExpressionTestWindow" Height="450" Width="800">
-    <swctl:SwagWindow.Resources>
-        <swui:SwagTemplate x:Key="NonHierarchyHeaderTemplate">
-            <swui:SwagTemplate.DataTemplate>
-                <DataTemplate>
-                    <TextBlock VerticalAlignment="Center" Text="{Binding Display}" />
-                </DataTemplate>
-            </swui:SwagTemplate.DataTemplate>
-        </swui:SwagTemplate>
-    </swctl:SwagWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -35,17 +26,7 @@
                     <Button DockPanel.Dock="Right" Click="Evaluate">
                         <swctl:IconControl Text="Evaluate" Kind="{x:Static swui:PackIconCustomKind.Play}" />
                     </Button>
-                    <swctl:IconControl Text="{Binding Display}" Kind="{Binding Icon}">
-                        <swctl:IconControl.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Add" Command="{Binding ObjValue.AddDefaultCommand}">
-                                    <MenuItem.Icon>
-                                        <swctl:IconControl Kind="{x:Static swui:PackIconCustomKind.Plus}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </ContextMenu>
-                        </swctl:IconControl.ContextMenu>
-                    </swctl:IconControl>
+                    <swctl:IconControl Text="Options" Kind="{x:Static swui:PackIconCustomKind.Variable}" />
                 </DockPanel>
             </GroupBox.Header>
             <swctl:SwagOptionControl 
@@ -63,7 +44,6 @@
 
             </swctl:SwagOptionControl>
         </GroupBox>
-        
         <GroupBox Grid.Row="0" Grid.Column="1">
             <GroupBox.Header>
                 <DockPanel>
