@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Shell;
+//using Microsoft.WindowsAPICodePack.Shell;
 using SwagOverFlow.Data;
 using SwagOverFlow.Utils;
 using SwagOverFlow.WPF.UI;
@@ -157,23 +157,24 @@ namespace SwagOverFlow.WPF.Controls
             else
             {
                 //https://searchcode.com/codesearch/view/28333948/
-                String[] formats = e.Data.GetFormats();
+                //Does not seem to work in .NET CORE; Gonna need to research if we want dropping inner zip files
+                //String[] formats = e.Data.GetFormats();
 
-                foreach (var format in formats)
-                {
-                    // Shell items are passed using the "Shell IDList Array" format. 
-                    if (format == "Shell IDList Array")
-                    {
-                        // Retrieve the ShellObjects from the data object
-                        ShellObjectCollection shellObjects = ShellObjectCollection.FromDataObject(
-                            (System.Runtime.InteropServices.ComTypes.IDataObject)e.Data);
+                //foreach (var format in formats)
+                //{
+                //    // Shell items are passed using the "Shell IDList Array" format. 
+                //    if (format == "Shell IDList Array")
+                //    {
+                //        // Retrieve the ShellObjects from the data object
+                //        ShellObjectCollection shellObjects = ShellObjectCollection.FromDataObject(
+                //            (System.Runtime.InteropServices.ComTypes.IDataObject)e.Data);
 
-                        foreach (ShellObject shellObject in shellObjects)
-                        {
-                            allFiles.Add(shellObject.ParsingName);
-                        }
-                    }
-                }
+                //        foreach (ShellObject shellObject in shellObjects)
+                //        {
+                //            allFiles.Add(shellObject.ParsingName);
+                //        }
+                //    }
+                //}
             }
 
             if (allFiles.Count > 0)
