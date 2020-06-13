@@ -245,10 +245,21 @@
                 <swui:SwagTemplate Type="{x:Type svm:SwagOptionGroup}">
                     <swui:SwagTemplate.DataTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
-                            <DockPanel>
-                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:SwagOptionControl}}}" />
-                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconIoniconsKind.OptionsMD}" />
-                            </DockPanel>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Grid.RowSpan="1" Grid.Column="0" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:SwagOptionControl}}}" />
+                                <CheckBox IsChecked="{Binding IsEnabled}" Grid.Column="1" />
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconIoniconsKind.OptionsMD}" Grid.Column="2" />
+                                <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Name, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                            </Grid>
                         </HierarchicalDataTemplate>
                     </swui:SwagTemplate.DataTemplate>
                 </swui:SwagTemplate>
@@ -259,22 +270,19 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Grid.RowSpan="3" Grid.Column="0" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:SwagOptionControl}}}" />
-                                <swctl:IconControl Grid.Row="0" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Name, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
-                                <swctl:IconControl Grid.Row="1" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Alphabetical}" />
-                                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding ValueT, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
-                                <swctl:IconControl Grid.Row="2" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaSBox}" />
-                                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding StringFormat, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                <CheckBox IsChecked="{Binding IsEnabled}" Grid.RowSpan="2" Grid.Column="1" />
+                                <swctl:IconControl Grid.Row="0" Grid.Column="2" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
+                                <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Name, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                <swctl:IconControl Grid.Row="1" Grid.Column="2" Kind="{x:Static iconPacks:PackIconMaterialKind.Alphabetical}" />
+                                <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ValueT, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
                             </Grid>
                         </DataTemplate>
                     </swui:SwagTemplate.DataTemplate>
@@ -291,17 +299,17 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Grid.RowSpan="3" Grid.Column="0" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:SwagOptionControl}}}" />
-                                <swctl:IconControl Grid.Row="0" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Name, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
-                                <swctl:IconControl Grid.Row="1" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Calendar}" />
-                                <metro:DateTimePicker Grid.Row="1" Grid.Column="2" SelectedDateTime="{Binding ValueT}" />
-                                <swctl:IconControl Grid.Row="2" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaSBox}" />
-                                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding StringFormat, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                <CheckBox IsChecked="{Binding IsEnabled}" Grid.RowSpan="3" Grid.Column="1" />
+                                <swctl:IconControl Grid.Row="0" Grid.Column="2" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
+                                <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Name, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                <swctl:IconControl Grid.Row="1" Grid.Column="2" Kind="{x:Static iconPacks:PackIconMaterialKind.Calendar}" />
+                                <metro:DateTimePicker Grid.Row="1" Grid.Column="3" SelectedDateTime="{Binding ValueT}" SelectedDateFormat="Short" SelectedTimeFormat="Short" IsClockVisible="False" />
+                                <swctl:IconControl Grid.Row="2" Grid.Column="2" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaSBox}" />
+                                <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding StringFormat, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
                             </Grid>
                         </DataTemplate>
                     </swui:SwagTemplate.DataTemplate>
@@ -313,22 +321,19 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Grid.RowSpan="3" Grid.Column="0" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type swctl:SwagOptionControl}}}" />
-                                <swctl:IconControl Grid.Row="0" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Name, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
-                                <swctl:IconControl Grid.Row="1" Grid.Column="1" Kind="{x:Static iconPacks:PackIconModernKind.TypeBoolean}" />
-                                <CheckBox Grid.Row="1" Grid.Column="2" IsChecked="{Binding ValueT}" MinWidth="100" />
-                                <swctl:IconControl Grid.Row="2" Grid.Column="1" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaSBox}" />
-                                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding StringFormat, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                <CheckBox IsChecked="{Binding IsEnabled}" Grid.RowSpan="2" Grid.Column="1" />
+                                <swctl:IconControl Grid.Row="0" Grid.Column="2" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
+                                <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Name, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                <swctl:IconControl Grid.Row="1" Grid.Column="2" Kind="{x:Static iconPacks:PackIconModernKind.TypeBoolean}" />
+                                <CheckBox Grid.Row="1" Grid.Column="3" IsChecked="{Binding ValueT}" MinWidth="100" />
                             </Grid>
                         </DataTemplate>
                     </swui:SwagTemplate.DataTemplate>

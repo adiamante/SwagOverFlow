@@ -14,6 +14,7 @@ namespace SwagOverFlow.ViewModels
     #region SwagOption
     public abstract class SwagOption : SwagItem<SwagOptionGroup, SwagOption>
     {
+        public Boolean IsEnabled { get; set; } = true;
         public String Name { get; set; } = "";
         public String StringFormat { get; set; } = "";
         [NotMapped]
@@ -24,8 +25,13 @@ namespace SwagOverFlow.ViewModels
         public virtual Dictionary<String, String> Dict
         { 
             get 
-            { 
-                return new Dictionary<string, string>() { { Name, Value } }; 
+            {
+                if (IsEnabled)
+                {
+                    return new Dictionary<string, string>() { { Name, Value } };
+                }
+
+                return new Dictionary<string, string>();
             }
         }
         public abstract Type Type { get; }
@@ -50,8 +56,11 @@ namespace SwagOverFlow.ViewModels
     #region StringOption
     public class StringOption : SwagOption<String>
     {
-
         public override Type Type { get { return typeof(StringOption); } }
+        public StringOption()
+        {
+            StringFormat = "yyyyMMdd";
+        }
         public override string Value
         {
             get { return ValueT; }
@@ -62,7 +71,6 @@ namespace SwagOverFlow.ViewModels
     #region DateOption
     public class DateOption : SwagOption<DateTime>
     {
-
         public override Type Type { get { return typeof(DateOption); } }
         public override string Value
         {
@@ -120,21 +128,28 @@ namespace SwagOverFlow.ViewModels
             get
             {
                 Dictionary<String, String> dict = new Dictionary<string, string>();
-                foreach (SwagOption option in Children)
+
+                if (IsEnabled)
                 {
-                    foreach (KeyValuePair<string, string> kvp in option.Dict)
+                    foreach (SwagOption option in Children)
                     {
-                        if (dict.ContainsKey(kvp.Key))
+                        if (option.IsEnabled)
                         {
-                            dict[kvp.Key] = kvp.Value;
-                        }
-                        else
-                        {
-                            dict.Add(kvp.Key, kvp.Value);
+                            foreach (KeyValuePair<string, string> kvp in option.Dict)
+                            {
+                                if (dict.ContainsKey(kvp.Key))
+                                {
+                                    dict[kvp.Key] = kvp.Value;
+                                }
+                                else
+                                {
+                                    dict.Add(kvp.Key, kvp.Value);
+                                }
+                            }
                         }
                     }
                 }
-
+                
                 return dict;
             }
         }
