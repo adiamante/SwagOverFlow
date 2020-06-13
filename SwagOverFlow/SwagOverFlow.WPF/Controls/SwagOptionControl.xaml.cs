@@ -323,14 +323,11 @@ namespace SwagOverFlow.WPF.Controls
             Boolean allowChildMove = false, allowSiblingMove = false;
             switch (tviea.TargetItem.DataContext)
             {
-                case BooleanOperationExpression opExp:
+                case SwagOptionGroup grp:
                     allowChildMove = true;
                     allowSiblingMove = true;
                     break;
-                case BooleanBooleanVariableExpression bbvExp:
-                    allowSiblingMove = true;
-                    break;
-                case BooleanStringVariableExpression bsvExp:
+                case SwagOption opt:
                     allowSiblingMove = true;
                     break;
             }
@@ -376,14 +373,14 @@ namespace SwagOverFlow.WPF.Controls
             }
 
             MoveType moveType = GetMoveType(tviea);
-            BooleanExpression targetExpression = (BooleanExpression)tviea.TargetItem.DataContext;
-            BooleanExpression droppedExpression = (BooleanExpression)tviea.DroppedItem.DataContext;
+            SwagOption targetItem = (SwagOption)tviea.TargetItem.DataContext;
+            SwagOption droppedItem = (SwagOption)tviea.DroppedItem.DataContext;
 
-            BooleanOperationExpression originalDroppedParent = droppedExpression.Parent;
-            Boolean sameParent = originalDroppedParent == targetExpression.Parent;
-            Int32 originalDroppedSequence = droppedExpression.Sequence,
-                currentDroppedSequence = droppedExpression.Sequence,
-                targetSequence = targetExpression.Sequence,
+            SwagOptionGroup originalDroppedParent = (SwagOptionGroup)droppedItem.Parent;
+            Boolean sameParent = originalDroppedParent == targetItem.Parent;
+            Int32 originalDroppedSequence = droppedItem.Sequence,
+                currentDroppedSequence = droppedItem.Sequence,
+                targetSequence = targetItem.Sequence,
                 delta = targetSequence - originalDroppedSequence;
 
             switch (moveType)
@@ -392,10 +389,10 @@ namespace SwagOverFlow.WPF.Controls
                 case MoveType.Below:
                     if (!sameParent)
                     {
-                        originalDroppedParent.Children.Remove(droppedExpression);
-                        droppedExpression.Sequence = -1;        //reset sequence
-                        targetExpression.Parent.Children.Add(droppedExpression);
-                        currentDroppedSequence = droppedExpression.Sequence;
+                        originalDroppedParent.Children.Remove(droppedItem);
+                        droppedItem.Sequence = -1;        //reset sequence
+                        targetItem.Parent.Children.Add(droppedItem);
+                        currentDroppedSequence = droppedItem.Sequence;
                         delta = targetSequence - currentDroppedSequence;
                     }
 
@@ -404,37 +401,37 @@ namespace SwagOverFlow.WPF.Controls
                         case MoveType.Above:
                             if (delta != 0)
                             {
-                                foreach (BooleanExpression sibling in targetExpression.Parent.Children)
+                                foreach (SwagOption sibling in targetItem.Parent.Children)
                                 {
                                     if (sibling.Sequence >= Math.Min(currentDroppedSequence, targetSequence) && sibling.Sequence < Math.Max(currentDroppedSequence, targetSequence))
                                     {
                                         sibling.Sequence = (sibling.Sequence + (delta > 0 ? -1 : 1));
                                     }
                                 }
-                                droppedExpression.Sequence = targetSequence + (delta > 0 ? -1 : 0);
+                                droppedItem.Sequence = targetSequence + (delta > 0 ? -1 : 0);
                             }
                             break;
                         case MoveType.Below:
                             if (delta != 0)
                             {
-                                foreach (BooleanExpression sibling in targetExpression.Parent.Children)
+                                foreach (SwagOption sibling in targetItem.Parent.Children)
                                 {
                                     if (sibling.Sequence > Math.Min(currentDroppedSequence, targetSequence) && sibling.Sequence <= Math.Max(currentDroppedSequence, targetSequence))
                                     {
                                         sibling.Sequence = (sibling.Sequence + (delta > 0 ? -1 : 1));
                                     }
                                 }
-                                droppedExpression.Sequence = targetSequence + (delta > 0 ? 0 : 1);
+                                droppedItem.Sequence = targetSequence + (delta > 0 ? 0 : 1);
                             }
                             break;
                     }
                     break;
                 case MoveType.Into:
-                    if (tviea.TargetItem.DataContext is BooleanOperationExpression opExp)
+                    if (tviea.TargetItem.DataContext is SwagOptionGroup grp)
                     {
-                        originalDroppedParent.Children.Remove(droppedExpression);
-                        droppedExpression.Sequence = -1;        //reset sequence
-                        opExp.Children.Add(droppedExpression);
+                        originalDroppedParent.Children.Remove(droppedItem);
+                        droppedItem.Sequence = -1;        //reset sequence
+                        grp.Children.Add(droppedItem);
                     }
                     break;
             }
@@ -454,8 +451,8 @@ namespace SwagOverFlow.WPF.Controls
         private void SwagItemsControl_Copy(object sender, RoutedEventArgs e)
         {
             SwagOptionControl sic = (SwagOptionControl)e.OriginalSource;
-            SwagOption exp = (SwagOption)sic.RootOption;
-            SwagItemsControlHelper.SetClipBoardData<SwagOption>(exp);
+            SwagOption opt = (SwagOption)sic.RootOption;
+            SwagItemsControlHelper.SetClipBoardData<SwagOption>(opt);
         }
 
         private void SwagItemsControl_Paste(object sender, RoutedEventArgs e)
@@ -489,27 +486,21 @@ namespace SwagOverFlow.WPF.Controls
         #region Methods
         private Boolean CheckIfValidDrop(TreeViewItemDropEventArgs tviea)
         {
-            BooleanExpression targetExp = (BooleanExpression)tviea.TargetItem.DataContext;
-            BooleanExpression droppedExp = (BooleanExpression)tviea.DroppedItem.DataContext;
+            SwagOption targetItem = (SwagOption)tviea.TargetItem.DataContext;
+            SwagOption droppedItem = (SwagOption)tviea.DroppedItem.DataContext;
             Boolean valid = true;
             MoveType moveType = GetMoveType(tviea);
 
-            //if ((targetExp == RootExpression && (moveType == MoveType.Above || moveType == MoveType.Below)) ||  //Don't drop as root sibling
-            //    targetExp == droppedExp)        //Don't drop to self
-            //{
-            //    valid = false;
-            //}
+            SwagOption tempOpt = targetItem.Parent;
 
-            BooleanExpression tempExp = targetExp.Parent;
-
-            while (valid && tempExp != null)
+            while (valid && tempOpt != null)
             {
-                if (droppedExp == tempExp) //Don't drop within own descendants
+                if (droppedItem == tempOpt) //Don't drop within own descendants
                 {
                     valid = false;
                     break;
                 }
-                tempExp = tempExp.Parent;
+                tempOpt = tempOpt.Parent;
             }
 
             if (!valid)

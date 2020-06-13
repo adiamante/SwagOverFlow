@@ -1,6 +1,0 @@
-{"Timestamp":"2020-05-07T12:49:09.4677800-05:00","Level":"Information","MessageTemplate":"[Start - 00:00:00.0000000] {Service} {Action}","Properties":{"Service":"WindowSettingService","Action":"GetWindowSettingGroupByName"}}
-{"Timestamp":"2020-05-07T12:49:10.0516587-05:00","Level":"Information","MessageTemplate":"{Service} {Action}","Properties":{"Service":"WindowSettingService","Action":"Created then saved to database"}}
-{"Timestamp":"2020-05-07T12:49:10.0533145-05:00","Level":"Information","MessageTemplate":"[End   - {Elapsed}] {Service} {Action}","Properties":{"Elapsed":"00:00:00.5933532","Service":"WindowSettingService","Action":"GetWindowSettingGroupByName"}}
-{"Timestamp":"2020-05-07T12:51:50.0992740-05:00","Level":"Information","MessageTemplate":"[Start - 00:00:00.0000000] {Service} {Action}","Properties":{"Service":"WindowSettingService","Action":"GetWindowSettingGroupByName"}}
-{"Timestamp":"2020-05-07T12:51:50.5106749-05:00","Level":"Information","MessageTemplate":"{Service} {Action}","Properties":{"Service":"WindowSettingService","Action":"Loaded from database"}}
-{"Timestamp":"2020-05-07T12:51:50.5116521-05:00","Level":"Information","MessageTemplate":"[End   - {Elapsed}] {Service} {Action}","Properties":{"Elapsed":"00:00:00.4196616","Service":"WindowSettingService","Action":"GetWindowSettingGroupByName"}}

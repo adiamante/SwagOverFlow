@@ -14,8 +14,8 @@ namespace SwagOverFlow.ViewModels
     #region SwagOption
     public abstract class SwagOption : SwagItem<SwagOptionGroup, SwagOption>
     {
-        public String Name { get; set; }
-        public String StringFormat { get; set; }
+        public String Name { get; set; } = "";
+        public String StringFormat { get; set; } = "";
         [NotMapped]
         [JsonIgnore]
         public abstract String Value { get; }
@@ -122,13 +122,16 @@ namespace SwagOverFlow.ViewModels
                 Dictionary<String, String> dict = new Dictionary<string, string>();
                 foreach (SwagOption option in Children)
                 {
-                    if (dict.ContainsKey(option.Name))
+                    foreach (KeyValuePair<string, string> kvp in option.Dict)
                     {
-                        dict[option.Name] = option.Value;
-                    }
-                    else
-                    {
-                        dict.Add(option.Name, option.Value);
+                        if (dict.ContainsKey(kvp.Key))
+                        {
+                            dict[kvp.Key] = kvp.Value;
+                        }
+                        else
+                        {
+                            dict.Add(kvp.Key, kvp.Value);
+                        }
                     }
                 }
 
