@@ -3,8 +3,11 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using SwagOverFlow.Services;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 
 namespace SwagOverFlow.Utils
 {
@@ -121,6 +124,93 @@ namespace SwagOverFlow.Utils
         public static object ToObject(string str, Type type)
         {
             return JsonConvert.DeserializeObject(str, type, new JsonSerializerSettings() { Converters = _jsonConverterProviderService.GetConverters().ToList() });
+        }
+
+        public static void ApplyJson(Object target, JObject jApply)
+        {
+            Type classType = target.GetType();
+            foreach (KeyValuePair<String, JToken> kvpApply in jApply)
+            {
+                PropertyInfo prop = ReflectionHelper.PropertyInfoCollection[classType][kvpApply.Key]; //classType.GetProperty(kvpApply.Key);
+
+                if (prop != null && prop.GetSetMethod() != null)
+                {
+                    Type destType = prop.PropertyType;
+                    TypeConverter converter = ReflectionHelper.TypeConverterCache[destType]; //TypeDescriptor.GetConverter(destType);
+
+                    if (kvpApply.Value is JValue)
+                    {
+                        JValue jVal = kvpApply.Value as JValue;
+
+                        if (jVal.Value != null)
+                        {
+                            Type sourceType = jVal.Value.GetType();
+
+                            if (converter.CanConvertFrom(sourceType))
+                            {
+                                prop.SetValue(target, converter.ConvertFrom(jVal.Value));
+                            }
+                            //If source and destination types are numeric, try converting from string
+                            else if ((sourceType.IsNumericType() && (destType.IsNumericType() || Nullable.GetUnderlyingType(destType).IsNumericType())) ||
+                                      destType.GetTypeCode() == TypeCode.DateTime)
+                            {
+                                prop.SetValue(target, converter.ConvertFrom(jVal.Value.ToString()));
+                            }
+                            else if (sourceType == destType)
+                            {
+                                prop.SetValue(target, jVal.Value);
+                            }
+                        }
+                    }
+                    else if (kvpApply.Value is JArray && destType.IsGenericType && destType.GetInterface(nameof(ICollection)) != null)
+                    {
+                        //This was made for dictionary and uses JOjbect item fields (in order the given order) in the Add method of the Collection no clue if it works for other generics
+                        var collection = Activator.CreateInstance(destType);
+                        JArray jArray = kvpApply.Value as JArray;
+
+                        foreach (JToken jToken in jArray)
+                        {
+                            if (jToken.Type == JTokenType.Object)
+                            {
+                                JObject jObject = (JObject)jToken;
+                                List<Object> parameters = new List<Object>();
+                                foreach (KeyValuePair<String, JToken> itemKvp in jObject)
+                                {
+                                    if (itemKvp.Value is JValue)
+                                    {
+                                        JValue val = (JValue)itemKvp.Value;
+                                        parameters.Add(val.Value);
+                                    }
+                                }
+                                collection.GetType().GetMethod("Add").Invoke(collection, parameters.ToArray());
+                            }
+                        }
+
+                        prop.SetValue(target, collection);
+                    }
+                    else if (kvpApply.Value is JArray && destType.IsGenericType)
+                    {
+                        JArray jArray = kvpApply.Value as JArray;
+                        Type listGenericType = typeof(List<>);
+                        Type listType = listGenericType.MakeGenericType(destType.GenericTypeArguments);
+
+                        var genericCollection = JsonConvert.DeserializeObject(jArray.ToString(), listType);
+                        prop.SetValue(target, genericCollection);
+                    }
+                    else if (kvpApply.Value is JArray)
+                    {
+                        JArray jArray = kvpApply.Value as JArray;
+
+                        var genericCollection = JsonConvert.DeserializeObject(jArray.ToString(), destType);
+                        prop.SetValue(target, genericCollection);
+                    }
+                    else if (kvpApply.Value is JObject && !destType.IsAbstract && !destType.IsInterface)
+                    {
+                        var destClass = JsonConvert.DeserializeObject(kvpApply.Value.ToString(), destType);
+                        prop.SetValue(target, destClass);
+                    }
+                }
+            }
         }
     }
 

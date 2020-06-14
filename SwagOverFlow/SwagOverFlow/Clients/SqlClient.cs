@@ -3,12 +3,92 @@ using System;
 using System.Data;
 using System.Text;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Microsoft.Data.SqlClient;
+using System.Collections.Generic;
 
 namespace SwagOverFlow.Clients
 {
     public class SqlClient
     {
+        #region Private Members
+        SqlConnection _connection;
+        #endregion Private Members
+
+        #region Initialization
+        public SqlClient(String connectionString)
+        {
+            _connection = new SqlConnection(connectionString);
+        }
+        #endregion Initialization
+
+        #region Connections
+        public void Open()
+        {
+            _connection.Open();
+        }
+
+        public void Close()
+        {
+            _connection.Close();
+        }
+        #endregion Connections
+
+        #region Methods
+        public DataSet ExecuteStoredProcedure(String storedProcedureName, Dictionary<String, SqlParam> sqlParams)
+        {
+            DataSet ds = new DataSet();
+            SqlCommand cmd = new SqlCommand(storedProcedureName, _connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            foreach (KeyValuePair<String, SqlParam> sqlParamKvp in sqlParams)
+            {
+                cmd.Parameters.Add(new SqlParameter()
+                {
+                    ParameterName = sqlParamKvp.Value.Key,
+                    Value = sqlParamKvp.Value.Value,
+                    SqlDbType = sqlParamKvp.Value.Type,
+                    Direction = sqlParamKvp.Value.Direction,
+                    Size = sqlParamKvp.Value.Size
+                });
+            }
+
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            da.Fill(ds);
+
+            foreach (SqlParameter sqlParam in cmd.Parameters)
+            {
+                if (sqlParam.Direction == ParameterDirection.Output)
+                {
+                    sqlParams[sqlParam.ParameterName].Value = sqlParam.Value;
+                }
+            }
+
+            return ds;
+        }
+
+        public DataSet GetDataSet()
+        {
+            //SqlCommand cmd = new SqlCommand()
+            throw new NotImplementedException();
+        }
+        #endregion Methods
     }
+
+    #region SqlParam
+    public class SqlParam
+    {
+        public String Key { get; set; }
+        //[JsonSchemaType(typeof(String))]
+        public Object Value { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public SqlDbType Type { get; set; }
+        public Int32 Size { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ParameterDirection Direction { get; set; }
+    }
+    #endregion SqlParam
 
     public static class SqlHelper
     {
