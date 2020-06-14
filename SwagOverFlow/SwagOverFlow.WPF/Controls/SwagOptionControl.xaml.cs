@@ -373,14 +373,14 @@ namespace SwagOverFlow.WPF.Controls
             }
 
             MoveType moveType = GetMoveType(tviea);
-            SwagOption targetItem = (SwagOption)tviea.TargetItem.DataContext;
-            SwagOption droppedItem = (SwagOption)tviea.DroppedItem.DataContext;
+            SwagOption targetOpt = (SwagOption)tviea.TargetItem.DataContext;
+            SwagOption droppedOpt = (SwagOption)tviea.DroppedItem.DataContext;
 
-            SwagOptionGroup originalDroppedParent = (SwagOptionGroup)droppedItem.Parent;
-            Boolean sameParent = originalDroppedParent == targetItem.Parent;
-            Int32 originalDroppedSequence = droppedItem.Sequence,
-                currentDroppedSequence = droppedItem.Sequence,
-                targetSequence = targetItem.Sequence,
+            SwagOptionGroup originalDroppedParent = (SwagOptionGroup)droppedOpt.Parent;
+            Boolean sameParent = originalDroppedParent == targetOpt.Parent;
+            Int32 originalDroppedSequence = droppedOpt.Sequence,
+                currentDroppedSequence = droppedOpt.Sequence,
+                targetSequence = targetOpt.Sequence,
                 delta = targetSequence - originalDroppedSequence;
 
             switch (moveType)
@@ -389,10 +389,10 @@ namespace SwagOverFlow.WPF.Controls
                 case MoveType.Below:
                     if (!sameParent)
                     {
-                        originalDroppedParent.Children.Remove(droppedItem);
-                        droppedItem.Sequence = -1;        //reset sequence
-                        targetItem.Parent.Children.Add(droppedItem);
-                        currentDroppedSequence = droppedItem.Sequence;
+                        originalDroppedParent.Children.Remove(droppedOpt);
+                        droppedOpt.Sequence = -1;        //reset sequence
+                        targetOpt.Parent.Children.Add(droppedOpt);
+                        currentDroppedSequence = droppedOpt.Sequence;
                         delta = targetSequence - currentDroppedSequence;
                     }
 
@@ -401,27 +401,27 @@ namespace SwagOverFlow.WPF.Controls
                         case MoveType.Above:
                             if (delta != 0)
                             {
-                                foreach (SwagOption sibling in targetItem.Parent.Children)
+                                foreach (SwagOption sibling in targetOpt.Parent.Children)
                                 {
                                     if (sibling.Sequence >= Math.Min(currentDroppedSequence, targetSequence) && sibling.Sequence < Math.Max(currentDroppedSequence, targetSequence))
                                     {
                                         sibling.Sequence = (sibling.Sequence + (delta > 0 ? -1 : 1));
                                     }
                                 }
-                                droppedItem.Sequence = targetSequence + (delta > 0 ? -1 : 0);
+                                droppedOpt.Sequence = targetSequence + (delta > 0 ? -1 : 0);
                             }
                             break;
                         case MoveType.Below:
                             if (delta != 0)
                             {
-                                foreach (SwagOption sibling in targetItem.Parent.Children)
+                                foreach (SwagOption sibling in targetOpt.Parent.Children)
                                 {
                                     if (sibling.Sequence > Math.Min(currentDroppedSequence, targetSequence) && sibling.Sequence <= Math.Max(currentDroppedSequence, targetSequence))
                                     {
                                         sibling.Sequence = (sibling.Sequence + (delta > 0 ? -1 : 1));
                                     }
                                 }
-                                droppedItem.Sequence = targetSequence + (delta > 0 ? 0 : 1);
+                                droppedOpt.Sequence = targetSequence + (delta > 0 ? 0 : 1);
                             }
                             break;
                     }
@@ -429,9 +429,9 @@ namespace SwagOverFlow.WPF.Controls
                 case MoveType.Into:
                     if (tviea.TargetItem.DataContext is SwagOptionGroup grp)
                     {
-                        originalDroppedParent.Children.Remove(droppedItem);
-                        droppedItem.Sequence = -1;        //reset sequence
-                        grp.Children.Add(droppedItem);
+                        originalDroppedParent.Children.Remove(droppedOpt);
+                        droppedOpt.Sequence = -1;        //reset sequence
+                        grp.Children.Add(droppedOpt);
                     }
                     break;
             }
@@ -486,16 +486,16 @@ namespace SwagOverFlow.WPF.Controls
         #region Methods
         private Boolean CheckIfValidDrop(TreeViewItemDropEventArgs tviea)
         {
-            SwagOption targetItem = (SwagOption)tviea.TargetItem.DataContext;
-            SwagOption droppedItem = (SwagOption)tviea.DroppedItem.DataContext;
+            SwagOption targetOpt = (SwagOption)tviea.TargetItem.DataContext;
+            SwagOption droppedOpt = (SwagOption)tviea.DroppedItem.DataContext;
             Boolean valid = true;
             MoveType moveType = GetMoveType(tviea);
 
-            SwagOption tempOpt = targetItem.Parent;
+            SwagOption tempOpt = targetOpt.Parent;
 
             while (valid && tempOpt != null)
             {
-                if (droppedItem == tempOpt) //Don't drop within own descendants
+                if (droppedOpt == tempOpt) //Don't drop within own descendants
                 {
                     valid = false;
                     break;

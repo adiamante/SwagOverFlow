@@ -56,8 +56,8 @@
                                             ShowAddContextMenuItem="True"
                                             ShowCopyContextMenuItem="True"
                                             ShowPasteContextMenuItem="True"
-                                ShowExportContextMenuItem="True"
-                                 ShowImportContextMenuItem="True"
+                                            ShowExportContextMenuItem="True"
+                                            ShowImportContextMenuItem="True"
                                             ShowItemAddContextMenuItem="True"
                                             ShowItemRemoveContextMenuItem="True"
                                             Save="BooleanExpressionControl_Save" />

@@ -558,8 +558,6 @@ namespace SwagOverFlow.WPF.Controls
 
             return moveType;
         }
-
-
         #endregion Methods
 
     }
