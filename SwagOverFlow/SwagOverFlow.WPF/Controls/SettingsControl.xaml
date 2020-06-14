@@ -106,7 +106,7 @@
                 </ui:SwagTemplate>
                 <ui:SwagTemplate TypePath="ValueType">
                     <ui:SwagTemplate.Type>
-                        <ui:GenericType BaseTypeName="vm:SwagItemGroupWPF">
+                        <ui:GenericType BaseTypeName="vm:SwagValueItemGroupWPF">
                             <ui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
                                 <x:Type TypeName="sys:String"/>
                                 <x:Type TypeName="vm:ParseViewModel"/>
@@ -190,7 +190,7 @@
                 </ui:SwagTemplate>
                 <ui:SwagTemplate TypePath="ValueType">
                     <ui:SwagTemplate.Type>
-                        <ui:GenericType BaseTypeName="vm:SwagItemGroupWPF">
+                        <ui:GenericType BaseTypeName="vm:SwagValueItemGroupWPF">
                             <ui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
                                 <x:Type TypeName="sys:String"/>
                                 <x:Type TypeName="sys:String"/>

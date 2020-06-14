@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace SwagOverFlow.ViewModels
 {
+    #region ViewModelBase
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -26,12 +27,14 @@ namespace SwagOverFlow.ViewModels
                 if (EqualityComparer<T>.Default.Equals(backingField, value))
                     return;
             }
-            
+
             backingField = value;
             OnPropertyChanged(propertyname);
         }
     }
+    #endregion ViewModelBase
 
+    #region PropertyChangedExtendedEventArgs
     //https://stackoverflow.com/questions/7677854/notifypropertychanged-event-where-event-args-contain-the-old-value
     public class PropertyChangedExtendedEventArgs : PropertyChangedEventArgs
     {
@@ -48,7 +51,9 @@ namespace SwagOverFlow.ViewModels
             NewValue = newValue;
         }
     }
+    #endregion PropertyChangedExtendedEventArgs
 
+    #region ViewModelBaseExtended
     public abstract class ViewModelBaseExtended : ViewModelBase
     {
 
@@ -78,4 +83,5 @@ namespace SwagOverFlow.ViewModels
             OnPropertyChangedExtended(oldValue, value, propertyName);
         }
     }
+    #endregion ViewModelBaseExtended
 }

@@ -37,9 +37,9 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
         #endregion MessageTemplate
 
         #region Variables
-        public SwagItemGroupWPF<KeyValuePairViewModel<String, String>> Variables
+        public SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>> Variables
         {
-            get { return SwagWindow.GlobalSettings["Test"]["Variables"].GetValue<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>>(); }
+            get { return SwagWindow.GlobalSettings["Test"]["Variables"].GetValue<SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>>>(); }
         }
         #endregion Variables
 
@@ -99,11 +99,11 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
             #region Variables
             if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Variables"))
             {
-                SwagSetting<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>> ssVariables =
-                    new SwagSetting<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>>()
+                SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>>> ssVariables =
+                    new SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>>>()
                     {
                         Icon = PackIconCustomKind.Variable,
-                        Value = new SwagItemGroupWPF<KeyValuePairViewModel<String, String>>()
+                        Value = new SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>>()
                     };
 
                 ssVariables.IconString = ssVariables.IconString;
@@ -114,7 +114,7 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
                 ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
             }
 
-            SwagWindow.GlobalSettings["Test"]["Variables"].GetValue<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>>().SwagItemChanged += (s, e) =>
+            SwagWindow.GlobalSettings["Test"]["Variables"].GetValue<SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>>>().SwagItemChanged += (s, e) =>
             {
                 SwagWindow.GlobalSettings.OnSwagItemChanged(SwagWindow.GlobalSettings["Test"]["Variables"], e.PropertyChangedArgs);
             };
@@ -129,7 +129,7 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
 
             Dictionary<String, String> variables = new Dictionary<string, string>();
 
-            foreach (SwagItem<KeyValuePairViewModel<String, String>> variable in Variables.Children)
+            foreach (SwagValueItem<KeyValuePairViewModel<String, String>> variable in Variables.Children)
             {
                 variables.Add(variable.Value.Key, variable.Value.Value);
             }

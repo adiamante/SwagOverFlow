@@ -16,6 +16,7 @@ namespace SwagOverFlow.Data.Persistence
     {
         static string _dataSource = "localhost";
         public DbSet<SwagItemBase> SwagItems { get; set; }
+        public DbSet<SwagValueItemBase> SwagValueItems { get; set; }
         public DbSet<SwagSetting> SwagSettings { get; set; }
         public DbSet<SwagSettingGroup> SwagSettingGroups { get; set; }
         public DbSet<SwagSettingString> SwagSettingStrings { get; set; }
@@ -31,7 +32,8 @@ namespace SwagOverFlow.Data.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new SwagItemBaseEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagItemBaseEntityConfiguration()); 
+            modelBuilder.ApplyConfiguration(new SwagValueItemBaseEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingGroupEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingStringEntityConfiguration());
@@ -81,7 +83,13 @@ namespace SwagOverFlow.Data.Persistence
 
             //SwagItemBase AlternateId => Unique
             builder.HasIndex(si => si.AlternateId).IsUnique();
+        }
+    }
 
+    public class SwagValueItemBaseEntityConfiguration : IEntityTypeConfiguration<SwagValueItemBase>
+    {
+        public void Configure(EntityTypeBuilder<SwagValueItemBase> builder)
+        {
             //SwagItemBase Value
             builder.Property(si => si.ObjValue)
                 .HasConversion(

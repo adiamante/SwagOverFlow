@@ -88,9 +88,9 @@ namespace SwagOverFlow.Test.BooleanExpression.WPF
         #endregion Option
 
         #region Context
-        public SwagItemGroupWPF<KeyValuePairViewModel<String, String>> Context
+        public SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>> Context
         {
-            get { return SwagWindow.GlobalSettings["Test"]["Context"].GetValue<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>>(); }
+            get { return SwagWindow.GlobalSettings["Test"]["Context"].GetValue<SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>>>(); }
         }
         #endregion Context
 

@@ -54,11 +54,11 @@ namespace SwagOverFlow.WPF.Controls
         }
         #endregion DataTemplates
         #region ParseMapper
-        public SwagItemGroupWPF<KeyValuePairViewModel<String, ParseViewModel>> ParseMapper
+        public SwagValueItemGroupWPF<KeyValuePairViewModel<String, ParseViewModel>> ParseMapper
         {
             get
             {
-                return SwagWindow.GlobalSettings["SwagData"]["ParseMapper"].GetValue<SwagItemGroupWPF<KeyValuePairViewModel<String, ParseViewModel>>>();
+                return SwagWindow.GlobalSettings["SwagData"]["ParseMapper"].GetValue<SwagValueItemGroupWPF<KeyValuePairViewModel<String, ParseViewModel>>>();
             }
         }
         #endregion ParseMapper
@@ -96,11 +96,11 @@ namespace SwagOverFlow.WPF.Controls
 
             if (!((SwagSettingGroup)SwagWindow.GlobalSettings["SwagData"]).ContainsKey("ParseMapper"))
             {
-                SwagSetting<SwagItemGroupWPF<KeyValuePairViewModel<String, ParseViewModel>>> ssParseMapper =
-                    new SwagSetting<SwagItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>>()
+                SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<String, ParseViewModel>>> ssParseMapper =
+                    new SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>>()
                     {
                         Icon = PackIconCustomKind.ArrowMultipleSweepRight,
-                        Value = new SwagItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>()
+                        Value = new SwagValueItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>()
                     };
 
                 ssParseMapper.IconString = ssParseMapper.IconString;

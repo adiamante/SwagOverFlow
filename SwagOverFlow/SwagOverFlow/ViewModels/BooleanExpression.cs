@@ -7,7 +7,7 @@ namespace SwagOverFlow.ViewModels
 {
     #region BooleanExpression
     //https://stackoverflow.com/questions/20995865/deserializing-json-to-abstract-class
-    public abstract class BooleanExpression : SwagItem<BooleanOperationExpression, BooleanExpression>
+    public abstract class BooleanExpression : SwagValueItem<BooleanOperationExpression, BooleanExpression>
     {
         public abstract bool Evaluate(Dictionary<String, String> context);
         public abstract Type Type { get; }

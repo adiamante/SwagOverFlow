@@ -13,7 +13,7 @@ using SwagOverFlow.Iterator;
 namespace SwagOverFlow.ViewModels
 {
     #region SwagData
-    public class SwagData : SwagItem<SwagDataGroup, SwagData, JObject>
+    public class SwagData : SwagValueItem<SwagDataGroup, SwagData, JObject>
     {
         #region Private/Protected Members
         protected SwagDataResult _swagDataResult;

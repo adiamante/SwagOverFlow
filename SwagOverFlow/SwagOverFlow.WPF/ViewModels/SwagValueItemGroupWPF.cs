@@ -9,7 +9,7 @@ using System;
 
 namespace SwagOverFlow.WPF.ViewModels
 {
-    public class SwagItemGroupWPF<T> : SwagItemGroup<T>
+    public class SwagValueItemGroupWPF<T> : SwagValueItemGroup<T>
     {
         #region Private/Protected Members
         CollectionViewSource _childrenCollectionViewSource;
@@ -36,7 +36,7 @@ namespace SwagOverFlow.WPF.ViewModels
                     new RelayCommand(() =>
                     {
                         T val = typeof(T).GetConstructor(Type.EmptyTypes) != null ? (T)Activator.CreateInstance(typeof(T)) : default(T);
-                        Children.Add(new SwagItem<T>() { Value = val });
+                        Children.Add(new SwagValueItem<T>() { Value = val });
                     }));
             }
         }
@@ -44,7 +44,7 @@ namespace SwagOverFlow.WPF.ViewModels
         #endregion Properties
 
         #region Initialization
-        public SwagItemGroupWPF() : base()
+        public SwagValueItemGroupWPF() : base()
         {
             _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
             _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
@@ -55,7 +55,7 @@ namespace SwagOverFlow.WPF.ViewModels
         {
             if (e.NewItems != null)
             {
-                foreach (SwagItem<T> newItem in e.NewItems)
+                foreach (SwagValueItem<T> newItem in e.NewItems)
                 {
                     //Will probably hard to troubleshoot. It's the price of transparency
                     if (typeof(T).IsSubclassOf(typeof(ViewModelBaseExtended)))

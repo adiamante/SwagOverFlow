@@ -28,7 +28,7 @@ namespace SwagOverFlow.ViewModels
     }
     #endregion SettingType
 
-    public class SwagSetting : SwagIndexedItem<SwagSettingGroup, SwagSetting>
+    public class SwagSetting : SwagIndexedValueItem<SwagSettingGroup, SwagSetting>
     {
         #region Private/Protected Members
         SettingType _settingType;
