@@ -41,7 +41,7 @@
                         <swagui:SwagTemplateCollection>
                             <swagui:SwagTemplate>
                                 <swagui:SwagTemplate.Type>
-                                    <swagui:GenericType BaseTypeName="swagvm:SwagItem">
+                                    <swagui:GenericType BaseTypeName="swagvm:SwagValueItem">
                                         <swagui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
                                             <x:Type TypeName="sys:String"/>
                                             <x:Type TypeName="sys:String"/>
