@@ -41,7 +41,6 @@
                                 ShowItemRemoveContextMenuItem="True"
                                  RootOption="{Binding Options, ElementName=TestWindow}"
                                  Save="SwagOptionControl_Save">
-
             </swctl:SwagOptionControl>
         </GroupBox>
         <GroupBox Grid.Row="0" Grid.Column="1">

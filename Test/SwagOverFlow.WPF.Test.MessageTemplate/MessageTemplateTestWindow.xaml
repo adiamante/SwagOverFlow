@@ -21,61 +21,6 @@
                 </DataTemplate>
             </swagui:SwagTemplate.DataTemplate>
         </swagui:SwagTemplate>
-        <DataTemplate x:Key="KeyValuePairGroupDataTemplate">
-            <GroupBox DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}">
-                <GroupBox.Header>
-                    <swag:IconControl Text="{Binding Display}" Kind="{Binding Icon}">
-                        <swag:IconControl.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Add" Command="{Binding ObjValue.AddDefaultCommand}">
-                                    <MenuItem.Icon>
-                                        <swag:IconControl Kind="{x:Static swagui:PackIconCustomKind.Plus}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </ContextMenu>
-                        </swag:IconControl.ContextMenu>
-                    </swag:IconControl>
-                </GroupBox.Header>
-                <swag:SwagItemsControl SwagItemsSource="{Binding ObjValue}" CustomDefaultItemTemplate="{StaticResource NonHierarchyHeaderTemplate}">
-                    <swag:SwagItemsControl.ItemTemplates>
-                        <swagui:SwagTemplateCollection>
-                            <swagui:SwagTemplate>
-                                <swagui:SwagTemplate.Type>
-                                    <swagui:GenericType BaseTypeName="swagvm:SwagValueItem">
-                                        <swagui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
-                                            <x:Type TypeName="sys:String"/>
-                                            <x:Type TypeName="sys:String"/>
-                                        </swagui:GenericType>
-                                    </swagui:GenericType>
-                                </swagui:SwagTemplate.Type>
-                                <swagui:SwagTemplate.DataTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <swag:IconControl Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                                            <TextBox Grid.Column="1" Text="{Binding Value.Key, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
-                                            <swag:IconControl Grid.Column="2" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaX}" />
-                                            <TextBox Grid.Column="3" Text="{Binding Value.Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </swagui:SwagTemplate.DataTemplate>
-                            </swagui:SwagTemplate>
-                        </swagui:SwagTemplateCollection>
-                    </swag:SwagItemsControl.ItemTemplates>
-                </swag:SwagItemsControl>
-            </GroupBox>
-        </DataTemplate>
     </swag:SwagWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -103,9 +48,26 @@
             </GroupBox.Header>
             <TextBlock Text="{Binding Message, ElementName=TestWindow}" />
         </GroupBox>
-        <ContentControl Grid.Row="1" Grid.Column="0"  
-                        DataContext="{Binding Settings[Test][Variables], ElementName=TestWindow}"
-                        ContentTemplate="{StaticResource KeyValuePairGroupDataTemplate}">
-        </ContentControl>
+        <GroupBox Grid.Row="1" Grid.Column="0" MinWidth="200" DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}">
+            <GroupBox.Header>
+                <DockPanel>
+                    <swag:IconControl Text="Options" Kind="{x:Static swagui:PackIconCustomKind.Variable}" />
+                </DockPanel>
+            </GroupBox.Header>
+            <swag:SwagOptionControl 
+                                 ShowSaveButton="True" 
+                                ShowSaveContextMenuItem="True" 
+                                ShowAddContextMenuItem="True"
+                                ShowCopyContextMenuItem="True"
+                                ShowPasteContextMenuItem="True"
+                                ShowExportContextMenuItem="True"
+                                 ShowImportContextMenuItem="True"
+                                ShowItemAddContextMenuItem="True"
+                                ShowItemRemoveContextMenuItem="True"
+                                 RootOption="{Binding Options, ElementName=TestWindow}"
+                                 Save="SwagOptionControl_Save">
+            </swag:SwagOptionControl>
+        </GroupBox>
+        
     </Grid>
 </swag:SwagWindow>

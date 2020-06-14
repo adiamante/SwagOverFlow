@@ -47,7 +47,6 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
         #endregion Expression
 
         #region Options
-
         public SwagOptionGroupWPF Options
         {
             get
@@ -65,34 +64,13 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
                     ssOpt.ValueTypeString = ssOpt.ValueTypeString;
                     ssOpt.ObjValue = ssOpt.ObjValue;
                     SwagWindow.GlobalSettings["Test"]["Options"] = ssOpt;
-
-                    //SwagSetting<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>> ssContext =
-                    //    new SwagSetting<SwagItemGroupWPF<KeyValuePairViewModel<String, String>>>()
-                    //    {
-                    //        Icon = PackIconCustomKind.Variable,
-                    //        Value = new SwagItemGroupWPF<KeyValuePairViewModel<String, String>>()
-                    //    };
-
-                    //ssContext.IconString = ssContext.IconString;
-                    //ssContext.IconTypeString = ssContext.IconTypeString;
-                    //ssContext.ValueTypeString = ssContext.ValueTypeString;
-                    //ssContext.ObjValue = ssContext.ObjValue;
-                    //SwagWindow.GlobalSettings["Test"]["Context"] = ssContext;
                     ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
                 return (SwagOptionGroupWPF)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
             }
         }
-
         #endregion Option
-
-        #region Context
-        public SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>> Context
-        {
-            get { return SwagWindow.GlobalSettings["Test"]["Context"].GetValue<SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>>>(); }
-        }
-        #endregion Context
 
         #region Initialization
         public BooleanExpressionTestWindow()
@@ -120,10 +98,6 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
                 ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
             }
             #endregion Test
-
-            #region Options
-            
-            #endregion Options
         }
         #endregion Initialization
 
@@ -142,7 +116,6 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
                 txtResult.Foreground = Brushes.Red;
             }
         }
-        #endregion Events
 
         private void BooleanExpressionControl_Save(object sender, RoutedEventArgs e)
         {
@@ -153,5 +126,7 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
         {
             SwagWindow.GlobalSettings["Test"]["Options"].SetValue(Options);
         }
+        #endregion Events
+
     }
 }

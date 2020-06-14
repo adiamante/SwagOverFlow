@@ -31,17 +31,56 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
         #region MessageTemplate
         public String MessageTemplate
         {
-            get { return SwagWindow.GlobalSettings["Test"]["MessageTemplate"].GetValue<String>(); }
+            get 
+            {
+                if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("MessageTemplate"))
+                {
+                    SwagSettingString ssMessageTemplate = new SwagSettingString()
+                    {
+                        Icon = PackIconCustomKind.Template,
+                        Value = ""
+                    };
+
+                    ssMessageTemplate.IconString = ssMessageTemplate.IconString;
+                    ssMessageTemplate.IconTypeString = ssMessageTemplate.IconTypeString;
+                    ssMessageTemplate.ValueTypeString = ssMessageTemplate.ValueTypeString;
+                    ssMessageTemplate.ObjValue = ssMessageTemplate.ObjValue;
+
+                    SwagWindow.GlobalSettings["Test"]["MessageTemplate"] = ssMessageTemplate;
+                    ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                }
+
+                return SwagWindow.GlobalSettings["Test"]["MessageTemplate"].GetValue<String>(); 
+            }
             set { SwagWindow.GlobalSettings["Test"]["MessageTemplate"].SetValue(value); }
         }
         #endregion MessageTemplate
 
-        #region Variables
-        public SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>> Variables
+        #region Options
+        public SwagOptionGroupWPF Options
         {
-            get { return SwagWindow.GlobalSettings["Test"]["Variables"].GetValue<SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>>>(); }
+            get
+            {
+                if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Options"))
+                {
+                    SwagSetting<SwagOptionGroup> ssOpt = new SwagSetting<SwagOptionGroup>()
+                    {
+                        Icon = PackIconCustomKind.Variable,
+                        Value = new SwagOptionGroupWPF()
+                    };
+
+                    ssOpt.IconString = ssOpt.IconString;
+                    ssOpt.IconTypeString = ssOpt.IconTypeString;
+                    ssOpt.ValueTypeString = ssOpt.ValueTypeString;
+                    ssOpt.ObjValue = ssOpt.ObjValue;
+                    SwagWindow.GlobalSettings["Test"]["Options"] = ssOpt;
+                    ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                }
+
+                return (SwagOptionGroupWPF)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
+            }
         }
-        #endregion Variables
+        #endregion Option
 
         #region Message
         public String Message
@@ -76,66 +115,16 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
                 ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
             }
             #endregion Test
-
-            #region MessageTemplate
-            if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("MessageTemplate"))
-            {
-                SwagSettingString ssMessageTemplate = new SwagSettingString()
-                {
-                    Icon = PackIconCustomKind.Template,
-                    Value = ""
-                };
-
-                ssMessageTemplate.IconString = ssMessageTemplate.IconString;
-                ssMessageTemplate.IconTypeString = ssMessageTemplate.IconTypeString;
-                ssMessageTemplate.ValueTypeString = ssMessageTemplate.ValueTypeString;
-                ssMessageTemplate.ObjValue = ssMessageTemplate.ObjValue;
-
-                SwagWindow.GlobalSettings["Test"]["MessageTemplate"] = ssMessageTemplate;
-                ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-            }
-            #endregion MessageTemplate
-
-            #region Variables
-            if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Variables"))
-            {
-                SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>>> ssVariables =
-                    new SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>>>()
-                    {
-                        Icon = PackIconCustomKind.Variable,
-                        Value = new SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>>()
-                    };
-
-                ssVariables.IconString = ssVariables.IconString;
-                ssVariables.IconTypeString = ssVariables.IconTypeString;
-                ssVariables.ValueTypeString = ssVariables.ValueTypeString;
-                ssVariables.ObjValue = ssVariables.ObjValue;
-                SwagWindow.GlobalSettings["Test"]["Variables"] = ssVariables;
-                ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-            }
-
-            SwagWindow.GlobalSettings["Test"]["Variables"].GetValue<SwagValueItemGroupWPF<KeyValuePairViewModel<String, String>>>().SwagItemChanged += (s, e) =>
-            {
-                SwagWindow.GlobalSettings.OnSwagItemChanged(SwagWindow.GlobalSettings["Test"]["Variables"], e.PropertyChangedArgs);
-            };
-            #endregion Variables
         }
 
         private void GenerateMessage(object sender, RoutedEventArgs e)
         {
-            //var messageTemplate = MessageTemplateRenderer.
-            //MessageTemplateParser parser = new MessageTemplateParser();
-            //Parsing.MessageTemplate messageTemplate = parser.Parse(MessageTemplate);
+            Message = MessageTemplateHelper.ParseTemplate(MessageTemplate, Options.Dict);
+        }
 
-            Dictionary<String, String> variables = new Dictionary<string, string>();
-
-            foreach (SwagValueItem<KeyValuePairViewModel<String, String>> variable in Variables.Children)
-            {
-                variables.Add(variable.Value.Key, variable.Value.Value);
-            }
-
-            //Message = messageTemplate.Render(variables);
-            Message = MessageTemplateHelper.ParseTemplate(MessageTemplate, variables);
+        private void SwagOptionControl_Save(object sender, RoutedEventArgs e)
+        {
+            SwagWindow.GlobalSettings["Test"]["Options"].SetValue(Options);
         }
     }
 }
