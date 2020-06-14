@@ -23,9 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dreamporter.WPF", "Dreampor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestWPF", "Test\TestWPF\TestWPF.csproj", "{886A3549-D944-4BEE-8E15-367FC12AF290}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwagOverFlow.Data", "SwagOverFlow\SwagOverFlow.Data\SwagOverFlow.Data.csproj", "{6FE240F5-3611-43E1-A8C9-B5D9C8EEC907}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwagOverFlow.Data", "SwagOverFlow\SwagOverFlow.Data\SwagOverFlow.Data.csproj", "{6FE240F5-3611-43E1-A8C9-B5D9C8EEC907}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwagOverFlow.Test.BooleanExpression.WPF", "Test\SwagOverFlow.Test.BooleanExpression.WPF\SwagOverFlow.Test.BooleanExpression.WPF.csproj", "{0B24038A-C7DA-4482-B82F-E1C825D85126}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwagOverFlow.WPF.Test.BooleanExpression", "Test\SwagOverFlow.WPF.Test.BooleanExpression\SwagOverFlow.WPF.Test.BooleanExpression.csproj", "{4D217025-9763-4286-B334-D69B41A46E4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,10 +65,10 @@ Global
 		{6FE240F5-3611-43E1-A8C9-B5D9C8EEC907}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FE240F5-3611-43E1-A8C9-B5D9C8EEC907}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FE240F5-3611-43E1-A8C9-B5D9C8EEC907}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0B24038A-C7DA-4482-B82F-E1C825D85126}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0B24038A-C7DA-4482-B82F-E1C825D85126}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0B24038A-C7DA-4482-B82F-E1C825D85126}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0B24038A-C7DA-4482-B82F-E1C825D85126}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D217025-9763-4286-B334-D69B41A46E4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D217025-9763-4286-B334-D69B41A46E4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D217025-9763-4286-B334-D69B41A46E4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D217025-9763-4286-B334-D69B41A46E4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,7 +82,6 @@ Global
 		{AC43A7AA-9971-448B-B0CB-59243B848DCC} = {8EC68C53-C67F-4033-85A8-5A964D5941B1}
 		{886A3549-D944-4BEE-8E15-367FC12AF290} = {0A5F97F1-CE68-4BDC-B3E4-A34D0BF3A6A3}
 		{6FE240F5-3611-43E1-A8C9-B5D9C8EEC907} = {73FAE661-1D39-48F0-AD74-55EB2AFA24F9}
-		{0B24038A-C7DA-4482-B82F-E1C825D85126} = {0A5F97F1-CE68-4BDC-B3E4-A34D0BF3A6A3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4D3F37F2-4FFF-48B5-87CA-031B47251ED1}

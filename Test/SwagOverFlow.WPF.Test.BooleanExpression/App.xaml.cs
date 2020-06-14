@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace SwagOverFlow.Test.BooleanExpression.WPF
+namespace SwagOverFlow.WPF.Test.BooleanExpression
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -12,7 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace SwagOverFlow.Test.BooleanExpression.WPF
+namespace SwagOverFlow.WPF.Test.BooleanExpression
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
