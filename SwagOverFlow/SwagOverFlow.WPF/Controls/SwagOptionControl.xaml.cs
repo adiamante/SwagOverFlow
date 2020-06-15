@@ -450,8 +450,8 @@ namespace SwagOverFlow.WPF.Controls
 
         private void SwagItemsControl_Copy(object sender, RoutedEventArgs e)
         {
-            SwagOptionControl sic = (SwagOptionControl)e.OriginalSource;
-            SwagOption opt = (SwagOption)sic.RootOption;
+            SwagOptionControl soc = (SwagOptionControl)e.OriginalSource;
+            SwagOption opt = (SwagOption)soc.RootOption;
             SwagItemsControlHelper.SetClipBoardData<SwagOption>(opt);
         }
 
@@ -467,8 +467,8 @@ namespace SwagOverFlow.WPF.Controls
 
         private void SwagItemsControl_Export(object sender, RoutedEventArgs e)
         {
-            SwagOptionControl sic = (SwagOptionControl)e.OriginalSource;
-            SwagOption opt = (SwagOption)sic.RootOption;
+            SwagOptionControl soc = (SwagOptionControl)e.OriginalSource;
+            SwagOption opt = (SwagOption)soc.RootOption;
             SwagItemsControlHelper.ExportDataToFile<SwagOption>(opt);
         }
 
