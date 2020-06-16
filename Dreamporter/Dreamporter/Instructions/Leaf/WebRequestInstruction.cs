@@ -30,7 +30,9 @@ namespace Dreamporter.Instructions
         #endregion Private Variables
 
         #region Properties
-
+        #region Type
+        public override Type Type { get { return typeof(WebRequestInstruction); } }
+        #endregion Type
         #region Schema
         public String Schema
         {

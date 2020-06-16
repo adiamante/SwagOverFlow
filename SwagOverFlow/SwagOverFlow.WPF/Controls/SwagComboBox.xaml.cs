@@ -19,26 +19,8 @@ namespace SwagOverFlow.WPF.Controls
     /// <summary>
     /// Interaction logic for SwagComboBox.xaml
     /// </summary>
-    public partial class SwagComboBox : SwagControlBase, INotifyPropertyChanged
+    public partial class SwagComboBox : SwagControlBase
     {
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected virtual void SetValue<T>(ref T backingField, T value, [CallerMemberName] string propertyname = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(backingField, value))
-                return;
-
-            backingField = value;
-            OnPropertyChanged(propertyname);
-        }
-        #endregion INotifyPropertyChanged
-
         #region ValueChanged
         public static readonly RoutedEvent ValueChangedEvent =
                     EventManager.RegisterRoutedEvent(

@@ -26,6 +26,11 @@ namespace SwagOverFlow.WPF.Services
             get { return _serviceProvider.GetService<SwagDataTableService>(); }
         }
 
+        public static IServiceProvider ServiceProvider
+        {
+            get { return _serviceProvider; }
+        }
+
         static SwagWPFContainer()
         {
             ConfigureServices();

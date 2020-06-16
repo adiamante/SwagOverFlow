@@ -1,17 +1,19 @@
-﻿using System;
+﻿using Dreamporter.Instructions;
+using Dreamporter.WPF.ViewModels;
+using SwagOverFlow.WPF.Controls;
+using SwagOverFlow.WPF.UI;
+using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using SwagOverFlow.ViewModels;
-using SwagOverFlow.WPF.UI;
-using SwagOverFlow.WPF.ViewModels;
 
-namespace SwagOverFlow.WPF.Controls
+namespace Dreamporter.WPF.Controls
 {
     /// <summary>
-    /// Interaction logic for BooleanExpressionControl.xaml
+    /// Interaction logic for InstructionControl.xaml
     /// </summary>
-    public partial class BooleanExpressionControl : SwagControlBase
+    public partial class InstructionControl : SwagControlBase
     {
         #region MoveType
         enum MoveType
@@ -29,7 +31,7 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "AllowMove",
                 typeof(Boolean),
-                typeof(BooleanExpressionControl));
+                typeof(InstructionControl));
 
         public Boolean AllowMove
         {
@@ -42,7 +44,7 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "ShowSequence",
                 typeof(Boolean),
-                typeof(BooleanExpressionControl));
+                typeof(InstructionControl));
 
         public Boolean ShowSequence
         {
@@ -54,39 +56,26 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowSequence
-        #region Expression
-        public static DependencyProperty ExpressionProperty =
+        #region RootInstruction
+        public static DependencyProperty RootInstructionProperty =
             DependencyProperty.Register(
-                "Expression",
-                typeof(BooleanExpression),
-                typeof(BooleanExpressionControl));
+                "RootInstruction",
+                typeof(GroupInstructionWPF),
+                typeof(InstructionControl));
 
-        public BooleanExpression Expression
+        public GroupInstructionWPF RootInstruction
         {
-            get { return (BooleanExpression)GetValue(ExpressionProperty); }
-            set { SetValue(ExpressionProperty, value); }
+            get { return (GroupInstructionWPF)GetValue(RootInstructionProperty); }
+            set { SetValue(RootInstructionProperty, value); }
         }
-        #endregion Expression
-        #region RootExpression
-        public BooleanExpression RootExpression
-        {
-            get
-            {
-                if (Expression is BooleanOperationExpression op && op.Children.Count > 0)
-                {
-                    return op.Children[0];
-                }
-                return null;
-            }
-        }
-        #endregion Expression
+        #endregion RootInstruction
         #region Save
         public static readonly RoutedEvent SaveEvent =
             EventManager.RegisterRoutedEvent(
             "Save",
             RoutingStrategy.Bubble,
             typeof(RoutedEventHandler),
-            typeof(BooleanExpressionControl));
+            typeof(InstructionControl));
 
         public event RoutedEventHandler Save
         {
@@ -99,7 +88,7 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "SaveCommand",
                 typeof(ICommand),
-                typeof(BooleanExpressionControl));
+                typeof(InstructionControl));
 
         public ICommand SaveCommand
         {
@@ -112,7 +101,7 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "ShowSaveButton",
                 typeof(Boolean),
-                typeof(BooleanExpressionControl),
+                typeof(InstructionControl),
                 new PropertyMetadata(false));
 
         public Boolean ShowSaveButton
@@ -130,7 +119,7 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "ShowSaveContextMenuItem",
                 typeof(Boolean),
-                typeof(BooleanExpressionControl),
+                typeof(InstructionControl),
                 new PropertyMetadata(false));
 
         public Boolean ShowSaveContextMenuItem
@@ -148,7 +137,7 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "ShowAddContextMenuItem",
                 typeof(Boolean),
-                typeof(BooleanExpressionControl),
+                typeof(InstructionControl),
                 new PropertyMetadata(false));
 
         public Boolean ShowAddContextMenuItem
@@ -166,7 +155,7 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "ShowCopyContextMenuItem",
                 typeof(Boolean),
-                typeof(BooleanExpressionControl),
+                typeof(InstructionControl),
                 new PropertyMetadata(false));
 
         public Boolean ShowCopyContextMenuItem
@@ -184,7 +173,7 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "ShowPasteContextMenuItem",
                 typeof(Boolean),
-                typeof(BooleanExpressionControl),
+                typeof(InstructionControl),
                 new PropertyMetadata(false));
 
         public Boolean ShowPasteContextMenuItem
@@ -202,7 +191,7 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "ShowExportContextMenuItem",
                 typeof(Boolean),
-                typeof(BooleanExpressionControl),
+                typeof(InstructionControl),
                 new PropertyMetadata(false));
 
         public Boolean ShowExportContextMenuItem
@@ -220,7 +209,7 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "ShowImportContextMenuItem",
                 typeof(Boolean),
-                typeof(BooleanExpressionControl),
+                typeof(InstructionControl),
                 new PropertyMetadata(false));
 
         public Boolean ShowImportContextMenuItem
@@ -238,7 +227,7 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "ShowItemAddContextMenuItem",
                 typeof(Boolean),
-                typeof(BooleanExpressionControl),
+                typeof(InstructionControl),
                 new PropertyMetadata(false));
 
         public Boolean ShowItemAddContextMenuItem
@@ -256,7 +245,7 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "ShowItemRemoveContextMenuItem",
                 typeof(Boolean),
-                typeof(BooleanExpressionControl),
+                typeof(InstructionControl),
                 new PropertyMetadata(false));
 
         public Boolean ShowItemRemoveContextMenuItem
@@ -269,10 +258,46 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowItemRemoveContextMenuItem
+        #region ShowItemCopyContextMenuItem
+        public static DependencyProperty ShowItemCopyContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowItemCopyContextMenuItem",
+                typeof(Boolean),
+                typeof(InstructionControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowItemCopyContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowItemCopyContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowItemCopyContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowItemCopyContextMenuItem
+        #region ShowItemPasteContextMenuItem
+        public static DependencyProperty ShowItemPasteContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowItemPasteContextMenuItem",
+                typeof(Boolean),
+                typeof(InstructionControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowItemPasteContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowItemPasteContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowItemPasteContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowItemPasteContextMenuItem
         #endregion Properties
 
         #region Initialization
-        public BooleanExpressionControl()
+        public InstructionControl()
         {
             InitializeComponent();
         }
@@ -282,41 +307,47 @@ namespace SwagOverFlow.WPF.Controls
         private void SwagItemsControl_Add(object sender, RoutedEventArgs e)
         {
             FrameworkElement fe = (FrameworkElement)e.OriginalSource;
-            BooleanOperationExpression exp = (BooleanOperationExpression)fe.DataContext;
+            GroupInstruction insGrp = (GroupInstruction)fe.DataContext;
 
-            BooleanExpression newExp = null;
+            Instruction ins = null;
             String tag = (fe.Tag ?? "").ToString();
             switch (tag)
             {
-                case "OR":
-                    newExp = new BooleanOrExpressionWPF();
+                case "GRP_INS":
+                    ins = new GroupInstructionWPF();
                     break;
-                case "AND":
-                    newExp = new BooleanAndExpressionWPF();
+                case "GRP_TBL":
+                    ins = new ForEachTableGroupInstructionWPF();
                     break;
-                case "VAR_BOOL":
-                    newExp = new BooleanBooleanVariableExpression();
+                case "LF_QRY":
+                    ins = new QueryInstruction();
                     break;
-                case "VAR_STR":
-                    newExp = new BooleanStringVariableExpression();
+                case "LF_SQL_SP":
+                    ins = new SqlExecSPInstruction();
+                    break;
+                case "LF_WR_WRI":
+                    ins = new WebRequestInstruction();
+                    break;
+                case "LF_WR_WRGRP":
+                    ins = new ForEachTableWebRequestInstruction();
                     break;
             }
 
-            exp.Children.Add(newExp);
+            ins.Display = "NEW";
+            insGrp.Children.Add(ins);
         }
 
         private void SwagItemsControl_Clear(object sender, RoutedEventArgs e)
         {
-            BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
-            BooleanOperationExpression exp = (BooleanOperationExpression)bec.Expression;
-            exp.Children.Clear();
+            InstructionControl ic = (InstructionControl)e.OriginalSource;
+            ic.RootInstruction.Children.Clear();
         }
 
         private void SwagItemsControl_Remove(object sender, RoutedEventArgs e)
         {
             FrameworkElement fe = (FrameworkElement)e.OriginalSource;
-            BooleanExpression exp = (BooleanExpression)fe.DataContext;
-            exp.Parent.Children.Remove(exp);
+            Instruction instruction = (Instruction)fe.DataContext;
+            instruction.Parent.Children.Remove(instruction);
         }
 
         private void SwagItemsControl_TreeViewItemDropPreview(object sender, RoutedEventArgs e)
@@ -331,14 +362,11 @@ namespace SwagOverFlow.WPF.Controls
             Boolean allowChildMove = false, allowSiblingMove = false;
             switch (tviea.TargetItem.DataContext)
             {
-                case BooleanOperationExpression opExp:
+                case GroupInstruction grp:
                     allowChildMove = true;
                     allowSiblingMove = true;
                     break;
-                case BooleanBooleanVariableExpression bbvExp:
-                    allowSiblingMove = true;
-                    break;
-                case BooleanStringVariableExpression bsvExp:
+                case Instruction instruction:
                     allowSiblingMove = true;
                     break;
             }
@@ -384,14 +412,14 @@ namespace SwagOverFlow.WPF.Controls
             }
 
             MoveType moveType = GetMoveType(tviea);
-            BooleanExpression targetExpression = (BooleanExpression)tviea.TargetItem.DataContext;
-            BooleanExpression droppedExpression = (BooleanExpression)tviea.DroppedItem.DataContext;
+            Instruction targetInstruction = (Instruction)tviea.TargetItem.DataContext;
+            Instruction droppedInstruction = (Instruction)tviea.DroppedItem.DataContext;
 
-            BooleanOperationExpression originalDroppedParent = droppedExpression.Parent;
-            Boolean sameParent = originalDroppedParent == targetExpression.Parent;
-            Int32 originalDroppedSequence = droppedExpression.Sequence,
-                currentDroppedSequence = droppedExpression.Sequence,
-                targetSequence = targetExpression.Sequence, 
+            GroupInstruction originalDroppedParent = (GroupInstruction)droppedInstruction.Parent;
+            Boolean sameParent = originalDroppedParent == targetInstruction.Parent;
+            Int32 originalDroppedSequence = droppedInstruction.Sequence,
+                currentDroppedSequence = droppedInstruction.Sequence,
+                targetSequence = targetInstruction.Sequence,
                 delta = targetSequence - originalDroppedSequence;
 
             switch (moveType)
@@ -400,10 +428,10 @@ namespace SwagOverFlow.WPF.Controls
                 case MoveType.Below:
                     if (!sameParent)
                     {
-                        originalDroppedParent.Children.Remove(droppedExpression);
-                        droppedExpression.Sequence = -1;        //reset sequence
-                        targetExpression.Parent.Children.Add(droppedExpression);
-                        currentDroppedSequence = droppedExpression.Sequence;
+                        originalDroppedParent.Children.Remove(droppedInstruction);
+                        droppedInstruction.Sequence = -1;        //reset sequence
+                        targetInstruction.Parent.Children.Add(droppedInstruction);
+                        currentDroppedSequence = droppedInstruction.Sequence;
                         delta = targetSequence - currentDroppedSequence;
                     }
 
@@ -412,37 +440,37 @@ namespace SwagOverFlow.WPF.Controls
                         case MoveType.Above:
                             if (delta != 0)
                             {
-                                foreach (BooleanExpression sibling in targetExpression.Parent.Children)
+                                foreach (Instruction sibling in targetInstruction.Parent.Children)
                                 {
                                     if (sibling.Sequence >= Math.Min(currentDroppedSequence, targetSequence) && sibling.Sequence < Math.Max(currentDroppedSequence, targetSequence))
                                     {
                                         sibling.Sequence = (sibling.Sequence + (delta > 0 ? -1 : 1));
                                     }
                                 }
-                                droppedExpression.Sequence = targetSequence + (delta > 0 ? -1 : 0);
+                                droppedInstruction.Sequence = targetSequence + (delta > 0 ? -1 : 0);
                             }
                             break;
                         case MoveType.Below:
                             if (delta != 0)
                             {
-                                foreach (BooleanExpression sibling in targetExpression.Parent.Children)
+                                foreach (Instruction sibling in targetInstruction.Parent.Children)
                                 {
                                     if (sibling.Sequence > Math.Min(currentDroppedSequence, targetSequence) && sibling.Sequence <= Math.Max(currentDroppedSequence, targetSequence))
                                     {
                                         sibling.Sequence = (sibling.Sequence + (delta > 0 ? -1 : 1));
                                     }
                                 }
-                                droppedExpression.Sequence = targetSequence + (delta > 0 ? 0 : 1);
+                                droppedInstruction.Sequence = targetSequence + (delta > 0 ? 0 : 1);
                             }
                             break;
                     }
                     break;
                 case MoveType.Into:
-                    if (tviea.TargetItem.DataContext is BooleanOperationExpression opExp)
+                    if (tviea.TargetItem.DataContext is GroupInstruction grp)
                     {
-                        originalDroppedParent.Children.Remove(droppedExpression);
-                        droppedExpression.Sequence = -1;        //reset sequence
-                        opExp.Children.Add(droppedExpression);
+                        originalDroppedParent.Children.Remove(droppedInstruction);
+                        droppedInstruction.Sequence = -1;        //reset sequence
+                        grp.Children.Add(droppedInstruction);
                     }
                     break;
             }
@@ -461,35 +489,65 @@ namespace SwagOverFlow.WPF.Controls
 
         private void SwagItemsControl_Copy(object sender, RoutedEventArgs e)
         {
-            BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
-            BooleanOperationExpression exp = (BooleanOperationExpression)bec.Expression;
-            SwagItemsControlHelper.SetClipBoardData<BooleanExpression>(exp);
+            Instruction instruction = null;
+            switch (e.OriginalSource)
+            {
+                case MenuItem mi:
+                    instruction = (Instruction)mi.DataContext;
+                    break;
+                case InstructionControl ic:
+                    instruction = (Instruction)ic.RootInstruction;
+                    break;
+            }
+
+            if (instruction != null)
+            {
+                SwagItemsControlHelper.SetClipBoardData<Instruction>(instruction);
+            }
         }
 
         private void SwagItemsControl_Paste(object sender, RoutedEventArgs e)
         {
-            BooleanExpression exp = SwagItemsControlHelper.GetClipBoardData<BooleanExpression>();
-            if (exp != null)
+            Instruction instruction = SwagItemsControlHelper.GetClipBoardData<Instruction>();
+            if (instruction != null)
             {
-                BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
-                bec.Expression = exp;
+                switch (e.OriginalSource)
+                {
+                    case MenuItem mi:
+                        Instruction original = (Instruction)mi.DataContext;
+                        GroupInstruction parent = original.Parent;
+                        instruction.Sequence = original.Sequence;
+                        parent.Children.Remove(original);
+                        foreach (Instruction ins in parent.Children)
+                        {
+                            if (ins.Sequence >= instruction.Sequence)
+                            {
+                                ins.Sequence++;
+                            }
+                        }
+                        parent.Children.Add(instruction);
+                        break;
+                    case InstructionControl ic:
+                        ic.RootInstruction = (GroupInstructionWPF)instruction;
+                        break;
+                }
             }
         }
 
         private void SwagItemsControl_Export(object sender, RoutedEventArgs e)
         {
-            BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
-            BooleanOperationExpression exp = (BooleanOperationExpression)bec.Expression;
-            SwagItemsControlHelper.ExportDataToFile<BooleanExpression>(exp);
+            InstructionControl ic = (InstructionControl)e.OriginalSource;
+            Instruction instruction = (Instruction)ic.RootInstruction;
+            SwagItemsControlHelper.ExportDataToFile<Instruction>(instruction);
         }
 
         private void SwagItemsControl_Import(object sender, RoutedEventArgs e)
         {
-            BooleanExpression exp = SwagItemsControlHelper.GetDataFromFile<BooleanExpression>();
-            if (exp != null)
+            Instruction instruction = SwagItemsControlHelper.GetDataFromFile<Instruction>();
+            if (instruction != null)
             {
-                BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
-                bec.Expression = exp;
+                InstructionControl ic = (InstructionControl)e.OriginalSource;
+                ic.RootInstruction = (GroupInstructionWPF)instruction;
             }
         }
         #endregion Events
@@ -497,27 +555,21 @@ namespace SwagOverFlow.WPF.Controls
         #region Methods
         private Boolean CheckIfValidDrop(TreeViewItemDropEventArgs tviea)
         {
-            BooleanExpression targetExp = (BooleanExpression)tviea.TargetItem.DataContext;
-            BooleanExpression droppedExp = (BooleanExpression)tviea.DroppedItem.DataContext;
+            Instruction targetInstruction = (Instruction)tviea.TargetItem.DataContext;
+            Instruction droppedInstruction = (Instruction)tviea.DroppedItem.DataContext;
             Boolean valid = true;
             MoveType moveType = GetMoveType(tviea);
 
-            if ((targetExp == RootExpression && (moveType == MoveType.Above || moveType == MoveType.Below)) ||  //Don't drop as root sibling
-                targetExp == droppedExp)        //Don't drop to self
-            {
-                valid = false;
-            }
+            Instruction tempOpt = targetInstruction.Parent;
 
-            BooleanExpression tempExp = targetExp.Parent;
-
-            while (valid && tempExp != null)
+            while (valid && tempOpt != null)
             {
-                if (droppedExp == tempExp) //Don't drop within own descendants
+                if (droppedInstruction == tempOpt) //Don't drop within own descendants
                 {
                     valid = false;
                     break;
                 }
-                tempExp = tempExp.Parent;
+                tempOpt = tempOpt.Parent;
             }
 
             if (!valid)

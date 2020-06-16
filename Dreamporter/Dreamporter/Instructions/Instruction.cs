@@ -12,14 +12,13 @@ using System.Linq;
 
 namespace Dreamporter.Instructions
 {
-    public abstract class Instruction : ViewModelBase
+    public abstract class Instruction : SwagItem<GroupInstruction, Instruction>
     {
         #region Private Members
         Int32 _instructionId;
-        String _name, _infoFormat, _description, _preProcessQuery, _postProcessQuery;
-        Boolean _isEnabled = true, _requireTags, _doLog = true;
-        Int32 _sequence;
-        Int32? _parentId;
+        String _name, _infoFormat, _description;
+        Boolean _isEnabled = true, _doLog = true;
+        InstructionCacheProperties _cacheProperties = new InstructionCacheProperties();
         #endregion Private Members
 
         #region Properties
@@ -30,13 +29,6 @@ namespace Dreamporter.Instructions
             set { SetValue(ref _instructionId, value); }
         }
         #endregion InstructionId
-        #region ParentId
-        public Int32? ParentId
-        {
-            get { return _parentId; }
-            set { SetValue(ref _parentId, value); }
-        }
-        #endregion ParentId
         #region Name
         public String Name
         {
@@ -68,22 +60,15 @@ namespace Dreamporter.Instructions
             set { SetValue(ref _description, value); }
         }
         #endregion Description
-        #region Sequence
-        public Int32 Sequence
-        {
-            get { return _sequence; }
-            set { SetValue(ref _sequence, value); }
-        }
-        #endregion Sequence
-        #region Parent
-        [JsonIgnore]
-        public virtual InstructionGroup Parent { get; set; }
-        #endregion Parent
         #region Type
-        public String Type { get { return this.GetType().Name; } }
+        public abstract Type Type { get; }
         #endregion Type
         #region CacheProperties
-        public InstructionCacheProperties CacheProperties { get; set; }
+        public InstructionCacheProperties CacheProperties
+        {
+            get { return _cacheProperties; }
+            set { SetValue(ref _cacheProperties, value); }
+        }
         #endregion CacheProperties
         #region LogPattern
         public String LogPattern
@@ -196,9 +181,6 @@ namespace Dreamporter.Instructions
             //Handle special templates
             output = output.Replace("{Now}", DateTime.Now.ToString());
             output = output.Replace("{*}", JsonHelper.ToJsonString(parameters));
-            //output = output.Replace("{$Year$}", DateTime.Now.ToString("yyyy"));
-            //output = output.Replace("{$Month$}", DateTime.Now.ToString("MM"));
-            //output = output.Replace("{$MonthName$}", DateTime.Now.ToString("MMM"));
 
             return output;
         }

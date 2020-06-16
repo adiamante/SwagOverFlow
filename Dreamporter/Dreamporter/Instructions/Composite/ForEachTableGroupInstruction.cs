@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 
 namespace Dreamporter.Instructions
 {
-    public class ForEachTableInstructionGroup : InstructionGroup
+    public class ForEachTableGroupInstruction : GroupInstruction
     {
         #region Properties
+        #region Type
+        public override Type Type { get { return typeof(ForEachTableGroupInstruction); } }
+        #endregion Type
         public String Query { get; set; }
         public Decimal DelayMinutes { get; set; } = 0.0m;
         #endregion Properties

@@ -14,13 +14,16 @@ using System.Text;
 
 namespace Dreamporter.Instructions
 {
-    public class WebRequestGroupInstruction : WebRequestInstruction
+    public class ForEachTableWebRequestInstruction : WebRequestInstruction
     {
         #region Private Variables
         String _query;
         #endregion Private Variables
 
         #region Properties
+        #region Type
+        public override Type Type { get { return typeof(ForEachTableWebRequestInstruction); } }
+        #endregion Type
         #region Schema
         public String Query
         {

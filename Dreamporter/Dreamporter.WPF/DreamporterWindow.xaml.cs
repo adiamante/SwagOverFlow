@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Dreamporter.WPF.Services;
+using SwagOverFlow.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +24,7 @@ namespace DreamporterWPF
     {
         public DreamporterWindow()
         {
+            JsonHelper.ResolveConverterProvider(new DreamporterJsonConverterProvider());
             InitializeComponent();
         }
     }

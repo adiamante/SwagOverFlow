@@ -1,17 +1,19 @@
-﻿<swctl:SwagWindow x:Class="SwagOverFlow.WPF.Test.BooleanExpression.BooleanExpressionTestWindow"
+﻿<swctl:SwagWindow x:Class="Dreamporter.WPF.Test.Instruction.InstructionTestWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dwc="clr-namespace:Dreamporter.WPF.Controls;assembly=Dreamporter.WPF"
         xmlns:svm="clr-namespace:SwagOverFlow.ViewModels;assembly=SwagOverFlow"
         xmlns:swctl="clr-namespace:SwagOverFlow.WPF.Controls;assembly=SwagOverFlow.WPF"
         xmlns:swui="clr-namespace:SwagOverFlow.WPF.UI;assembly=SwagOverFlow.WPF" 
         xmlns:swvm="clr-namespace:SwagOverFlow.WPF.ViewModels;assembly=SwagOverFlow.WPF"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:local="clr-namespace:Dreamporter.WPF.Test.Instruction"
         mc:Ignorable="d"
         x:Name="TestWindow"
-        Title="BooleanExpressionTestWindow" Height="450" Width="800">
+        Title="InstructionTestWindow" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -23,8 +25,8 @@
         <GroupBox Grid.Row="0" Grid.Column="0" MinWidth="200" DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}">
             <GroupBox.Header>
                 <DockPanel>
-                    <Button DockPanel.Dock="Right" Click="Evaluate">
-                        <swctl:IconControl Text="Evaluate" Kind="{x:Static swui:PackIconCustomKind.Play}" />
+                    <Button DockPanel.Dock="Right" Click="Run">
+                        <swctl:IconControl Text="Run" Kind="{x:Static swui:PackIconCustomKind.Play}" />
                     </Button>
                     <swctl:IconControl Text="Options" Kind="{x:Static swui:PackIconCustomKind.Variable}" />
                 </DockPanel>
@@ -46,21 +48,24 @@
         <GroupBox Grid.Row="0" Grid.Column="1">
             <GroupBox.Header>
                 <DockPanel>
-                    <TextBlock x:Name="txtResult" DockPanel.Dock="Right" FontWeight="Bold" />
-                    <swctl:IconControl Text="Expression" Kind="{x:Static swui:PackIconCustomKind.Checked}" />
+                    <swctl:IconControl Text="Instruction" Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.LightningBolt}" />
                 </DockPanel>
             </GroupBox.Header>
-            <swctl:BooleanExpressionControl Expression="{Binding Expression, ElementName=TestWindow}" 
-                                            ShowSaveButton="True" 
-                                            ShowSaveContextMenuItem="True" 
-                                            ShowAddContextMenuItem="True"
-                                            ShowCopyContextMenuItem="True"
-                                            ShowPasteContextMenuItem="True"
-                                            ShowExportContextMenuItem="True"
-                                            ShowImportContextMenuItem="True"
-                                            ShowItemAddContextMenuItem="True"
-                                            ShowItemRemoveContextMenuItem="True"
-                                            Save="BooleanExpressionControl_Save" />
+            <dwc:InstructionControl RootInstruction="{Binding Instruction, ElementName=TestWindow}"
+                                    ShowSaveButton="True" 
+                                    ShowSaveContextMenuItem="True" 
+                                    ShowAddContextMenuItem="True"
+                                    ShowCopyContextMenuItem="True"
+                                    ShowPasteContextMenuItem="True"
+                                    ShowExportContextMenuItem="True"
+                                    ShowImportContextMenuItem="True"
+                                    ShowItemAddContextMenuItem="True"
+                                    ShowItemCopyContextMenuItem="True"
+                                    ShowItemPasteContextMenuItem="True"
+                                    ShowItemRemoveContextMenuItem="True"
+                                    Save="InstructionControl_Save">
+                
+            </dwc:InstructionControl>
         </GroupBox>
     </Grid>
 </swctl:SwagWindow>

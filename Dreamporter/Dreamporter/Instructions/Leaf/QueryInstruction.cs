@@ -7,6 +7,10 @@ namespace Dreamporter.Instructions
 {
     public class QueryInstruction : Instruction
     {
+        #region Type
+        public override Type Type { get { return typeof(QueryInstruction); } }
+        #endregion Type
+
         public String Query { get; set; }
         public String TargetTable { get; set; }
 

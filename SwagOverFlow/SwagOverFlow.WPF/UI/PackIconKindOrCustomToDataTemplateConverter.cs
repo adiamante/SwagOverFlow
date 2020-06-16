@@ -76,6 +76,12 @@ namespace SwagOverFlow.WPF.UI
             Decimal baseWidth = 20m, baseHeight = 20m, centerX = 0.0m, centerY = 0.0m, scaleX = 1.0m, scaleY = 1.0m;
             switch (iconKind)
             {
+                case PackIconBoxIconsKind boxKind:
+                    baseWidth = 600m;
+                    baseHeight = 600m;
+                    scaleX = 0.7m;
+                    scaleY = -0.7m;
+                    break;
                 default:
                 case PackIconEntypoKind entypoKind:
                     baseWidth = 20m;
@@ -103,6 +109,22 @@ namespace SwagOverFlow.WPF.UI
                 case PackIconModernKind modernKind:
                     baseWidth = 65m;
                     baseHeight = 65m;
+                    scaleX = 1.3m;
+                    scaleY = 1.3m;
+                    break;
+                case PackIconPicolIconsKind picolKind:
+                    baseWidth = 1000m;
+                    baseHeight = 1000m;
+                    break;
+                case PackIconRPGAwesomeKind rpgAwesomeKind:
+                    baseWidth = 600m;
+                    baseHeight = 600m;
+                    scaleX = 0.7m;
+                    scaleY = -0.7m;
+                    break;
+                case PackIconWeatherIconsKind weatherKind:
+                    baseWidth = 30m;
+                    baseHeight = 30m;
                     scaleX = 1.3m;
                     scaleY = 1.3m;
                     break;

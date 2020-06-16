@@ -9,6 +9,10 @@ namespace Dreamporter.Instructions
 {
     public class SqlExecSPInstruction : Instruction
     {
+        #region Type
+        public override Type Type { get { return typeof(SqlExecSPInstruction); } }
+        #endregion Type
+
         public String ConnectionName { get; set; }
         public String StoredProcedure { get; set; }
         public String TargetTable { get; set; }

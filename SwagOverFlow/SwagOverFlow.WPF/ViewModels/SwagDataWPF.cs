@@ -1445,13 +1445,6 @@ namespace SwagOverFlow.WPF.ViewModels
 
         #endregion Context Methods
 
-        #region Iterator
-        public SwagItemPreOrderIterator<SwagData> CreateIterator()
-        {
-            return new SwagItemPreOrderIterator<SwagData>(this);
-        }
-        #endregion Iterator
-
         #region Methods
         public void InitSettings()
         {

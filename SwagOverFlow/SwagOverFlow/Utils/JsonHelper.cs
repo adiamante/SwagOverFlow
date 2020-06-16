@@ -15,6 +15,12 @@ namespace SwagOverFlow.Utils
     {
         static IJsonConverterProviderService _jsonConverterProviderService;
 
+        //Does not look to good architectually but gotta get this working
+        public static void ResolveConverterProvider(IJsonConverterProviderService jsonConverterProvider)
+        {
+            _jsonConverterProviderService = jsonConverterProvider;
+        }
+
         public static void ResolveServices(IServiceProvider serviceProvider)
         {
             _jsonConverterProviderService = (IJsonConverterProviderService)serviceProvider.GetService(typeof(IJsonConverterProviderService));
