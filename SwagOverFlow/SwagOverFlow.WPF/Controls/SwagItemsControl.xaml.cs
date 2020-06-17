@@ -24,6 +24,20 @@ namespace SwagOverFlow.WPF.Controls
         #endregion Private Members
 
         #region Properties
+        #region SelectedItem
+        private static readonly DependencyProperty SelectedItemProperty =
+        DependencyProperty.Register("SelectedItem", typeof(Object), typeof(SwagItemsControl));
+
+        public Object SelectedItem
+        {
+            get { return (Object)GetValue(SelectedItemProperty); }
+            set
+            {
+                SetValue(SelectedItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion SelectedItem
         #region SwagItemsSource
         private static readonly DependencyProperty SwagItemsSourceProperty =
         DependencyProperty.Register("SwagItemsSource", typeof(SwagItemBase), typeof(SwagItemsControl));
@@ -805,7 +819,6 @@ namespace SwagOverFlow.WPF.Controls
                 "SaveVerticalAlignment",
                 typeof(VerticalAlignment),
                 typeof(SwagItemsControl));
-
         public VerticalAlignment SaveVerticalAlignment
         {
             get { return (VerticalAlignment)GetValue(SaveVerticalAlignmentProperty); }
@@ -943,8 +956,11 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
 
+        private void ControlTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            SelectedItem = e.NewValue;
+        }
         #endregion Events
-
     }
 
     #region SwagItemsControlHelper

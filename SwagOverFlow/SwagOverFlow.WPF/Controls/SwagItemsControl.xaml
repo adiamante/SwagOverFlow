@@ -180,7 +180,8 @@
                   PreviewMouseLeftButtonDown="ControlTreeView_PreviewMouseLeftButtonDown"
                   PreviewDragOver="ControlTreeView_PreviewDragOver"
                   PreviewDragLeave="ControlTreeView_PreviewDragLeave"
-                  Drop="ControlTreeView_Drop">
+                  Drop="ControlTreeView_Drop"
+                  SelectedItemChanged="ControlTreeView_SelectedItemChanged">
             <swui:SwagTemplateSelector.CustomTemplates>
                 <CompositeCollection>
                     <CollectionContainer Collection="{Binding Source={StaticResource ItemTemplates}}" />

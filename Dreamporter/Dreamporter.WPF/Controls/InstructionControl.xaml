@@ -145,9 +145,91 @@
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
-        <swui:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        <DataTemplate DataType="{x:Type di:GroupInstruction}">
+            <Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Column="0">
+                        <GroupBox.Header>
+                            <swctl:IconControl Text="General" Kind="{x:Static iconPacks:PackIconMaterialKind.Settings}" />
+                        </GroupBox.Header>
+                        <StackPanel>
+                            <CheckBox IsChecked="{Binding IsEnabled}" Content="Enabled" />
+                            <swctl:IconControl Text="Display" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaNBoxOutline}" />
+                            <TextBox Text="{Binding Display}" />
+                            <CheckBox IsChecked="{Binding DoLog}" Content="DoLog" />
+                            <swctl:IconControl Text="LogPattern" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaLBoxOutline}" />
+                            <TextBox Text="{Binding LogPattern}" />
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Grid.Column="1">
+                        <GroupBox.Header>
+                            <swctl:IconControl Text="Cache" Kind="{x:Static iconPacks:PackIconMaterialKind.Cached}" />
+                        </GroupBox.Header>
+                        <StackPanel>
+                            <CheckBox IsChecked="{Binding CacheProperties.Enabled}" Content="Enabled" />
+                            <swctl:IconControl Text="AddressPattern" Kind="{x:Static iconPacks:PackIconIoniconsKind.PinMD}" />
+                            <TextBox Text="{Binding CacheProperties.AddressPattern}" />
+                            <swctl:IconControl Text="KeyPattern" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
+                            <TextBox Text="{Binding CacheProperties.KeyPattern}" />
+                            <swctl:IconControl Text="VersionPattern" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaVBoxOutline}" />
+                            <TextBox Text="{Binding CacheProperties.VersionPattern}" />
+                            <swctl:IconControl Text="ExpiresInMinutes" Kind="{x:Static iconPacks:PackIconMaterialKind.ClockOutline}" />
+                            <metro:NumericUpDown Value="{Binding CacheProperties.ExpiresInMinutes}" />
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Grid.Column="2">
+                        <GroupBox.Header>
+                            <swctl:IconControl Text="Advanced" Kind="{x:Static iconPacks:PackIconFontAwesomeKind.CogsSolid}" />
+                        </GroupBox.Header>
+                        <StackPanel>
+                            <CheckBox IsChecked="{Binding IsConcurrent}" Content="IsConcurrent" />
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Grid.Column="3">
+                        <GroupBox.Header>
+                            <swctl:IconControl Text="Description" Kind="{x:Static iconPacks:PackIconMaterialKind.Information}" />
+                        </GroupBox.Header>
+                        <TextBox Grid.Column="2" AcceptsReturn="True" AcceptsTab="True" Text="{Binding Description}">
+
+                        </TextBox>
+                    </GroupBox>
+                </Grid>
+                <Button HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                        Click="SwagItemsControl_Save">
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
+                </Button>
+            </Grid>
+            
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type di:ForEachTableGroupInstruction}">
+            <TextBlock Text="ForEachTableGroupInstruction Placeholder" />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type di:QueryInstruction}">
+            <TextBlock Text="QueryInstruction Placeholder" />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type di:SqlExecSPInstruction}">
+            <TextBlock Text="SqlExecSPInstruction Placeholder" />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type di:WebRequestInstruction}">
+            <TextBlock Text="WebRequestInstruction Placeholder" />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type di:ForEachTableWebRequestInstruction}">
+            <TextBlock Text="ForEachTableWebRequestInstruction Placeholder" />
+        </DataTemplate>
     </swctl:SwagControlBase.Resources>
-    <swctl:SwagItemsControl SwagItemsSource="{Binding RootInstruction, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
+    <DockPanel>
+        <swctl:SwagItemsControl DockPanel.Dock="Left"
+                            SwagItemsSource="{Binding RootInstruction, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
+                            SelectedItem="{Binding SelectedInstruction, ElementName=ThisControl, Mode=TwoWay}"
                             AllowMove="{Binding AllowMove, ElementName=ThisControl}"
                             TreeViewItemDropPreview="SwagItemsControl_TreeViewItemDropPreview"
                             TreeViewItemLeavePreview="SwagItemsControl_TreeViewItemLeavePreview"
@@ -169,219 +251,223 @@
                             ShowItemPasteContextMenuItem="{Binding ShowItemPasteContextMenuItem, ElementName=ThisControl}"
                             SaveHorizontalAlignment="Right"
                             SaveVerticalAlignment="Bottom">
-        <swctl:SwagItemsControl.ContextMenu>
-            <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (InstructionControl)-->
-            <ContextMenu DataContext="{Binding PlacementTarget.Tag.RootInstruction, RelativeSource={RelativeSource Self}}" Tag="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                <MenuItem Header="Save"
+            <swctl:SwagItemsControl.ContextMenu>
+                <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (InstructionControl)-->
+                <ContextMenu DataContext="{Binding PlacementTarget.Tag.RootInstruction, RelativeSource={RelativeSource Self}}" Tag="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                    <MenuItem Header="Save"
                           Command="{Binding Parent.Tag.SaveCommand, RelativeSource={RelativeSource Self}}"
                           Visibility="{Binding Parent.Tag.Tag.ShowSaveContextMenuItem, Converter={swui:BoolToVisibilityConverter}}">
-                    <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Add">
-                    <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconEntypoKind.Plus}" />
-                    </MenuItem.Icon>
-                    <MenuItem Header="Group">
                         <MenuItem.Icon>
-                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.TreeLeafThree}" />
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
                         </MenuItem.Icon>
-                        <MenuItem Header="InstructionGroup" Tag="GRP_INS" Command="{Binding Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                    </MenuItem>
+                    <MenuItem Header="Add">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconEntypoKind.Plus}" />
+                        </MenuItem.Icon>
+                        <MenuItem Header="Group">
                             <MenuItem.Icon>
-                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.LightningTrio}" />
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.TreeLeafThree}" />
                             </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="ForEach Table" Tag="GRP_TBL" Command="{Binding Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
+                            <MenuItem Header="InstructionGroup" Tag="GRP_INS" Command="{Binding Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                                <MenuItem.Icon>
+                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.LightningTrio}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="ForEach Table" Tag="GRP_TBL" Command="{Binding Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                                <MenuItem.Icon>
+                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Table}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuItem>
+                        <MenuItem Header="Leaf">
                             <MenuItem.Icon>
-                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Table}" />
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.TreeLeaf}" />
+                            </MenuItem.Icon>
+                            <MenuItem Header="SQL">
+                                <MenuItem.Icon>
+                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.DatabaseSql}" />
+                                </MenuItem.Icon>
+                                <MenuItem Header="Query" Tag="LF_QRY" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                                    <MenuItem.Icon>
+                                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.DatabaseSearch}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="SQL SP" Tag="LF_SQL_SP" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                                    <MenuItem.Icon>
+                                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseRun}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </MenuItem>
+                            <MenuItem Header="Web">
+                                <MenuItem.Icon>
+                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconWeatherIconsKind.Cloud}" />
+                                </MenuItem.Icon>
+                                <MenuItem Header="WebRequest" Tag="LF_WR_WRI" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                                    <MenuItem.Icon>
+                                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconBoxIconsKind.RegularCloudLightning}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="WebRequest Group" Tag="LF_WR_WRGRP" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                                    <MenuItem.Icon>
+                                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconWeatherIconsKind.Thunderstorm}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </MenuItem>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="AllowMove" IsCheckable="True" IsChecked="{Binding Parent.Tag.AllowMove, RelativeSource={RelativeSource Self}}">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.CursorMove}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Debug">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.AndroidDebugBridge}" />
+                        </MenuItem.Icon>
+                        <MenuItem Header="ShowSequence" IsCheckable="True" IsChecked="{Binding Parent.Parent.Tag.Tag.ShowSequence, RelativeSource={RelativeSource Self}}">
+                            <MenuItem.Icon>
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.FormatListNumbered}" />
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="Leaf">
-                        <MenuItem.Icon>
-                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.TreeLeaf}" />
-                        </MenuItem.Icon>
-                        <MenuItem Header="SQL">
-                            <MenuItem.Icon>
-                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.DatabaseSql}" />
-                            </MenuItem.Icon>
-                            <MenuItem Header="Query" Tag="LF_QRY" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
-                                <MenuItem.Icon>
-                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.DatabaseSearch}" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="SQL SP" Tag="LF_SQL_SP" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
-                                <MenuItem.Icon>
-                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseRun}" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </MenuItem>
-                        <MenuItem Header="Web">
-                            <MenuItem.Icon>
-                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconWeatherIconsKind.Cloud}" />
-                            </MenuItem.Icon>
-                            <MenuItem Header="WebRequest" Tag="LF_WR_WRI" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
-                                <MenuItem.Icon>
-                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconBoxIconsKind.RegularCloudLightning}" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="WebRequest Group" Tag="LF_WR_WRGRP" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
-                                <MenuItem.Icon>
-                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconWeatherIconsKind.Thunderstorm}" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </MenuItem>
-                    </MenuItem>
-                </MenuItem>
-                <MenuItem Header="AllowMove" IsCheckable="True" IsChecked="{Binding Parent.Tag.AllowMove, RelativeSource={RelativeSource Self}}">
-                    <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.CursorMove}" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Debug">
-                    <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.AndroidDebugBridge}" />
-                    </MenuItem.Icon>
-                    <MenuItem Header="ShowSequence" IsCheckable="True" IsChecked="{Binding Parent.Parent.Tag.Tag.ShowSequence, RelativeSource={RelativeSource Self}}">
-                        <MenuItem.Icon>
-                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.FormatListNumbered}" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                </MenuItem>
-                <MenuItem Header="Copy"
+                    <MenuItem Header="Copy"
                           Command="{Binding Parent.Tag.CopyCommand, RelativeSource={RelativeSource Self}}" 
                           CommandParameter="{Binding Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" 
                           Visibility="{Binding Parent.Tag.Tag.ShowCopyContextMenuItem, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource Self}}">
-                    <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Clipboard}" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Paste" 
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Clipboard}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Paste" 
                           Command="{Binding Parent.Tag.PasteCommand, RelativeSource={RelativeSource Self}}" 
                           CommandParameter="{Binding Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" 
                           Visibility="{Binding Parent.Tag.Tag.ShowPasteContextMenuItem, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource Self}}">
-                    <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.ClipboardPaste}" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Export" 
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.ClipboardPaste}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Export" 
                           Command="{Binding Parent.Tag.ExportCommand, RelativeSource={RelativeSource Self}}" 
                           CommandParameter="{Binding Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" 
                           Visibility="{Binding Parent.Tag.Tag.ShowExportContextMenuItem, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource Self}}">
-                    <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Export}" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Import"
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Export}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Import"
                           Command="{Binding Parent.Tag.ImportCommand, RelativeSource={RelativeSource Self}}" 
                           CommandParameter="{Binding Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" 
                           Visibility="{Binding Parent.Tag.Tag.ShowImportContextMenuItem, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource Self}}">
-                    <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Import}" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Clear" 
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Import}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Clear" 
                           Command="{Binding Parent.Tag.ClearCommand, RelativeSource={RelativeSource Self}}" 
                           CommandParameter="{Binding Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" 
                           Visibility="{Binding Parent.Tag.Expression.HasChildren, Converter={swui:BoolToVisibilityConverter}}">
-                    <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialDesignKind.Clear}" />
-                    </MenuItem.Icon>
-                </MenuItem>
-            </ContextMenu>
-        </swctl:SwagItemsControl.ContextMenu>
-        <swctl:SwagItemsControl.ItemContainerStyles>
-            <swui:SwagStyleCollection>
-                <swui:SwagStyle Type="{x:Type di:GroupInstruction}">
-                    <swui:SwagStyle.Style>
-                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
-                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                            <Setter Property="ContextMenu" Value="{StaticResource GroupContextMenu}" />
-                        </Style>
-                    </swui:SwagStyle.Style>
-                </swui:SwagStyle>
-                <swui:SwagStyle Type="{x:Type di:Instruction}">
-                    <swui:SwagStyle.Style>
-                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
-                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                            <Setter Property="ContextMenu" Value="{StaticResource InstructionContextMenu}" />
-                        </Style>
-                    </swui:SwagStyle.Style>
-                </swui:SwagStyle>
-            </swui:SwagStyleCollection>
-        </swctl:SwagItemsControl.ItemContainerStyles>
-        <swctl:SwagItemsControl.ItemTemplates>
-            <swui:SwagTemplateCollection>
-                <swui:SwagTemplate Type="{x:Type di:ForEachTableGroupInstruction}">
-                    <swui:SwagTemplate.DataTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
-                            <DockPanel>
-                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dic:InstructionControl}}}" />
-                                <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconMaterialKind.Table}" />
-                            </DockPanel>
-                        </HierarchicalDataTemplate>
-                    </swui:SwagTemplate.DataTemplate>
-                </swui:SwagTemplate>
-                <swui:SwagTemplate Type="{x:Type di:GroupInstruction}">
-                    <swui:SwagTemplate.DataTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
-                            <DockPanel>
-                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dic:InstructionControl}}}" />
-                                <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.LightningTrio}" />
-                            </DockPanel>
-                        </HierarchicalDataTemplate>
-                    </swui:SwagTemplate.DataTemplate>
-                </swui:SwagTemplate>
-                <swui:SwagTemplate Type="{x:Type di:QueryInstruction}">
-                    <swui:SwagTemplate.DataTemplate>
-                        <DataTemplate>
-                            <DockPanel>
-                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dic:InstructionControl}}}" />
-                                <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconMaterialKind.DatabaseSearch}" />
-                            </DockPanel>
-                        </DataTemplate>
-                    </swui:SwagTemplate.DataTemplate>
-                </swui:SwagTemplate>
-                <swui:SwagTemplate Type="{x:Type di:SqlExecSPInstruction}">
-                    <swui:SwagTemplate.DataTemplate>
-                        <DataTemplate>
-                            <DockPanel>
-                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dic:InstructionControl}}}" />
-                                <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseRun}" />
-                            </DockPanel>
-                        </DataTemplate>
-                    </swui:SwagTemplate.DataTemplate>
-                </swui:SwagTemplate>
-                <swui:SwagTemplate Type="{x:Type di:ForEachTableWebRequestInstruction}">
-                    <swui:SwagTemplate.DataTemplate>
-                        <DataTemplate>
-                            <DockPanel>
-                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dic:InstructionControl}}}" />
-                                <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconWeatherIconsKind.Thunderstorm}" />
-                            </DockPanel>
-                        </DataTemplate>
-                    </swui:SwagTemplate.DataTemplate>
-                </swui:SwagTemplate>
-                <swui:SwagTemplate Type="{x:Type di:WebRequestInstruction}">
-                    <swui:SwagTemplate.DataTemplate>
-                        <DataTemplate>
-                            <DockPanel>
-                                <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dic:InstructionControl}}}" />
-                                <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconBoxIconsKind.RegularCloudLightning}" />
-                            </DockPanel>
-                        </DataTemplate>
-                    </swui:SwagTemplate.DataTemplate>
-                </swui:SwagTemplate>
-            </swui:SwagTemplateCollection>
-        </swctl:SwagItemsControl.ItemTemplates>
-    </swctl:SwagItemsControl>
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialDesignKind.Clear}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </swctl:SwagItemsControl.ContextMenu>
+            <swctl:SwagItemsControl.ItemContainerStyles>
+                <swui:SwagStyleCollection>
+                    <swui:SwagStyle Type="{x:Type di:GroupInstruction}">
+                        <swui:SwagStyle.Style>
+                            <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                                <Setter Property="ContextMenu" Value="{StaticResource GroupContextMenu}" />
+                            </Style>
+                        </swui:SwagStyle.Style>
+                    </swui:SwagStyle>
+                    <swui:SwagStyle Type="{x:Type di:Instruction}">
+                        <swui:SwagStyle.Style>
+                            <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                                <Setter Property="ContextMenu" Value="{StaticResource InstructionContextMenu}" />
+                            </Style>
+                        </swui:SwagStyle.Style>
+                    </swui:SwagStyle>
+                </swui:SwagStyleCollection>
+            </swctl:SwagItemsControl.ItemContainerStyles>
+            <swctl:SwagItemsControl.ItemTemplates>
+                <swui:SwagTemplateCollection>
+                    <swui:SwagTemplate Type="{x:Type di:ForEachTableGroupInstruction}">
+                        <swui:SwagTemplate.DataTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dic:InstructionControl}}}" />
+                                    <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconMaterialKind.Table}" />
+                                </DockPanel>
+                            </HierarchicalDataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
+                    <swui:SwagTemplate Type="{x:Type di:GroupInstruction}">
+                        <swui:SwagTemplate.DataTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dic:InstructionControl}}}" />
+                                    <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.LightningTrio}" />
+                                </DockPanel>
+                            </HierarchicalDataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
+                    <swui:SwagTemplate Type="{x:Type di:QueryInstruction}">
+                        <swui:SwagTemplate.DataTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dic:InstructionControl}}}" />
+                                    <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconMaterialKind.DatabaseSearch}" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
+                    <swui:SwagTemplate Type="{x:Type di:SqlExecSPInstruction}">
+                        <swui:SwagTemplate.DataTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dic:InstructionControl}}}" />
+                                    <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseRun}" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
+                    <swui:SwagTemplate Type="{x:Type di:ForEachTableWebRequestInstruction}">
+                        <swui:SwagTemplate.DataTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dic:InstructionControl}}}" />
+                                    <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconWeatherIconsKind.Thunderstorm}" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
+                    <swui:SwagTemplate Type="{x:Type di:WebRequestInstruction}">
+                        <swui:SwagTemplate.DataTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dic:InstructionControl}}}" />
+                                    <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconBoxIconsKind.RegularCloudLightning}" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
+                </swui:SwagTemplateCollection>
+            </swctl:SwagItemsControl.ItemTemplates>
+        </swctl:SwagItemsControl>
+        <ContentControl MinWidth="60" BorderThickness="3" BorderBrush="Black" Content="{Binding SelectedInstruction, ElementName=ThisControl}">
+
+        </ContentControl>
+    </DockPanel>
 </swctl:SwagControlBase>

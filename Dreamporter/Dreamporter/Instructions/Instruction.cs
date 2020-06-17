@@ -50,6 +50,13 @@ namespace Dreamporter.Instructions
             set { SetValue(ref _doLog, value); }
         }
         #endregion DoLog
+        #region LogPattern
+        public String LogPattern
+        {
+            get { return _infoFormat; }
+            set { SetValue(ref _infoFormat, value); }
+        }
+        #endregion LogPattern
         #region Tags
         public string[] Tags { get; set; }
         #endregion Tags
@@ -70,13 +77,6 @@ namespace Dreamporter.Instructions
             set { SetValue(ref _cacheProperties, value); }
         }
         #endregion CacheProperties
-        #region LogPattern
-        public String LogPattern
-        {
-            get { return _infoFormat; }
-            set { SetValue(ref _infoFormat, value); }
-        }
-        #endregion LogPattern
         #endregion Properties
 
         #region Initialization

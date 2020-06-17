@@ -69,6 +69,19 @@ namespace Dreamporter.WPF.Controls
             set { SetValue(RootInstructionProperty, value); }
         }
         #endregion RootInstruction
+        #region SelectedInstruction
+        public static DependencyProperty SelectedInstructionProperty =
+            DependencyProperty.Register(
+                "SelectedInstruction",
+                typeof(Instruction),
+                typeof(InstructionControl));
+
+        public Instruction SelectedInstruction
+        {
+            get { return (Instruction)GetValue(SelectedInstructionProperty); }
+            set { SetValue(SelectedInstructionProperty, value); }
+        }
+        #endregion SelectedInstruction
         #region Save
         public static readonly RoutedEvent SaveEvent =
             EventManager.RegisterRoutedEvent(
