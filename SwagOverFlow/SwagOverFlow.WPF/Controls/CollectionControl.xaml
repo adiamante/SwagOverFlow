@@ -1,0 +1,63 @@
+﻿<swctl:SwagControlBase x:Class="SwagOverFlow.WPF.Controls.CollectionControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:swctl="clr-namespace:SwagOverFlow.WPF.Controls" 
+             xmlns:swui="clr-namespace:SwagOverFlow.WPF.UI"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:swcmd="clr-namespace:SwagOverFlow.WPF.Commands"
+             mc:Ignorable="d" 
+             x:Name="ThisControl"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <swctl:SwagControlBase.ContextMenu>
+        <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+            <MenuItem Header="Add" Command="{Binding AddCommand}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconEntypoKind.Plus}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <!--<MenuItem Header="Clear" Command="{Binding ClearCommand}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialDesignKind.ClearAll}" />
+                </MenuItem.Icon>
+            </MenuItem>-->
+        </ContextMenu>
+    </swctl:SwagControlBase.ContextMenu>
+    <ListView ItemsSource="{Binding Collection, ElementName=ThisControl, Mode=TwoWay}"
+              ItemTemplate="{Binding ItemTemplate, ElementName=ThisControl}">
+        <ListView.ItemContainerStyle>
+            <Style TargetType="{x:Type ListViewItem}">
+                <Setter Property="ContextMenu">
+                    <Setter.Value>
+                        <ContextMenu
+                             Tag="{Binding PlacementTarget,
+                             RelativeSource={RelativeSource Self},
+                             Converter={swui:AncestorFindConverter},
+                             ConverterParameter={x:Type swctl:CollectionControl}}">
+                            <MenuItem Header="Add"
+                                      Command="{Binding Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}" >
+                                <MenuItem.Icon>
+                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconEntypoKind.Plus}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Remove" 
+                                  Command="{Binding Parent.Tag.RemoveCommand, RelativeSource={RelativeSource Self}}" 
+                                  CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                                <MenuItem.Icon>
+                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.CloseBoxOutline}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Clear" 
+                                      Command="{Binding Parent.Tag.ClearCommand, RelativeSource={RelativeSource Self}}" >
+                                <MenuItem.Icon>
+                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.CloseBoxMultipleOutline}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ListView.ItemContainerStyle>
+    </ListView>
+</swctl:SwagControlBase>

@@ -77,8 +77,8 @@ namespace SwagOverFlow.WPF.UI
             switch (iconKind)
             {
                 case PackIconBoxIconsKind boxKind:
-                    baseWidth = 600m;
-                    baseHeight = 600m;
+                    baseWidth = 900m;
+                    baseHeight = 900m;
                     scaleX = 0.7m;
                     scaleY = -0.7m;
                     break;

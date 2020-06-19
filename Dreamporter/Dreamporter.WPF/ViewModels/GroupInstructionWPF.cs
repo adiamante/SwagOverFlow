@@ -84,7 +84,9 @@ namespace Dreamporter.WPF.ViewModels
                 jObject.Remove("Children");
             }
 
-            Instruction instruction = (Instruction)JsonConvert.DeserializeObject(jObject.ToString(), type);
+            //https://stackoverflow.com/questions/13394401/json-net-deserializing-list-gives-duplicate-items
+            //ObjectCreationHandling.Replace is for list properties
+            Instruction instruction = (Instruction)JsonConvert.DeserializeObject(jObject.ToString(), type, new JsonSerializerSettings() { ObjectCreationHandling = ObjectCreationHandling.Replace });
 
             switch (instruction)
             {
@@ -92,7 +94,7 @@ namespace Dreamporter.WPF.ViewModels
                     foreach (JToken token in jaChildren)
                     {
                         JObject jChild = (JObject)token;
-                        Instruction child = (Instruction)JsonConvert.DeserializeObject(jChild.ToString(), typeof(Instruction), InstructionWPFJsonConverter.Instance);
+                        Instruction child = (Instruction)JsonConvert.DeserializeObject(jChild.ToString(), typeof(Instruction), new JsonSerializerSettings() { ObjectCreationHandling = ObjectCreationHandling.Replace, Converters = new JsonConverter[] { InstructionWPFJsonConverter.Instance } });
                         grp.Children.Add(child);
                     }
                     break;

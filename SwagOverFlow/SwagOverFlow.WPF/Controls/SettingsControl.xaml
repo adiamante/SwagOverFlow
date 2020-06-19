@@ -107,7 +107,7 @@
                 <ui:SwagTemplate TypePath="ValueType">
                     <ui:SwagTemplate.Type>
                         <ui:GenericType BaseTypeName="vm:SwagValueItemGroupWPF">
-                            <ui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
+                            <ui:GenericType BaseTypeName="swagvm:KeyValuePairViewModel">
                                 <x:Type TypeName="sys:String"/>
                                 <x:Type TypeName="vm:ParseViewModel"/>
                             </ui:GenericType>
@@ -135,7 +135,7 @@
                                             <ui:SwagTemplate>
                                                 <ui:SwagTemplate.Type>
                                                     <ui:GenericType BaseTypeName="swagvm:SwagItem">
-                                                        <ui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
+                                                        <ui:GenericType BaseTypeName="swagvm:KeyValuePairViewModel">
                                                             <x:Type TypeName="sys:String"/>
                                                             <x:Type TypeName="vm:ParseViewModel"/>
                                                         </ui:GenericType>
@@ -191,7 +191,7 @@
                 <ui:SwagTemplate TypePath="ValueType">
                     <ui:SwagTemplate.Type>
                         <ui:GenericType BaseTypeName="vm:SwagValueItemGroupWPF">
-                            <ui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
+                            <ui:GenericType BaseTypeName="swagvm:KeyValuePairViewModel">
                                 <x:Type TypeName="sys:String"/>
                                 <x:Type TypeName="sys:String"/>
                             </ui:GenericType>
@@ -219,7 +219,7 @@
                                             <ui:SwagTemplate>
                                                 <ui:SwagTemplate.Type>
                                                     <ui:GenericType BaseTypeName="swagvm:SwagItem">
-                                                        <ui:GenericType BaseTypeName="vm:KeyValuePairViewModel">
+                                                        <ui:GenericType BaseTypeName="swagvm:KeyValuePairViewModel">
                                                             <x:Type TypeName="sys:String"/>
                                                             <x:Type TypeName="sys:String"/>
                                                         </ui:GenericType>

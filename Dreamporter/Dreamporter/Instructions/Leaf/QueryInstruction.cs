@@ -7,12 +7,29 @@ namespace Dreamporter.Instructions
 {
     public class QueryInstruction : Instruction
     {
+        #region Private Members
+        String _query, _targetTable;
+        #endregion Private Members
+
+        #region Properties
         #region Type
         public override Type Type { get { return typeof(QueryInstruction); } }
         #endregion Type
-
-        public String Query { get; set; }
-        public String TargetTable { get; set; }
+        #region Query
+        public String Query
+        {
+            get { return _query; }
+            set { SetValue(ref _query, value); }
+        }
+        #endregion Query
+        #region TargetTable
+        public String TargetTable
+        {
+            get { return _targetTable; }
+            set { SetValue(ref _targetTable, value); }
+        }
+        #endregion TargetTable
+        #endregion Properties
 
         public override void Execute(RuntimeContext context, Dictionary<String, String> parameters)
         {

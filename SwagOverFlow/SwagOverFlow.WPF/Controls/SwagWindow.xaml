@@ -21,7 +21,7 @@
                         <controls:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.History}" />
                     </ToggleButton>
                     <ToggleButton IsChecked="{Binding Settings[Window][Settings][IsOpen].Value}">
-                        <controls:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Settings}" />
+                        <controls:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Cog}" />
                     </ToggleButton>
                 </metro:WindowCommands>
             </Setter.Value>
@@ -75,7 +75,7 @@
                     <metro:Flyout IsOpen="{Binding Settings[Window][Settings][IsOpen].Value}" Position="Right" Theme="Accent">
                         <metro:Flyout.Header>
                             <StackPanel Orientation="Horizontal">
-                                <controls:IconControl Text="Settings" Kind="{x:Static iconPacks:PackIconMaterialKind.Settings}" />
+                                <controls:IconControl Text="Settings" Kind="{x:Static iconPacks:PackIconMaterialKind.Cog}" />
                             </StackPanel>
                         </metro:Flyout.Header>
                         <controls:SettingsControl Settings="{Binding Settings}" SettingCustomTemplates="{Binding SettingCustomTemplates}" />

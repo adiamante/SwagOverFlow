@@ -58,7 +58,7 @@ namespace SwagOverFlow.WPF.ViewModels
         {
             if (doInit)
             {
-                this["Window"] = new SwagSettingWPFGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.SettingsOutline };
+                this["Window"] = new SwagSettingWPFGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.CogOutline };
                 this["Window"]["Status"] = new SwagSettingWPFGroup() { SettingType = SettingType.Hidden };
                 this["Window"]["Status"]["Message"] = new SwagSettingString() { SettingType = SettingType.Hidden };
                 this["Window"]["Status"]["IsBusy"] = new SwagSettingBoolean() { SettingType = SettingType.Hidden, Value = false };

@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using SwagOverFlow.Clients;
 using SwagOverFlow.Parsing;
 using SwagOverFlow.Utils;
+using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -24,13 +25,13 @@ namespace Dreamporter.Instructions
         #region Type
         public override Type Type { get { return typeof(ForEachTableWebRequestInstruction); } }
         #endregion Type
-        #region Schema
+        #region Query
         public String Query
         {
             get { return _query; }
             set { SetValue(ref _query, value); }
         }
-        #endregion Schema
+        #endregion Query
         #endregion Properties
 
         #region Methods
@@ -139,8 +140,9 @@ namespace Dreamporter.Instructions
                             #region ParameterColumns
                             if (ParameterColumns != null)
                             {
-                                foreach (KeyValuePair<String, String> pcKvp in ParameterColumns.Reverse())
+                                for (int i = ParameterColumns.Count - 1; i >= 0; i--)       //reverse order
                                 {
+                                    KeyValuePairViewModel<String, String> pcKvp = ParameterColumns[i];
                                     if (dictParamSet.ContainsKey(pcKvp.Key))
                                     {
                                         if (!dtCopy.Columns.Contains(pcKvp.Key))
@@ -204,8 +206,9 @@ namespace Dreamporter.Instructions
                 #region ParameterColumns
                 if (ParameterColumns != null)
                 {
-                    foreach (KeyValuePair<String, String> pcKvp in ParameterColumns.Reverse())
+                    for (int i = ParameterColumns.Count - 1; i >= 0; i--)       //reverse order
                     {
+                        KeyValuePairViewModel<String, String> pcKvp = ParameterColumns[i];
                         if (parameters.ContainsKey(pcKvp.Key) && !dt.Columns.Contains(pcKvp.Key))
                         {
                             DataColumn dc = dt.Columns.Add(pcKvp.Value);

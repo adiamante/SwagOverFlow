@@ -80,7 +80,6 @@ namespace SwagOverFlow.Clients
     public class SqlParam
     {
         public String Key { get; set; }
-        //[JsonSchemaType(typeof(String))]
         public Object Value { get; set; }
         [JsonConverter(typeof(StringEnumConverter))]
         public SqlDbType Type { get; set; }

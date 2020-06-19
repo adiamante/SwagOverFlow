@@ -9,15 +9,46 @@ namespace Dreamporter.Instructions
 {
     public class SqlExecSPInstruction : Instruction
     {
+        #region Private Members
+        String _dbContext, _storedProcedure, _targetTable;
+        List<SqlParam> _sqlParams = new List<SqlParam>();
+        #endregion Private Members
+
+        #region Properties
         #region Type
         public override Type Type { get { return typeof(SqlExecSPInstruction); } }
         #endregion Type
+        #region DBContext
+        public String DBContext
+        {
+            get { return _dbContext; }
+            set { SetValue(ref _dbContext, value); }
+        }
+        #endregion DBContext
+        #region StoredProcedure
+        public String StoredProcedure
+        {
+            get { return _storedProcedure; }
+            set { SetValue(ref _storedProcedure, value); }
+        }
+        #endregion StoredProcedure
+        #region TargetTable
+        public String TargetTable
+        {
+            get { return _targetTable; }
+            set { SetValue(ref _targetTable, value); }
+        }
+        #endregion TargetTable
+        #region SqlParams
+        public List<SqlParam> SqlParams
+        {
+            get { return _sqlParams; }
+            set { SetValue(ref _sqlParams, value); }
+        }
+        #endregion SqlParams
+        #endregion Properties
 
-        public String ConnectionName { get; set; }
-        public String StoredProcedure { get; set; }
-        public String TargetTable { get; set; }
-
-        public SqlParam[] SqlParams { get; set; }
+        #region Methods
         public override void Execute(RuntimeContext context, Dictionary<String, String> parameters)
         {
             Dictionary<String, SqlParam> sqlParams = new Dictionary<string, SqlParam>();
@@ -81,7 +112,7 @@ namespace Dreamporter.Instructions
                 Exception exOuter = new Exception($"SQL Params: {JsonHelper.ToJsonString(SqlParams)}\nparameters: {JsonHelper.ToJsonString(parameters)}", ex);
                 throw exOuter;
             }
-
         }
+        #endregion Methods
     }
 }

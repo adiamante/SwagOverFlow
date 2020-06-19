@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="MahApps.Metro" Version="2.0.0-alpha0775" />
-    <PackageReference Include="MahApps.Metro.IconPacks" Version="3.3.0" />
+    <PackageReference Include="MahApps.Metro.IconPacks" Version="4.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 

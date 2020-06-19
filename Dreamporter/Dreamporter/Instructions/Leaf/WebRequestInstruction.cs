@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using SwagOverFlow.Clients;
 using SwagOverFlow.Parsing;
 using SwagOverFlow.Utils;
+using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -27,6 +28,9 @@ namespace Dreamporter.Instructions
         WebRequestPostContentType _postContentType;
         Int32 _limit;
         Boolean _forceFixXml;
+        List<KeyValuePairViewModel<String, String>> _headers = new List<KeyValuePairViewModel<string, string>>();
+        List<KeyValuePairViewModel<String, String>> _urlParams = new List<KeyValuePairViewModel<string, string>>();
+        List<KeyValuePairViewModel<String, String>> _parameterColumns = new List<KeyValuePairViewModel<string, string>>();
         #endregion Private Variables
 
         #region Properties
@@ -78,10 +82,18 @@ namespace Dreamporter.Instructions
         }
         #endregion PostContentType
         #region Headers
-        public KeyValuePair<String, String>[] Headers { get; set; }
+        public List<KeyValuePairViewModel<string, string>> Headers
+        {
+            get { return _headers; }
+            set { SetValue(ref _headers, value); }
+        }
         #endregion Headers
         #region UrlParams
-        public KeyValuePair<String, String>[] UrlParams { get; set; }
+        public List<KeyValuePairViewModel<String, String>> UrlParams
+        {
+            get { return _urlParams; }
+            set { SetValue(ref _urlParams, value); }
+        }
         #endregion UrlParams
         #region Limit
         public Int32 Limit
@@ -99,7 +111,11 @@ namespace Dreamporter.Instructions
 
         #endregion ForceFixXml
         #region ParameterColumns
-        public KeyValuePair<String, String>[] ParameterColumns { get; set; }
+        public List<KeyValuePairViewModel<String, String>> ParameterColumns
+        {
+            get { return _parameterColumns; }
+            set { SetValue(ref _parameterColumns, value); }
+        }
         #endregion ParameterColumns
         #region LimitField
         public String LimitField
@@ -146,15 +162,9 @@ namespace Dreamporter.Instructions
             HttpResponseMessage response = null;
             Boolean useCache = CacheProperties?.Enabled ?? false && context.CacheProvider != null;
 
-            //if (parameters.ContainsKey("IgnoreCache") && Boolean.TryParse(parameters["IgnoreCache"], out bool ignoreCache) && ignoreCache)
-            //{
-            //    useCache = false;
-            //}
-
             if (useCache)
             {
                 #region Get Cache Address and Key
-                //cacheAddress = Instruction.ResolveParameters(CacheProperties?.AddressPattern ?? "", parameters);
                 cacheAddress = MessageTemplateHelper.ParseTemplate(CacheProperties?.AddressPattern ?? "", parameters);
                 cacheKey = Instruction.ResolveParameters(CacheProperties?.KeyPattern ?? "", parameters);
                 cacheVersion = Instruction.ResolveParameters(CacheProperties?.VersionPattern ?? "", parameters);
@@ -332,11 +342,13 @@ namespace Dreamporter.Instructions
                     }
                 }
 
+                #region ParameterColumns
                 if (ParameterColumns != null)
                 {
-                    foreach (KeyValuePair<String, String> pcKvp in ParameterColumns.Reverse())
+                    for (int i = ParameterColumns.Count - 1; i >= 0; i--)       //reverse order
                     {
-                        if (parameters.ContainsKey(pcKvp.Key))
+                        KeyValuePairViewModel<String, String> pcKvp = ParameterColumns[i];
+                        if (parameters.ContainsKey(pcKvp.Key) && !dt.Columns.Contains(pcKvp.Key))
                         {
                             DataColumn dc = dt.Columns.Add(pcKvp.Value);
                             dc.Expression = $"'{parameters[pcKvp.Key]}'";
@@ -344,6 +356,7 @@ namespace Dreamporter.Instructions
                         }
                     }
                 }
+                #endregion ParameterColumns
 
                 context.AddTables(dt);
             }

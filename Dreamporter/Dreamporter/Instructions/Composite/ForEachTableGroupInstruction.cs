@@ -10,12 +10,29 @@ namespace Dreamporter.Instructions
 {
     public class ForEachTableGroupInstruction : GroupInstruction
     {
+        #region Private Members
+        String _query;
+        Decimal _delayMinutes;
+        #endregion Private Members
+
         #region Properties
         #region Type
         public override Type Type { get { return typeof(ForEachTableGroupInstruction); } }
         #endregion Type
-        public String Query { get; set; }
-        public Decimal DelayMinutes { get; set; } = 0.0m;
+        #region Query
+        public String Query
+        {
+            get { return _query; }
+            set { SetValue(ref _query, value); }
+        }
+        #endregion Query
+        #region DelayMinutes
+        public Decimal DelayMinutes
+        {
+            get { return _delayMinutes; }
+            set { SetValue(ref _delayMinutes, value); }
+        }
+        #endregion DelayMinutes
         #endregion Properties
 
         #region Methods
