@@ -4,9 +4,12 @@ using SwagOverFlow.ViewModels;
 using SwagOverFlow.WPF.Commands;
 using SwagOverFlow.WPF.UI;
 using System;
+using System.Collections;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace SwagOverFlow.WPF.Controls
@@ -40,11 +43,11 @@ namespace SwagOverFlow.WPF.Controls
         #endregion SelectedItem
         #region SwagItemsSource
         private static readonly DependencyProperty SwagItemsSourceProperty =
-        DependencyProperty.Register("SwagItemsSource", typeof(SwagItemBase), typeof(SwagItemsControl));
+        DependencyProperty.Register("SwagItemsSource", typeof(Object), typeof(SwagItemsControl));
 
-        public SwagItemBase SwagItemsSource
+        public Object SwagItemsSource
         {
-            get { return (SwagItemBase)GetValue(SwagItemsSourceProperty); }
+            get { return (Object)GetValue(SwagItemsSourceProperty); }
             set
             {
                 SetValue(SwagItemsSourceProperty, value);
@@ -280,6 +283,20 @@ namespace SwagOverFlow.WPF.Controls
             remove { RemoveHandler(AddEvent, value); }
         }
         #endregion Add
+        #region UseDefaultAdd
+        public static DependencyProperty UseDefaultAddProperty =
+            DependencyProperty.Register(
+                "UseDefaultAdd",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean UseDefaultAdd
+        {
+            get { return (Boolean)GetValue(UseDefaultAddProperty); }
+            set { SetValue(UseDefaultAddProperty, value); }
+        }
+        #endregion UseDefaultAdd
         #region AddCommand
         public ICommand AddCommand
         {
@@ -288,7 +305,26 @@ namespace SwagOverFlow.WPF.Controls
                 return _addCommand ??
                     (_addCommand = new RelayCommand<object>((s) =>
                     {
-                        RaiseEvent(new RoutedEventArgs(AddEvent, s ?? this));
+                        if (UseDefaultAdd)
+                        {
+                            Type t = SwagItemsSource.GetType();
+                            if (t.GetInterface(nameof(ICollection)) != null)
+                            {
+                                //Assuming there is an add method with GenericArgument Types
+                                Type[] typeArgs = t.GetGenericArguments();
+                                Object[] args = new object[typeArgs.Length];
+                                for (int i = 0; i < typeArgs.Length; i++)
+                                {
+                                    args[i] = Activator.CreateInstance(typeArgs[i]);
+                                    ReflectionHelper.MethodInfoCollection[SwagItemsSource.GetType()]["Add"].Invoke(SwagItemsSource, args);
+                                    Refresh();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            RaiseEvent(new RoutedEventArgs(AddEvent, s ?? this));
+                        }
                     }));
             }
         }
@@ -415,6 +451,20 @@ namespace SwagOverFlow.WPF.Controls
             remove { RemoveHandler(ClearEvent, value); }
         }
         #endregion Clear
+        #region UseDefaultClear
+        public static DependencyProperty UseDefaultClearProperty =
+            DependencyProperty.Register(
+                "UseDefaultClear",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean UseDefaultClear
+        {
+            get { return (Boolean)GetValue(UseDefaultClearProperty); }
+            set { SetValue(UseDefaultClearProperty, value); }
+        }
+        #endregion UseDefaultClear
         #region ClearCommand
         public ICommand ClearCommand
         {
@@ -423,7 +473,19 @@ namespace SwagOverFlow.WPF.Controls
                 return _clearCommand ??
                     (_clearCommand = new RelayCommand<object>((s) =>
                     {
-                        RaiseEvent(new RoutedEventArgs(ClearEvent, s ?? this));
+                        if (UseDefaultClear)
+                        {
+                            Type t = SwagItemsSource.GetType();
+                            if (t.GetInterface(nameof(ICollection)) != null)
+                            {
+                                ReflectionHelper.MethodInfoCollection[SwagItemsSource.GetType()]["Clear"].Invoke(SwagItemsSource, null);
+                                Refresh();
+                            }
+                        }
+                        else
+                        {
+                            RaiseEvent(new RoutedEventArgs(ClearEvent, s ?? this));
+                        }
                     }));
             }
         }
@@ -494,6 +556,20 @@ namespace SwagOverFlow.WPF.Controls
             remove { RemoveHandler(RemoveEvent, value); }
         }
         #endregion Remove
+        #region UseDefaultRemove
+        public static DependencyProperty UseDefaultRemoveProperty =
+            DependencyProperty.Register(
+                "UseDefaultRemove",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean UseDefaultRemove
+        {
+            get { return (Boolean)GetValue(UseDefaultRemoveProperty); }
+            set { SetValue(UseDefaultRemoveProperty, value); }
+        }
+        #endregion UseDefaultRemove
         #region RemoveCommand
         public ICommand RemoveCommand
         {
@@ -502,7 +578,20 @@ namespace SwagOverFlow.WPF.Controls
                 return _removeCommand ??
                     (_removeCommand = new RelayCommand<object>((s) =>
                     {
-                        RaiseEvent(new RoutedEventArgs(RemoveEvent, s ?? this));
+                        if (UseDefaultRemove)
+                        {
+                            Type t = SwagItemsSource.GetType();
+                            if (t.GetInterface(nameof(ICollection)) != null)
+                            {
+                                MenuItem mi = (MenuItem)s;
+                                ReflectionHelper.MethodInfoCollection[SwagItemsSource.GetType()]["Remove"].Invoke(SwagItemsSource, new object[] { mi.DataContext });
+                                Refresh();
+                            }
+                        }
+                        else
+                        {
+                            RaiseEvent(new RoutedEventArgs(RemoveEvent, s ?? this));
+                        }
                     }));
             }
         }
@@ -531,7 +620,7 @@ namespace SwagOverFlow.WPF.Controls
                 "ShowSaveContextMenuItem",
                 typeof(Boolean),
                 typeof(SwagItemsControl),
-                new PropertyMetadata(true));
+                new PropertyMetadata(false));
 
         public Boolean ShowSaveContextMenuItem
         {
@@ -669,6 +758,24 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowImportContextMenuItem
+        #region ShowClearContextMenuItem
+        public static DependencyProperty ShowClearContextMenuItemProperty =
+            DependencyProperty.Register(
+                "ShowClearContextMenuItem",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowClearContextMenuItem
+        {
+            get { return (Boolean)GetValue(ShowClearContextMenuItemProperty); }
+            set
+            {
+                SetValue(ShowClearContextMenuItemProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowClearContextMenuItem
         #region ShowItemSaveContextMenuItem
         public static DependencyProperty ShowItemSaveContextMenuItemProperty =
             DependencyProperty.Register(
@@ -961,6 +1068,21 @@ namespace SwagOverFlow.WPF.Controls
             SelectedItem = e.NewValue;
         }
         #endregion Events
+
+        #region Method
+        public TreeViewItem ContainerFromItemRecursive(Object item)
+        {
+            return ControlTreeView
+                       .ItemContainerGenerator
+                       .ContainerFromItemRecursive(item);
+        }
+
+        private void Refresh()
+        {
+            ICollectionView view = CollectionViewSource.GetDefaultView(SwagItemsSource);
+            view.Refresh();
+        }
+        #endregion Method
     }
 
     #region SwagItemsControlHelper

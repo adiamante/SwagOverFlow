@@ -129,7 +129,7 @@
                                         </local:IconControl.ContextMenu>
                                     </local:IconControl>
                                 </GroupBox.Header>
-                                <local:SwagItemsControl SwagItemsSource="{Binding ObjValue}" CustomDefaultItemTemplate="{StaticResource NonHierarchyHeaderTemplate}">
+                                <local:SwagItemsControl SwagItemsSource="{Binding ObjValue.ChildrenView}" CustomDefaultItemTemplate="{StaticResource NonHierarchyHeaderTemplate}">
                                     <local:SwagItemsControl.ItemTemplates>
                                         <ui:SwagTemplateCollection>
                                             <ui:SwagTemplate>
@@ -213,7 +213,7 @@
                                         </local:IconControl.ContextMenu>
                                     </local:IconControl>
                                 </GroupBox.Header>
-                                <local:SwagItemsControl SwagItemsSource="{Binding ObjValue}" CustomDefaultItemTemplate="{StaticResource NonHierarchyHeaderTemplate}">
+                                <local:SwagItemsControl SwagItemsSource="{Binding ObjValue.ChildrenView}" CustomDefaultItemTemplate="{StaticResource NonHierarchyHeaderTemplate}">
                                     <local:SwagItemsControl.ItemTemplates>
                                         <ui:SwagTemplateCollection>
                                             <ui:SwagTemplate>

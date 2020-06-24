@@ -24,10 +24,10 @@
             </MenuItem>-->
         </ContextMenu>
     </swctl:SwagControlBase.ContextMenu>
-    <ListView ItemsSource="{Binding Collection, ElementName=ThisControl, Mode=TwoWay}"
-              ItemTemplate="{Binding ItemTemplate, ElementName=ThisControl}">
+    <ListView ItemsSource="{Binding Collection, ElementName=ThisControl, Mode=TwoWay}">
         <ListView.ItemContainerStyle>
             <Style TargetType="{x:Type ListViewItem}">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="ContextMenu">
                     <Setter.Value>
                         <ContextMenu

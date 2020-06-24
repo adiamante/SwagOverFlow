@@ -1,4 +1,5 @@
-﻿using Dreamporter.Instructions;
+﻿using Dreamporter.Builds;
+using Dreamporter.Instructions;
 using Dreamporter.WPF.Services;
 using Dreamporter.WPF.ViewModels;
 using MahApps.Metro.IconPacks;
@@ -58,6 +59,32 @@ namespace Dreamporter.WPF.Test.Instruction
             }
         }
         #endregion Instruction
+
+        #region Schemas
+        public List<Schema> Schemas
+        {
+            get
+            {
+                if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Schemas"))
+                {
+                    SwagSetting<List<Schema>> ssSchemas = new SwagSetting<List<Schema>>()
+                    {
+                        Icon = PackIconCustomKind.Dataset,
+                        Value = new List<Schema>()
+                    };
+
+                    ssSchemas.IconString = ssSchemas.IconString;
+                    ssSchemas.IconTypeString = ssSchemas.IconTypeString;
+                    ssSchemas.ValueTypeString = ssSchemas.ValueTypeString;
+                    ssSchemas.ObjValue = ssSchemas.ObjValue;
+                    SwagWindow.GlobalSettings["Test"]["Schemas"] = ssSchemas;
+                    ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                }
+
+                return (List<Schema>)SwagWindow.GlobalSettings["Test"]["Schemas"].GetValue<List<Schema>>();
+            }
+        }
+        #endregion Schemas
 
         #region Options
         public SwagOptionGroupWPF Options
@@ -124,6 +151,7 @@ namespace Dreamporter.WPF.Test.Instruction
         private void SwagOptionControl_Save(object sender, RoutedEventArgs e)
         {
             SwagWindow.GlobalSettings["Test"]["Options"].SetValue(Options);
+            SwagWindow.GlobalSettings["Test"]["Schemas"].SetValue(Schemas);
         }
 
         private void Run(object sender, RoutedEventArgs e)

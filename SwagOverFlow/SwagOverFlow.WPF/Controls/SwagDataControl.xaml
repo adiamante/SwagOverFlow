@@ -174,7 +174,7 @@
                                                                  SearchMode="Delayed"
                                                                  MinWidth="100"
                                                                  Search="Search_OnSearch"/>
-                                        <local:SwagItemsControl SwagItemsSource="{Binding ViewModel.SwagDataResult}">
+                                        <local:SwagItemsControl SwagItemsSource="{Binding ViewModel.SwagDataResult.Children}">
                                             <local:SwagItemsControl.CustomDefaultItemTemplate>
                                                 <ui:SwagTemplate>
                                                     <ui:SwagTemplate.DataTemplate>

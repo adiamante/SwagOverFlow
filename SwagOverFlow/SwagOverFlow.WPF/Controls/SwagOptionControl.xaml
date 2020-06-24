@@ -84,7 +84,7 @@
         </ContextMenu>
         <swui:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
     </swctl:SwagControlBase.Resources>
-    <swctl:SwagItemsControl SwagItemsSource="{Binding RootOption, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
+    <swctl:SwagItemsControl SwagItemsSource="{Binding RootOption.ChildrenView, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
                             AllowMove="{Binding AllowMove, ElementName=ThisControl}"
                             TreeViewItemDropPreview="SwagItemsControl_TreeViewItemDropPreview"
                             TreeViewItemLeavePreview="SwagItemsControl_TreeViewItemLeavePreview"

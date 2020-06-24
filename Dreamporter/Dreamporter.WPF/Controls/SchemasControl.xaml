@@ -1,0 +1,65 @@
+﻿<swctl:SwagControlBase x:Class="Dreamporter.WPF.Controls.SchemasControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:di="clr-namespace:Dreamporter.Instructions;assembly=Dreamporter"
+             xmlns:db="clr-namespace:Dreamporter.Builds;assembly=Dreamporter"
+             xmlns:dic="clr-namespace:Dreamporter.WPF.Controls"
+             xmlns:svm="clr-namespace:SwagOverFlow.ViewModels;assembly=SwagOverFlow"
+             xmlns:swctl="clr-namespace:SwagOverFlow.WPF.Controls;assembly=SwagOverFlow.WPF"
+             xmlns:swvm="clr-namespace:SwagOverFlow.WPF.ViewModels;assembly=SwagOverFlow.WPF"
+             xmlns:swui="clr-namespace:SwagOverFlow.WPF.UI;assembly=SwagOverFlow.WPF"
+             xmlns:swcmd="clr-namespace:SwagOverFlow.WPF.Commands;assembly=SwagOverFlow.WPF"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common"
+             xmlns:sc="clr-namespace:SwagOverFlow.Clients;assembly=SwagOverFlow"
+             x:Name="ThisControl"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <swctl:SwagItemsControl x:Name="SwagItemsControl" SwagItemsSource="{Binding Schemas, ElementName=ThisControl}" 
+                                                    Add="SwagItemsControl_Add"
+                                                    Remove="SwagItemsControl_Remove"
+                                                    ShowAddContextMenuItem="True"
+                                                    ShowItemAddContextMenuItem="True"
+                                                    UseDefaultClear="True"
+                                                    ShowClearContextMenuItem="True"
+                                                    ShowItemRemoveContextMenuItem="True"
+                                                    MinHeight="30">
+        <swctl:SwagItemsControl.ItemTemplates>
+            <swui:SwagTemplateCollection>
+                <swui:SwagTemplate Type="{x:Type db:Schema}">
+                    <swui:SwagTemplate.DataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type db:Schema}" ItemsSource="{Binding Tables}">
+                            <DockPanel>
+                                <swctl:IconControl DockPanel.Dock="Left" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
+                                <TextBox Text="{Binding Name}" MinWidth="100" />
+                            </DockPanel>
+                        </HierarchicalDataTemplate>
+                    </swui:SwagTemplate.DataTemplate>
+                </swui:SwagTemplate>
+                <swui:SwagTemplate Type="{x:Type db:SchemaTable}">
+                    <swui:SwagTemplate.DataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type db:SchemaTable}" ItemsSource="{Binding Columns}">
+                            <DockPanel>
+                                <swctl:IconControl DockPanel.Dock="Left" Kind="{x:Static iconPacks:PackIconMaterialKind.Table}" />
+                                <TextBox Text="{Binding Name}" MinWidth="100" />
+                            </DockPanel>
+                        </HierarchicalDataTemplate>
+                    </swui:SwagTemplate.DataTemplate>
+                </swui:SwagTemplate>
+                <swui:SwagTemplate Type="{x:Type db:SchemaColumn}">
+                    <swui:SwagTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type db:SchemaColumn}">
+                            <DockPanel>
+                                <swctl:IconControl DockPanel.Dock="Left" Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumn}" />
+                                <TextBox Text="{Binding Name}" MinWidth="100" />
+                            </DockPanel>
+                        </DataTemplate>
+                    </swui:SwagTemplate.DataTemplate>
+                </swui:SwagTemplate>
+            </swui:SwagTemplateCollection>
+        </swctl:SwagItemsControl.ItemTemplates>
+    </swctl:SwagItemsControl>
+</swctl:SwagControlBase>

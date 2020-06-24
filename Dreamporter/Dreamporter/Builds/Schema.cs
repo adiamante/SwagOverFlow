@@ -9,10 +9,10 @@ namespace Dreamporter.Builds
         String
     }
 
-    public class Schema : ViewModelBaseExtended
+    public abstract class SchemaBase : ViewModelBaseExtended
     {
+        Boolean _isExpanded = true;
         String _name;
-        List<SchemaTable> _tables = new List<SchemaTable>();
 
         #region Name
         public String Name
@@ -21,6 +21,19 @@ namespace Dreamporter.Builds
             set { SetValue(ref _name, value); }
         }
         #endregion Name
+
+        #region IsExpanded
+        public Boolean IsExpanded
+        {
+            get { return _isExpanded; }
+            set { SetValue(ref _isExpanded, value); }
+        }
+        #endregion IsExpanded
+    }
+
+    public class Schema : SchemaBase
+    {
+        List<SchemaTable> _tables = new List<SchemaTable>();
 
         #region Tables
         public List<SchemaTable> Tables
@@ -31,21 +44,12 @@ namespace Dreamporter.Builds
         #endregion Tables
     }
 
-    public class SchemaTable : ViewModelBaseExtended
+    public class SchemaTable : SchemaBase
     {
-        String _name;
-        List<SchemaColumns> _columns = new List<SchemaColumns>();
-
-        #region Name
-        public String Name
-        {
-            get { return _name; }
-            set { SetValue(ref _name, value); }
-        }
-        #endregion Name
+        List<SchemaColumn> _columns = new List<SchemaColumn>();
 
         #region Columns
-        public List<SchemaColumns> Columns
+        public List<SchemaColumn> Columns
         {
             get { return _columns; }
             set { SetValue(ref _columns, value); }
@@ -53,18 +57,9 @@ namespace Dreamporter.Builds
         #endregion Columns
     }
 
-    public class SchemaColumns : ViewModelBaseExtended
+    public class SchemaColumn : SchemaBase
     {
-        String _name;
         SchemaColumnDataType _dataType;
-
-        #region Name
-        public String Name
-        {
-            get { return _name; }
-            set { SetValue(ref _name, value); }
-        }
-        #endregion Name
 
         #region DataType
         public SchemaColumnDataType DataType

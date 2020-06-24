@@ -1,0 +1,77 @@
+﻿<swctl:SwagControlBase x:Class="Dreamporter.WPF.Controls.DataStoresControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:di="clr-namespace:Dreamporter.Instructions;assembly=Dreamporter"
+             xmlns:db="clr-namespace:Dreamporter.Builds;assembly=Dreamporter"
+             xmlns:dic="clr-namespace:Dreamporter.WPF.Controls"
+             xmlns:svm="clr-namespace:SwagOverFlow.ViewModels;assembly=SwagOverFlow"
+             xmlns:swctl="clr-namespace:SwagOverFlow.WPF.Controls;assembly=SwagOverFlow.WPF"
+             xmlns:swvm="clr-namespace:SwagOverFlow.WPF.ViewModels;assembly=SwagOverFlow.WPF"
+             xmlns:swui="clr-namespace:SwagOverFlow.WPF.UI;assembly=SwagOverFlow.WPF"
+             xmlns:swcmd="clr-namespace:SwagOverFlow.WPF.Commands;assembly=SwagOverFlow.WPF"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common"
+             xmlns:sc="clr-namespace:SwagOverFlow.Clients;assembly=SwagOverFlow"
+             x:Name="ThisControl"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <swctl:SwagItemsControl x:Name="SwagItemsControl" SwagItemsSource="{Binding DataStores, ElementName=ThisControl}" 
+                                                    Add="SwagItemsControl_Add"
+                                                    ShowAddContextMenuItem="True"
+                                                    UseDefaultAdd="True"
+                                                    UseDefaultClear="True"
+                                                    ShowClearContextMenuItem="True"
+                                                    ShowItemRemoveContextMenuItem="True"
+                                                    MinHeight="30">
+        <swctl:SwagItemsControl.ContextMenu>
+            <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (InstructionControl)-->
+            <ContextMenu DataContext="{Binding PlacementTarget.Tag.RootInstruction, RelativeSource={RelativeSource Self}}" Tag="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                <MenuItem Header="Add">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconEntypoKind.Plus}" />
+                    </MenuItem.Icon>
+                    <MenuItem Header="SQL Connection" Tag="SQL" Command="{Binding Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Table}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Clear" 
+                          Command="{Binding Parent.Tag.ClearCommand, RelativeSource={RelativeSource Self}}" 
+                          CommandParameter="{Binding Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.DatabaseSql}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </swctl:SwagItemsControl.ContextMenu>
+        <swctl:SwagItemsControl.ItemTemplates>
+            <swui:SwagTemplateCollection>
+                <swui:SwagTemplate Type="{x:Type db:SqlConnectionStore}">
+                    <swui:SwagTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type db:SqlConnectionStore}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <swctl:IconControl Grid.Row="0" Grid.Column="0" Kind="{x:Static iconPacks:PackIconModernKind.DatabaseSql}" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}" MinWidth="100" />
+                                <swctl:IconControl Grid.Row="1" Grid.Column="0" Kind="{x:Static iconPacks:PackIconModernKind.Information}" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ConnectionString}" MinWidth="100" />
+                            </Grid>
+                        </DataTemplate>
+                    </swui:SwagTemplate.DataTemplate>
+                </swui:SwagTemplate>
+            </swui:SwagTemplateCollection>
+        </swctl:SwagItemsControl.ItemTemplates>
+    </swctl:SwagItemsControl>
+</swctl:SwagControlBase>

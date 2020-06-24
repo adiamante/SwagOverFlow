@@ -14,7 +14,6 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common"
              xmlns:sc="clr-namespace:SwagOverFlow.Clients;assembly=SwagOverFlow"
-             xmlns:local="clr-namespace:Dreamporter.WPF.Controls"
              mc:Ignorable="d" 
              x:Name="ThisControl"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -320,6 +319,18 @@
                 </Grid>
             </ContentControl>
         </DataTemplate>
+        <DataTemplate x:Key="SqlParamDataTemplate" DataType="{x:Type sc:SqlParam}">
+            <StackPanel>
+                <swctl:IconControl Text="Key" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
+                <TextBox Text="{Binding Key}" />
+                <swctl:IconControl Text="Value" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaVBoxOutline}" />
+                <TextBox Text="{Binding Value}" />
+                <swctl:IconControl Text="Type" Kind="{x:Static iconPacks:PackIconMaterialKind.ShapeOutline}" />
+                <ComboBox SelectedValue="{Binding Type}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sd:SqlDbType}}}" />
+                <swctl:IconControl Text="Direction" Kind="{x:Static iconPacks:PackIconBoxIconsKind.SolidDirections}" />
+                <ComboBox SelectedValue="{Binding Direction}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sd:ParameterDirection}}}" />
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type di:SqlExecSPInstruction}">
             <ContentControl Template="{StaticResource InstructionControlTemplate}">
                 <Grid>
@@ -343,22 +354,19 @@
                             <swctl:IconControl Text="TargetTable" Kind="{x:Static iconPacks:PackIconMaterialKind.TableEye}" />
                             <TextBox Text="{Binding TargetTable}" />
                             <swctl:IconControl Text="SQL Params" Kind="{x:Static iconPacks:PackIconUniconsKind.X}" />
-                            <swctl:CollectionControl Collection="{Binding Headers}" MinHeight="30">
-                                <swctl:CollectionControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel>
-                                            <swctl:IconControl Text="Key" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                                            <TextBox Text="{Binding Key}" />
-                                            <swctl:IconControl Text="Value" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaVBoxOutline}" />
-                                            <TextBox Text="{Binding Value}" />
-                                            <swctl:IconControl Text="Type" Kind="{x:Static iconPacks:PackIconMaterialKind.ShapeOutline}" />
-                                            <ComboBox SelectedValue="{Binding Type}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sd:SqlDbType}}}" />
-                                            <swctl:IconControl Text="Direction" Kind="{x:Static iconPacks:PackIconBoxIconsKind.SolidDirections}" />
-                                            <ComboBox SelectedValue="{Binding Direction}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sd:ParameterDirection}}}" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </swctl:CollectionControl.ItemTemplate>
-                            </swctl:CollectionControl>
+                            <swctl:SwagItemsControl SwagItemsSource="{Binding SqlParams}" 
+                                                    UseDefaultAdd="True"
+                                                    ShowAddContextMenuItem="True"
+                                                    ShowItemAddContextMenuItem="True"
+                                                    UseDefaultClear="True"
+                                                    ShowClearContextMenuItem="True"
+                                                    UseDefaultRemove="True"
+                                                    ShowItemRemoveContextMenuItem="True"
+                                                    MinHeight="30">
+                                <swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                    <swui:SwagTemplate Type="{x:Type sc:SqlParam}" DataTemplate="{StaticResource SqlParamDataTemplate}" />
+                                </swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                            </swctl:SwagItemsControl>
                         </StackPanel>
                     </ContentControl>
                     <ContentControl Grid.Column="3" Template="{StaticResource DescriptionFieldControlTemplate}" />
@@ -525,7 +533,7 @@
     </swctl:SwagControlBase.Resources>
     <DockPanel>
         <swctl:SwagItemsControl DockPanel.Dock="Left"
-                            SwagItemsSource="{Binding RootInstruction, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
+                            SwagItemsSource="{Binding RootInstruction.ChildrenView, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
                             SelectedItem="{Binding SelectedInstruction, ElementName=ThisControl, Mode=TwoWay}"
                             AllowMove="{Binding AllowMove, ElementName=ThisControl}"
                             TreeViewItemDropPreview="SwagItemsControl_TreeViewItemDropPreview"
