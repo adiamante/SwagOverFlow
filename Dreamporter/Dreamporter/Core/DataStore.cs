@@ -16,12 +16,18 @@ namespace Dreamporter.Core
             set { SetValue(ref _name, value); }
         }
         #endregion Name
+        #region Type
+        public abstract Type Type { get; }
+        #endregion Type
     }
 
     public class SqlConnectionStore : DataStore
     {
         String _connectionString;
 
+        #region Type
+        public override Type Type { get { return typeof(SqlConnectionStore); } }
+        #endregion Type
         #region ConnectionString
         public String ConnectionString
         {
