@@ -1,4 +1,4 @@
-﻿using Dreamporter.Builds;
+﻿using Dreamporter.Core;
 using Dreamporter.Caching;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -35,7 +35,7 @@ namespace Dreamporter.Instructions
         #endregion Properties
 
         #region Methods
-        public override void Execute(RuntimeContext context, Dictionary<String, String> parameters)
+        public override void Execute(RunContext context, Dictionary<String, String> parameters)
         {
             String cacheAddress = "", cacheKey = "", cacheVersion = "";
             WebRequestClient webReqTemplate = new WebRequestClient();

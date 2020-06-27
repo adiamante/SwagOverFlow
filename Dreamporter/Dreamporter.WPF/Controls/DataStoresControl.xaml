@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:di="clr-namespace:Dreamporter.Instructions;assembly=Dreamporter"
-             xmlns:db="clr-namespace:Dreamporter.Builds;assembly=Dreamporter"
+             xmlns:db="clr-namespace:Dreamporter.Core;assembly=Dreamporter"
              xmlns:dic="clr-namespace:Dreamporter.WPF.Controls"
              xmlns:svm="clr-namespace:SwagOverFlow.ViewModels;assembly=SwagOverFlow"
              xmlns:swctl="clr-namespace:SwagOverFlow.WPF.Controls;assembly=SwagOverFlow.WPF"

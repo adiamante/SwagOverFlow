@@ -1,4 +1,4 @@
-﻿using Dreamporter.Builds;
+﻿using Dreamporter.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -31,7 +31,7 @@ namespace Dreamporter.Instructions
         #endregion TargetTable
         #endregion Properties
 
-        public override void Execute(RuntimeContext context, Dictionary<String, String> parameters)
+        public override void Execute(RunContext context, Dictionary<String, String> parameters)
         {
             String query = Query,
                 targetTable = TargetTable ?? "";

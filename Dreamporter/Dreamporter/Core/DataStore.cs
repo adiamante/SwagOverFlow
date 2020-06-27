@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Dreamporter.Builds
+namespace Dreamporter.Core
 {
     public abstract class DataStore : ViewModelBaseExtended
     {

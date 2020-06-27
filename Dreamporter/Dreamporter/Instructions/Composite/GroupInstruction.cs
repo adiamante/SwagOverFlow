@@ -1,4 +1,4 @@
-﻿using Dreamporter.Builds;
+﻿using Dreamporter.Core;
 using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
 using System;
@@ -92,7 +92,7 @@ namespace Dreamporter.Instructions
         #endregion Events
 
         #region Methods
-        public override void Execute(RuntimeContext context, Dictionary<String, String> parameters)
+        public override void Execute(RunContext context, Dictionary<String, String> parameters)
         {
             if (IsConcurrent)
             {

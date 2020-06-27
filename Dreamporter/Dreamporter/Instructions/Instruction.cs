@@ -1,4 +1,4 @@
-﻿using Dreamporter.Builds;
+﻿using Dreamporter.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SwagOverFlow.Parsing;
@@ -89,9 +89,9 @@ namespace Dreamporter.Instructions
         #endregion Events
 
         #region Methods
-        abstract public void Execute(RuntimeContext context, Dictionary<String, String> parameters);
+        abstract public void Execute(RunContext context, Dictionary<String, String> parameters);
 
-        public void Run(RuntimeContext context, Dictionary<String, String> parameters)
+        public void Run(RunContext context, Dictionary<String, String> parameters)
         {
             Boolean doExecute = IsEnabled;
             Instruction temp = this;
@@ -184,7 +184,6 @@ namespace Dreamporter.Instructions
 
             return output;
         }
-
         #endregion Methods
     }
 }

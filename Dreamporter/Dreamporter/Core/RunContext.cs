@@ -10,9 +10,9 @@ using System.IO;
 using System.Threading;
 using System.Web;
 
-namespace Dreamporter.Builds
+namespace Dreamporter.Core
 {
-    public class RuntimeContext
+    public class RunContext
     {
         #region Private Members
         SqliteClient _main = new SqliteClient();

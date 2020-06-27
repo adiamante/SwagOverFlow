@@ -1,4 +1,4 @@
-﻿using Dreamporter.Builds;
+﻿using Dreamporter.Core;
 using SwagOverFlow.Utils;
 using System;
 using System.Collections.Generic;
@@ -36,7 +36,7 @@ namespace Dreamporter.Instructions
         #endregion Properties
 
         #region Methods
-        public override void Execute(RuntimeContext context, Dictionary<String, String> parameters)
+        public override void Execute(RunContext context, Dictionary<String, String> parameters)
         {
             String query = Query ?? "";
             query = Instruction.ResolveParameters(query, parameters);

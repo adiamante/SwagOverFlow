@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Dreamporter.Builds
+namespace Dreamporter.Core
 {
     public enum SchemaColumnDataType
     {

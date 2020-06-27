@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:db="clr-namespace:Dreamporter.Builds;assembly=Dreamporter"
+        xmlns:db="clr-namespace:Dreamporter.Core;assembly=Dreamporter"
         xmlns:dwc="clr-namespace:Dreamporter.WPF.Controls;assembly=Dreamporter.WPF"
         xmlns:svm="clr-namespace:SwagOverFlow.ViewModels;assembly=SwagOverFlow"
         xmlns:swctl="clr-namespace:SwagOverFlow.WPF.Controls;assembly=SwagOverFlow.WPF"

@@ -1,4 +1,4 @@
-﻿using Dreamporter.Builds;
+﻿using Dreamporter.Core;
 using SwagOverFlow.Clients;
 using SwagOverFlow.Utils;
 using System;
@@ -49,7 +49,7 @@ namespace Dreamporter.Instructions
         #endregion Properties
 
         #region Methods
-        public override void Execute(RuntimeContext context, Dictionary<String, String> parameters)
+        public override void Execute(RunContext context, Dictionary<String, String> parameters)
         {
             Dictionary<String, SqlParam> sqlParams = new Dictionary<string, SqlParam>();
             if (SqlParams != null)
