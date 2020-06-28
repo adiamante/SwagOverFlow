@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Dreamporter.Core
 {
-    public abstract class DataStore : ViewModelBaseExtended
+    public abstract class DataContext : ViewModelBaseExtended
     {
         String _name;
 
@@ -21,12 +21,12 @@ namespace Dreamporter.Core
         #endregion Type
     }
 
-    public class SqlConnectionStore : DataStore
+    public class SqlConnectionDataContext : DataContext
     {
         String _connectionString;
 
         #region Type
-        public override Type Type { get { return typeof(SqlConnectionStore); } }
+        public override Type Type { get { return typeof(SqlConnectionDataContext); } }
         #endregion Type
         #region ConnectionString
         public String ConnectionString

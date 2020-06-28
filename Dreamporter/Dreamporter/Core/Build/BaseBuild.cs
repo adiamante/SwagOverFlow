@@ -1,16 +1,17 @@
-﻿using SwagOverFlow.ViewModels;
+﻿using Dreamporter.Instructions;
+using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Dreamporter.Core
 {
-    public abstract class Build : SwagItem<GroupBuild, Build>
+    public abstract class BaseBuild : SwagItem<GroupBuild, BaseBuild>
     {
         #region Private Members
         String _name, _description;
         Boolean _isEnabled = true;
         List<Schema> _requiredData;
+        GroupInstruction _instructions;
         #endregion Private Members
 
         #region Properties
@@ -45,10 +46,17 @@ namespace Dreamporter.Core
         #region Type
         public abstract Type Type { get; }
         #endregion Type
+        #region Instructions
+        public GroupInstruction Instructions
+        {
+            get { return _instructions; }
+            set { SetValue(ref _instructions, value); }
+        }
+        #endregion Instructions
         #endregion Properties
 
         #region Initialization
-        public Build()
+        public BaseBuild()
         {
 
         }

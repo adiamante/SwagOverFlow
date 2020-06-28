@@ -15,12 +15,12 @@ namespace Dreamporter.WPF.Controls
         public static DependencyProperty DataStoresProperty =
             DependencyProperty.Register(
                 "DataStores",
-                typeof(ICollection<DataStore>),
+                typeof(ICollection<DataContext>),
                 typeof(DataStoresControl));
 
-        public ICollection<DataStore> DataStores
+        public ICollection<DataContext> DataStores
         {
-            get { return (ICollection<DataStore>)GetValue(DataStoresProperty); }
+            get { return (ICollection<DataContext>)GetValue(DataStoresProperty); }
             set { SetValue(DataStoresProperty, value); }
         }
         #endregion DataStores
@@ -41,7 +41,7 @@ namespace Dreamporter.WPF.Controls
             switch (tag)
             {
                 case "SQL":
-                    DataStores.Add(new SqlConnectionStore());
+                    DataStores.Add(new SqlConnectionDataContext());
                     break;
             }
         }

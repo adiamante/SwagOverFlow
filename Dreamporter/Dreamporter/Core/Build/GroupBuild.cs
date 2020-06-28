@@ -5,10 +5,10 @@ using System.Collections.Specialized;
 
 namespace Dreamporter.Core
 {
-    public class GroupBuild : Build, ISwagParent<Build>
+    public class GroupBuild : BaseBuild, ISwagParent<BaseBuild>
     {
         #region Private/Protected Members
-        protected ObservableCollection<Build> _children = new ObservableCollection<Build>();
+        protected ObservableCollection<BaseBuild> _children = new ObservableCollection<BaseBuild>();
         #endregion Private/Protected Members
 
         #region Properties
@@ -16,7 +16,7 @@ namespace Dreamporter.Core
         public override Type Type { get { return typeof(GroupBuild); } }
         #endregion Type
         #region Children
-        public ObservableCollection<Build> Children
+        public ObservableCollection<BaseBuild> Children
         {
             get { return _children; }
             set { SetValue(ref _children, value); }
@@ -44,7 +44,7 @@ namespace Dreamporter.Core
         {
             if (e.NewItems != null)
             {
-                foreach (Build item in e.NewItems)
+                foreach (BaseBuild item in e.NewItems)
                 {
                     item.Parent = this;
                     if (item.Sequence < 0)
@@ -56,9 +56,9 @@ namespace Dreamporter.Core
 
             if (e.OldItems != null)
             {
-                foreach (Build item in e.OldItems)
+                foreach (BaseBuild item in e.OldItems)
                 {
-                    foreach (Build sibling in Children)
+                    foreach (BaseBuild sibling in Children)
                     {
                         if (item.Sequence < sibling.Sequence)
                         {

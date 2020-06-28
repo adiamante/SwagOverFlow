@@ -125,7 +125,6 @@ namespace SwagOverFlow.ViewModels
     }
     #endregion BooleanContainerExpression
 
-
     #region BooleanOperationExpression
     public abstract class BooleanOperationExpression : BooleanGroupExpression
     {

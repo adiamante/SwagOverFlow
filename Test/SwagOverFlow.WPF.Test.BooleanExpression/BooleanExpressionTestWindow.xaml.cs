@@ -127,6 +127,5 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
             SwagWindow.GlobalSettings["Test"]["Options"].SetValue(Options);
         }
         #endregion Events
-
     }
 }

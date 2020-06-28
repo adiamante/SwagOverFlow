@@ -51,9 +51,9 @@
         </swctl:SwagItemsControl.ContextMenu>
         <swctl:SwagItemsControl.ItemTemplates>
             <swui:SwagTemplateCollection>
-                <swui:SwagTemplate Type="{x:Type db:SqlConnectionStore}">
+                <swui:SwagTemplate Type="{x:Type db:SqlConnectionDataContext}">
                     <swui:SwagTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type db:SqlConnectionStore}">
+                        <DataTemplate DataType="{x:Type db:SqlConnectionDataContext}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
