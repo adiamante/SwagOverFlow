@@ -117,7 +117,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Root"
-                          Visibility="{Binding HasChildren, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                          Visibility="{Binding HasRoot, Converter={StaticResource InverseBoolToVisibilityConverter}}">
                     <MenuItem.Icon>
                         <swctl:IconControl Kind="{x:Static iconPacks:PackIconEntypoKind.FlowTree}" />
                     </MenuItem.Icon>
@@ -201,7 +201,7 @@
                 <MenuItem Header="Clear" 
                           Command="{Binding Parent.Tag.ClearCommand, RelativeSource={RelativeSource Self}}" 
                           CommandParameter="{Binding Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" 
-                          Visibility="{Binding Parent.Tag.Expression.HasChildren, Converter={swui:BoolToVisibilityConverter}}">
+                          Visibility="{Binding Parent.Tag.Expression.HasRoot, Converter={swui:BoolToVisibilityConverter}}">
                     <MenuItem.Icon>
                         <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialDesignKind.Clear}" />
                     </MenuItem.Icon>

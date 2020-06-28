@@ -20,28 +20,28 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
     public partial class BooleanExpressionTestWindow : SwagWindow
     {
         #region Expression
-        public BooleanOrExpressionWPF Expression
+        public BooleanContainerExpressionWPF Expression
         {
             get 
             {
                 if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Expression"))
                 {
-                    BooleanOrExpressionWPF exp = new BooleanOrExpressionWPF() { Display = "Root" };
-                    SwagSetting<BooleanOrExpressionWPF> ssExp = new SwagSetting<BooleanOrExpressionWPF>()
+                    BooleanContainerExpressionWPF cnt = new BooleanContainerExpressionWPF() { Display = "Root" };
+                    SwagSetting<BooleanContainerExpressionWPF> ssCnt = new SwagSetting<BooleanContainerExpressionWPF>()
                     {
                         Icon = PackIconMaterialKind.IframeVariable,
-                        Value = exp
+                        Value = cnt
                     };
 
-                    ssExp.IconString = ssExp.IconString;
-                    ssExp.IconTypeString = ssExp.IconTypeString;
-                    ssExp.ValueTypeString = ssExp.ValueTypeString;
-                    ssExp.ObjValue = ssExp.ObjValue;
-                    SwagWindow.GlobalSettings["Test"]["Expression"] = ssExp;
+                    ssCnt.IconString = ssCnt.IconString;
+                    ssCnt.IconTypeString = ssCnt.IconTypeString;
+                    ssCnt.ValueTypeString = ssCnt.ValueTypeString;
+                    ssCnt.ObjValue = ssCnt.ObjValue;
+                    SwagWindow.GlobalSettings["Test"]["Expression"] = ssCnt;
                     ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
-                return SwagWindow.GlobalSettings["Test"]["Expression"].GetValue<BooleanOrExpressionWPF>(); 
+                return SwagWindow.GlobalSettings["Test"]["Expression"].GetValue<BooleanContainerExpressionWPF>(); 
             }
         }
         #endregion Expression

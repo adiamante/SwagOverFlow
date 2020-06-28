@@ -1,21 +1,23 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SwagOverFlow.ViewModels
 {
     #region BooleanExpression
     //https://stackoverflow.com/questions/20995865/deserializing-json-to-abstract-class
-    public abstract class BooleanExpression : SwagItem<BooleanOperationExpression, BooleanExpression>
+    public abstract class BooleanExpression : SwagItem<BooleanGroupExpression, BooleanExpression>
     {
         public abstract bool Evaluate(Dictionary<String, String> context);
         public abstract Type Type { get; }
     }
     #endregion BooleanExpression
 
-    #region BooleanOperationExpression
-    public abstract class BooleanOperationExpression : BooleanExpression, ISwagParent<BooleanExpression>
+    #region BooleanGroupExpression
+    public abstract class BooleanGroupExpression : BooleanExpression, ISwagParent<BooleanExpression>
     {
         protected ObservableCollection<BooleanExpression> _children = new ObservableCollection<BooleanExpression>();
 
@@ -46,7 +48,7 @@ namespace SwagOverFlow.ViewModels
         #endregion HasChildren
 
         #region Initialization
-        public BooleanOperationExpression() : base()
+        public BooleanGroupExpression() : base()
         {
             _children.CollectionChanged += _children_CollectionChanged;
         }
@@ -85,6 +87,49 @@ namespace SwagOverFlow.ViewModels
             OnSwagItemChanged(this, new PropertyChangedExtendedEventArgs("Children", Children, null, null));
         }
         #endregion Initialization
+    }
+    #endregion BooleanGroupExpression
+
+    #region BooleanContainerExpression
+    public class BooleanContainerExpression : BooleanExpression
+    {
+        protected BooleanExpression _root;
+        public override Type Type { get { return typeof(BooleanContainerExpression); } }
+
+        #region Root
+        public BooleanExpression Root
+        {
+            get { return _root; }
+            set 
+            { 
+                SetValue(ref _root, value);
+                OnPropertyChanged("HasRoot");
+            }
+        }
+        #endregion Root
+        #region HasRoot
+        [NotMapped]
+        [JsonIgnore]
+        public Boolean HasRoot { get { return _root != null; } }
+        #endregion HasRoot
+
+        public override bool Evaluate(Dictionary<string, string> context)
+        {
+            if (_root == null)
+            {
+                return true;
+            }
+
+            return _root.Evaluate(context);
+        }
+    }
+    #endregion BooleanContainerExpression
+
+
+    #region BooleanOperationExpression
+    public abstract class BooleanOperationExpression : BooleanGroupExpression
+    {
+
     }
     #endregion BooleanOperationExpression
 

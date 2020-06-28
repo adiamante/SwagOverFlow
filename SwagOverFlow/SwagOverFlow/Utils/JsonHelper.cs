@@ -237,6 +237,12 @@ namespace SwagOverFlow.Utils
             object existingValue,
             JsonSerializer serializer)
         {
+            //https://stackoverflow.com/questions/34185295/handling-null-objects-in-custom-jsonconverters-readjson-method
+            if (reader.TokenType == JsonToken.Null)
+            {
+                return null;
+            }    
+
             var jObject = JObject.Load(reader);
 
             T target = Create(objectType, jObject);

@@ -3,13 +3,64 @@ using Newtonsoft.Json.Linq;
 using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
 using System;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Windows.Data;
+using System.Windows.Documents;
 
 namespace SwagOverFlow.WPF.ViewModels
 {
+    public class BooleanContainerExpressionWPF : BooleanContainerExpression
+    {
+        #region Private/Protected Members
+        CollectionViewSource _childrenCollectionViewSource;
+        protected ObservableCollection<BooleanExpression> _children;
+        #endregion Private/Protected Members
+
+        #region Properties
+        #region ChildrenView
+        [JsonIgnore]
+        [NotMapped]
+        public ICollectionView ChildrenView
+        {
+            get { return _childrenCollectionViewSource.View; }
+        }
+        #endregion ChildrenView
+        #endregion Properties
+
+        #region Initialization
+        public BooleanContainerExpressionWPF() : base()
+        {
+            _children = new ObservableCollection<BooleanExpression>() { _root };
+            _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
+            _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
+            _children.CollectionChanged += _children_CollectionChanged;
+            this.PropertyChangedExtended += BooleanContainerExpressionWPF_PropertyChangedExtended;
+        }
+
+        private void BooleanContainerExpressionWPF_PropertyChangedExtended(object sender, PropertyChangedExtendedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "Root":
+                    _children = new ObservableCollection<BooleanExpression>() { _root };
+                    _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
+                    _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
+                    _children.CollectionChanged += _children_CollectionChanged;
+                    OnPropertyChanged("ChildrenView");
+                    break;
+            }
+        }
+
+        private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            _childrenCollectionViewSource.View.Refresh();
+        }
+        #endregion Initialization
+    }
+
     public class BooleanAndExpressionWPF : BooleanAndExpression
     {
         #region Private/Protected Members
@@ -119,11 +170,21 @@ namespace SwagOverFlow.WPF.ViewModels
                 .Replace(", SwagOverFlow,", ", SwagOverFlow.WPF,")
                 .Replace("Expression", "ExpressionWPF");
             Type type = Type.GetType(assemblyType) ?? Type.GetType(nativeType);
-            JArray jaChildren = null;
+            JObject jRoot = null;
+            JArray jaChildren = null; 
 
             if (jObject.ContainsKey("Parent"))  //Prevent ReadJson Null error
             {
                 jObject.Remove("Parent");
+            }
+
+            if (jObject.ContainsKey("Root"))  //Prevent ReadJson Null error
+            {
+                if (jObject["Root"] is JObject)
+                {
+                    jRoot = (JObject)jObject["Root"];
+                }
+                jObject.Remove("Root");
             }
 
             if (jObject.ContainsKey("Children")) //Children are handled below
@@ -136,6 +197,13 @@ namespace SwagOverFlow.WPF.ViewModels
 
             switch (exp)
             {
+                case BooleanContainerExpression cnt:
+                    if (jRoot != null)
+                    {
+                        BooleanExpression root = (BooleanExpression)JsonConvert.DeserializeObject(jRoot.ToString(), typeof(BooleanExpression), BooleanExpressionWPFJsonConverter.Instance);
+                        cnt.Root = root;
+                    }
+                    break;
                 case BooleanOperationExpression op:
                     foreach (JToken token in jaChildren)
                     {

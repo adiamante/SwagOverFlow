@@ -282,7 +282,6 @@ namespace SwagOverFlow.WPF.Controls
         private void SwagItemsControl_Add(object sender, RoutedEventArgs e)
         {
             FrameworkElement fe = (FrameworkElement)e.OriginalSource;
-            BooleanOperationExpression exp = (BooleanOperationExpression)fe.DataContext;
 
             BooleanExpression newExp = null;
             String tag = (fe.Tag ?? "").ToString();
@@ -302,14 +301,22 @@ namespace SwagOverFlow.WPF.Controls
                     break;
             }
 
-            exp.Children.Add(newExp);
+            switch (fe.DataContext)
+            {
+                case BooleanGroupExpression grp:
+                    grp.Children.Add(newExp);
+                    break;
+                case BooleanContainerExpression cnt:
+                    cnt.Root = newExp;
+                    break;
+            }
         }
 
         private void SwagItemsControl_Clear(object sender, RoutedEventArgs e)
         {
             BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
-            BooleanOperationExpression exp = (BooleanOperationExpression)bec.Expression;
-            exp.Children.Clear();
+            BooleanContainerExpression cnt = (BooleanContainerExpression)bec.Expression;
+            cnt.Root = null;
         }
 
         private void SwagItemsControl_Remove(object sender, RoutedEventArgs e)
@@ -387,7 +394,7 @@ namespace SwagOverFlow.WPF.Controls
             BooleanExpression targetExpression = (BooleanExpression)tviea.TargetItem.DataContext;
             BooleanExpression droppedExpression = (BooleanExpression)tviea.DroppedItem.DataContext;
 
-            BooleanOperationExpression originalDroppedParent = droppedExpression.Parent;
+            BooleanGroupExpression originalDroppedParent = droppedExpression.Parent;
             Boolean sameParent = originalDroppedParent == targetExpression.Parent;
             Int32 originalDroppedSequence = droppedExpression.Sequence,
                 currentDroppedSequence = droppedExpression.Sequence,
