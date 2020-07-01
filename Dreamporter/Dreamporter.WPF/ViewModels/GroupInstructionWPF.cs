@@ -1,4 +1,4 @@
-﻿using Dreamporter.Instructions;
+﻿using Dreamporter.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SwagOverFlow.Utils;
@@ -67,7 +67,7 @@ namespace Dreamporter.WPF.ViewModels
         {
             String nativeType = jObject["Type"].ToString();
             String assemblyType = nativeType
-                .Replace("Dreamporter.Instructions", "Dreamporter.WPF.ViewModels")
+                .Replace("Dreamporter.Core", "Dreamporter.WPF.ViewModels")
                 .Replace(", Dreamporter,", ", Dreamporter.WPF,")
                 .Replace("GroupInstruction", "GroupInstructionWPF");
             Type type = Type.GetType(assemblyType) ?? Type.GetType(nativeType);

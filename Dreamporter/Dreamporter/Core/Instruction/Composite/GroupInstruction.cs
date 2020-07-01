@@ -8,7 +8,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Dreamporter.Instructions
+namespace Dreamporter.Core
 {
     public class GroupInstruction : Instruction, ISwagParent<Instruction>
     {

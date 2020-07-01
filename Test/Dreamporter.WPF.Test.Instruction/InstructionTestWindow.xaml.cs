@@ -1,5 +1,5 @@
 ﻿using Dreamporter.Core;
-using Dreamporter.Instructions;
+using Dreamporter.Core;
 using Dreamporter.WPF.Services;
 using Dreamporter.WPF.ViewModels;
 using MahApps.Metro.IconPacks;

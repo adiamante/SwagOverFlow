@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 
 
-namespace Dreamporter.Instructions
+namespace Dreamporter.Core
 {
     public abstract class Instruction : SwagItem<GroupInstruction, Instruction>
     {

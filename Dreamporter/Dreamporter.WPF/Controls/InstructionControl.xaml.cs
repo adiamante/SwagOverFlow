@@ -1,4 +1,4 @@
-﻿using Dreamporter.Instructions;
+﻿using Dreamporter.Core;
 using Dreamporter.WPF.ViewModels;
 using SwagOverFlow.WPF.Controls;
 using SwagOverFlow.WPF.UI;

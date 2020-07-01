@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace Dreamporter.Instructions
+namespace Dreamporter.Core
 {
     public class SqlExecSPInstruction : Instruction
     {

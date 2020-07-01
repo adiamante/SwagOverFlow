@@ -16,7 +16,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 
-namespace Dreamporter.Instructions
+namespace Dreamporter.Core
 {
     public class WebRequestInstruction : Instruction
     {

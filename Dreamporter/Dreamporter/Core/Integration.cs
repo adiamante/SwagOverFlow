@@ -1,4 +1,4 @@
-﻿using Dreamporter.Instructions;
+﻿using Dreamporter.Core;
 using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -10,6 +10,7 @@ namespace Dreamporter.Core
     public class Integration : ViewModelBaseExtended
     {
         #region Private Members
+        Int32 _integrationId;
         GroupBuild _coreBuild = new GroupBuild();
         GroupBuild _profileBuild = new GroupBuild();
         List<Instruction> _instructionTemplates = new List<Instruction>();
@@ -21,6 +22,13 @@ namespace Dreamporter.Core
         #endregion Private Members
 
         #region Properties
+        #region IntegrationId
+        public Int32 IntegrationId
+        {
+            get { return _integrationId; }
+            set { SetValue(ref _integrationId, value); }
+        }
+        #endregion IntegrationId
         #region CoreBuild
         public GroupBuild CoreBuild
         {
@@ -31,8 +39,8 @@ namespace Dreamporter.Core
         #region ProfileBuild
         public GroupBuild ProfileBuild
         {
-            get { return _name; }
-            set { SetValue(ref _name, value); }
+            get { return _profileBuild; }
+            set { SetValue(ref _profileBuild, value); }
         }
         #endregion ProfileBuild
         #region InstructionTemplates

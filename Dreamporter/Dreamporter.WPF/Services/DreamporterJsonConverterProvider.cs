@@ -1,4 +1,4 @@
-﻿using Dreamporter.Instructions;
+﻿using Dreamporter.Core;
 using Dreamporter.WPF.ViewModels;
 using Newtonsoft.Json;
 using SwagOverFlow.Services;

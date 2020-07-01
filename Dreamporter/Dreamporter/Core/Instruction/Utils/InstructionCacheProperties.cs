@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace Dreamporter.Instructions
+namespace Dreamporter.Core
 {
     public class InstructionCacheProperties
     {

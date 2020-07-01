@@ -1,4 +1,4 @@
-﻿using Dreamporter.Instructions;
+﻿using Dreamporter.Core;
 using Newtonsoft.Json;
 using System.Collections.Specialized;
 using System.ComponentModel;
