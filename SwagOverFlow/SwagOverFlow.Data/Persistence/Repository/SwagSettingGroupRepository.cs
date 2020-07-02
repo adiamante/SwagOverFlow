@@ -2,7 +2,7 @@
 
 namespace SwagOverFlow.Data.Persistence
 {
-    public class SwagSettingGroupRepository : SwagEFRepository<SwagSettingGroup>, ISwagSettingGroupRepository
+    public class SwagSettingGroupRepository : SwagEFRepository<SwagContext, SwagSettingGroup>, ISwagSettingGroupRepository
     {
         //Custom query method implementation here
         public SwagSettingGroupRepository(SwagContext context) : base(context)

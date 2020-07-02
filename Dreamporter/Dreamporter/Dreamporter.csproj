@@ -5,12 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SwagOverFlow\SwagOverFlow.Data\SwagOverFlow.Data.csproj" />
     <ProjectReference Include="..\..\SwagOverFlow\SwagOverFlow\SwagOverFlow.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
   </ItemGroup>
 
 </Project>

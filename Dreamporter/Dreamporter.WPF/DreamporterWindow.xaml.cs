@@ -24,7 +24,7 @@ namespace DreamporterWPF
     {
         public DreamporterWindow()
         {
-            JsonHelper.ResolveConverterProvider(new DreamporterJsonConverterProvider());
+            var x = DreamporterWPFContainer.Context;
             InitializeComponent();
         }
     }

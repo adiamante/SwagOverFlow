@@ -3,7 +3,7 @@ using SwagOverFlow.ViewModels;
 
 namespace SwagOverFlow.Data.Persistence
 {
-    public class SwagSettingRepository : SwagEFRepository<SwagSetting>, ISwagSettingRepository
+    public class SwagSettingRepository : SwagEFRepository<SwagContext, SwagSetting>, ISwagSettingRepository
     {
         //Custom query method implementation here
         public SwagSettingRepository(SwagContext context) : base(context)

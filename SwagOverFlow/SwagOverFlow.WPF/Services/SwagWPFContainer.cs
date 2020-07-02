@@ -35,7 +35,7 @@ namespace SwagOverFlow.WPF.Services
         {
             ConfigureServices();
             //WPF assembly depends on JsonHelper utility static class to enable 
-            //BooleanExpression abstract hierarchy conversion between native and wpf classes
+            //abstract hierarchy conversion between native and wpf classes (Ex. BooleanExpression)
             //SwagContext uses JsonHelper to dynamically convert SwagItem values
             JsonHelper.ResolveServices(_serviceProvider);
         }

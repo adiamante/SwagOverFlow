@@ -115,7 +115,7 @@ namespace Dreamporter.WPF.Test.Instruction
         #region Initialization
         public InstructionTestWindow()
         {
-            JsonHelper.ResolveConverterProvider(new DreamporterJsonConverterProvider());
+            var x = DreamporterWPFContainer.Context;
             InitializeComponent();
             Initialize();
         }

@@ -1,7 +1,9 @@
 ﻿using Dreamporter.Core;
+using Newtonsoft.Json;
 using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -10,9 +12,9 @@ namespace Dreamporter.Core
     public class Integration : ViewModelBaseExtended
     {
         #region Private Members
-        Int32 _integrationId;
-        GroupBuild _coreBuild = new GroupBuild();
-        GroupBuild _profileBuild = new GroupBuild();
+        Int32 _integrationId, _coreBuildId, _profileBuildId;
+        CoreGroupBuild _coreBuild = new CoreGroupBuild();
+        ProfileGroupBuild _profileBuild = new ProfileGroupBuild();
         List<Instruction> _instructionTemplates = new List<Instruction>();
         SwagOptionGroup _defaultOptions = new SwagOptionGroup();
         SwagOptionGroup _selectedOptions = new SwagOptionGroup();
@@ -29,15 +31,29 @@ namespace Dreamporter.Core
             set { SetValue(ref _integrationId, value); }
         }
         #endregion IntegrationId
+        #region CoreBuildId
+        public Int32 CoreBuildId
+        {
+            get { return _coreBuildId; }
+            set { SetValue(ref _coreBuildId, value); }
+        }
+        #endregion CoreBuildId
         #region CoreBuild
-        public GroupBuild CoreBuild
+        public CoreGroupBuild CoreBuild
         {
             get { return _coreBuild; }
             set { SetValue(ref _coreBuild, value); }
         }
         #endregion CoreBuild
+        #region ProfileBuildId
+        public Int32 ProfileBuildId
+        {
+            get { return _profileBuildId; }
+            set { SetValue(ref _profileBuildId, value); }
+        }
+        #endregion ProfileBuildId
         #region ProfileBuild
-        public GroupBuild ProfileBuild
+        public ProfileGroupBuild ProfileBuild
         {
             get { return _profileBuild; }
             set { SetValue(ref _profileBuild, value); }
@@ -58,6 +74,8 @@ namespace Dreamporter.Core
         }
         #endregion DefaultOptions
         #region SelectedOptions
+        [NotMapped]
+        [JsonIgnore]
         public SwagOptionGroup SelectedOptions
         {
             get { return _selectedOptions; }

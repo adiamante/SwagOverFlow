@@ -81,4 +81,7 @@ namespace Dreamporter.Core
         #region Methods
         #endregion Methods
     }
+
+    public class CoreGroupBuild : GroupBuild { }
+    public class ProfileGroupBuild : GroupBuild { }
 }

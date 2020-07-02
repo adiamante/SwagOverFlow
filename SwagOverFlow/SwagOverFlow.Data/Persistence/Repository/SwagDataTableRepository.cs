@@ -2,7 +2,7 @@
 
 namespace SwagOverFlow.Data.Persistence
 {
-    public class SwagDataTableRepository : SwagEFRepository<SwagDataTable>, ISwagDataTableRepository
+    public class SwagDataTableRepository : SwagEFRepository<SwagContext, SwagDataTable>, ISwagDataTableRepository
     {
         public SwagDataTableRepository(SwagContext context) : base(context)
         {

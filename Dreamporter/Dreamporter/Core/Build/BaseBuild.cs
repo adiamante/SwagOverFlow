@@ -8,13 +8,37 @@ namespace Dreamporter.Core
     public abstract class BaseBuild : SwagItem<GroupBuild, BaseBuild>
     {
         #region Private Members
+        Int32 _buildId;
+        Int32? _integrationId;
         String _name, _description;
         Boolean _isEnabled = true;
         List<Schema> _requiredData;
-        GroupInstruction _instructions;
+        GroupInstruction _instructions = new GroupInstruction();
+        Integration _integration;
         #endregion Private Members
 
         #region Properties
+        #region BuildId
+        public Int32 BuildId
+        {
+            get { return _buildId; }
+            set { SetValue(ref _buildId, value); }
+        }
+        #endregion BuildId
+        #region IntegrationId
+        public Int32? IntegrationId
+        {
+            get { return _integrationId; }
+            set { SetValue(ref _integrationId, value); }
+        }
+        #endregion IntegrationId
+        #region Integration
+        public Integration Integration
+        {
+            get { return _integration; }
+            set { SetValue(ref _integration, value); }
+        }
+        #endregion Integration
         #region Name
         public String Name
         {

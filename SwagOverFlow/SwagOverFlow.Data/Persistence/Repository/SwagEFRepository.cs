@@ -7,12 +7,14 @@ using System.Linq.Expressions;
 namespace SwagOverFlow.Data.Persistence
 {
     //https://codewithshadman.com/repository-pattern-csharp/
-    public class SwagEFRepository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class SwagEFRepository<TContext, TEntity> : IRepository<TEntity> 
+        where TContext : DbContext 
+        where TEntity : class
     {
-        protected SwagContext context;
+        protected TContext context;
         internal DbSet<TEntity> dbSet;
 
-        public SwagEFRepository(SwagContext context)
+        public SwagEFRepository(TContext context)
         {
             this.context = context;
             this.dbSet = context.Set<TEntity>();
