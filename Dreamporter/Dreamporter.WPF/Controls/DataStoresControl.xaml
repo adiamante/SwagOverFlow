@@ -25,6 +25,7 @@
                                                     UseDefaultClear="True"
                                                     ShowClearContextMenuItem="True"
                                                     ShowItemRemoveContextMenuItem="True"
+                                                    Tag="{Binding ElementName=ThisControl}"
                                                     MinHeight="30">
         <swctl:SwagItemsControl.ContextMenu>
             <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (InstructionControl)-->

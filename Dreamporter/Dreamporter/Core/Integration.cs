@@ -12,9 +12,9 @@ namespace Dreamporter.Core
     public class Integration : ViewModelBaseExtended
     {
         #region Private Members
-        Int32 _integrationId, _coreBuildId, _profileBuildId;
-        CoreGroupBuild _coreBuild = new CoreGroupBuild();
-        ProfileGroupBuild _profileBuild = new ProfileGroupBuild();
+        Int32 _integrationId, _buildId, _sequence;
+        String _name;
+        GroupBuild _build = new GroupBuild();
         List<Instruction> _instructionTemplates = new List<Instruction>();
         SwagOptionGroup _defaultOptions = new SwagOptionGroup();
         SwagOptionGroup _selectedOptions = new SwagOptionGroup();
@@ -31,34 +31,34 @@ namespace Dreamporter.Core
             set { SetValue(ref _integrationId, value); }
         }
         #endregion IntegrationId
-        #region CoreBuildId
-        public Int32 CoreBuildId
+        #region Name
+        public String Name
         {
-            get { return _coreBuildId; }
-            set { SetValue(ref _coreBuildId, value); }
+            get { return _name; }
+            set { SetValue(ref _name, value); }
         }
-        #endregion CoreBuildId
-        #region CoreBuild
-        public CoreGroupBuild CoreBuild
+        #endregion Name
+        #region Sequence
+        public Int32 Sequence
         {
-            get { return _coreBuild; }
-            set { SetValue(ref _coreBuild, value); }
+            get { return _sequence; }
+            set { SetValue(ref _sequence, value); }
+        }
+        #endregion Sequence
+        #region BuildId
+        public Int32 BuildId
+        {
+            get { return _buildId; }
+            set { SetValue(ref _buildId, value); }
+        }
+        #endregion BuildId
+        #region CoreBuild
+        public GroupBuild Build
+        {
+            get { return _build; }
+            set { SetValue(ref _build, value); }
         }
         #endregion CoreBuild
-        #region ProfileBuildId
-        public Int32 ProfileBuildId
-        {
-            get { return _profileBuildId; }
-            set { SetValue(ref _profileBuildId, value); }
-        }
-        #endregion ProfileBuildId
-        #region ProfileBuild
-        public ProfileGroupBuild ProfileBuild
-        {
-            get { return _profileBuild; }
-            set { SetValue(ref _profileBuild, value); }
-        }
-        #endregion ProfileBuild
         #region InstructionTemplates
         public List<Instruction> InstructionTemplates
         {
@@ -73,15 +73,6 @@ namespace Dreamporter.Core
             set { SetValue(ref _defaultOptions, value); }
         }
         #endregion DefaultOptions
-        #region SelectedOptions
-        [NotMapped]
-        [JsonIgnore]
-        public SwagOptionGroup SelectedOptions
-        {
-            get { return _selectedOptions; }
-            set { SetValue(ref _selectedOptions, value); }
-        }
-        #endregion SelectedOptions
         #region OptionsSet
         public List<SwagOptionGroup> OptionsSet
         {

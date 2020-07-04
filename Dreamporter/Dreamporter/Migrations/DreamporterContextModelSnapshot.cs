@@ -32,6 +32,9 @@ namespace Dreamporter.Migrations
                     b.Property<bool>("CanUndo")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Condition")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -40,9 +43,6 @@ namespace Dreamporter.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Display")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Instructions")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("IntegrationId")
@@ -88,7 +88,7 @@ namespace Dreamporter.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CoreBuildId")
+                    b.Property<int>("BuildId")
                         .HasColumnType("int");
 
                     b.Property<string>("DataContexts")
@@ -103,27 +103,33 @@ namespace Dreamporter.Migrations
                     b.Property<string>("InstructionTemplates")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OptionsSet")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProfileBuildId")
+                    b.Property<int>("Sequence")
                         .HasColumnType("int");
 
                     b.HasKey("IntegrationId");
 
+                    b.HasIndex("BuildId")
+                        .IsUnique();
+
                     b.ToTable("Integrations");
                 });
 
-            modelBuilder.Entity("Dreamporter.Core.CoreBuild", b =>
+            modelBuilder.Entity("Dreamporter.Core.Build", b =>
                 {
                     b.HasBaseType("Dreamporter.Core.BaseBuild");
 
-                    b.Property<string>("Condition")
+                    b.Property<string>("Instructions")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasIndex("IntegrationId");
 
-                    b.HasDiscriminator().HasValue("CoreBuild");
+                    b.HasDiscriminator().HasValue("Build");
                 });
 
             modelBuilder.Entity("Dreamporter.Core.GroupBuild", b =>
@@ -131,45 +137,6 @@ namespace Dreamporter.Migrations
                     b.HasBaseType("Dreamporter.Core.BaseBuild");
 
                     b.HasDiscriminator().HasValue("GroupBuild");
-                });
-
-            modelBuilder.Entity("Dreamporter.Core.ProfileBuild", b =>
-                {
-                    b.HasBaseType("Dreamporter.Core.BaseBuild");
-
-                    b.Property<string>("InstructionTemplateGUID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Options")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasIndex("IntegrationId");
-
-                    b.HasDiscriminator().HasValue("ProfileBuild");
-                });
-
-            modelBuilder.Entity("Dreamporter.Core.CoreGroupBuild", b =>
-                {
-                    b.HasBaseType("Dreamporter.Core.GroupBuild");
-
-                    b.HasIndex("IntegrationId")
-                        .IsUnique()
-                        .HasName("IX_BaseBuilds_IntegrationId1")
-                        .HasFilter("[IntegrationId] IS NOT NULL");
-
-                    b.HasDiscriminator().HasValue("CoreGroupBuild");
-                });
-
-            modelBuilder.Entity("Dreamporter.Core.ProfileGroupBuild", b =>
-                {
-                    b.HasBaseType("Dreamporter.Core.GroupBuild");
-
-                    b.HasIndex("IntegrationId")
-                        .IsUnique()
-                        .HasName("IX_BaseBuilds_IntegrationId2")
-                        .HasFilter("[IntegrationId] IS NOT NULL");
-
-                    b.HasDiscriminator().HasValue("ProfileGroupBuild");
                 });
 
             modelBuilder.Entity("Dreamporter.Core.BaseBuild", b =>
@@ -180,34 +147,20 @@ namespace Dreamporter.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
                 });
 
-            modelBuilder.Entity("Dreamporter.Core.CoreBuild", b =>
+            modelBuilder.Entity("Dreamporter.Core.Integration", b =>
+                {
+                    b.HasOne("Dreamporter.Core.GroupBuild", "Build")
+                        .WithOne("Integration")
+                        .HasForeignKey("Dreamporter.Core.Integration", "BuildId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Dreamporter.Core.Build", b =>
                 {
                     b.HasOne("Dreamporter.Core.Integration", "Integration")
                         .WithMany()
                         .HasForeignKey("IntegrationId");
-                });
-
-            modelBuilder.Entity("Dreamporter.Core.ProfileBuild", b =>
-                {
-                    b.HasOne("Dreamporter.Core.Integration", "Integration")
-                        .WithMany()
-                        .HasForeignKey("IntegrationId");
-                });
-
-            modelBuilder.Entity("Dreamporter.Core.CoreGroupBuild", b =>
-                {
-                    b.HasOne("Dreamporter.Core.Integration", "Integration")
-                        .WithOne("CoreBuild")
-                        .HasForeignKey("Dreamporter.Core.CoreGroupBuild", "IntegrationId")
-                        .HasConstraintName("FK_BaseBuilds_Integrations_IntegrationId1");
-                });
-
-            modelBuilder.Entity("Dreamporter.Core.ProfileGroupBuild", b =>
-                {
-                    b.HasOne("Dreamporter.Core.Integration", "Integration")
-                        .WithOne("ProfileBuild")
-                        .HasForeignKey("Dreamporter.Core.ProfileGroupBuild", "IntegrationId")
-                        .HasConstraintName("FK_BaseBuilds_Integrations_IntegrationId2");
                 });
 #pragma warning restore 612, 618
         }

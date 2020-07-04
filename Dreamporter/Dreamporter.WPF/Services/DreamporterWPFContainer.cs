@@ -17,6 +17,11 @@ namespace Dreamporter.WPF.Services
             get { return _serviceProvider.GetService<DreamporterContext>(); }
         }
 
+        public static IIntegrationRepository IntegrationDataRepository
+        {
+            get { return _serviceProvider.GetService<IIntegrationRepository>(); }
+        }
+
         public static IServiceProvider ServiceProvider
         {
             get { return _serviceProvider; }

@@ -18,10 +18,7 @@ namespace Dreamporter.Data
         public DbSet<Integration> Integrations { get; set; }
         public DbSet<BaseBuild> BaseBuilds { get; set; }
         public DbSet<GroupBuild> GroupBuilds { get; set; }
-        public DbSet<CoreGroupBuild> CoreGroupBuilds { get; set; }
-        public DbSet<ProfileGroupBuild> ProfileGroupBuilds { get; set; }
-        public DbSet<CoreBuild> CoreBuilds { get; set; }
-        public DbSet<ProfileBuild> ProfileBuilds { get; set; }
+        public DbSet<Build> Builds { get; set; }
         #endregion 
 
         #region Initialization
@@ -40,8 +37,7 @@ namespace Dreamporter.Data
             modelBuilder.ApplyConfiguration(new IntegrationEntityConfiguration());
             modelBuilder.ApplyConfiguration(new BaseBuildEntityConfiguration());
             modelBuilder.ApplyConfiguration(new GroupBuildEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new CoreBuildEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new ProfileBuildEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new BuildEntityConfiguration());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -58,12 +54,10 @@ namespace Dreamporter.Data
             public void Configure(EntityTypeBuilder<Integration> builder)
             {
                 builder.HasKey(i => i.IntegrationId);
-                builder.HasOne(i => i.CoreBuild)
+                builder.HasOne(i => i.Build)
                     .WithOne(b => b.Integration)
-                    .HasForeignKey<CoreGroupBuild>(b => b.IntegrationId);
-                builder.HasOne(i => i.ProfileBuild)
-                    .WithOne(b => b.Integration)
-                    .HasForeignKey<ProfileGroupBuild>(b => b.IntegrationId);
+                    .HasForeignKey<Integration>(i => i.BuildId)
+                    .OnDelete(DeleteBehavior.NoAction);
                 builder.Property(i => i.InstructionTemplates)
                     .HasConversion(
                         i => JsonHelper.ToJsonString(i),
@@ -93,14 +87,15 @@ namespace Dreamporter.Data
             public void Configure(EntityTypeBuilder<BaseBuild> builder)
             {
                 builder.HasKey(b => b.BuildId);
+                builder.Property(b => b.Condition)
+                    .HasConversion(
+                        b => JsonHelper.ToJsonString(b),
+                        b => JsonHelper.ToObject<BooleanContainerExpression>(b));
                 builder.Property(b => b.RequiredData)
                     .HasConversion(
                         i => JsonHelper.ToJsonString(i),
                         i => JsonHelper.ToObject<List<Schema>>(i));
-                builder.Property(b => b.Instructions)
-                    .HasConversion(
-                        i => JsonHelper.ToJsonString(i),
-                        i => JsonHelper.ToObject<GroupInstruction>(i));
+                
             }
         }
         #endregion BaseBuildEntityConfiguration
@@ -116,30 +111,19 @@ namespace Dreamporter.Data
             }
         }
         #endregion GroupBuildEntityConfiguration
-        #region CoreBuildEntityConfiguration
-        public class CoreBuildEntityConfiguration : IEntityTypeConfiguration<CoreBuild>
+        #region BuildEntityConfiguration
+        public class BuildEntityConfiguration : IEntityTypeConfiguration<Build>
         {
-            public void Configure(EntityTypeBuilder<CoreBuild> builder)
+            public void Configure(EntityTypeBuilder<Build> builder)
             {
-                builder.Property(b => b.Condition)
+                
+                builder.Property(b => b.Instructions)
                     .HasConversion(
-                        b => JsonHelper.ToJsonString(b),
-                        b => JsonHelper.ToObject<BooleanContainerExpression>(b));
+                        i => JsonHelper.ToJsonString(i),
+                        i => JsonHelper.ToObject<GroupInstruction>(i));
             }
         }
         #endregion CoreBuildEntityConfiguration
-        #region ProfileBuildEntityConfiguration
-        public class ProfileBuildEntityConfiguration : IEntityTypeConfiguration<ProfileBuild>
-        {
-            public void Configure(EntityTypeBuilder<ProfileBuild> builder)
-            {
-                builder.Property(b => b.Options)
-                    .HasConversion(
-                        b => JsonHelper.ToJsonString(b),
-                        b => JsonHelper.ToObject<SwagOptionGroup>(b));
-            }
-        }
-        #endregion ProfileBuildEntityConfiguration
         #endregion Entity Configurations
     }
 }

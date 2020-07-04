@@ -13,7 +13,7 @@ namespace Dreamporter.Core
         String _name, _description;
         Boolean _isEnabled = true;
         List<Schema> _requiredData;
-        GroupInstruction _instructions = new GroupInstruction();
+        BooleanContainerExpression _condition = new BooleanContainerExpression();
         Integration _integration;
         #endregion Private Members
 
@@ -53,6 +53,13 @@ namespace Dreamporter.Core
             set { SetValue(ref _description, value); }
         }
         #endregion Description
+        #region Condition
+        public BooleanContainerExpression Condition
+        {
+            get { return _condition; }
+            set { SetValue(ref _condition, value); }
+        }
+        #endregion Condition   
         #region IsEnabled
         public Boolean IsEnabled
         {
@@ -70,13 +77,6 @@ namespace Dreamporter.Core
         #region Type
         public abstract Type Type { get; }
         #endregion Type
-        #region Instructions
-        public GroupInstruction Instructions
-        {
-            get { return _instructions; }
-            set { SetValue(ref _instructions, value); }
-        }
-        #endregion Instructions
         #endregion Properties
 
         #region Initialization

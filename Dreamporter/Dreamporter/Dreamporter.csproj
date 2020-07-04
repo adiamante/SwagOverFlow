@@ -5,6 +5,31 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200630195911_Initial.cs" />
+    <Compile Remove="Migrations\20200630195911_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20200630200838_Second.cs" />
+    <Compile Remove="Migrations\20200630200838_Second.Designer.cs" />
+    <Compile Remove="Migrations\20200701043907_Third.cs" />
+    <Compile Remove="Migrations\20200701043907_Third.Designer.cs" />
+    <Compile Remove="Migrations\20200701234506_Fourth.cs" />
+    <Compile Remove="Migrations\20200701234506_Fourth.Designer.cs" />
+    <Compile Remove="Migrations\20200702194314_M0.cs" />
+    <Compile Remove="Migrations\20200702194314_M0.Designer.cs" />
+    <Compile Remove="Migrations\20200703043654_M0.cs" />
+    <Compile Remove="Migrations\20200703043654_M0.Designer.cs" />
+    <Compile Remove="Migrations\20200703044534_M0.cs" />
+    <Compile Remove="Migrations\20200703044534_M0.Designer.cs" />
+    <Compile Remove="Migrations\20200703044948_M1.cs" />
+    <Compile Remove="Migrations\20200703044948_M1.Designer.cs" />
+    <Compile Remove="Migrations\20200703045102_M0.cs" />
+    <Compile Remove="Migrations\20200703045102_M0.Designer.cs" />
+    <Compile Remove="Migrations\20200703045741_M1.cs" />
+    <Compile Remove="Migrations\20200703045741_M1.Designer.cs" />
+    <Compile Remove="Migrations\20200704171358_M1.cs" />
+    <Compile Remove="Migrations\20200704171358_M1.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\SwagOverFlow\SwagOverFlow.Data\SwagOverFlow.Data.csproj" />
     <ProjectReference Include="..\..\SwagOverFlow\SwagOverFlow\SwagOverFlow.csproj" />
   </ItemGroup>
