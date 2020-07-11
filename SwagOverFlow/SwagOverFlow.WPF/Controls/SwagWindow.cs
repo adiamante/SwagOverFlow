@@ -152,6 +152,8 @@ namespace SwagOverFlow.WPF.Controls
 
         protected virtual void SwagWindowSettings_Save(object sender, RoutedEventArgs e)
         {
+            _settings["Window"]["Settings"]["IsOpen"].SetValue(false);
+            _settings["Window"]["CommandHistory"]["IsOpen"].SetValue(false);
             SwagWPFContainer.Context.SaveChanges();
         }
         #endregion Initialization

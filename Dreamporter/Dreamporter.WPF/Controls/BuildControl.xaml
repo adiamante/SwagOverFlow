@@ -119,7 +119,6 @@
         </DataTemplate>
         <DataTemplate x:Key="RequiredDataDataTemplate">
             <dwctl:SchemasControl Schemas="{Binding DataContext.RequiredData, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
-                                          ShowSaveButton="True"
                                           Save="SchemasControl_Save">
             </dwctl:SchemasControl>
         </DataTemplate>
@@ -146,7 +145,6 @@
         </DataTemplate>
         <DataTemplate x:Key="ConditionDataTemplate">
             <swctl:BooleanExpressionControl ExpressionContainer="{Binding DataContext.Condition, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
-                                            ShowSaveButton="True" 
                                             ShowSaveContextMenuItem="True" 
                                             ShowAddContextMenuItem="True"
                                             ShowCopyContextMenuItem="True"
@@ -347,8 +345,15 @@
                 </swui:SwagTemplateCollection>
             </swctl:SwagItemsControl.ItemTemplates>
         </swctl:SwagItemsControl>
-        <ContentControl MinWidth="60" BorderThickness="3" BorderBrush="Black" Content="{Binding SelectedBuild, ElementName=ThisControl}">
+        <Grid>
+            <ContentControl MinWidth="60" BorderThickness="3" BorderBrush="Black" Content="{Binding SelectedBuild, ElementName=ThisControl}">
 
-        </ContentControl>
+            </ContentControl>
+            <Button HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                    Click="SwagItemsControl_Save">
+                <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
+            </Button>
+        </Grid>
+        
     </DockPanel>
 </swctl:SwagControlBase>
