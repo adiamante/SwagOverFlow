@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using SwagOverFlow.Iterator;
 using SwagOverFlow.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -14,9 +15,30 @@ namespace SwagOverFlow.ViewModels
     #region SwagOption
     public abstract class SwagOption : SwagItem<SwagOptionGroup, SwagOption>
     {
-        public Boolean IsEnabled { get; set; } = true;
-        public String Name { get; set; } = "";
-        public String StringFormat { get; set; } = "";
+        Boolean _isEnabled = true;
+        String _name = "", _stringFormat = "";
+
+        #region IsEnabled
+        public bool IsEnabled
+        {
+            get { return _isEnabled; }
+            set { SetValue(ref _isEnabled, value); }
+        }
+        #endregion IsEnabled
+        #region Name
+        public String Name
+        {
+            get { return _name; }
+            set { SetValue(ref _name, value); }
+        }
+        #endregion Name
+        #region StringFormat
+        public String StringFormat
+        {
+            get { return _stringFormat; }
+            set { SetValue(ref _stringFormat, value); }
+        }
+        #endregion StringFormat
         [NotMapped]
         [JsonIgnore]
         public abstract String Value { get; }
@@ -91,7 +113,8 @@ namespace SwagOverFlow.ViewModels
     #endregion BooleanOption
 
     #region SwagOptionGroup
-    public class SwagOptionGroup : SwagOption, ISwagParent<SwagOption>
+    [JsonObject]
+    public class SwagOptionGroup : SwagOption, ISwagParent<SwagOption>, ICollection<SwagOption>
     {
         protected ObservableCollection<SwagOption> _children = new ObservableCollection<SwagOption>();
         public override string Value
@@ -206,6 +229,47 @@ namespace SwagOverFlow.ViewModels
             OnSwagItemChanged(this, new PropertyChangedExtendedEventArgs("Children", Children, null, null));
         }
         #endregion Initialization
+
+        #region ICollection
+
+        public int Count => ((ICollection<SwagOption>)_children).Count;
+
+        public bool IsReadOnly => ((ICollection<SwagOption>)_children).IsReadOnly;
+        public void Add(SwagOption item)
+        {
+            ((ICollection<SwagOption>)_children).Add(item);
+        }
+
+        public void Clear()
+        {
+            ((ICollection<SwagOption>)_children).Clear();
+        }
+
+        public bool Contains(SwagOption item)
+        {
+            return ((ICollection<SwagOption>)_children).Contains(item);
+        }
+
+        public void CopyTo(SwagOption[] array, int arrayIndex)
+        {
+            ((ICollection<SwagOption>)_children).CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(SwagOption item)
+        {
+            return ((ICollection<SwagOption>)_children).Remove(item);
+        }
+
+        public IEnumerator<SwagOption> GetEnumerator()
+        {
+            return ((IEnumerable<SwagOption>)_children).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)_children).GetEnumerator();
+        }
+        #endregion ICollection
     }
     #endregion SwagOptionGroup
 

@@ -20,14 +20,14 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
     public partial class BooleanExpressionTestWindow : SwagWindow
     {
         #region Expression
-        public BooleanContainerExpressionWPF Expression
+        public BooleanContainerExpression Expression
         {
             get 
             {
                 if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Expression"))
                 {
-                    BooleanContainerExpressionWPF cnt = new BooleanContainerExpressionWPF() { Display = "Root" };
-                    SwagSetting<BooleanContainerExpressionWPF> ssCnt = new SwagSetting<BooleanContainerExpressionWPF>()
+                    BooleanContainerExpression cnt = new BooleanContainerExpression() { Display = "Root" };
+                    SwagSetting<BooleanContainerExpression> ssCnt = new SwagSetting<BooleanContainerExpression>()
                     {
                         Icon = PackIconMaterialKind.IframeVariable,
                         Value = cnt
@@ -41,13 +41,13 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
                     ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
-                return SwagWindow.GlobalSettings["Test"]["Expression"].GetValue<BooleanContainerExpressionWPF>(); 
+                return SwagWindow.GlobalSettings["Test"]["Expression"].GetValue<BooleanContainerExpression>(); 
             }
         }
         #endregion Expression
 
         #region Options
-        public SwagOptionGroupWPF Options
+        public SwagOptionGroup Options
         {
             get
             {
@@ -56,7 +56,7 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
                     SwagSetting<SwagOptionGroup> ssOpt = new SwagSetting<SwagOptionGroup>()
                     {
                         Icon = PackIconCustomKind.Variable,
-                        Value = new SwagOptionGroupWPF()
+                        Value = new SwagOptionGroup()
                     };
 
                     ssOpt.IconString = ssOpt.IconString;
@@ -67,7 +67,7 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
                     ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
-                return (SwagOptionGroupWPF)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
+                return (SwagOptionGroup)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
             }
         }
         #endregion Option

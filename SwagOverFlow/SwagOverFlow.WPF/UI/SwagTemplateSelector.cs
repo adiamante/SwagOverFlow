@@ -189,10 +189,10 @@ namespace SwagOverFlow.WPF.UI
                 return customDefaultTemplate.DataTemplate;
             }
 
-            if (DefaultTemplate != null)
-            {
-                return DefaultTemplate.DataTemplate;
-            }
+            //if (DefaultTemplate != null)
+            //{
+            //    return DefaultTemplate.DataTemplate;
+            //}
 
             return base.SelectTemplate(item, container);
         }

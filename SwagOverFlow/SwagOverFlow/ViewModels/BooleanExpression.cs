@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -17,7 +18,8 @@ namespace SwagOverFlow.ViewModels
     #endregion BooleanExpression
 
     #region BooleanGroupExpression
-    public abstract class BooleanGroupExpression : BooleanExpression, ISwagParent<BooleanExpression>
+    [JsonObject]
+    public abstract class BooleanGroupExpression : BooleanExpression, ISwagParent<BooleanExpression>, ICollection<BooleanExpression>
     {
         protected ObservableCollection<BooleanExpression> _children = new ObservableCollection<BooleanExpression>();
 
@@ -43,9 +45,46 @@ namespace SwagOverFlow.ViewModels
         }
         #endregion Children
 
-        #region HasChildren
-        public bool HasChildren { get { return _children.Count > 0; } }
-        #endregion HasChildren
+        #region ICollection
+        public int Count => _children.Count;
+
+        public bool IsReadOnly => false;
+
+        public void Add(BooleanExpression item)
+        {
+            ((ICollection<BooleanExpression>)_children).Add(item);
+        }
+
+        public void Clear()
+        {
+            ((ICollection<BooleanExpression>)_children).Clear();
+        }
+
+        public bool Contains(BooleanExpression item)
+        {
+            return ((ICollection<BooleanExpression>)_children).Contains(item);
+        }
+
+        public void CopyTo(BooleanExpression[] array, int arrayIndex)
+        {
+            ((ICollection<BooleanExpression>)_children).CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(BooleanExpression item)
+        {
+            return ((ICollection<BooleanExpression>)_children).Remove(item);
+        }
+
+        public IEnumerator<BooleanExpression> GetEnumerator()
+        {
+            return ((IEnumerable<BooleanExpression>)_children).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)_children).GetEnumerator();
+        }
+        #endregion ICollection
 
         #region Initialization
         public BooleanGroupExpression() : base()
@@ -91,7 +130,8 @@ namespace SwagOverFlow.ViewModels
     #endregion BooleanGroupExpression
 
     #region BooleanContainerExpression
-    public class BooleanContainerExpression : BooleanExpression
+    [JsonObject]
+    public class BooleanContainerExpression : BooleanExpression, ICollection<BooleanExpression>
     {
         protected BooleanExpression _root;
         public override Type Type { get { return typeof(BooleanContainerExpression); } }
@@ -100,18 +140,58 @@ namespace SwagOverFlow.ViewModels
         public BooleanExpression Root
         {
             get { return _root; }
-            set 
-            { 
-                SetValue(ref _root, value);
-                OnPropertyChanged("HasRoot");
-            }
+            set { SetValue(ref _root, value); }
         }
         #endregion Root
-        #region HasRoot
-        [NotMapped]
-        [JsonIgnore]
-        public Boolean HasRoot { get { return _root != null; } }
-        #endregion HasRoot
+
+        #region ICollection
+        public int Count => _root == null ? 0 : 1;
+
+        public bool IsReadOnly => false;
+
+        public void Add(BooleanExpression item)
+        {
+            Root = item;
+        }
+
+        public void Clear()
+        {
+            Root = null;
+        }
+
+        public bool Contains(BooleanExpression item)
+        {
+            return Root == item;
+        }
+
+        public void CopyTo(BooleanExpression[] array, int arrayIndex)
+        {
+            array[arrayIndex] = Root;
+        }
+
+        public IEnumerator<BooleanExpression> GetEnumerator()
+        {
+            if (Root != null)
+            {
+                yield return Root;
+            }
+        }
+
+        public bool Remove(BooleanExpression item)
+        {
+            if (item == Root)
+            {
+                Root = null;
+                return true;
+            }
+            return false;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        #endregion ICollection
 
         public override bool Evaluate(Dictionary<string, string> context)
         {

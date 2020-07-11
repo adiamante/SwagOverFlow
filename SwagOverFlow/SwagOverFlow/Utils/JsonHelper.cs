@@ -47,6 +47,7 @@ namespace SwagOverFlow.Utils
 
             String jsonString = JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings()
             {
+                //ObjectCreationHandling = ObjectCreationHandling.Replace,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore, Converters = _jsonConverterProviderService.GetConverters().ToList()
             });
 
@@ -55,7 +56,10 @@ namespace SwagOverFlow.Utils
 
         public static T ToObject<T>(String str)
         {
-            return JsonConvert.DeserializeObject<T>(str, new JsonSerializerSettings() { Converters = _jsonConverterProviderService.GetConverters().ToList() });
+            return JsonConvert.DeserializeObject<T>(str, new JsonSerializerSettings() { 
+                ObjectCreationHandling = ObjectCreationHandling.Replace, 
+                Converters = _jsonConverterProviderService.GetConverters().ToList() 
+            });
             //return JsonConvert.DeserializeObject<T>(str, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
         }
 
@@ -241,9 +245,57 @@ namespace SwagOverFlow.Utils
             if (reader.TokenType == JsonToken.Null)
             {
                 return null;
-            }    
+            }
 
             var jObject = JObject.Load(reader);
+
+            T target = Create(objectType, jObject);
+            serializer.Populate(jObject.CreateReader(), target);
+
+            return target;
+        }
+
+        public override void WriteJson(
+            JsonWriter writer,
+            object value,
+            JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected static bool FieldExists(
+            JObject jObject,
+            string name,
+            JTokenType type)
+        {
+            JToken token;
+            return jObject.TryGetValue(name, out token) && token.Type == type;
+        }
+    }
+
+    public abstract class AbstractJsonArrayConverter<T> : JsonConverter
+    {
+        public override bool CanWrite => false;
+        protected abstract T Create(Type objectType, JArray jObject);
+
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(T).IsAssignableFrom(objectType);
+        }
+
+        public override object ReadJson(
+            JsonReader reader,
+            Type objectType,
+            object existingValue,
+            JsonSerializer serializer)
+        {
+            //https://stackoverflow.com/questions/34185295/handling-null-objects-in-custom-jsonconverters-readjson-method
+            if (reader.TokenType == JsonToken.Null)
+            {
+                return null;
+            }
+
+            var jObject = JArray.Load(reader);
 
             T target = Create(objectType, jObject);
             serializer.Populate(jObject.CreateReader(), target);

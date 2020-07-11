@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using SwagOverFlow.ViewModels;
@@ -54,17 +57,17 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowSequence
-        #region Expression
-        public static DependencyProperty ExpressionProperty =
+        #region ExpressionContainer
+        public static DependencyProperty ExpressionContainerProperty =
             DependencyProperty.Register(
-                "Expression",
-                typeof(BooleanExpression),
+                "ExpressionContainer",
+                typeof(ICollection<BooleanExpression>),
                 typeof(BooleanExpressionControl));
 
-        public BooleanExpression Expression
+        public ICollection<BooleanExpression> ExpressionContainer
         {
-            get { return (BooleanExpression)GetValue(ExpressionProperty); }
-            set { SetValue(ExpressionProperty, value); }
+            get { return (ICollection<BooleanExpression>)GetValue(ExpressionContainerProperty); }
+            set { SetValue(ExpressionContainerProperty, value); }
         }
         #endregion Expression
         #region RootExpression
@@ -72,9 +75,9 @@ namespace SwagOverFlow.WPF.Controls
         {
             get
             {
-                if (Expression is BooleanOperationExpression op && op.Children.Count > 0)
+                if(ExpressionContainer.Count > 0)
                 {
-                    return op.Children[0];
+                    return ExpressionContainer.First();
                 }
                 return null;
             }
@@ -288,10 +291,10 @@ namespace SwagOverFlow.WPF.Controls
             switch (tag)
             {
                 case "OR":
-                    newExp = new BooleanOrExpressionWPF();
+                    newExp = new BooleanOrExpression();
                     break;
                 case "AND":
-                    newExp = new BooleanAndExpressionWPF();
+                    newExp = new BooleanAndExpression();
                     break;
                 case "VAR_BOOL":
                     newExp = new BooleanBooleanVariableExpression();
@@ -305,18 +308,19 @@ namespace SwagOverFlow.WPF.Controls
             {
                 case BooleanGroupExpression grp:
                     grp.Children.Add(newExp);
+                    CollectionViewSource.GetDefaultView(grp.Children).Refresh();
                     break;
                 case BooleanContainerExpression cnt:
                     cnt.Root = newExp;
+                    CollectionViewSource.GetDefaultView(cnt).Refresh();
                     break;
             }
         }
 
         private void SwagItemsControl_Clear(object sender, RoutedEventArgs e)
         {
-            BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
-            BooleanContainerExpression cnt = (BooleanContainerExpression)bec.Expression;
-            cnt.Root = null;
+            ExpressionContainer.Clear();
+            CollectionViewSource.GetDefaultView(ExpressionContainer).Refresh();
         }
 
         private void SwagItemsControl_Remove(object sender, RoutedEventArgs e)
@@ -469,7 +473,7 @@ namespace SwagOverFlow.WPF.Controls
         private void SwagItemsControl_Copy(object sender, RoutedEventArgs e)
         {
             BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
-            BooleanOperationExpression exp = (BooleanOperationExpression)bec.Expression;
+            BooleanExpression exp = (BooleanExpression)bec.ExpressionContainer;
             SwagItemsControlHelper.SetClipBoardData<BooleanExpression>(exp);
         }
 
@@ -479,15 +483,14 @@ namespace SwagOverFlow.WPF.Controls
             if (exp != null)
             {
                 BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
-                bec.Expression = exp;
+                bec.ExpressionContainer = (ICollection<BooleanExpression>)exp;
             }
         }
 
         private void SwagItemsControl_Export(object sender, RoutedEventArgs e)
         {
             BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
-            BooleanOperationExpression exp = (BooleanOperationExpression)bec.Expression;
-            SwagItemsControlHelper.ExportDataToFile<BooleanExpression>(exp);
+            SwagItemsControlHelper.ExportDataToFile<BooleanExpression>((BooleanExpression)bec.ExpressionContainer);
         }
 
         private void SwagItemsControl_Import(object sender, RoutedEventArgs e)
@@ -496,7 +499,7 @@ namespace SwagOverFlow.WPF.Controls
             if (exp != null)
             {
                 BooleanExpressionControl bec = (BooleanExpressionControl)e.OriginalSource;
-                bec.Expression = exp;
+                bec.ExpressionContainer = (ICollection<BooleanExpression>)exp;
             }
         }
         #endregion Events

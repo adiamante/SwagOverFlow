@@ -38,24 +38,141 @@
                 <Button DockPanel.Dock="Left" Click="AddIntegration_Click">
                     <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Plus}" />
                 </Button>
+                <ToggleButton DockPanel.Dock="Left" x:Name="tbIntegrationEdit" IsChecked="False">
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialDesignKind.Edit}" />
+                </ToggleButton>
+                <TextBox DockPanel.Dock="Left" Grid.Row="0" MinWidth="100" Text="{Binding SelectedIntegration.Name, ElementName=ThisControl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Visibility="{Binding IsChecked, ElementName=tbIntegrationEdit, Converter={swui:BoolToVisibilityConverter}}" />
+                <Button DockPanel.Dock="Left" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="IntegrationSave_Click"
+                        Visibility="{Binding IsChecked, ElementName=tbIntegrationEdit, Converter={swui:BoolToVisibilityConverter}}">
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
+                </Button>
                 <Grid />
             </DockPanel>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="0" DataContext="{Binding SelectedIntegration, ElementName=ThisControl}">
+        <Grid Grid.Row="1" Grid.Column="0">
             <Grid.ColumnDefinitions>
-                
+
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <!--<RowDefinition Height="*" />-->
             </Grid.RowDefinitions>
-            
-            <TextBox Grid.Row="0" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                
-            </TextBox>
+            <TabControl Grid.Row="0">
+                <TabItem>
+                    <TabItem.HeaderTemplate>
+                        <DataTemplate>
+                            <swctl:IconControl Text="Build" Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.Cubes}" />
+                        </DataTemplate>
+                    </TabItem.HeaderTemplate>
+                    <dwctl:BuildControl RootBuild="{Binding SelectedIntegration.Build, Mode=TwoWay, ElementName=ThisControl}"
+                                    SelectedBuild="{Binding SelectedIntegration.SelectedBuild, ElementName=ThisControl}"
+                                    ShowSaveContextMenuItem="True" 
+                                    ShowAddContextMenuItem="True"
+                                    ShowCopyContextMenuItem="True"
+                                    ShowPasteContextMenuItem="True"
+                                    ShowExportContextMenuItem="True"
+                                    ShowImportContextMenuItem="True"
+                                    ShowItemAddContextMenuItem="True"
+                                    ShowItemCopyContextMenuItem="True"
+                                    ShowItemPasteContextMenuItem="True"
+                                    ShowItemRemoveContextMenuItem="True"
+                                    Save="BuildControl_Save">
+                    </dwctl:BuildControl>
+                </TabItem>
+                <TabItem>
+                    <TabItem.HeaderTemplate>
+                        <DataTemplate>
+                            <swctl:IconControl Text="Instruction Templates" Kind="{x:Static iconPacks:PackIconMaterialKind.Shape}" />
+                        </DataTemplate>
+                    </TabItem.HeaderTemplate>
+                    <dwctl:InstructionControl InstructionCollection="{Binding SelectedIntegration.InstructionTemplates, Mode=TwoWay, ElementName=ThisControl}"
+                                    ShowSaveContextMenuItem="True" 
+                                    ShowAddContextMenuItem="True"
+                                    ShowCopyContextMenuItem="True"
+                                    ShowPasteContextMenuItem="True"
+                                    ShowExportContextMenuItem="True"
+                                    ShowImportContextMenuItem="True"
+                                    ShowItemAddContextMenuItem="True"
+                                    ShowItemCopyContextMenuItem="True"
+                                    ShowItemPasteContextMenuItem="True"
+                                    ShowItemRemoveContextMenuItem="True"
+                                    Save="InstructionControl_Save">
+                    </dwctl:InstructionControl>
+                </TabItem>
+                <TabItem>
+                    <TabItem.HeaderTemplate>
+                        <DataTemplate>
+                            <swctl:IconControl Text="Options" Kind="{x:Static iconPacks:PackIconIoniconsKind.OptionsMD}" />
+                        </DataTemplate>
+                    </TabItem.HeaderTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Grid.Column="0">
+                            <GroupBox.Header>
+                                <swctl:IconControl Text="Default" Kind="{x:Static iconPacks:PackIconUniconsKind.AlignCenterAlt}" />
+                            </GroupBox.Header>
+                            <swctl:SwagOptionControl 
+                                ShowSaveButton="True" 
+                                ShowSaveContextMenuItem="True" 
+                                ShowAddContextMenuItem="True"
+                                ShowCopyContextMenuItem="True"
+                                ShowPasteContextMenuItem="True"
+                                ShowExportContextMenuItem="True"
+                                ShowImportContextMenuItem="True"
+                                ShowItemAddContextMenuItem="True"
+                                ShowItemRemoveContextMenuItem="True"
+                                OptionCollection="{Binding SelectedIntegration.DefaultOptions, Mode=TwoWay, ElementName=ThisControl}"
+                                Save="DefaultOptions_Save">
+                            </swctl:SwagOptionControl>
+                        </GroupBox>
+                        <GroupBox Grid.Column="1">
+                            <GroupBox.Header>
+                                <DockPanel>
+                                    <swctl:IconControl DockPanel.Dock="Left" Text="Options Tree" Kind="{x:Static iconPacks:PackIconBoxIconsKind.SolidTree}" />
+                                </DockPanel>
+                            </GroupBox.Header>
+                            <dwctl:OptionsTreeControl RootOptions="{Binding SelectedIntegration.OptionsTree, Mode=TwoWay, ElementName=ThisControl}"
+                                    SelectedOptions="{Binding SelectedIntegration.SelectedOptions, ElementName=ThisControl}"
+                                    ShowSaveContextMenuItem="True" 
+                                    ShowAddContextMenuItem="True"
+                                    ShowExportContextMenuItem="True"
+                                    ShowImportContextMenuItem="True"
+                                    ShowItemAddContextMenuItem="True"
+                                    ShowItemCopyContextMenuItem="True"
+                                    ShowItemPasteContextMenuItem="True"
+                                    ShowItemRemoveContextMenuItem="True"
+                                    Save="OptionsTreeControl_Save">
+                            </dwctl:OptionsTreeControl>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+                <TabItem>
+                    <TabItem.HeaderTemplate>
+                        <DataTemplate>
+                            <swctl:IconControl Text="Initial Schemas" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
+                        </DataTemplate>
+                    </TabItem.HeaderTemplate>
+                    <dwctl:SchemasControl Schemas="{Binding SelectedIntegration.InitialSchemas, Mode=TwoWay, ElementName=ThisControl}"
+                                          ShowSaveButton="True"
+                                          Save="SchemasControl_Save">
+                    </dwctl:SchemasControl>
+                </TabItem>
+                <TabItem>
+                    <TabItem.HeaderTemplate>
+                        <DataTemplate>
+                            <swctl:IconControl Text="Data Contexts" Kind="{x:Static iconPacks:PackIconMaterialKind.Warehouse}" />
+                        </DataTemplate>
+                    </TabItem.HeaderTemplate>
+                    <dwctl:DataContextsControl DataContexts="{Binding SelectedIntegration.DataContexts, Mode=TwoWay, ElementName=ThisControl}"
+                                          ShowSaveButton="True"
+                                          Save="DataContextsControl_Save">
+                    </dwctl:DataContextsControl>
+                </TabItem>
+            </TabControl>
         </Grid>
-        <Button Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="Save_Click">
-            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
-        </Button>
     </Grid>
 </swctl:SwagControlBase>

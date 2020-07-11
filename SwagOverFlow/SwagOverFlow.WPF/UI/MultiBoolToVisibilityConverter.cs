@@ -25,22 +25,47 @@ namespace SwagOverFlow.WPF.UI
 
             foreach (object val in values)
             {
-                if (val is Boolean)
+                switch (val)
                 {
-                    Boolean bVal = (Boolean)val;
-                    if (bVal)
-                    {
-                        bHasTrue = true;
-                    }
-                    else
-                    {
-                        bHasFalse = true;
-                    }
+                    case Boolean bVal:
+                        if (bVal)
+                        {
+                            bHasTrue = true;
+                        }
+                        else
+                        {
+                            bHasFalse = true;
+                        }
+                        break;
+                    case Int32 iVal:
+                        if (iVal != 0)
+                        {
+                            bHasTrue = true;
+                        }
+                        else
+                        {
+                            bHasFalse = true;
+                        }
+                        break;
+                    default:
+                        return Default;
                 }
-                else //if any value is not a boolean return default value
-                {
-                    return Default;
-                }
+                //if (val is Boolean)
+                //{
+                //    Boolean bVal = (Boolean)val;
+                //    if (bVal)
+                //    {
+                //        bHasTrue = true;
+                //    }
+                //    else
+                //    {
+                //        bHasFalse = true;
+                //    }
+                //}
+                //else //if any value is not a boolean return default value
+                //{
+                //    return Default;
+                //}
             }
 
             switch (LogicalOperator)

@@ -46,7 +46,7 @@
                                  ShowImportContextMenuItem="True"
                                 ShowItemAddContextMenuItem="True"
                                 ShowItemRemoveContextMenuItem="True"
-                                 RootOption="{Binding Options, ElementName=TestWindow}"
+                                 OptionCollection="{Binding Options, ElementName=TestWindow}"
                                  Save="SwagOptionControl_Save">
             </swctl:SwagOptionControl>
         </GroupBox>
@@ -59,7 +59,7 @@
                     <swctl:IconControl Text="Instruction" Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.LightningBolt}" />
                 </DockPanel>
             </GroupBox.Header>
-            <dwc:InstructionControl RootInstruction="{Binding Instruction, ElementName=TestWindow}"
+            <dwc:InstructionControl InstructionCollection="{Binding Instruction, ElementName=TestWindow}"
                                     ShowSaveButton="True" 
                                     ShowSaveContextMenuItem="True" 
                                     ShowAddContextMenuItem="True"

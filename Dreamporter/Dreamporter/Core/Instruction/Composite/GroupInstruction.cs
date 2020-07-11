@@ -1,7 +1,9 @@
 ﻿using Dreamporter.Core;
+using Newtonsoft.Json;
 using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -10,7 +12,10 @@ using System.Threading.Tasks;
 
 namespace Dreamporter.Core
 {
-    public class GroupInstruction : Instruction, ISwagParent<Instruction>
+    //https://stackoverflow.com/questions/14383736/how-to-serialize-deserialize-a-custom-collection-with-additional-properties-usin
+    //So JsonConvert does not see this as an array
+    [JsonObject]    
+    public class GroupInstruction : Instruction, ISwagParent<Instruction>, ICollection<Instruction>
     {
         #region Private/Protected Members
         Boolean _isConcurrent = false;
@@ -34,6 +39,10 @@ namespace Dreamporter.Core
             get { return _isConcurrent; }
             set { SetValue(ref _isConcurrent, value); }
         }
+
+        public int Count => ((ICollection<Instruction>)_children).Count;
+
+        public bool IsReadOnly => ((ICollection<Instruction>)_children).IsReadOnly;
         #endregion IsConcurrent
         #endregion Properties
 
@@ -90,6 +99,43 @@ namespace Dreamporter.Core
 
         #region Events
         #endregion Events
+
+        #region ICollection
+        public void Add(Instruction item)
+        {
+            ((ICollection<Instruction>)_children).Add(item);
+        }
+
+        public void Clear()
+        {
+            ((ICollection<Instruction>)_children).Clear();
+        }
+
+        public bool Contains(Instruction item)
+        {
+            return ((ICollection<Instruction>)_children).Contains(item);
+        }
+
+        public void CopyTo(Instruction[] array, int arrayIndex)
+        {
+            ((ICollection<Instruction>)_children).CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(Instruction item)
+        {
+            return ((ICollection<Instruction>)_children).Remove(item);
+        }
+
+        public IEnumerator<Instruction> GetEnumerator()
+        {
+            return ((IEnumerable<Instruction>)_children).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)_children).GetEnumerator();
+        }
+        #endregion ICollection
 
         #region Methods
         public override void Execute(RunContext context, Dictionary<String, String> parameters)

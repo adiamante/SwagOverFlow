@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SwagOverFlow.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace SwagOverFlow.Data.Persistence
 {
@@ -55,6 +58,62 @@ namespace SwagOverFlow.Data.Persistence
             else
             {
                 return query.ToList();
+            }
+        }
+
+        public virtual IEnumerable<TEntity> GetRecursiveCollection(
+            String collectionProperty,
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            string includeProperties = "")
+        {
+            IQueryable<TEntity> query = dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties.Split
+                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            List<TEntity> result = null;
+            if (orderBy != null)
+            {
+                result = orderBy(query).ToList();
+            }
+            else
+            {
+                result = query.ToList();
+            }
+
+            foreach (TEntity item in result)
+            {
+                RecursiveLoadCollection(item, collectionProperty);
+            }
+
+            return result;
+        }
+
+        public void RecursiveLoadCollection(TEntity entity, String collectionProperty)
+        {
+            PropertyInfo prop = ReflectionHelper.PropertyInfoCollection[entity.GetType()][collectionProperty];
+
+            //Assuming that Collection type argument is also TEntity
+            if (prop != null && prop.PropertyType.GetInterface(nameof(ICollection)) != null)
+            {
+                context.Entry(entity).Collection(collectionProperty).Load();
+                ICollection collection = (ICollection)prop.GetValue(entity);
+                foreach (TEntity item in collection)
+                {
+                    RecursiveLoadCollection(item, collectionProperty);
+                }
             }
         }
 

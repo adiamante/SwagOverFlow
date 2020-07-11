@@ -1,0 +1,212 @@
+﻿<swctl:SwagControlBase x:Class="Dreamporter.WPF.Controls.OptionsTreeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dc="clr-namespace:Dreamporter.Core;assembly=Dreamporter"
+             xmlns:dwctl="clr-namespace:Dreamporter.WPF.Controls"
+             xmlns:svm="clr-namespace:SwagOverFlow.ViewModels;assembly=SwagOverFlow"
+             xmlns:swctl="clr-namespace:SwagOverFlow.WPF.Controls;assembly=SwagOverFlow.WPF"
+             xmlns:swvm="clr-namespace:SwagOverFlow.WPF.ViewModels;assembly=SwagOverFlow.WPF"
+             xmlns:swui="clr-namespace:SwagOverFlow.WPF.UI;assembly=SwagOverFlow.WPF"
+             xmlns:swcmd="clr-namespace:SwagOverFlow.WPF.Commands;assembly=SwagOverFlow.WPF"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common"
+             mc:Ignorable="d" 
+             x:Name="ThisControl"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <swctl:SwagControlBase.Resources>
+        <ContextMenu x:Key="NodeContextMenu" 
+                     Tag="{Binding PlacementTarget,
+                     RelativeSource={RelativeSource Self},
+                     Converter={swui:AncestorFindConverter},
+                     ConverterParameter={x:Type swctl:SwagItemsControl}}"
+                     swcmd:CommandBehavior.Event="Opened"
+                     swcmd:CommandBehavior.Command="{Binding Tag.ItemContextMenuOpenedCommand, RelativeSource={RelativeSource Self}}"
+                     swcmd:CommandBehavior.CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+            <MenuItem Header="Add"
+                      Visibility="{Binding Parent.Tag.ShowItemAddContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}"
+                      Command="{Binding Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
+                      CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconEntypoKind.Plus}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Copy"
+                          Command="{Binding Parent.Tag.CopyCommand, RelativeSource={RelativeSource Self}}" 
+                          CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                          Visibility="{Binding Parent.Tag.ShowItemCopyContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Clipboard}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Paste" 
+                          Command="{Binding Parent.Tag.PasteCommand, RelativeSource={RelativeSource Self}}" 
+                          CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                          Visibility="{Binding Parent.Tag.ShowItemPasteContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.ClipboardPaste}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Remove" 
+                      Command="{Binding Parent.Tag.RemoveCommand, RelativeSource={RelativeSource Self}}" 
+                      CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                      Visibility="{Binding Parent.Tag.ShowItemRemoveContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialDesignKind.Clear}" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+    </swctl:SwagControlBase.Resources>
+    <DockPanel>
+        <swctl:SwagItemsControl DockPanel.Dock="Left" MinWidth="30"
+                            SwagItemsSource="{Binding RootOptions.Children, Converter={swui:CollectionToViewConverter Sort=Sequence}, ElementName=ThisControl}" 
+                            Tag="{Binding ElementName=ThisControl}"
+                            SelectedItem="{Binding SelectedOptions, ElementName=ThisControl, Mode=TwoWay}"
+                            AllowMove="{Binding AllowMove, ElementName=ThisControl}"
+                            TreeViewItemDropPreview="SwagItemsControl_TreeViewItemDropPreview"
+                            TreeViewItemLeavePreview="SwagItemsControl_TreeViewItemLeavePreview"
+                            TreeViewItemDrop="SwagItemsControl_TreeViewItemDrop"
+                            ShowSaveButton="{Binding ShowSaveButton, ElementName=ThisControl}"
+                            ShowAddContextMenuItem="{Binding ShowAddContextMenuItem, ElementName=ThisControl}"
+                            Save="SwagItemsControl_Save"
+                            Add="SwagItemsControl_Add"
+                            Copy="SwagItemsControl_Copy"
+                            Paste="SwagItemsControl_Paste"
+                            Export="SwagItemsControl_Export"
+                            Import="SwagItemsControl_Import"
+                            Remove="SwagItemsControl_Remove"
+                            Clear="SwagItemsControl_Clear"
+                            UseDefaultItemContextMenuOpened="True"
+                            ShowItemRemoveContextMenuItem="{Binding ShowItemRemoveContextMenuItem, ElementName=ThisControl}"
+                            ShowItemAddContextMenuItem="{Binding ShowItemAddContextMenuItem, ElementName=ThisControl}"
+                            ShowItemCopyContextMenuItem="{Binding ShowItemCopyContextMenuItem, ElementName=ThisControl}"
+                            ShowItemPasteContextMenuItem="{Binding ShowItemPasteContextMenuItem, ElementName=ThisControl}"
+                            SaveHorizontalAlignment="Right"
+                            SaveVerticalAlignment="Bottom">
+            <swctl:SwagItemsControl.ContextMenu>
+                <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (OptionsTreeControl)-->
+                <ContextMenu DataContext="{Binding PlacementTarget.Tag.RootOptions, RelativeSource={RelativeSource Self}}" Tag="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                    <MenuItem Header="Save"
+                          Command="{Binding Parent.Tag.SaveCommand, RelativeSource={RelativeSource Self}}"
+                          Visibility="{Binding Parent.Tag.Tag.ShowSaveContextMenuItem, Converter={swui:BoolToVisibilityConverter}}">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Add"
+                      Visibility="{Binding Parent.Tag.ShowItemAddContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}"
+                      Command="{Binding Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
+                      CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconEntypoKind.Plus}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="AllowMove" IsCheckable="True" IsChecked="{Binding Parent.Tag.AllowMove, RelativeSource={RelativeSource Self}}">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.CursorMove}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Debug">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.AndroidDebugBridge}" />
+                        </MenuItem.Icon>
+                        <MenuItem Header="ShowSequence" IsCheckable="True" IsChecked="{Binding Parent.Parent.Tag.Tag.ShowSequence, RelativeSource={RelativeSource Self}}">
+                            <MenuItem.Icon>
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.FormatListNumbered}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="Copy"
+                          Command="{Binding Parent.Tag.CopyCommand, RelativeSource={RelativeSource Self}}" 
+                          CommandParameter="{Binding Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" 
+                          Visibility="{Binding Parent.Tag.Tag.ShowCopyContextMenuItem, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource Self}}">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Clipboard}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Paste" 
+                          Command="{Binding Parent.Tag.PasteCommand, RelativeSource={RelativeSource Self}}" 
+                          CommandParameter="{Binding Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" 
+                          Visibility="{Binding Parent.Tag.Tag.ShowPasteContextMenuItem, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource Self}}">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.ClipboardPaste}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Export" 
+                          Command="{Binding Parent.Tag.ExportCommand, RelativeSource={RelativeSource Self}}" 
+                          CommandParameter="{Binding Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" 
+                          Visibility="{Binding Parent.Tag.Tag.ShowExportContextMenuItem, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource Self}}">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Export}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Import"
+                          Command="{Binding Parent.Tag.ImportCommand, RelativeSource={RelativeSource Self}}" 
+                          CommandParameter="{Binding Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" 
+                          Visibility="{Binding Parent.Tag.Tag.ShowImportContextMenuItem, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource Self}}">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Import}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Clear" 
+                          Command="{Binding Parent.Tag.ClearCommand, RelativeSource={RelativeSource Self}}" 
+                          CommandParameter="{Binding Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" 
+                          Visibility="{Binding Parent.Tag.Expression.HasChildren, Converter={swui:BoolToVisibilityConverter}}">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialDesignKind.Clear}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </swctl:SwagItemsControl.ContextMenu>
+            <swctl:SwagItemsControl.ItemContainerStyles>
+                <swui:SwagStyleCollection>
+                    <swui:SwagStyle Type="{x:Type dc:OptionsNode}">
+                        <swui:SwagStyle.Style>
+                            <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                                <Setter Property="ContextMenu" Value="{StaticResource NodeContextMenu}" />
+                            </Style>
+                        </swui:SwagStyle.Style>
+                    </swui:SwagStyle>
+                </swui:SwagStyleCollection>
+            </swctl:SwagItemsControl.ItemContainerStyles>
+            <swctl:SwagItemsControl.ItemTemplates>
+                <swui:SwagTemplateCollection>
+                    <swui:SwagTemplate Type="{x:Type dc:OptionsNode}">
+                        <swui:SwagTemplate.DataTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding Children, Converter={swui:CollectionToViewConverter Sort=Sequence}}">
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:OptionsTreeControl}}}" />
+                                    <swctl:IconControl Text="{Binding Name}" Kind="{x:Static iconPacks:PackIconIoniconsKind.CogMD}" />
+                                </DockPanel>
+                            </HierarchicalDataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
+                </swui:SwagTemplateCollection>
+            </swctl:SwagItemsControl.ItemTemplates>
+        </swctl:SwagItemsControl>
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                <swctl:IconControl Text="Name" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaNBoxOutline}" />
+                <TextBox Text="{Binding SelectedOptions.Name, ElementName=ThisControl}" MinWidth="100" />
+            </StackPanel>
+            <swctl:SwagOptionControl 
+                                ShowSaveButton="True" 
+                                ShowSaveContextMenuItem="True" 
+                                ShowAddContextMenuItem="True"
+                                ShowCopyContextMenuItem="True"
+                                ShowPasteContextMenuItem="True"
+                                ShowExportContextMenuItem="True"
+                                ShowImportContextMenuItem="True"
+                                ShowItemAddContextMenuItem="True"
+                                ShowItemRemoveContextMenuItem="True"
+                                OptionCollection="{Binding SelectedOptions.Options, ElementName=ThisControl}"
+                                Save="OptionsSave_Click">
+            </swctl:SwagOptionControl>
+
+        </DockPanel>
+    </DockPanel>
+</swctl:SwagControlBase>

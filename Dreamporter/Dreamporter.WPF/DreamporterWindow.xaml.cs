@@ -1,4 +1,5 @@
 ﻿using Dreamporter.Core;
+using Dreamporter.Data;
 using Dreamporter.WPF.Services;
 using SwagOverFlow.Utils;
 using SwagOverFlow.WPF.Controls;
@@ -29,8 +30,13 @@ namespace DreamporterWPF
         {
             get
             {
-                var integrationRepo = DreamporterWPFContainer.IntegrationDataRepository;
-                return new ObservableCollection<Integration>(integrationRepo.Get());
+                IIntegrationRepository integrationRepo = DreamporterWPFContainer.IntegrationDataRepository;
+                IEnumerable<Integration> integrations = integrationRepo.Get(includeProperties: "Build");
+                foreach (Integration integration in integrations)
+                {
+                    DreamporterWPFContainer.BuildRepository.RecursiveLoadCollection(integration.Build, "Children");
+                }
+                return new ObservableCollection<Integration>(integrationRepo.Get(includeProperties: "Build"));
             }
         }
 

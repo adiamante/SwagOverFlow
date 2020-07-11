@@ -73,7 +73,7 @@ namespace SwagOverFlow.WPF.UI
             //drawingImage.Freeze();
             //return drawingImage;
 
-            Decimal baseWidth = 20m, baseHeight = 20m, centerX = 0.0m, centerY = 0.0m, scaleX = 1.0m, scaleY = 1.0m;
+            Decimal baseWidth = 20m, baseHeight = 20m, centerX = 0.0m, centerY = 0.0m, scaleX = 1.0m, scaleY = 1.0m, translateX = 0.0m, translateY = 0.0m;
             switch (iconKind)
             {
                 case PackIconBoxIconsKind boxKind:
@@ -96,6 +96,14 @@ namespace SwagOverFlow.WPF.UI
                     baseHeight = 350m;
                     scaleX = 0.7m;
                     scaleY = 0.7m;
+                    break;
+                case PackIconJamIconsKind jamIconsKind:
+                    baseWidth = 350m;
+                    baseHeight = 350m;
+                    scaleX = 0.4m;
+                    scaleY = 0.4m;
+                    translateX = -baseWidth * scaleX;
+                    translateY = -baseHeight * scaleY;
                     break;
                 case PackIconMaterialKind materialKind:
                     baseWidth = 25m;
@@ -162,7 +170,10 @@ namespace SwagOverFlow.WPF.UI
                                     <Canvas Width=""{baseWidth}"" Height=""{baseHeight}"">
                                         <Path Fill=""{fill}"">
                                             <Path.RenderTransform>
-                                                <ScaleTransform CenterX=""{centerX}"" CenterY=""{centerY}"" ScaleX=""{scaleX}"" ScaleY=""{scaleY}"" />
+                                                <TransformGroup>
+                                                    <ScaleTransform CenterX=""{centerX}"" CenterY=""{centerY}"" ScaleX=""{scaleX}"" ScaleY=""{scaleY}"" />
+                                                    <TranslateTransform X=""{translateX}"" Y=""{translateY}"" />
+                                                </TransformGroup>
                                             </Path.RenderTransform>
                                             <Path.Data>
                                                 <PathGeometry Figures=""{path}"" />

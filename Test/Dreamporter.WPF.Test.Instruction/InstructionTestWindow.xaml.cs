@@ -1,7 +1,5 @@
 ﻿using Dreamporter.Core;
-using Dreamporter.Core;
 using Dreamporter.WPF.Services;
-using Dreamporter.WPF.ViewModels;
 using MahApps.Metro.IconPacks;
 using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
@@ -33,15 +31,15 @@ namespace Dreamporter.WPF.Test.Instruction
     public partial class InstructionTestWindow : SwagWindow
     {
         #region Instruction
-        public GroupInstructionWPF Instruction
+        public GroupInstruction Instruction
         {
             get
             {
                 if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Instruction"))
                 {
-                    GroupInstructionWPF grp = new GroupInstructionWPF() { Display = "Root" };
+                    GroupInstruction grp = new GroupInstruction() { Display = "Root" };
 
-                    SwagSetting<GroupInstructionWPF> ssGrp = new SwagSetting<GroupInstructionWPF>()
+                    SwagSetting<GroupInstruction> ssGrp = new SwagSetting<GroupInstruction>()
                     {
                         Icon = PackIconRPGAwesomeKind.LightningBolt,
                         Value = grp
@@ -55,7 +53,7 @@ namespace Dreamporter.WPF.Test.Instruction
                     ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
-                return SwagWindow.GlobalSettings["Test"]["Instruction"].GetValue<GroupInstructionWPF>();
+                return SwagWindow.GlobalSettings["Test"]["Instruction"].GetValue<GroupInstruction>();
             }
         }
         #endregion Instruction
@@ -87,7 +85,7 @@ namespace Dreamporter.WPF.Test.Instruction
         #endregion Schemas
 
         #region Options
-        public SwagOptionGroupWPF Options
+        public SwagOptionGroup Options
         {
             get
             {
@@ -96,7 +94,7 @@ namespace Dreamporter.WPF.Test.Instruction
                     SwagSetting<SwagOptionGroup> ssOpt = new SwagSetting<SwagOptionGroup>()
                     {
                         Icon = PackIconCustomKind.Variable,
-                        Value = new SwagOptionGroupWPF()
+                        Value = new SwagOptionGroup()
                     };
 
                     ssOpt.IconString = ssOpt.IconString;
@@ -107,7 +105,7 @@ namespace Dreamporter.WPF.Test.Instruction
                     ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
-                return (SwagOptionGroupWPF)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
+                return (SwagOptionGroup)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
             }
         }
         #endregion Option

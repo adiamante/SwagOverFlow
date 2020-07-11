@@ -1,14 +1,18 @@
-﻿using SwagOverFlow.ViewModels;
+﻿using Newtonsoft.Json;
+using SwagOverFlow.ViewModels;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace Dreamporter.Core
 {
-    public class GroupBuild : BaseBuild, ISwagParent<BaseBuild>
+    [JsonObject]
+    public class GroupBuild : Build, ISwagParent<Build>, ICollection<Build>
     {
         #region Private/Protected Members
-        protected ObservableCollection<BaseBuild> _children = new ObservableCollection<BaseBuild>();
+        protected ObservableCollection<Build> _children = new ObservableCollection<Build>();
         #endregion Private/Protected Members
 
         #region Properties
@@ -16,11 +20,15 @@ namespace Dreamporter.Core
         public override Type Type { get { return typeof(GroupBuild); } }
         #endregion Type
         #region Children
-        public ObservableCollection<BaseBuild> Children
+        public ObservableCollection<Build> Children
         {
             get { return _children; }
             set { SetValue(ref _children, value); }
         }
+
+        public int Count => ((ICollection<Build>)_children).Count;
+
+        public bool IsReadOnly => ((ICollection<Build>)_children).IsReadOnly;
         #endregion Children
         #endregion Properties
 
@@ -44,7 +52,7 @@ namespace Dreamporter.Core
         {
             if (e.NewItems != null)
             {
-                foreach (BaseBuild item in e.NewItems)
+                foreach (Build item in e.NewItems)
                 {
                     item.Parent = this;
                     if (item.Sequence < 0)
@@ -56,9 +64,9 @@ namespace Dreamporter.Core
 
             if (e.OldItems != null)
             {
-                foreach (BaseBuild item in e.OldItems)
+                foreach (Build item in e.OldItems)
                 {
-                    foreach (BaseBuild sibling in Children)
+                    foreach (Build sibling in Children)
                     {
                         if (item.Sequence < sibling.Sequence)
                         {
@@ -77,6 +85,43 @@ namespace Dreamporter.Core
 
         #region Events
         #endregion Events
+
+        #region ICollection
+        public void Add(Build item)
+        {
+            ((ICollection<Build>)_children).Add(item);
+        }
+
+        public void Clear()
+        {
+            ((ICollection<Build>)_children).Clear();
+        }
+
+        public bool Contains(Build item)
+        {
+            return ((ICollection<Build>)_children).Contains(item);
+        }
+
+        public void CopyTo(Build[] array, int arrayIndex)
+        {
+            ((ICollection<Build>)_children).CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(Build item)
+        {
+            return ((ICollection<Build>)_children).Remove(item);
+        }
+
+        public IEnumerator<Build> GetEnumerator()
+        {
+            return ((IEnumerable<Build>)_children).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)_children).GetEnumerator();
+        }
+        #endregion ICollection
 
         #region Methods
         #endregion Methods

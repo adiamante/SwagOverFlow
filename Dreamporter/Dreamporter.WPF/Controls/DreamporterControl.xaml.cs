@@ -1,6 +1,8 @@
 ﻿using Dreamporter.Core;
 using Dreamporter.WPF.Services;
 using MahApps.Metro.IconPacks;
+using SwagOverFlow.Iterator;
+using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
 using SwagOverFlow.WPF.Controls;
 using SwagOverFlow.WPF.ViewModels;
@@ -66,7 +68,11 @@ namespace Dreamporter.WPF.Controls
         public Integration SelectedIntegration
         {
             get { return (Integration)GetValue(SelectedIntegrationProperty); }
-            set { SetValue(SelectedIntegrationProperty, value); }
+            set 
+            { 
+                SetValue(SelectedIntegrationProperty, value);
+                OnPropertyChanged();
+            }
         }
         #endregion SelectedIntegration
 
@@ -83,8 +89,6 @@ namespace Dreamporter.WPF.Controls
         {
             InitializeComponent();
             InitSettings();
-
-            
         }
 
         private void InitSettings()
@@ -132,7 +136,7 @@ namespace Dreamporter.WPF.Controls
             SelectedIntegration = newIntegration;
         }
 
-        private void Save_Click(object sender, RoutedEventArgs e)
+        private void IntegrationSave_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedIntegration != null)
             {
@@ -143,6 +147,97 @@ namespace Dreamporter.WPF.Controls
                 DreamporterWPFContainer.Context.SaveChanges();
             }
         }
+
+        private void BuildControl_Save(object sender, RoutedEventArgs e)
+        {
+            if (SelectedIntegration != null)
+            {
+                if (SelectedIntegration.IntegrationId != 0)
+                {
+                    SelectedIntegration.Build = SelectedIntegration.Build;
+                    SwagItemPreOrderIterator<Build> iterator = new SwagItemPreOrderIterator<Build>(SelectedIntegration.Build);
+                    for (Build b = iterator.First(); !iterator.IsDone; b = iterator.Next())
+                    {
+                        if (b.BuildId != 0)
+                        {
+                            DreamporterWPFContainer.BuildRepository.Update(b);
+                        }
+                        else
+                        {
+                            DreamporterWPFContainer.BuildRepository.Insert(b);
+                        }
+                    }
+                }
+                DreamporterWPFContainer.Context.SaveChanges();
+            }
+        }
+
+        private void InstructionControl_Save(object sender, RoutedEventArgs e)
+        {
+            if (SelectedIntegration != null)
+            {
+                if (SelectedIntegration.IntegrationId != 0)
+                {
+                    SelectedIntegration.InstructionTemplates = SelectedIntegration.InstructionTemplates;
+                    DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
+                }
+                DreamporterWPFContainer.Context.SaveChanges();
+            }
+        }
+
+        private void DefaultOptions_Save(object sender, RoutedEventArgs e)
+        {
+            if (SelectedIntegration != null)
+            {
+                if (SelectedIntegration.IntegrationId != 0)
+                {
+                    SelectedIntegration.DefaultOptions = SelectedIntegration.DefaultOptions;
+                    DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
+                }
+                DreamporterWPFContainer.Context.SaveChanges();
+            }
+        }
+
+        private void OptionsTreeControl_Save(object sender, RoutedEventArgs e)
+        {
+            if (SelectedIntegration != null)
+            {
+                if (SelectedIntegration.IntegrationId != 0)
+                {
+                    SelectedIntegration.OptionsTree = SelectedIntegration.OptionsTree;
+                    DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
+                }
+                DreamporterWPFContainer.Context.SaveChanges();
+            }
+        }
+
+        private void SchemasControl_Save(object sender, RoutedEventArgs e)
+        {
+            if (SelectedIntegration != null)
+            {
+                if (SelectedIntegration.IntegrationId != 0)
+                {
+                    SelectedIntegration.InitialSchemas = SelectedIntegration.InitialSchemas;
+                    DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
+                }
+                DreamporterWPFContainer.Context.SaveChanges();
+            }
+        }
+
+        private void DataContextsControl_Save(object sender, RoutedEventArgs e)
+        {
+            if (SelectedIntegration != null)
+            {
+                if (SelectedIntegration.IntegrationId != 0)
+                {
+                    SelectedIntegration.DataContexts = SelectedIntegration.DataContexts;
+                    DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
+                }
+                DreamporterWPFContainer.Context.SaveChanges();
+            }
+        }
         #endregion Events
+
+        
     }
 }

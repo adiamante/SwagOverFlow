@@ -11,6 +11,7 @@
              x:Name="ThisControl"
              d:DesignHeight="450" d:DesignWidth="800">
     <swctl:SwagControlBase.Resources>
+        <swui:MultiBoolToVisibilityConverter x:Key="MultiBoolToVisibilityConverter" Default="Collapsed" LogicalOperator="AND" />
         <CollectionViewSource x:Key="ItemTemplates" Source="{Binding ItemTemplates, RelativeSource={RelativeSource AncestorType={x:Type swctl:SwagItemsControl}}}" />
         <swui:SwagTemplateSelector x:Key="SwagTemplateSelector">
             <swui:SwagTemplateSelector.DefaultTemplate>
@@ -196,5 +197,14 @@
             Command="{Binding SaveCommand, ElementName=ThisControl}">
             <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
         </Button>
+        <TextBlock Text="{Binding EmptyMessage, ElementName=ThisControl}" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock.Visibility>
+                <MultiBinding Converter="{StaticResource MultiBoolToVisibilityConverter}">
+                    <Binding Path="SwagItemsSource.Count" UpdateSourceTrigger="PropertyChanged" NotifyOnTargetUpdated="True" NotifyOnSourceUpdated="True" ElementName="ThisControl" Converter="{swui:ObjectToBoolConverter TrueValue=False,FalseValue=True}" />
+                    <Binding Path="SwagItemsSource" ElementName="ThisControl" Converter="{swui:NullToBoolConverter TrueValue=False,FalseValue=True}" />
+                </MultiBinding>
+            </TextBlock.Visibility>
+        </TextBlock>
+        <TextBlock Text="{Binding NullMessage, ElementName=ThisControl}" Visibility="{Binding SwagItemsSource, ElementName=ThisControl, Converter={swui:NullToVisibilityConverter}}" VerticalAlignment="Center" HorizontalAlignment="Center" />
     </Grid>
 </swctl:SwagControlBase>

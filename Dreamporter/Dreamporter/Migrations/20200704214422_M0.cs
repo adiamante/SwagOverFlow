@@ -27,7 +27,7 @@ namespace Dreamporter.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BaseBuilds",
+                name: "Builds",
                 columns: table => new
                 {
                     BuildId = table.Column<int>(nullable: false)
@@ -51,14 +51,14 @@ namespace Dreamporter.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BaseBuilds", x => x.BuildId);
+                    table.PrimaryKey("PK_Builds", x => x.BuildId);
                     table.ForeignKey(
-                        name: "FK_BaseBuilds_BaseBuilds_ParentId",
+                        name: "FK_Builds_Builds_ParentId",
                         column: x => x.ParentId,
-                        principalTable: "BaseBuilds",
+                        principalTable: "Builds",
                         principalColumn: "BuildId");
                     table.ForeignKey(
-                        name: "FK_BaseBuilds_Integrations_IntegrationId",
+                        name: "FK_Builds_Integrations_IntegrationId",
                         column: x => x.IntegrationId,
                         principalTable: "Integrations",
                         principalColumn: "IntegrationId",
@@ -66,13 +66,13 @@ namespace Dreamporter.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseBuilds_ParentId",
-                table: "BaseBuilds",
+                name: "IX_Builds_ParentId",
+                table: "Builds",
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseBuilds_IntegrationId",
-                table: "BaseBuilds",
+                name: "IX_Builds_IntegrationId",
+                table: "Builds",
                 column: "IntegrationId");
 
             migrationBuilder.CreateIndex(
@@ -82,24 +82,24 @@ namespace Dreamporter.Migrations
                 unique: true);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Integrations_BaseBuilds_BuildId",
+                name: "FK_Integrations_Builds_BuildId",
                 table: "Integrations",
                 column: "BuildId",
-                principalTable: "BaseBuilds",
+                principalTable: "Builds",
                 principalColumn: "BuildId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_BaseBuilds_Integrations_IntegrationId",
-                table: "BaseBuilds");
+                name: "FK_Builds_Integrations_IntegrationId",
+                table: "Builds");
 
             migrationBuilder.DropTable(
                 name: "Integrations");
 
             migrationBuilder.DropTable(
-                name: "BaseBuilds");
+                name: "Builds");
         }
     }
 }

@@ -22,12 +22,12 @@ namespace Dreamporter.Data
     #endregion IntegrationRepository
 
     #region BuildRepository
-    public interface IBuildRepository : IRepository<BaseBuild>
+    public interface IBuildRepository : IRepository<Build>
     {
 
     }
 
-    public class BuildEFRepository : SwagEFRepository<DreamporterContext, BaseBuild>, IBuildRepository
+    public class BuildEFRepository : SwagEFRepository<DreamporterContext, Build>, IBuildRepository
     {
         public BuildEFRepository(DreamporterContext context) : base(context)
         {

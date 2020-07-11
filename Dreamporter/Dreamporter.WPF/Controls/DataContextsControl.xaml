@@ -1,4 +1,4 @@
-﻿<swctl:SwagControlBase x:Class="Dreamporter.WPF.Controls.DataStoresControl"
+﻿<swctl:SwagControlBase x:Class="Dreamporter.WPF.Controls.DataContextsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -18,18 +18,22 @@
              x:Name="ThisControl"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <swctl:SwagItemsControl x:Name="SwagItemsControl" SwagItemsSource="{Binding DataStores, ElementName=ThisControl}" 
+    <swctl:SwagItemsControl x:Name="SwagItemsControl" SwagItemsSource="{Binding DataContexts, ElementName=ThisControl}" 
+                                                    ShowSaveButton="{Binding ShowSaveButton, ElementName=ThisControl}"
+                                                    Save="SwagItemsControl_Save"
                                                     Add="SwagItemsControl_Add"
                                                     ShowAddContextMenuItem="True"
-                                                    UseDefaultAdd="True"
                                                     UseDefaultClear="True"
+                                                    UseDefaultRemove="True"
                                                     ShowClearContextMenuItem="True"
                                                     ShowItemRemoveContextMenuItem="True"
                                                     Tag="{Binding ElementName=ThisControl}"
+                                                    SaveHorizontalAlignment="Right"
+                                                    SaveVerticalAlignment="Bottom"
                                                     MinHeight="30">
         <swctl:SwagItemsControl.ContextMenu>
             <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (InstructionControl)-->
-            <ContextMenu DataContext="{Binding PlacementTarget.Tag.RootInstruction, RelativeSource={RelativeSource Self}}" Tag="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+            <ContextMenu DataContext="{Binding PlacementTarget.Tag.DataContexts, RelativeSource={RelativeSource Self}}" Tag="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                 <MenuItem Header="Add">
                     <MenuItem.Icon>
                         <swctl:IconControl Kind="{x:Static iconPacks:PackIconEntypoKind.Plus}" />

@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using SwagOverFlow.ViewModels;
 using SwagOverFlow.WPF.UI;
-using SwagOverFlow.WPF.ViewModels;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -54,19 +55,19 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowSequence
-        #region RootOption
-        public static DependencyProperty RootOptionProperty =
+        #region OptionCollection
+        public static DependencyProperty OptionCollectionProperty =
             DependencyProperty.Register(
-                "RootOption",
-                typeof(SwagOptionGroupWPF),
+                "OptionCollection",
+                typeof(ICollection<SwagOption>),
                 typeof(SwagOptionControl));
 
-        public SwagOptionGroupWPF RootOption
+        public ICollection<SwagOption> OptionCollection
         {
-            get { return (SwagOptionGroupWPF)GetValue(RootOptionProperty); }
-            set { SetValue(RootOptionProperty, value); }
+            get { return (ICollection<SwagOption>)GetValue(OptionCollectionProperty); }
+            set { SetValue(OptionCollectionProperty, value); }
         }
-        #endregion RootOption
+        #endregion OptionCollection
         #region Save
         public static readonly RoutedEvent SaveEvent =
             EventManager.RegisterRoutedEvent(
@@ -256,6 +257,24 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowItemRemoveContextMenuItem
+        #region EmptyMessage
+        public static readonly DependencyProperty EmptyMessageProperty =
+                DependencyProperty.Register(
+                    "EmptyMessage",
+                    typeof(String),
+                    typeof(SwagOptionControl),
+                    new PropertyMetadata("Right click to add item..."));
+
+        public String EmptyMessage
+        {
+            get { return (String)GetValue(EmptyMessageProperty); }
+            set
+            {
+                SetValue(EmptyMessageProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion EmptyMessage
         #endregion Properties
 
         #region Initialization
@@ -269,14 +288,14 @@ namespace SwagOverFlow.WPF.Controls
         private void SwagItemsControl_Add(object sender, RoutedEventArgs e)
         {
             FrameworkElement fe = (FrameworkElement)e.OriginalSource;
-            SwagOptionGroup optGroup = (SwagOptionGroup)fe.DataContext;
+            ICollection<SwagOption> col = (ICollection<SwagOption>)fe.DataContext;
 
             SwagOption opt = null;
             String tag = (fe.Tag ?? "").ToString();
             switch (tag)
             {
                 case "GROUP":
-                    opt = new SwagOptionGroupWPF();
+                    opt = new SwagOptionGroup();
                     break;
                 case "STRING":
                     opt = new StringOption();
@@ -289,13 +308,15 @@ namespace SwagOverFlow.WPF.Controls
                     break;
             }
 
-            optGroup.Children.Add(opt);
+            col.Add(opt);
+            CollectionViewSource.GetDefaultView(col).Refresh();
         }
 
         private void SwagItemsControl_Clear(object sender, RoutedEventArgs e)
         {
             SwagOptionControl soc = (SwagOptionControl)e.OriginalSource;
-            soc.RootOption.Children.Clear();
+            soc.OptionCollection.Clear();
+            CollectionViewSource.GetDefaultView(soc.OptionCollection).Refresh();
         }
 
         private void SwagItemsControl_Remove(object sender, RoutedEventArgs e)
@@ -445,7 +466,7 @@ namespace SwagOverFlow.WPF.Controls
         private void SwagItemsControl_Copy(object sender, RoutedEventArgs e)
         {
             SwagOptionControl soc = (SwagOptionControl)e.OriginalSource;
-            SwagOption opt = (SwagOption)soc.RootOption;
+            SwagOption opt = (SwagOption)soc.OptionCollection;
             SwagItemsControlHelper.SetClipBoardData<SwagOption>(opt);
         }
 
@@ -455,14 +476,14 @@ namespace SwagOverFlow.WPF.Controls
             if (opt != null)
             {
                 SwagOptionControl soc = (SwagOptionControl)e.OriginalSource;
-                soc.RootOption = (SwagOptionGroupWPF)opt;
+                soc.OptionCollection = (SwagOptionGroup)opt;
             }
         }
 
         private void SwagItemsControl_Export(object sender, RoutedEventArgs e)
         {
             SwagOptionControl soc = (SwagOptionControl)e.OriginalSource;
-            SwagOption opt = (SwagOption)soc.RootOption;
+            SwagOption opt = (SwagOption)soc.OptionCollection;
             SwagItemsControlHelper.ExportDataToFile<SwagOption>(opt);
         }
 
@@ -472,7 +493,7 @@ namespace SwagOverFlow.WPF.Controls
             if (opt != null)
             {
                 SwagOptionControl soc = (SwagOptionControl)e.OriginalSource;
-                soc.RootOption = (SwagOptionGroupWPF)opt;
+                soc.OptionCollection = (SwagOptionGroup)opt;
             }
         }
         #endregion Events

@@ -1,10 +1,11 @@
 ﻿using Dreamporter.Core;
-using Dreamporter.WPF.ViewModels;
 using SwagOverFlow.WPF.Controls;
 using SwagOverFlow.WPF.UI;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -56,19 +57,19 @@ namespace Dreamporter.WPF.Controls
             }
         }
         #endregion ShowSequence
-        #region RootInstruction
-        public static DependencyProperty RootInstructionProperty =
+        #region InstructionCollection
+        public static DependencyProperty InstructionCollectionProperty =
             DependencyProperty.Register(
-                "RootInstruction",
-                typeof(GroupInstructionWPF),
+                "InstructionCollection",
+                typeof(ICollection<Instruction>),
                 typeof(InstructionControl));
 
-        public GroupInstructionWPF RootInstruction
+        public ICollection<Instruction> InstructionCollection
         {
-            get { return (GroupInstructionWPF)GetValue(RootInstructionProperty); }
-            set { SetValue(RootInstructionProperty, value); }
+            get { return (ICollection<Instruction>)GetValue(InstructionCollectionProperty); }
+            set { SetValue(InstructionCollectionProperty, value); }
         }
-        #endregion RootInstruction
+        #endregion InstructionCollection
         #region SelectedInstruction
         public static DependencyProperty SelectedInstructionProperty =
             DependencyProperty.Register(
@@ -320,17 +321,17 @@ namespace Dreamporter.WPF.Controls
         private void SwagItemsControl_Add(object sender, RoutedEventArgs e)
         {
             FrameworkElement fe = (FrameworkElement)e.OriginalSource;
-            GroupInstruction insGrp = (GroupInstruction)fe.DataContext;
+            ICollection<Instruction> instructions = (ICollection<Instruction>)fe.DataContext;
 
             Instruction ins = null;
             String tag = (fe.Tag ?? "").ToString();
             switch (tag)
             {
                 case "GRP_INS":
-                    ins = new GroupInstructionWPF();
+                    ins = new GroupInstruction();
                     break;
                 case "GRP_TBL":
-                    ins = new ForEachTableGroupInstructionWPF();
+                    ins = new ForEachTableGroupInstruction();
                     break;
                 case "LF_QRY":
                     ins = new QueryInstruction();
@@ -347,13 +348,15 @@ namespace Dreamporter.WPF.Controls
             }
 
             ins.Display = "NEW";
-            insGrp.Children.Add(ins);
+            instructions.Add(ins);
+            CollectionViewSource.GetDefaultView(instructions).Refresh();
         }
 
         private void SwagItemsControl_Clear(object sender, RoutedEventArgs e)
         {
             InstructionControl ic = (InstructionControl)e.OriginalSource;
-            ic.RootInstruction.Children.Clear();
+            ic.InstructionCollection.Clear();
+            CollectionViewSource.GetDefaultView(ic.InstructionCollection).Refresh();
         }
 
         private void SwagItemsControl_Remove(object sender, RoutedEventArgs e)
@@ -509,7 +512,7 @@ namespace Dreamporter.WPF.Controls
                     instruction = (Instruction)mi.DataContext;
                     break;
                 case InstructionControl ic:
-                    instruction = (Instruction)ic.RootInstruction;
+                    instruction = (Instruction)ic.InstructionCollection;
                     break;
             }
 
@@ -539,9 +542,10 @@ namespace Dreamporter.WPF.Controls
                             }
                         }
                         parent.Children.Add(instruction);
+                        CollectionViewSource.GetDefaultView(parent.Children).Refresh();
                         break;
                     case InstructionControl ic:
-                        ic.RootInstruction = (GroupInstructionWPF)instruction;
+                        ic.InstructionCollection = (GroupInstruction)instruction;
                         break;
                 }
             }
@@ -550,7 +554,7 @@ namespace Dreamporter.WPF.Controls
         private void SwagItemsControl_Export(object sender, RoutedEventArgs e)
         {
             InstructionControl ic = (InstructionControl)e.OriginalSource;
-            Instruction instruction = (Instruction)ic.RootInstruction;
+            Instruction instruction = (Instruction)ic.InstructionCollection;
             SwagItemsControlHelper.ExportDataToFile<Instruction>(instruction);
         }
 
@@ -560,7 +564,7 @@ namespace Dreamporter.WPF.Controls
             if (instruction != null)
             {
                 InstructionControl ic = (InstructionControl)e.OriginalSource;
-                ic.RootInstruction = (GroupInstructionWPF)instruction;
+                ic.InstructionCollection = (GroupInstruction)instruction;
             }
         }
         #endregion Events
@@ -618,6 +622,5 @@ namespace Dreamporter.WPF.Controls
             return moveType;
         }
         #endregion Methods
-
     }
 }

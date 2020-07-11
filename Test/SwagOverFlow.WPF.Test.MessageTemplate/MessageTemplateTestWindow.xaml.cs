@@ -57,7 +57,7 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
         #endregion MessageTemplate
 
         #region Options
-        public SwagOptionGroupWPF Options
+        public SwagOptionGroup Options
         {
             get
             {
@@ -66,7 +66,7 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
                     SwagSetting<SwagOptionGroup> ssOpt = new SwagSetting<SwagOptionGroup>()
                     {
                         Icon = PackIconCustomKind.Variable,
-                        Value = new SwagOptionGroupWPF()
+                        Value = new SwagOptionGroup()
                     };
 
                     ssOpt.IconString = ssOpt.IconString;
@@ -77,7 +77,7 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
                     ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
-                return (SwagOptionGroupWPF)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
+                return (SwagOptionGroup)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
             }
         }
         #endregion Option

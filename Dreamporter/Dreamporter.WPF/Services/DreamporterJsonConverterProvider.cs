@@ -1,11 +1,9 @@
-﻿using Dreamporter.Core;
-using Dreamporter.WPF.ViewModels;
+﻿using Dreamporter.JsonConverters;
 using Newtonsoft.Json;
+using SwagOverFlow.JsonConverters;
 using SwagOverFlow.Services;
 using SwagOverFlow.WPF.ViewModels;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Dreamporter.WPF.Services
 {
@@ -13,7 +11,15 @@ namespace Dreamporter.WPF.Services
     {
         public IEnumerable<JsonConverter> GetConverters()
         {
-            return new List<JsonConverter>() { BooleanExpressionWPFJsonConverter.Instance, SwagOptionWPFJsonConverter.Instance, InstructionWPFJsonConverter.Instance };
+            return new List<JsonConverter>() { 
+                BooleanExpressionJsonConverter.Instance, 
+                SwagOptionJsonConverter.Instance,
+                BuildJsonConverter.Instance,
+                InstructionJsonConverter.Instance,
+                InstructionListJsonConverter.Instance,
+                DataContextJsonConverter.Instance,
+                DataContextListJsonConverter.Instance
+            };
         }
     }
 }

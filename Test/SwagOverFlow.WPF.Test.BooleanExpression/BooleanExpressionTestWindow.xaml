@@ -39,7 +39,7 @@
                                  ShowImportContextMenuItem="True"
                                 ShowItemAddContextMenuItem="True"
                                 ShowItemRemoveContextMenuItem="True"
-                                 RootOption="{Binding Options, ElementName=TestWindow}"
+                                 OptionCollection="{Binding Options, ElementName=TestWindow}"
                                  Save="SwagOptionControl_Save">
             </swctl:SwagOptionControl>
         </GroupBox>
@@ -50,7 +50,7 @@
                     <swctl:IconControl Text="Expression" Kind="{x:Static swui:PackIconCustomKind.Checked}" />
                 </DockPanel>
             </GroupBox.Header>
-            <swctl:BooleanExpressionControl Expression="{Binding Expression, ElementName=TestWindow}" 
+            <swctl:BooleanExpressionControl ExpressionContainer="{Binding Expression, ElementName=TestWindow}" 
                                             ShowSaveButton="True" 
                                             ShowSaveContextMenuItem="True" 
                                             ShowAddContextMenuItem="True"

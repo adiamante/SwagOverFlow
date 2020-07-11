@@ -29,7 +29,10 @@ namespace SwagOverFlow.WPF.Controls
         #region Properties
         #region SelectedItem
         private static readonly DependencyProperty SelectedItemProperty =
-        DependencyProperty.Register("SelectedItem", typeof(Object), typeof(SwagItemsControl));
+            DependencyProperty.Register("SelectedItem", 
+                typeof(Object), 
+                typeof(SwagItemsControl), 
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault) { DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
 
         public Object SelectedItem
         {
@@ -953,6 +956,42 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion SaveHorizontalAlignment
+        #region EmptyMessage
+        public static readonly DependencyProperty EmptyMessageProperty =
+                DependencyProperty.Register(
+                    "EmptyMessage",
+                    typeof(String),
+                    typeof(SwagItemsControl),
+                    new PropertyMetadata("Right click to add item..."));
+
+        public String EmptyMessage
+        {
+            get { return (String)GetValue(EmptyMessageProperty); }
+            set
+            {
+                SetValue(EmptyMessageProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion EmptyMessage
+        #region NullMessage
+        public static readonly DependencyProperty NullMessageProperty =
+                DependencyProperty.Register(
+                    "NullMessage",
+                    typeof(String),
+                    typeof(SwagItemsControl),
+                    new PropertyMetadata("Source is missing..."));
+
+        public String NullMessage
+        {
+            get { return (String)GetValue(NullMessageProperty); }
+            set
+            {
+                SetValue(NullMessageProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion NullMessage
         #endregion Properties
 
         #region Initialization

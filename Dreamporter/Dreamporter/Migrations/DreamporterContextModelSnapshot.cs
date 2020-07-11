@@ -19,7 +19,7 @@ namespace Dreamporter.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Dreamporter.Core.BaseBuild", b =>
+            modelBuilder.Entity("Dreamporter.Core.Build", b =>
                 {
                     b.Property<int>("BuildId")
                         .ValueGeneratedOnAdd()
@@ -66,9 +66,6 @@ namespace Dreamporter.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("RequiredData")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Sequence")
                         .HasColumnType("int");
 
@@ -76,9 +73,9 @@ namespace Dreamporter.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("BaseBuilds");
+                    b.ToTable("Builds");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("BaseBuild");
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Build");
                 });
 
             modelBuilder.Entity("Dreamporter.Core.Integration", b =>
@@ -106,7 +103,7 @@ namespace Dreamporter.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OptionsSet")
+                    b.Property<string>("OptionsTree")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Sequence")
@@ -120,26 +117,27 @@ namespace Dreamporter.Migrations
                     b.ToTable("Integrations");
                 });
 
-            modelBuilder.Entity("Dreamporter.Core.Build", b =>
-                {
-                    b.HasBaseType("Dreamporter.Core.BaseBuild");
-
-                    b.Property<string>("Instructions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasIndex("IntegrationId");
-
-                    b.HasDiscriminator().HasValue("Build");
-                });
-
             modelBuilder.Entity("Dreamporter.Core.GroupBuild", b =>
                 {
-                    b.HasBaseType("Dreamporter.Core.BaseBuild");
+                    b.HasBaseType("Dreamporter.Core.Build");
 
                     b.HasDiscriminator().HasValue("GroupBuild");
                 });
 
-            modelBuilder.Entity("Dreamporter.Core.BaseBuild", b =>
+            modelBuilder.Entity("Dreamporter.Core.InstructionBuild", b =>
+                {
+                    b.HasBaseType("Dreamporter.Core.Build");
+
+                    b.Property<string>("Instructions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequiredData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("InstructionBuild");
+                });
+
+            modelBuilder.Entity("Dreamporter.Core.Build", b =>
                 {
                     b.HasOne("Dreamporter.Core.GroupBuild", "Parent")
                         .WithMany("Children")
@@ -152,15 +150,8 @@ namespace Dreamporter.Migrations
                     b.HasOne("Dreamporter.Core.GroupBuild", "Build")
                         .WithOne("Integration")
                         .HasForeignKey("Dreamporter.Core.Integration", "BuildId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Dreamporter.Core.Build", b =>
-                {
-                    b.HasOne("Dreamporter.Core.Integration", "Integration")
-                        .WithMany()
-                        .HasForeignKey("IntegrationId");
                 });
 #pragma warning restore 612, 618
         }

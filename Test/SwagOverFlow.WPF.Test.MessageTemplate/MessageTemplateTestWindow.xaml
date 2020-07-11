@@ -64,7 +64,7 @@
                                  ShowImportContextMenuItem="True"
                                 ShowItemAddContextMenuItem="True"
                                 ShowItemRemoveContextMenuItem="True"
-                                 RootOption="{Binding Options, ElementName=TestWindow}"
+                                 OptionCollection="{Binding Options, ElementName=TestWindow}"
                                  Save="SwagOptionControl_Save">
             </swag:SwagOptionControl>
         </GroupBox>

@@ -28,6 +28,38 @@ namespace Dreamporter.WPF.Controls
             set { SetValue(SchemasProperty, value); }
         }
         #endregion Schemas
+        #region Save
+        public static readonly RoutedEvent SaveEvent =
+            EventManager.RegisterRoutedEvent(
+            "Save",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SchemasControl));
+
+        public event RoutedEventHandler Save
+        {
+            add { AddHandler(SaveEvent, value); }
+            remove { RemoveHandler(SaveEvent, value); }
+        }
+        #endregion Save
+        #region ShowSaveButton
+        public static DependencyProperty ShowSaveButtonProperty =
+            DependencyProperty.Register(
+                "ShowSaveButton",
+                typeof(Boolean),
+                typeof(SchemasControl),
+                new PropertyMetadata(false));
+
+        public Boolean ShowSaveButton
+        {
+            get { return (Boolean)GetValue(ShowSaveButtonProperty); }
+            set
+            {
+                SetValue(ShowSaveButtonProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion ShowSaveButton
 
         #region Initialization
         public SchemasControl()
@@ -46,6 +78,7 @@ namespace Dreamporter.WPF.Controls
                 case Schema schema:
                     schema.Tables.Add(new SchemaTable());
                     Refresh(schema.Tables);
+                    
                     break;
                 case SchemaTable table:
                     table.Columns.Add(new SchemaColumn());
@@ -91,6 +124,11 @@ namespace Dreamporter.WPF.Controls
                     break;
             }
         }
+
+        private void SwagItemsControl_Save(object sender, RoutedEventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(SaveEvent));
+        }
         #endregion Events
 
         #region Method
@@ -100,5 +138,7 @@ namespace Dreamporter.WPF.Controls
             view.Refresh();
         }
         #endregion Method
+
+
     }
 }

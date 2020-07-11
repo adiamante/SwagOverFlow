@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -14,13 +15,14 @@ namespace Dreamporter.Core
         #region Private Members
         Int32 _integrationId, _buildId, _sequence;
         String _name;
-        GroupBuild _build = new GroupBuild();
-        List<Instruction> _instructionTemplates = new List<Instruction>();
+        GroupBuild _build = new GroupBuild() { Sequence = 0 };      //Iterator is dependent on Sequence
+        Build _selectedBuild;
+        GroupInstruction _instructionTemplates = new GroupInstruction();
         SwagOptionGroup _defaultOptions = new SwagOptionGroup();
-        SwagOptionGroup _selectedOptions = new SwagOptionGroup();
-        List<SwagOptionGroup> _optionsSet = new List<SwagOptionGroup>();
-        List<Schema> _initialSchemas = new List<Schema>();
-        List<DataContext> _dataContexts = new List<DataContext>();
+        OptionsNode _selectedOptions;
+        OptionsNode _optionsTree = new OptionsNode();
+        ObservableCollection<Schema> _initialSchemas = new ObservableCollection<Schema>();
+        ObservableCollection<DataContext> _dataContexts = new ObservableCollection<DataContext>();
         #endregion Private Members
 
         #region Properties
@@ -52,15 +54,25 @@ namespace Dreamporter.Core
             set { SetValue(ref _buildId, value); }
         }
         #endregion BuildId
-        #region CoreBuild
+        #region Build
+        [NotMapped] //Opt out of one to zero to one convention with Group Build
         public GroupBuild Build
         {
             get { return _build; }
             set { SetValue(ref _build, value); }
         }
-        #endregion CoreBuild
+        #endregion Build
+        #region SelectedBuild
+        [JsonIgnore]
+        [NotMapped]
+        public Build SelectedBuild
+        {
+            get { return _selectedBuild; }
+            set { SetValue(ref _selectedBuild, value); }
+        }
+        #endregion SelectedBuild
         #region InstructionTemplates
-        public List<Instruction> InstructionTemplates
+        public GroupInstruction InstructionTemplates
         {
             get { return _instructionTemplates; }
             set { SetValue(ref _instructionTemplates, value); }
@@ -73,22 +85,31 @@ namespace Dreamporter.Core
             set { SetValue(ref _defaultOptions, value); }
         }
         #endregion DefaultOptions
-        #region OptionsSet
-        public List<SwagOptionGroup> OptionsSet
+        #region OptionsTree
+        public OptionsNode OptionsTree
         {
-            get { return _optionsSet; }
-            set { SetValue(ref _optionsSet, value); }
+            get { return _optionsTree; }
+            set { SetValue(ref _optionsTree, value); }
         }
-        #endregion OptionsSet
+        #endregion OptionsTree
+        #region SelectedOptions
+        [JsonIgnore]
+        [NotMapped]
+        public OptionsNode SelectedOptions
+        {
+            get { return _selectedOptions; }
+            set { SetValue(ref _selectedOptions, value); }
+        }
+        #endregion SelectedOptions
         #region InitialSchemas
-        public List<Schema> InitialSchemas
+        public ObservableCollection<Schema> InitialSchemas
         {
             get { return _initialSchemas; }
             set { SetValue(ref _initialSchemas, value); }
         }
         #endregion InitialSchemas
         #region DataContexts
-        public List<DataContext> DataContexts
+        public ObservableCollection<DataContext> DataContexts
         {
             get { return _dataContexts; }
             set { SetValue(ref _dataContexts, value); }

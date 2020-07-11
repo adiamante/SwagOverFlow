@@ -84,7 +84,7 @@
         </ContextMenu>
         <swui:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
     </swctl:SwagControlBase.Resources>
-    <swctl:SwagItemsControl SwagItemsSource="{Binding RootOption.ChildrenView, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
+    <swctl:SwagItemsControl SwagItemsSource="{Binding OptionCollection, Converter={swui:CollectionToViewConverter Sort=Sequence}, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
                             AllowMove="{Binding AllowMove, ElementName=ThisControl}"
                             TreeViewItemDropPreview="SwagItemsControl_TreeViewItemDropPreview"
                             TreeViewItemLeavePreview="SwagItemsControl_TreeViewItemLeavePreview"
@@ -106,7 +106,7 @@
                             SaveVerticalAlignment="Bottom">
         <swctl:SwagItemsControl.ContextMenu>
             <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (SwagOptionControl)-->
-            <ContextMenu DataContext="{Binding PlacementTarget.Tag.RootOption, RelativeSource={RelativeSource Self}}" Tag="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+            <ContextMenu DataContext="{Binding PlacementTarget.Tag.OptionCollection, RelativeSource={RelativeSource Self}}" Tag="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                 <MenuItem Header="Save"
                           Command="{Binding Parent.Tag.SaveCommand, RelativeSource={RelativeSource Self}}"
                           Visibility="{Binding Parent.Tag.Tag.ShowSaveContextMenuItem, Converter={swui:BoolToVisibilityConverter}}">
@@ -244,7 +244,7 @@
             <swui:SwagTemplateCollection>
                 <swui:SwagTemplate Type="{x:Type svm:SwagOptionGroup}">
                     <swui:SwagTemplate.DataTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children, Converter={swui:CollectionToViewConverter Sort=Sequence}}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />

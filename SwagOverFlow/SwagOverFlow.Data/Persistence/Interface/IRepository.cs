@@ -24,5 +24,7 @@ namespace SwagOverFlow.Data.Persistence
         void Update(TEntity entityToUpdate);
         void Attach(TEntity entityToAttach);
         void Detach(TEntity entityToDetach);
+        IEnumerable<TEntity> GetRecursiveCollection(string collectionProperty, Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, string includeProperties = "");
+        void RecursiveLoadCollection(TEntity entity, string collectionProperty);
     }
 }
