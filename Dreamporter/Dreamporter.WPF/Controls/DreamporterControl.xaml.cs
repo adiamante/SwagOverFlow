@@ -93,29 +93,8 @@ namespace Dreamporter.WPF.Controls
 
         private void InitSettings()
         {
-            if (!((SwagSettingGroup)SwagWindow.GlobalSettings).ContainsKey("Dreamporter"))
-            {
-                SwagSettingWPFGroup swagDataSetting = new SwagSettingWPFGroup() { Icon = PackIconMaterialKind.Cloud };
-                SwagWindow.GlobalSettings["Dreamporter"] = swagDataSetting;
-                swagDataSetting.IconString = swagDataSetting.IconString;
-                swagDataSetting.IconTypeString = swagDataSetting.IconTypeString;
-                ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-            }
-
-            if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Dreamporter"]).ContainsKey("SelectedIntegration"))
-            {
-                SwagSetting<String> ssSelectedIntegration = new SwagSetting<String>()
-                {
-                    Icon = PackIconMaterialKind.Bridge
-                };
-
-                ssSelectedIntegration.IconString = ssSelectedIntegration.IconString;
-                ssSelectedIntegration.IconTypeString = ssSelectedIntegration.IconTypeString;
-                ssSelectedIntegration.ValueTypeString = ssSelectedIntegration.ValueTypeString;
-                ssSelectedIntegration.ObjValue = ssSelectedIntegration.ObjValue;
-                SwagWindow.GlobalSettings["Dreamporter"]["SelectedIntegration"] = ssSelectedIntegration;
-                ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-            }
+            SwagWindow.GlobalSettings.TryAddChildSetting("Dreamporter", new SwagSettingGroup() { Icon = PackIconMaterialKind.Cloud });
+            SwagWindow.GlobalSettings["Dreamporter"].TryAddChildSetting("SelectedIntegration", new SwagSettingString() { Icon = PackIconMaterialKind.Bridge });
         }
         #endregion Initialization
 

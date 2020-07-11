@@ -192,8 +192,8 @@
         </TreeView>
         <Button 
             Visibility="{Binding ShowSaveButton, ElementName=ThisControl, Converter={swui:BoolToVisibilityConverter}}"
-            VerticalAlignment="{Binding SaveVerticalAlignment, ElementName=ThisControl}" 
-            HorizontalAlignment="{Binding SaveHorizontalAlignment, ElementName=ThisControl}"
+            VerticalAlignment="{Binding SaveButtonVerticalAlignment, ElementName=ThisControl}" 
+            HorizontalAlignment="{Binding SaveButtonHorizontalAlignment, ElementName=ThisControl}"
             Command="{Binding SaveCommand, ElementName=ThisControl}">
             <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
         </Button>

@@ -145,6 +145,14 @@ namespace SwagOverFlow.WPF.Controls
                     Settings["Window"]["Status"]["Message"].SetValue(sse.Message);
                 };
             }
+
+            SettingsControl settingsControl = this.FindLogicalChild<SettingsControl>();
+            settingsControl.Save += SwagWindowSettings_Save;
+        }
+
+        protected virtual void SwagWindowSettings_Save(object sender, RoutedEventArgs e)
+        {
+            SwagWPFContainer.Context.SaveChanges();
         }
         #endregion Initialization
 

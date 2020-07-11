@@ -11,58 +11,66 @@ namespace SwagOverFlow.WPF.Services
 {
     public class SwagWindowSettingService
     {
-        private readonly SwagContext _context;
+        readonly SwagContext _context;
+        readonly SwagWindowSettingsGroupRepository _swagWindowSettingsGroupRepository;
+        readonly SwagSettingGroupRepository _swagSettingGroupRepository;
 
-        public SwagWindowSettingService(SwagContext context) => this._context = context;
+        public SwagWindowSettingService(SwagContext context, SwagWindowSettingsGroupRepository swagWindowSettingGroupRepository, 
+            SwagSettingGroupRepository swagSettingGroupRepository)
+        {
+            _context = context;
+            _swagWindowSettingsGroupRepository = swagWindowSettingGroupRepository;
+            _swagSettingGroupRepository = swagSettingGroupRepository;
+        }
 
         public SwagWindowSettingGroup GetWindowSettingGroupByName(String groupName)
         {
             SwagLogger.LogStart(this, "{Service} {Action}", "WindowSettingService", "GetWindowSettingGroupByName");
-            SwagWindowSettingGroup windowSettings = null;
-            SwagSettingUnitOfWork work = new SwagSettingUnitOfWork(_context);
 
-            SwagSettingGroup storedSettings = work.SettingGroups.Get(sg => sg.Name == groupName, null).FirstOrDefault();
-            if (storedSettings != null)
+            SwagWindowSettingGroup windowSettings = _swagWindowSettingsGroupRepository.Get(sg => sg.Name == groupName, null).FirstOrDefault();
+            if (windowSettings != null)
             {
                 #region Load SwagSettingUnitOfWork
-                work.SettingGroups.RecursiveLoadChildren(storedSettings);
+                _swagSettingGroupRepository.RecursiveLoadCollection(windowSettings, "Children");
 
-                #region Get Groups
-                Stack<SwagSettingGroup> groups = new Stack<SwagSettingGroup>();
-                SwagItemPreOrderIterator<SwagSetting> iterator = storedSettings.CreateIterator();
-                for (SwagSetting setting = iterator.First(); !iterator.IsDone; setting = iterator.Next())
-                {
-                    switch (setting)
-                    {
-                        case SwagSettingGroup group:
-                            if (setting != storedSettings)
-                            {
-                                groups.Push(group);
-                            }
-                            break;
-                    }
-                }
-                #endregion Get Groups
+                #region OLD 2 Changing type to derived WPF type (not needed because of usage of CollectionToViewConverter)
+                //#region Get Groups
+                //Stack<SwagOverFlow.ViewModels.SwagSettingGroup> groups = new Stack<SwagOverFlow.ViewModels.SwagSettingGroup>();
+                //SwagItemPreOrderIterator<SwagSetting> iterator = storedSettings.CreateIterator();
+                //for (SwagSetting setting = iterator.First(); !iterator.IsDone; setting = iterator.Next())
+                //{
+                //    switch (setting)
+                //    {
+                //        case SwagOverFlow.ViewModels.SwagSettingGroup group:
+                //            if (setting != storedSettings)
+                //            {
+                //                groups.Push(group);
+                //            }
+                //            break;
+                //    }
+                //}
+                //#endregion Get Groups
 
-                #region Resolve Groups
-                //Attaching and detaching needs to be in reverse order
-                while (groups.Count > 0)
-                {
-                    SwagSettingGroup group = groups.Pop();
-                    SwagSettingWPFGroup newGroup = new SwagSettingWPFGroup(group);
-                    if (group.Parent != null)
-                    {
-                        group.Parent = null;
-                    }
-                    work.SettingGroups.Detach(group);
-                    work.SettingGroups.Attach(newGroup);
-                }
-                #endregion Resolve Groups
+                //#region Resolve Groups
+                ////Attaching and detaching needs to be in reverse order
+                //while (groups.Count > 0)
+                //{
+                //    SwagOverFlow.ViewModels.SwagSettingGroup group = groups.Pop();
+                //    SwagSettingGroup newGroup = new SwagSettingGroup(group);
+                //    if (group.Parent != null)
+                //    {
+                //        group.Parent = null;
+                //    }
+                //    work.SettingGroups.Detach(group);
+                //    work.SettingGroups.Attach(newGroup);
+                //}
+                //#endregion Resolve Groups
 
-                windowSettings = new SwagWindowSettingGroup(storedSettings);
-                work.SettingGroups.Detach(storedSettings);
-                work.SettingGroups.Attach(windowSettings);
-                work.SettingGroups.RecursiveLoadChildren(windowSettings);
+                //windowSettings = new SwagWindowSettingGroup(storedSettings);
+                //work.SettingGroups.Detach(storedSettings);
+                //work.SettingGroups.Attach(windowSettings);
+                //work.SettingGroups.RecursiveLoadChildren(windowSettings);
+                #endregion OLD 2 Changing type to derived WPF type (not needed because of usage of CollectionToViewConverter)
 
                 #region OLD - Dynamically creates generic type (handled in Properties of SwagItemViewModel/SwagSettingView instead) 
                 //SwagItemPreOrderIterator<SwagItemViewModel> iterator = windowSettings.CreateIterator();
@@ -120,6 +128,7 @@ namespace SwagOverFlow.WPF.Services
                 //}
                 #endregion OLD
                 #endregion Load SwagSettingUnitOfWork
+
                 SwagLogger.Log("{Service} {Action}", "WindowSettingService", "Loaded from database");
             }
 
@@ -128,8 +137,7 @@ namespace SwagOverFlow.WPF.Services
                 #region Create SwagWindowSettingGroup
                 windowSettings = new SwagWindowSettingGroup(true);
                 windowSettings.Name = windowSettings.AlternateId = groupName;
-                SwagSettingGroup group = new SwagSettingGroup();
-                work.SettingGroups.Insert(windowSettings);
+                _swagWindowSettingsGroupRepository.Insert(windowSettings);
 
                 SwagItemPreOrderIterator<SwagSetting> iterator = windowSettings.CreateIterator();
                 for (SwagSetting setting = iterator.First(); !iterator.IsDone; setting = iterator.Next())
@@ -143,12 +151,11 @@ namespace SwagOverFlow.WPF.Services
                     setting.IconTypeString = setting.IconTypeString;
                 }
 
-                work.Complete();
+                _context.SaveChanges();
                 SwagLogger.Log("{Service} {Action}", "WindowSettingService", "Created then saved to database");
                 #endregion Create SwagWindowSettingGroup
             }
 
-            windowSettings.SetContext(_context);
             SwagLogger.LogEnd(this, "{Service} {Action}", "WindowSettingService", "GetWindowSettingGroupByName");
             return windowSettings;
         }

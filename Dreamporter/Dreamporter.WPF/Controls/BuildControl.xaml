@@ -208,8 +208,8 @@
                             ShowItemAddContextMenuItem="{Binding ShowItemAddContextMenuItem, ElementName=ThisControl}"
                             ShowItemCopyContextMenuItem="{Binding ShowItemCopyContextMenuItem, ElementName=ThisControl}"
                             ShowItemPasteContextMenuItem="{Binding ShowItemPasteContextMenuItem, ElementName=ThisControl}"
-                            SaveHorizontalAlignment="Right"
-                            SaveVerticalAlignment="Bottom">
+                            SaveButtonHorizontalAlignment="Right"
+                            SaveButtonVerticalAlignment="Bottom">
             <swctl:SwagItemsControl.ContextMenu>
                 <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (BuildControl)-->
                 <ContextMenu DataContext="{Binding PlacementTarget.Tag.RootBuild, RelativeSource={RelativeSource Self}}" Tag="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">

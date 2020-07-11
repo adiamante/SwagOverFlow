@@ -44,10 +44,13 @@ namespace SwagOverFlow.WPF.Services
         {
             var services = new ServiceCollection();
 
-            services.AddDbContext<SwagContext>(options => SwagContext.SetSqliteOptions(options));
+            //services.AddDbContext<SwagWPFContext>(options => SwagContext.SetSqliteOptions(options));
+            services.AddDbContext<SwagContext, SwagWPFContext>(options => SwagContext.SetSqliteOptions(options));
             //services.AddDbContext<SwagContext>(options => SwagContext.SetSqlServerOptions(options));
-            services.AddTransient<SwagWindowSettingService>();
-            services.AddTransient<SwagDataTableService>();
+            services.AddTransient<SwagWindowSettingsGroupRepository>();
+            services.AddTransient<SwagSettingGroupRepository>();
+            services.AddSingleton<SwagWindowSettingService>();
+            //services.AddTransient<SwagDataTableService>();
             services.AddSingleton<IJsonConverterProviderService, JsonConverterProviderServiceWPF>();
             _serviceProvider = services.BuildServiceProvider();
         }

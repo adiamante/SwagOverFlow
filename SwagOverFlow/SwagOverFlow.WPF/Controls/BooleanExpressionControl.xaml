@@ -104,8 +104,8 @@
                             UseDefaultItemContextMenuOpened="True"
                             ShowItemRemoveContextMenuItem="{Binding ShowItemRemoveContextMenuItem, ElementName=ThisControl}"
                             ShowItemAddContextMenuItem="{Binding ShowItemAddContextMenuItem, ElementName=ThisControl}"
-                            SaveHorizontalAlignment="Right"
-                            SaveVerticalAlignment="Bottom">
+                            SaveButtonHorizontalAlignment="Right"
+                            SaveButtonVerticalAlignment="Bottom">
         <swctl:SwagItemsControl.ContextMenu>
             <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (BooleanExpressionControl)-->
             <ContextMenu DataContext="{Binding PlacementTarget.Tag.ExpressionContainer, RelativeSource={RelativeSource Self}}" Tag="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">

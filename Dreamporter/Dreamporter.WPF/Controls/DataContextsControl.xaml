@@ -28,8 +28,8 @@
                                                     ShowClearContextMenuItem="True"
                                                     ShowItemRemoveContextMenuItem="True"
                                                     Tag="{Binding ElementName=ThisControl}"
-                                                    SaveHorizontalAlignment="Right"
-                                                    SaveVerticalAlignment="Bottom"
+                                                    SaveButtonHorizontalAlignment="Right"
+                                                    SaveButtonVerticalAlignment="Bottom"
                                                     MinHeight="30">
         <swctl:SwagItemsControl.ContextMenu>
             <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (InstructionControl)-->

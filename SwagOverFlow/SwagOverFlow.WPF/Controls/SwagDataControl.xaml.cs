@@ -85,18 +85,18 @@ namespace SwagOverFlow.WPF.Controls
             }
             #endregion Prevents Designer Error
 
-            if (!((SwagSettingGroup)SwagWindow.GlobalSettings).ContainsKey("SwagData"))
+            if (!SwagWindow.GlobalSettings.ContainsKey("SwagData"))
             {
-                SwagSettingWPFGroup swagDataSetting = new SwagSettingWPFGroup() { Icon = PackIconCustomKind.Dataset };
+                SwagSettingGroup swagDataSetting = new SwagSettingGroup() { Icon = PackIconCustomKind.Dataset };
                 SwagWindow.GlobalSettings["SwagData"] = swagDataSetting;
                 swagDataSetting.IconString = swagDataSetting.IconString;
                 swagDataSetting.IconTypeString = swagDataSetting.IconTypeString;
-                ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
             }
 
             if (!((SwagSettingGroup)SwagWindow.GlobalSettings["SwagData"]).ContainsKey("ParseMapper"))
             {
-                SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<String, ParseViewModel>>> ssParseMapper =
+                SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>> ssParseMapper =
                     new SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>>()
                     {
                         Icon = PackIconCustomKind.ArrowMultipleSweepRight,
@@ -108,7 +108,7 @@ namespace SwagOverFlow.WPF.Controls
                 ssParseMapper.ValueTypeString = ssParseMapper.ValueTypeString;
                 ssParseMapper.ObjValue = ssParseMapper.ObjValue;
                 SwagWindow.GlobalSettings["SwagData"]["ParseMapper"] = ssParseMapper;
-                ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
             }
 
             ParseMapper.SwagItemChanged += (s, e) =>

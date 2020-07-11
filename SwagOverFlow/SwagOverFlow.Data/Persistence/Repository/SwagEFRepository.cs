@@ -110,9 +110,12 @@ namespace SwagOverFlow.Data.Persistence
             {
                 context.Entry(entity).Collection(collectionProperty).Load();
                 ICollection collection = (ICollection)prop.GetValue(entity);
-                foreach (TEntity item in collection)
+                foreach (var item in collection)
                 {
-                    RecursiveLoadCollection(item, collectionProperty);
+                    if (item is TEntity col)
+                    {
+                        RecursiveLoadCollection(col, collectionProperty);
+                    }
                 }
             }
         }

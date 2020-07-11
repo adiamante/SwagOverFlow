@@ -16,7 +16,6 @@ namespace SwagOverFlow.WPF.ViewModels
     public class SwagWindowSettingGroup : SwagSettingGroup
     {
         #region Private/Protected Members
-        SwagContext _context;
         CollectionViewSource _childrenCollectionViewSource;
         #endregion Private/Protected Members
 
@@ -58,15 +57,15 @@ namespace SwagOverFlow.WPF.ViewModels
         {
             if (doInit)
             {
-                this["Window"] = new SwagSettingWPFGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.CogOutline };
-                this["Window"]["Status"] = new SwagSettingWPFGroup() { SettingType = SettingType.Hidden };
+                this["Window"] = new SwagSettingGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.CogOutline };
+                this["Window"]["Status"] = new SwagSettingGroup() { SettingType = SettingType.Hidden };
                 this["Window"]["Status"]["Message"] = new SwagSettingString() { SettingType = SettingType.Hidden };
                 this["Window"]["Status"]["IsBusy"] = new SwagSettingBoolean() { SettingType = SettingType.Hidden, Value = false };
-                this["Window"]["Settings"] = new SwagSettingWPFGroup() { SettingType = SettingType.Hidden };
+                this["Window"]["Settings"] = new SwagSettingGroup() { SettingType = SettingType.Hidden };
                 this["Window"]["Settings"]["IsOpen"] = new SwagSettingBoolean() { Value = false, SettingType = SettingType.Hidden, CanUndo = false };
-                this["Window"]["CommandHistory"] = new SwagSettingWPFGroup() { SettingType = SettingType.Hidden };
+                this["Window"]["CommandHistory"] = new SwagSettingGroup() { SettingType = SettingType.Hidden };
                 this["Window"]["CommandHistory"]["IsOpen"] = new SwagSettingBoolean() { Value = false, SettingType = SettingType.Hidden, CanUndo = false };
-                this["Window"]["Theme"] = new SwagSettingWPFGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.PaletteOutline };
+                this["Window"]["Theme"] = new SwagSettingGroup() { SettingType = SettingType.SettingGroup, Icon = PackIconMaterialKind.PaletteOutline };
                 this["Window"]["Theme"]["Base"] = new SwagSettingString() { Value = "Light", Icon = PackIconMaterialKind.PaletteSwatchOutline, ItemsSource = new[] { "Light", "Dark" }, SettingType = SettingType.DropDown };
                 this["Window"]["Theme"]["Accent"] = new SwagSettingString() { Value = "Blue", Icon = PackIconMaterialKind.Brush, ItemsSource = new[] { "Red", "Green", "Blue", "Purple", "Orange", "Lime", "Emerald", "Teal", "Cyan", "Cobalt", "Indigo", "Violet", "Pink", "Magenta", "Crimson", "Amber", "Yellow", "Brown", "Olive", "Steel", "Mauve", "Taupe", "Sienna" }, SettingType = SettingType.DropDown };
             }
@@ -77,8 +76,6 @@ namespace SwagOverFlow.WPF.ViewModels
             this["Window"]["Theme"]["Base"].PropertyChanged += WindowSettingCollection_ThemePropertyChanged;
             this["Window"]["Theme"]["Accent"].PropertyChanged += WindowSettingCollection_ThemePropertyChanged;
             WindowSettingCollection_ThemePropertyChanged(this, new PropertyChangedEventArgs("Value"));
-
-            SwagItemChanged += SwagWindowSettingGroup_SwagItemChanged;
         }
 
         private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -88,30 +85,6 @@ namespace SwagOverFlow.WPF.ViewModels
         #endregion Initialization
 
         #region Methods
-        public void SetContext(SwagContext context)
-        {
-            _context = context;
-        }
-
-        public SwagContext GetContext()
-        {
-            return _context;
-        }
-
-        public void Save()
-        {
-            _context?.SaveChanges();
-        }
-
-        private void SwagWindowSettingGroup_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
-        {
-            if (_context != null)
-            {
-                SwagSettingUnitOfWork work = new SwagSettingUnitOfWork(_context);
-                work.Settings.Update((SwagSetting)e.SwagItem);
-                work.Complete();
-            }
-        }
 
         public Theme GetCurrentTheme()
         {

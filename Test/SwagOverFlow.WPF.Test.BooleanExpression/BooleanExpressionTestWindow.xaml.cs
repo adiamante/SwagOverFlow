@@ -24,7 +24,7 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
         {
             get 
             {
-                if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Expression"))
+                if (!((SwagOverFlow.ViewModels.SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Expression"))
                 {
                     BooleanContainerExpression cnt = new BooleanContainerExpression() { Display = "Root" };
                     SwagSetting<BooleanContainerExpression> ssCnt = new SwagSetting<BooleanContainerExpression>()
@@ -38,7 +38,7 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
                     ssCnt.ValueTypeString = ssCnt.ValueTypeString;
                     ssCnt.ObjValue = ssCnt.ObjValue;
                     SwagWindow.GlobalSettings["Test"]["Expression"] = ssCnt;
-                    ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                    //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
                 return SwagWindow.GlobalSettings["Test"]["Expression"].GetValue<BooleanContainerExpression>(); 
@@ -51,7 +51,7 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
         {
             get
             {
-                if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Options"))
+                if (!((SwagOverFlow.ViewModels.SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Options"))
                 {
                     SwagSetting<SwagOptionGroup> ssOpt = new SwagSetting<SwagOptionGroup>()
                     {
@@ -64,7 +64,7 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
                     ssOpt.ValueTypeString = ssOpt.ValueTypeString;
                     ssOpt.ObjValue = ssOpt.ObjValue;
                     SwagWindow.GlobalSettings["Test"]["Options"] = ssOpt;
-                    ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                    //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
                 return (SwagOptionGroup)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
@@ -89,13 +89,13 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
             #endregion Prevents Designer Error
 
             #region Test
-            if (!((SwagSettingGroup)SwagWindow.GlobalSettings).ContainsKey("Test"))
+            if (!SwagWindow.GlobalSettings.ContainsKey("Test"))
             {
-                SwagSettingWPFGroup swagDataSetting = new SwagSettingWPFGroup() { Icon = PackIconCustomKind.ClipboardTest };
+                SwagSettingGroup swagDataSetting = new SwagSettingGroup() { Icon = PackIconCustomKind.ClipboardTest };
                 SwagWindow.GlobalSettings["Test"] = swagDataSetting;
                 swagDataSetting.IconString = swagDataSetting.IconString;
                 swagDataSetting.IconTypeString = swagDataSetting.IconTypeString;
-                ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
             }
             #endregion Test
         }

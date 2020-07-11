@@ -332,5 +332,28 @@ namespace SwagOverFlow.ViewModels
     {
 
     }
+
+    public static class SwagSettingExtensions
+    {
+        public static void TryAddChildSetting(this SwagSetting setting, String key, SwagSetting child)
+        {
+            if (setting is SwagSettingGroup grp)
+            {
+                if (!grp.ContainsKey(key))
+                {
+                    grp[key] = child;
+                    child.IconString = child.IconString;
+                    child.IconTypeString = child.IconTypeString;
+                    child.ValueTypeString = child.ValueTypeString;
+                    child.ObjValue = child.ObjValue;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException($"Cannot add child to type {setting.GetType()}");
+            }
+        }
+    }
+
 }
 

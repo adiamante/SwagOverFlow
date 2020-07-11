@@ -923,39 +923,39 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ShowItemRemoveContextMenuItem
-        #region SaveVerticalAlignment
-        public static DependencyProperty SaveVerticalAlignmentProperty =
+        #region SaveButtonVerticalAlignment
+        public static DependencyProperty SaveButtonVerticalAlignmentProperty =
             DependencyProperty.Register(
-                "SaveVerticalAlignment",
+                "SaveButtonVerticalAlignment",
                 typeof(VerticalAlignment),
                 typeof(SwagItemsControl));
-        public VerticalAlignment SaveVerticalAlignment
+        public VerticalAlignment SaveButtonVerticalAlignment
         {
-            get { return (VerticalAlignment)GetValue(SaveVerticalAlignmentProperty); }
+            get { return (VerticalAlignment)GetValue(SaveButtonVerticalAlignmentProperty); }
             set 
             { 
-                SetValue(SaveVerticalAlignmentProperty, value);
+                SetValue(SaveButtonVerticalAlignmentProperty, value);
                 OnPropertyChanged();
             }
         }
-        #endregion SaveVerticalAlignment
-        #region SaveHorizontalAlignment
-        public static DependencyProperty SaveHorizontalAlignmentProperty =
+        #endregion SaveButtonVerticalAlignment
+        #region SaveButtonHorizontalAlignment
+        public static DependencyProperty SaveButtonHorizontalAlignmentProperty =
             DependencyProperty.Register(
-                "SaveHorizontalAlignment",
+                "SaveButtonHorizontalAlignment",
                 typeof(HorizontalAlignment),
                 typeof(SwagItemsControl));
 
-        public HorizontalAlignment SaveHorizontalAlignment
+        public HorizontalAlignment SaveButtonHorizontalAlignment
         {
-            get { return (HorizontalAlignment)GetValue(SaveHorizontalAlignmentProperty); }
+            get { return (HorizontalAlignment)GetValue(SaveButtonHorizontalAlignmentProperty); }
             set 
             { 
-                SetValue(SaveHorizontalAlignmentProperty, value);
+                SetValue(SaveButtonHorizontalAlignmentProperty, value);
                 OnPropertyChanged();
             }
         }
-        #endregion SaveHorizontalAlignment
+        #endregion SaveButtonHorizontalAlignment
         #region EmptyMessage
         public static readonly DependencyProperty EmptyMessageProperty =
                 DependencyProperty.Register(

@@ -33,7 +33,7 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
         {
             get 
             {
-                if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("MessageTemplate"))
+                if (!((ViewModels.SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("MessageTemplate"))
                 {
                     SwagSettingString ssMessageTemplate = new SwagSettingString()
                     {
@@ -47,7 +47,7 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
                     ssMessageTemplate.ObjValue = ssMessageTemplate.ObjValue;
 
                     SwagWindow.GlobalSettings["Test"]["MessageTemplate"] = ssMessageTemplate;
-                    ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                    //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
                 return SwagWindow.GlobalSettings["Test"]["MessageTemplate"].GetValue<String>(); 
@@ -61,7 +61,7 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
         {
             get
             {
-                if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Options"))
+                if (!((ViewModels.SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Options"))
                 {
                     SwagSetting<SwagOptionGroup> ssOpt = new SwagSetting<SwagOptionGroup>()
                     {
@@ -74,7 +74,7 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
                     ssOpt.ValueTypeString = ssOpt.ValueTypeString;
                     ssOpt.ObjValue = ssOpt.ObjValue;
                     SwagWindow.GlobalSettings["Test"]["Options"] = ssOpt;
-                    ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                    //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
                 return (SwagOptionGroup)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
@@ -106,13 +106,13 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
             #endregion Prevents Designer Error
 
             #region Test
-            if (!((SwagSettingGroup)SwagWindow.GlobalSettings).ContainsKey("Test"))
+            if (!SwagWindow.GlobalSettings.ContainsKey("Test"))
             {
-                SwagSettingWPFGroup swagDataSetting = new SwagSettingWPFGroup() { Icon = PackIconCustomKind.ClipboardTest };
+                SwagSettingGroup swagDataSetting = new SwagSettingGroup() { Icon = PackIconCustomKind.ClipboardTest };
                 SwagWindow.GlobalSettings["Test"] = swagDataSetting;
                 swagDataSetting.IconString = swagDataSetting.IconString;
                 swagDataSetting.IconTypeString = swagDataSetting.IconTypeString;
-                ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
             }
             #endregion Test
         }

@@ -35,7 +35,7 @@ namespace Dreamporter.WPF.Test.Instruction
         {
             get
             {
-                if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Instruction"))
+                if (!((SwagOverFlow.ViewModels.SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Instruction"))
                 {
                     GroupInstruction grp = new GroupInstruction() { Display = "Root" };
 
@@ -50,7 +50,7 @@ namespace Dreamporter.WPF.Test.Instruction
                     ssGrp.ValueTypeString = ssGrp.ValueTypeString;
                     ssGrp.ObjValue = ssGrp.ObjValue;
                     SwagWindow.GlobalSettings["Test"]["Instruction"] = ssGrp;
-                    ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                    //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
                 return SwagWindow.GlobalSettings["Test"]["Instruction"].GetValue<GroupInstruction>();
@@ -63,7 +63,7 @@ namespace Dreamporter.WPF.Test.Instruction
         {
             get
             {
-                if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Schemas"))
+                if (!((SwagOverFlow.ViewModels.SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Schemas"))
                 {
                     SwagSetting<List<Schema>> ssSchemas = new SwagSetting<List<Schema>>()
                     {
@@ -76,7 +76,7 @@ namespace Dreamporter.WPF.Test.Instruction
                     ssSchemas.ValueTypeString = ssSchemas.ValueTypeString;
                     ssSchemas.ObjValue = ssSchemas.ObjValue;
                     SwagWindow.GlobalSettings["Test"]["Schemas"] = ssSchemas;
-                    ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                    //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
                 return (List<Schema>)SwagWindow.GlobalSettings["Test"]["Schemas"].GetValue<List<Schema>>();
@@ -89,7 +89,7 @@ namespace Dreamporter.WPF.Test.Instruction
         {
             get
             {
-                if (!((SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Options"))
+                if (!((SwagOverFlow.ViewModels.SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Options"))
                 {
                     SwagSetting<SwagOptionGroup> ssOpt = new SwagSetting<SwagOptionGroup>()
                     {
@@ -102,7 +102,7 @@ namespace Dreamporter.WPF.Test.Instruction
                     ssOpt.ValueTypeString = ssOpt.ValueTypeString;
                     ssOpt.ObjValue = ssOpt.ObjValue;
                     SwagWindow.GlobalSettings["Test"]["Options"] = ssOpt;
-                    ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                    //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
                 }
 
                 return (SwagOptionGroup)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
@@ -113,7 +113,6 @@ namespace Dreamporter.WPF.Test.Instruction
         #region Initialization
         public InstructionTestWindow()
         {
-            var x = DreamporterWPFContainer.Context;
             InitializeComponent();
             Initialize();
         }
@@ -128,13 +127,13 @@ namespace Dreamporter.WPF.Test.Instruction
             #endregion Prevents Designer Error
 
             #region Test
-            if (!((SwagSettingGroup)SwagWindow.GlobalSettings).ContainsKey("Test"))
+            if (!SwagWindow.GlobalSettings.ContainsKey("Test"))
             {
-                SwagSettingWPFGroup swagDataSetting = new SwagSettingWPFGroup() { Icon = PackIconCustomKind.ClipboardTest };
+                SwagSettingGroup swagDataSetting = new SwagSettingGroup() { Icon = PackIconCustomKind.ClipboardTest };
                 SwagWindow.GlobalSettings["Test"] = swagDataSetting;
                 swagDataSetting.IconString = swagDataSetting.IconString;
                 swagDataSetting.IconTypeString = swagDataSetting.IconTypeString;
-                ((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
+                //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
             }
             #endregion Test
 

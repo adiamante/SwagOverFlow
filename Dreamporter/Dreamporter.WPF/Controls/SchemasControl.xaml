@@ -28,8 +28,8 @@
                                                     UseDefaultClear="True"
                                                     ShowClearContextMenuItem="True"
                                                     ShowItemRemoveContextMenuItem="True"
-                                                    SaveHorizontalAlignment="Right"
-                                                    SaveVerticalAlignment="Bottom"
+                                                    SaveButtonHorizontalAlignment="Right"
+                                                    SaveButtonVerticalAlignment="Bottom"
                                                     MinHeight="30">
         <swctl:SwagItemsControl.ItemTemplates>
             <swui:SwagTemplateCollection>
