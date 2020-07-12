@@ -142,7 +142,7 @@ namespace Dreamporter.Core
         #endregion Properties
 
         #region Methods
-        public override void Execute(RunContext context, Dictionary<String, String> parameters)
+        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
         {
             String cacheAddress = "", cacheKey = "", cacheVersion = "";
             WebRequestClient webRequestClient = new WebRequestClient();

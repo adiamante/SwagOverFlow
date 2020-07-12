@@ -79,5 +79,14 @@ namespace Dreamporter.Core
 
         }
         #endregion Initialization
+
+        #region Methods
+        abstract public void RunHandler(RunContext context, Dictionary<String, String> parameters);
+
+        public void Run(RunContext context, Dictionary<String, String> parameters)
+        {
+            RunHandler(context, parameters);
+        }
+        #endregion Methods
     }
 }

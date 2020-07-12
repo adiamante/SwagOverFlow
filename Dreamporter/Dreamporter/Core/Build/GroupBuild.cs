@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 
 namespace Dreamporter.Core
 {
@@ -124,6 +125,13 @@ namespace Dreamporter.Core
         #endregion ICollection
 
         #region Methods
+        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
+        {
+            foreach (Build child in Children.OrderBy(c => c.Sequence))
+            {
+                child.Run(context, parameters);
+            }
+        }
         #endregion Methods
     }
 }

@@ -89,7 +89,7 @@ namespace Dreamporter.Core
         #endregion Events
 
         #region Methods
-        abstract public void Execute(RunContext context, Dictionary<String, String> parameters);
+        abstract public void RunHandler(RunContext context, Dictionary<String, String> parameters);
 
         public void Run(RunContext context, Dictionary<String, String> parameters)
         {
@@ -126,7 +126,7 @@ namespace Dreamporter.Core
 
                 try
                 {
-                    Execute(context, parameters);
+                    RunHandler(context, parameters);
                 }
                 catch (InstructionException iex)
                 {

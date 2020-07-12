@@ -47,6 +47,9 @@
                         Visibility="{Binding IsChecked, ElementName=tbIntegrationEdit, Converter={swui:BoolToVisibilityConverter}}">
                     <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
                 </Button>
+                <Button DockPanel.Dock="Left" Click="RunIntegration_Click">
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Play}" />
+                </Button>
                 <Grid />
             </DockPanel>
         </Grid>
@@ -87,6 +90,7 @@
                         </DataTemplate>
                     </TabItem.HeaderTemplate>
                     <dwctl:InstructionControl InstructionCollection="{Binding SelectedIntegration.InstructionTemplates, Mode=TwoWay, ElementName=ThisControl}"
+                                    ShowSaveButton="True"
                                     ShowSaveContextMenuItem="True" 
                                     ShowAddContextMenuItem="True"
                                     ShowCopyContextMenuItem="True"
@@ -136,7 +140,7 @@
                                 </DockPanel>
                             </GroupBox.Header>
                             <dwctl:OptionsTreeControl RootOptions="{Binding SelectedIntegration.OptionsTree, Mode=TwoWay, ElementName=ThisControl}"
-                                    SelectedOptions="{Binding SelectedIntegration.SelectedOptions, ElementName=ThisControl}"
+                                    SelectedOptions="{Binding SelectedIntegration.SelectedOptions, Mode=TwoWay, ElementName=ThisControl}"
                                     ShowSaveContextMenuItem="True" 
                                     ShowAddContextMenuItem="True"
                                     ShowExportContextMenuItem="True"

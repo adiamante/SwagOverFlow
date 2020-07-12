@@ -31,7 +31,7 @@ namespace Dreamporter.Core
         #endregion TargetTable
         #endregion Properties
 
-        public override void Execute(RunContext context, Dictionary<String, String> parameters)
+        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
         {
             String query = Query,
                 targetTable = TargetTable ?? "";

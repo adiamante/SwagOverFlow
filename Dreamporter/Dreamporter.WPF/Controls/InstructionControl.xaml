@@ -151,7 +151,8 @@
                 <Grid>
                     <ContentPresenter />
                 </Grid>
-                <Button HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                <Button Visibility="{Binding ShowSaveButton, ElementName=ThisControl, Converter={swui:BoolToVisibilityConverter}}"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom"
                         Click="SwagItemsControl_Save">
                     <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
                 </Button>

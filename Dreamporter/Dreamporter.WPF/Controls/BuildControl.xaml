@@ -347,13 +347,11 @@
         </swctl:SwagItemsControl>
         <Grid>
             <ContentControl MinWidth="60" BorderThickness="3" BorderBrush="Black" Content="{Binding SelectedBuild, ElementName=ThisControl}">
-
             </ContentControl>
             <Button HorizontalAlignment="Right" VerticalAlignment="Bottom"
                     Click="SwagItemsControl_Save">
                 <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
             </Button>
         </Grid>
-        
     </DockPanel>
 </swctl:SwagControlBase>

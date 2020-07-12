@@ -138,7 +138,7 @@ namespace Dreamporter.Core
         #endregion ICollection
 
         #region Methods
-        public override void Execute(RunContext context, Dictionary<String, String> parameters)
+        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
         {
             if (IsConcurrent)
             {

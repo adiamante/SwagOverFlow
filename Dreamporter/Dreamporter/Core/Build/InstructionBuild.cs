@@ -27,5 +27,12 @@ namespace Dreamporter.Core
         #region Type
         public override Type Type { get { return typeof(InstructionBuild); } }
         #endregion Type
+
+        #region Methods
+        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
+        {
+            Instructions.Run(context, parameters);
+        }
+        #endregion Methods
     }
 }

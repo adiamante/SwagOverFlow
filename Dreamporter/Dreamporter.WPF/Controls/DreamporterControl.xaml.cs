@@ -2,23 +2,16 @@
 using Dreamporter.WPF.Services;
 using MahApps.Metro.IconPacks;
 using SwagOverFlow.Iterator;
-using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
 using SwagOverFlow.WPF.Controls;
 using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 
 namespace Dreamporter.WPF.Controls
 {
@@ -215,8 +208,53 @@ namespace Dreamporter.WPF.Controls
                 DreamporterWPFContainer.Context.SaveChanges();
             }
         }
+
+        private void RunIntegration_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedIntegration != null)
+            {
+                RunContext runContext = new RunContext();
+                runContext.Open();
+                Dictionary<String, String> optionsDict = SelectedIntegration.DefaultOptions.Dict;
+                
+                if (SelectedIntegration.SelectedOptions != null)
+                {
+                    foreach (KeyValuePair<String, String> opt in SelectedIntegration.SelectedOptions.Options.Dict)
+                    {
+                        if (optionsDict.ContainsKey(opt.Key))
+                        {
+                            optionsDict[opt.Key] = opt.Value;
+                        }
+                        else
+                        {
+                            optionsDict.Add(opt.Key, opt.Value);
+                        }
+                    }
+                }
+
+                SelectedIntegration.Build.Run(runContext, optionsDict);
+                runContext.ExportDB($"Export\\{SelectedIntegration.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.db");
+
+                DataSet dsResult = runContext.GetDataSet();
+                runContext.Close();
+                SwagDataSetWPF data = new SwagDataSetWPF() { Display = $"Export\\{SelectedIntegration.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}" };
+                DataSet dsRaw = new DataSet();
+                foreach (DataTable dt in dsResult.Tables)
+                {
+                    dsRaw.Tables.Add(dt.Copy());
+                }
+
+                SwagDataSetWPF raw = new SwagDataSetWPF(dsRaw) { Display = "Raw" };
+                data.Children.Add(raw);
+
+                SwagWindow swagWindow = new SwagWindow();
+                SwagDataControl swagDataControl = new SwagDataControl();
+                swagDataControl.SwagDataSet = data;
+                swagWindow.Content = swagDataControl;
+                swagWindow.Show();
+            }
+        }
         #endregion Events
 
-        
     }
 }
