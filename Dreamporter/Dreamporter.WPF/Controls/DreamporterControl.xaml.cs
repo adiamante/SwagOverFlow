@@ -256,12 +256,7 @@ namespace Dreamporter.WPF.Controls
         {
             if (SelectedIntegration != null)
             {
-                RunContext runContext = new RunContext();
-                runContext.Open();
-                SelectedIntegration.InitRunContext(runContext);
-
-                RunParams runParams = SelectedIntegration.GenerateRunParams(true);
-                SelectedIntegration.Build.Run(runContext, runParams);
+                RunContext runContext = SelectedIntegration.Run();
                 runContext.ExportDB($"Export\\{SelectedIntegration.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.db");
 
                 DataSet dsResult = runContext.GetDataSet();

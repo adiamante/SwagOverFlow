@@ -501,6 +501,18 @@ namespace SwagOverFlow.WPF.Controls
                 soc.OptionCollection = (SwagOptionGroup)opt;
             }
         }
+
+        private void Description_Click(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement fe = (FrameworkElement)e.OriginalSource;
+            SwagOption opt = (SwagOption)fe.DataContext;
+
+            String description = UIHelper.StringInputDialog("Description", opt.Description);
+            if (!String.IsNullOrEmpty(description))
+            {
+                opt.Description = description;
+            }
+        }
         #endregion Events
 
         #region Methods
@@ -556,6 +568,5 @@ namespace SwagOverFlow.WPF.Controls
             return moveType;
         }
         #endregion Methods
-
     }
 }

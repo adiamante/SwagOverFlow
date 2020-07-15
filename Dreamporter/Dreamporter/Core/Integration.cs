@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -124,5 +125,82 @@ namespace Dreamporter.Core
         }
         #endregion SchemaGroups
         #endregion Properties
+
+        #region Methods
+        public RunContext Run(RunContext rc = null, RunParams rp = null)
+        {
+            if (rc == null)
+            {
+                rc = new RunContext();
+                rc.Open();
+            }
+
+            InitRunContext(rc);
+
+            if (rp == null)
+            {
+                rp = GenerateRunParams();
+            }
+
+            Build.Run(rc, rp);
+
+            return rc;
+        }
+
+        public RunParams GenerateRunParams()
+        {
+            RunParams rp = new RunParams();
+
+            #region Resolve Options
+            Dictionary<String, String> optionsDict = DefaultOptions.Dict;
+
+            if (SelectedOptions != null)
+            {
+                Stack<OptionsNode> optionsStack = new Stack<OptionsNode>();
+                OptionsNode optionsNode = SelectedOptions;
+                while (optionsNode != null)     //Get all parent options
+                {
+                    optionsStack.Push(optionsNode);
+                    optionsNode = optionsNode.Parent;
+                }
+
+                while (optionsStack.Count > 0)
+                {
+                    optionsNode = optionsStack.Pop();
+                    foreach (KeyValuePair<String, String> opt in optionsNode.Options.Dict)
+                    {
+                        if (optionsDict.ContainsKey(opt.Key))
+                        {
+                            optionsDict[opt.Key] = opt.Value;
+                        }
+                        else
+                        {
+                            optionsDict.Add(opt.Key, opt.Value);
+                        }
+                    }
+                }
+            }
+
+            rp.Params = optionsDict;
+            #endregion Resolve Options
+
+            return rp;
+        }
+
+        public void InitRunContext(RunContext runContext)
+        {
+            runContext.InitDataContexts(DataContexts);
+
+            foreach (Schema schema in InitialSchemas)
+            {
+                DataSet ds = schema.GetDataSet();
+
+                foreach (DataTable dtbl in ds.Tables)
+                {
+                    runContext.AddTables(dtbl);
+                }
+            }
+        }
+        #endregion Methods
     }
 }

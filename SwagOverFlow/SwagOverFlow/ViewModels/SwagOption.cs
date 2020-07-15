@@ -16,7 +16,7 @@ namespace SwagOverFlow.ViewModels
     public abstract class SwagOption : SwagItem<SwagOptionGroup, SwagOption>
     {
         Boolean _isEnabled = true;
-        String _name = "", _stringFormat = "";
+        String _name = "", _stringFormat = "", _description = "";
 
         #region IsEnabled
         public bool IsEnabled
@@ -39,6 +39,13 @@ namespace SwagOverFlow.ViewModels
             set { SetValue(ref _stringFormat, value); }
         }
         #endregion StringFormat
+        #region Description
+        public String Description
+        {
+            get { return _description; }
+            set { SetValue(ref _description, value); }
+        }
+        #endregion Description
         [NotMapped]
         [JsonIgnore]
         public abstract String Value { get; }
