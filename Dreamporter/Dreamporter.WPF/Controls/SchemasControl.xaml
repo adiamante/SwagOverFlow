@@ -18,19 +18,22 @@
              x:Name="ThisControl"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <swctl:SwagItemsControl x:Name="SwagItemsControl" SwagItemsSource="{Binding Schemas, Mode=TwoWay, ElementName=ThisControl}" 
-                                                    ShowSaveButton="{Binding ShowSaveButton, ElementName=ThisControl}"
-                                                    Save="SwagItemsControl_Save"
-                                                    Add="SwagItemsControl_Add"
-                                                    Remove="SwagItemsControl_Remove"
-                                                    ShowAddContextMenuItem="True"
-                                                    ShowItemAddContextMenuItem="True"
-                                                    UseDefaultClear="True"
-                                                    ShowClearContextMenuItem="True"
-                                                    ShowItemRemoveContextMenuItem="True"
-                                                    SaveButtonHorizontalAlignment="Right"
-                                                    SaveButtonVerticalAlignment="Bottom"
-                                                    MinHeight="30">
+    <swctl:SwagItemsControl x:Name="SwagItemsControl" 
+                            AllowDrop="True"
+                            Drop="SwagItemsControl_Drop"
+                            SwagItemsSource="{Binding Schemas, Mode=TwoWay, ElementName=ThisControl}" 
+                            ShowSaveButton="{Binding ShowSaveButton, ElementName=ThisControl}"
+                            Save="SwagItemsControl_Save"
+                            Add="SwagItemsControl_Add"
+                            Remove="SwagItemsControl_Remove"
+                            ShowAddContextMenuItem="True"
+                            ShowItemAddContextMenuItem="True"
+                            UseDefaultClear="True"
+                            ShowClearContextMenuItem="True"
+                            ShowItemRemoveContextMenuItem="True"
+                            SaveButtonHorizontalAlignment="Right"
+                            SaveButtonVerticalAlignment="Bottom"
+                            MinHeight="30">
         <swctl:SwagItemsControl.ItemTemplates>
             <swui:SwagTemplateCollection>
                 <swui:SwagTemplate Type="{x:Type db:Schema}">
@@ -56,10 +59,13 @@
                 <swui:SwagTemplate Type="{x:Type db:SchemaColumn}">
                     <swui:SwagTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type db:SchemaColumn}">
-                            <DockPanel>
-                                <swctl:IconControl DockPanel.Dock="Left" Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumn}" />
-                                <TextBox Text="{Binding Name}" MinWidth="100" />
-                            </DockPanel>
+                            <StackPanel>
+                                <DockPanel>
+                                    <swctl:IconControl DockPanel.Dock="Left" Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumn}" />
+                                    <TextBox Text="{Binding Name}" MinWidth="100" />
+                                </DockPanel>
+                                <ComboBox SelectedValue="{Binding DataType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type db:SchemaColumnDataType}}}" />
+                            </StackPanel>
                         </DataTemplate>
                     </swui:SwagTemplate.DataTemplate>
                 </swui:SwagTemplate>

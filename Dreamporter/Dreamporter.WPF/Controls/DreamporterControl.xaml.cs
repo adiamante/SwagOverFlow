@@ -258,40 +258,9 @@ namespace Dreamporter.WPF.Controls
             {
                 RunContext runContext = new RunContext();
                 runContext.Open();
-                runContext.InitDataContexts(SelectedIntegration.DataContexts);
+                SelectedIntegration.InitRunContext(runContext);
 
-                #region Resolve Options
-                Dictionary<String, String> optionsDict = SelectedIntegration.DefaultOptions.Dict;
-
-                if (SelectedIntegration.SelectedOptions != null)
-                {
-                    Stack<OptionsNode> optionsStack = new Stack<OptionsNode>();
-                    OptionsNode optionsNode = SelectedIntegration.SelectedOptions;
-                    while (optionsNode != null)     //Get all parent options
-                    {
-                        optionsStack.Push(optionsNode);
-                        optionsNode = optionsNode.Parent;
-                    }
-
-                    while (optionsStack.Count > 0)
-                    {
-                        optionsNode = optionsStack.Pop();
-                        foreach (KeyValuePair<String, String> opt in optionsNode.Options.Dict)
-                        {
-                            if (optionsDict.ContainsKey(opt.Key))
-                            {
-                                optionsDict[opt.Key] = opt.Value;
-                            }
-                            else
-                            {
-                                optionsDict.Add(opt.Key, opt.Value);
-                            }
-                        }
-                    }
-                }
-                #endregion Resolve Options
-
-                RunParams runParams = new RunParams() { Params = optionsDict };
+                RunParams runParams = SelectedIntegration.GenerateRunParams(true);
                 SelectedIntegration.Build.Run(runContext, runParams);
                 runContext.ExportDB($"Export\\{SelectedIntegration.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.db");
 
@@ -414,7 +383,6 @@ namespace Dreamporter.WPF.Controls
                 SwagItemsControlHelper.ExportDataToFile<Integration>(SelectedIntegration, SelectedIntegration.Name);
             }
         }
-
         #endregion Events
 
     }

@@ -351,14 +351,14 @@
                         <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}" />
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource AdvancedHeaderTemplate}">
-                        <StackPanel>
-                            <swctl:IconControl Text="DB Context" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
-                            <TextBox Text="{Binding DBContext}" />
-                            <swctl:IconControl Text="Stored Procedure" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseRun}" />
-                            <TextBox Text="{Binding StoredProcedure}" />
-                            <swctl:IconControl Text="TargetTable" Kind="{x:Static iconPacks:PackIconMaterialKind.TableEye}" />
-                            <TextBox Text="{Binding TargetTable}" />
-                            <swctl:IconControl Text="SQL Params" Kind="{x:Static iconPacks:PackIconUniconsKind.X}" />
+                        <DockPanel>
+                            <swctl:IconControl DockPanel.Dock="Top" Text="DB Context" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding DBContext}" />
+                            <swctl:IconControl DockPanel.Dock="Top" Text="Stored Procedure" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseRun}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding StoredProcedure}" />
+                            <swctl:IconControl DockPanel.Dock="Top" Text="TargetTable" Kind="{x:Static iconPacks:PackIconMaterialKind.TableEye}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding TargetTable}" />
+                            <swctl:IconControl DockPanel.Dock="Top" Text="SQL Params" Kind="{x:Static iconPacks:PackIconUniconsKind.X}" />
                             <swctl:SwagItemsControl SwagItemsSource="{Binding SqlParams, Mode=TwoWay}" 
                                                     ShowImportContextMenuItem="True"
                                                     Import="SqlParams_Import"
@@ -374,7 +374,7 @@
                                     <swui:SwagTemplate Type="{x:Type sc:SqlParam}" DataTemplate="{StaticResource SqlParamDataTemplate}" />
                                 </swctl:SwagItemsControl.CustomDefaultItemTemplate>
                             </swctl:SwagItemsControl>
-                        </StackPanel>
+                        </DockPanel>
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
                         <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />

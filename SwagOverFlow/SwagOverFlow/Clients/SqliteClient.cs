@@ -246,7 +246,7 @@ namespace SwagOverFlow.Clients
     public static class SqliteHelper
     {
         #region IterateColumns
-        private static void IterateColumns(DataTable dt, Action<DataColumn, String> action)
+        public static void IterateColumns(DataTable dt, Action<DataColumn, String> action)
         {
             foreach (DataColumn dc in dt.Columns)
             {

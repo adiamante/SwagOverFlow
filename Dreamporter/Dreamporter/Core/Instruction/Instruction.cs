@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using SwagOverFlow.Utils;
 
 
 namespace Dreamporter.Core
@@ -136,6 +137,8 @@ namespace Dreamporter.Core
         public void Run(RunContext context, RunParams rp)
         {
             rp.Instruction = Path;
+            rp.Params.SafeSet<String, String>("InErrorState", context.InErrorState.ToString());
+
             Boolean doExecute = IsEnabled && Condition.Evaluate(rp.Params);
             Instruction temp = this;
             String fullPath = rp.FullPath, logMessage = "";

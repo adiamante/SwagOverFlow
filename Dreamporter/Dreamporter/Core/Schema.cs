@@ -1,12 +1,16 @@
 ﻿using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace Dreamporter.Core
 {
     public enum SchemaColumnDataType
     {
-        String
+        String,
+        DateTime,
+        Integer,
+        Real
     }
 
     public abstract class SchemaBase : ViewModelBaseExtended
@@ -42,6 +46,42 @@ namespace Dreamporter.Core
             set { SetValue(ref _tables, value); }
         }
         #endregion Tables
+
+        #region GetDataSet
+        public DataSet GetDataSet()
+        {
+            DataSet ds = new DataSet(Name);
+
+            foreach (SchemaTable table in Tables)
+            {
+                DataTable dtbl = new DataTable($"{Name}{(string.IsNullOrEmpty(Name) ? "" : ".")}{table.Name}");
+                foreach (SchemaColumn column in table.Columns)
+                {
+                    DataColumn dc = new DataColumn(column.Name);
+                    switch (column.DataType)
+                    {
+                        default:
+                        case SchemaColumnDataType.String:
+                            dc.DataType = typeof(String);
+                            break;
+                        case SchemaColumnDataType.DateTime:
+                            dc.DataType = typeof(DateTime);
+                            break;
+                        case SchemaColumnDataType.Integer:
+                            dc.DataType = typeof(Int32);
+                            break;
+                        case SchemaColumnDataType.Real:
+                            dc.DataType = typeof(Double);
+                            break;
+                    }
+                    dtbl.Columns.Add(dc);
+                }
+                ds.Tables.Add(dtbl);
+            }
+
+            return ds;
+        }
+        #endregion GetDataSet
     }
 
     public class SchemaTable : SchemaBase
