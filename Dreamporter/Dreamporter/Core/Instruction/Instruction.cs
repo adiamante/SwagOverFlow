@@ -6,6 +6,7 @@ using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -16,9 +17,11 @@ namespace Dreamporter.Core
     {
         #region Private Members
         Int32 _instructionId;
-        String _name, _infoFormat, _description;
+        String _name, _logPattern, _description, _status;
         Boolean _isEnabled = true, _doLog = true;
         InstructionCacheProperties _cacheProperties = new InstructionCacheProperties();
+        BooleanContainerExpression _condition = new BooleanContainerExpression();
+        ObservableCollection<Schema> _requiredData = new ObservableCollection<Schema>();
         #endregion Private Members
 
         #region Properties
@@ -53,8 +56,8 @@ namespace Dreamporter.Core
         #region LogPattern
         public String LogPattern
         {
-            get { return _infoFormat; }
-            set { SetValue(ref _infoFormat, value); }
+            get { return _logPattern; }
+            set { SetValue(ref _logPattern, value); }
         }
         #endregion LogPattern
         #region Tags
@@ -77,6 +80,45 @@ namespace Dreamporter.Core
             set { SetValue(ref _cacheProperties, value); }
         }
         #endregion CacheProperties
+        #region Status
+        public String Status
+        {
+            get { return _status; }
+            set { SetValue(ref _status, value); }
+        }
+        #endregion Status
+        #region Path
+        [JsonIgnore]
+        public String Path
+        {
+            get
+            {
+                String path = "";
+                Instruction temp = this;
+                while (temp != null)
+                {
+                    path = $"{temp.Name}/{path}";
+                    temp = temp.Parent;
+                }
+                path = path.Trim('/');
+                return path;
+            }
+        }
+        #endregion Path
+        #region Condition
+        public BooleanContainerExpression Condition
+        {
+            get { return _condition; }
+            set { SetValue(ref _condition, value); }
+        }
+        #endregion Condition  
+        #region RequiredData
+        public ObservableCollection<Schema> RequiredData
+        {
+            get { return _requiredData; }
+            set { SetValue(ref _requiredData, value); }
+        }
+        #endregion RequiredData
         #endregion Properties
 
         #region Initialization
@@ -89,28 +131,20 @@ namespace Dreamporter.Core
         #endregion Events
 
         #region Methods
-        abstract public void RunHandler(RunContext context, Dictionary<String, String> parameters);
+        abstract public void RunHandler(RunContext context, RunParams rp);
 
-        public void Run(RunContext context, Dictionary<String, String> parameters)
+        public void Run(RunContext context, RunParams rp)
         {
-            Boolean doExecute = IsEnabled;
+            rp.Instruction = Path;
+            Boolean doExecute = IsEnabled && Condition.Evaluate(rp.Params);
             Instruction temp = this;
-            String instructionPath = "", logMessage = "";
-
-            #region instructionPath
-            while (temp != null)
-            {
-                instructionPath = $"{temp.Name}/{instructionPath}";
-                temp = temp.Parent;
-            }
-            instructionPath = instructionPath.TrimEnd('/');
+            String fullPath = rp.FullPath, logMessage = "";
 
 #if DEBUG
-            System.Diagnostics.Debug.WriteLine(instructionPath);
+            System.Diagnostics.Debug.WriteLine(fullPath);
 #endif
-            #endregion instructionPath
 
-            logMessage = MessageTemplateHelper.ParseTemplate(LogPattern ?? "", parameters);
+            logMessage = MessageTemplateHelper.ParseTemplate(LogPattern ?? "", rp.Params);
 
             if (doExecute && !context.InAbortState)
             {
@@ -120,19 +154,19 @@ namespace Dreamporter.Core
                 #region DoLog
                 if (DoLog)
                 {
-                    context.Log(instructionPath, "Start", logMessage);
+                    context.Log(fullPath, "Start", logMessage);
                 }
                 #endregion DoLog
 
                 try
                 {
-                    RunHandler(context, parameters);
+                    RunHandler(context, rp);
                 }
                 catch (InstructionException iex)
                 {
                     context.InAbortState = iex.Abort;
                     context.InErrorState = true;
-                    context.LogError(instructionPath, "Error", (iex.Message + Environment.NewLine + iex.Info).Replace("'", "''"));
+                    context.LogError(fullPath, "Error", (iex.Message + Environment.NewLine + iex.Info).Replace("'", "''"));
                 }
                 catch (Exception ex)
                 {
@@ -149,7 +183,7 @@ namespace Dreamporter.Core
 
                     message += ex.StackTrace;
 
-                    context.LogError(instructionPath, "Error", message.Replace("'", "''"));
+                    context.LogError(fullPath, "Error", message.Replace("'", "''"));
                     #endregion Exception
                 }
 
@@ -158,7 +192,7 @@ namespace Dreamporter.Core
                 #region DoLog
                 if (DoLog)
                 {
-                    context.Log(instructionPath, $"End - {sw.Elapsed.ToString("G")}", logMessage);
+                    context.Log(fullPath, $"End - {sw.Elapsed.ToString("G")}", logMessage);
                 }
                 #endregion DoLog
             }

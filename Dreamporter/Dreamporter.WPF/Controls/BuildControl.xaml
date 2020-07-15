@@ -114,6 +114,22 @@
                 <TextBox Text="{Binding DataContext.Description, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}" AcceptsReturn="True" AcceptsTab="True" />
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="ConditionHeaderDataTemplate">
+            <swctl:IconControl Text="Condition" Kind="{x:Static iconPacks:PackIconJamIconsKind.Directions}" />
+        </DataTemplate>
+        <DataTemplate x:Key="ConditionDataTemplate">
+            <swctl:BooleanExpressionControl ExpressionContainer="{Binding DataContext.Condition, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
+                                            ShowSaveContextMenuItem="True" 
+                                            ShowAddContextMenuItem="True"
+                                            ShowCopyContextMenuItem="True"
+                                            ShowPasteContextMenuItem="True"
+                                            ShowExportContextMenuItem="True"
+                                            ShowImportContextMenuItem="True"
+                                            ShowItemAddContextMenuItem="True"
+                                            ShowItemRemoveContextMenuItem="True"
+                                            Save="BooleanExpressionControl_Save">
+            </swctl:BooleanExpressionControl>
+        </DataTemplate>
         <DataTemplate x:Key="RequiredDataHeaderTemplate">
             <swctl:IconControl Text="Required Data" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
         </DataTemplate>
@@ -140,29 +156,16 @@
                                     Save="InstructionControl_Save">
             </dwctl:InstructionControl>
         </DataTemplate>
-        <DataTemplate x:Key="ConditionDataHeaderTemplate">
-            <swctl:IconControl Text="Condition" Kind="{x:Static iconPacks:PackIconJamIconsKind.Directions}" />
-        </DataTemplate>
-        <DataTemplate x:Key="ConditionDataTemplate">
-            <swctl:BooleanExpressionControl ExpressionContainer="{Binding DataContext.Condition, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
-                                            ShowSaveContextMenuItem="True" 
-                                            ShowAddContextMenuItem="True"
-                                            ShowCopyContextMenuItem="True"
-                                            ShowPasteContextMenuItem="True"
-                                            ShowExportContextMenuItem="True"
-                                            ShowImportContextMenuItem="True"
-                                            ShowItemAddContextMenuItem="True"
-                                            ShowItemRemoveContextMenuItem="True"
-                                            Save="BooleanExpressionControl_Save">
-            </swctl:BooleanExpressionControl>
-        </DataTemplate>
         <DataTemplate DataType="{x:Type dc:GroupBuild}">
             <TabControl>
                 <TabItem HeaderTemplate="{StaticResource GeneralHeaderTemplate}">
                     <ContentControl ContentTemplate="{StaticResource GeneralFieldsDataTemplate}" />
                 </TabItem>
-                <TabItem HeaderTemplate="{StaticResource ConditionDataHeaderTemplate}">
+                <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
                     <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />
+                </TabItem>
+                <TabItem HeaderTemplate="{StaticResource RequiredDataHeaderTemplate}">
+                    <ContentControl ContentTemplate="{StaticResource RequiredDataDataTemplate}" />
                 </TabItem>
             </TabControl>
         </DataTemplate>
@@ -171,7 +174,7 @@
                 <TabItem HeaderTemplate="{StaticResource GeneralHeaderTemplate}">
                     <ContentControl ContentTemplate="{StaticResource GeneralFieldsDataTemplate}" />
                 </TabItem>
-                <TabItem HeaderTemplate="{StaticResource ConditionDataHeaderTemplate}">
+                <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
                     <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />
                 </TabItem>
                 <TabItem HeaderTemplate="{StaticResource RequiredDataHeaderTemplate}">

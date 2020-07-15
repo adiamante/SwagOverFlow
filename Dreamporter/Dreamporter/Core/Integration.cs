@@ -23,6 +23,7 @@ namespace Dreamporter.Core
         OptionsNode _optionsTree = new OptionsNode();
         ObservableCollection<Schema> _initialSchemas = new ObservableCollection<Schema>();
         ObservableCollection<DataContext> _dataContexts = new ObservableCollection<DataContext>();
+        ObservableCollection<String> _schemaGroups = new ObservableCollection<String>();
         #endregion Private Members
 
         #region Properties
@@ -115,6 +116,13 @@ namespace Dreamporter.Core
             set { SetValue(ref _dataContexts, value); }
         }
         #endregion DataContexts
+        #region SchemaGroups
+        public ObservableCollection<String> SchemaGroups
+        {
+            get { return _schemaGroups; }
+            set { SetValue(ref _schemaGroups, value); }
+        }
+        #endregion SchemaGroups
         #endregion Properties
     }
 }

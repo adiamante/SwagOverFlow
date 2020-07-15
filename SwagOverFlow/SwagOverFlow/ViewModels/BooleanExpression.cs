@@ -293,6 +293,11 @@ namespace SwagOverFlow.ViewModels
         public override Type Type { get { return typeof(BooleanBooleanVariableExpression); } }
         #endregion Type
 
+        public BooleanBooleanVariableExpression()
+        {
+            TargetValue = true;
+        }
+
         public override bool Evaluate(Dictionary<string, string> context)
         {
             if (context.ContainsKey(Key))

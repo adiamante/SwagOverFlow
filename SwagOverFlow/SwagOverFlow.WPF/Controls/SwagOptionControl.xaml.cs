@@ -324,6 +324,11 @@ namespace SwagOverFlow.WPF.Controls
             FrameworkElement fe = (FrameworkElement)e.OriginalSource;
             SwagOption opt = (SwagOption)fe.DataContext;
             opt.Parent.Children.Remove(opt);
+            CollectionViewSource.GetDefaultView(opt.Parent.Children).Refresh();
+            if (opt.Parent == OptionCollection)
+            {
+                CollectionViewSource.GetDefaultView(OptionCollection).Refresh();
+            }
         }
 
         private void SwagItemsControl_TreeViewItemDropPreview(object sender, RoutedEventArgs e)

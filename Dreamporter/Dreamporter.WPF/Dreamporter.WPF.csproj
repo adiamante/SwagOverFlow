@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Dreamporter\Dreamporter.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
-
 </Project>

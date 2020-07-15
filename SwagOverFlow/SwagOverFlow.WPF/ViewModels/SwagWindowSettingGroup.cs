@@ -71,13 +71,6 @@ namespace SwagOverFlow.WPF.ViewModels
             }
         }
 
-        public void Initialize()
-        {
-            this["Window"]["Theme"]["Base"].PropertyChanged += WindowSettingCollection_ThemePropertyChanged;
-            this["Window"]["Theme"]["Accent"].PropertyChanged += WindowSettingCollection_ThemePropertyChanged;
-            WindowSettingCollection_ThemePropertyChanged(this, new PropertyChangedEventArgs("Value"));
-        }
-
         private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             _childrenCollectionViewSource.View.Refresh();
@@ -93,43 +86,6 @@ namespace SwagOverFlow.WPF.ViewModels
 
             Theme theme = ThemeManager.Current.GetTheme($"{myBase}.{myAccent}");
             return theme;
-        }
-
-        private void WindowSettingCollection_ThemePropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Value")
-            {
-                Theme theme = GetCurrentTheme();
-                ThemeManager.Current.ChangeTheme(this, Application.Current.MainWindow.Resources, theme);
-
-                #region OLD - Theme switching is now handled in SwagControlBase.cs
-                //ResourceDictionary resourceDictionary = new ResourceDictionary();
-                //resourceDictionary.Source = new Uri($"pack://application:,,,/MahApps.Metro;component/Styles/Themes/{theme.BaseColorScheme}.{theme.ColorScheme}.xaml", UriKind.Absolute);
-
-                ////When there are duplicate references to Common.xaml (unavoidable since we are using Custom Controls),
-                ////add the theme to the Merged Dictionary 
-                ////(inefficient but there is no way to reset the MergedDictionaries without breaking during runtime)
-                //foreach (SettingsControl sc in Application.Current.MainWindow.FindVisualChildren<SettingsControl>())
-                //{
-                //    sc.Resources.MergedDictionaries.Add(resourceDictionary);
-                //}
-
-                //foreach (SwagComboBox scbx in Application.Current.MainWindow.FindVisualChildren<SwagComboBox>())
-                //{
-                //    scbx.Resources.MergedDictionaries.Add(resourceDictionary);
-                //}
-
-                //foreach (SwagDataGrid sdg in Application.Current.MainWindow.FindVisualChildren<SwagDataGrid>())
-                //{
-                //    sdg.Resources.MergedDictionaries.Add(resourceDictionary);
-                //}
-
-                //foreach (SearchTextBox stb in Application.Current.MainWindow.FindVisualChildren<SearchTextBox>())
-                //{
-                //    stb.Resources.MergedDictionaries.Add(resourceDictionary);
-                //}
-                #endregion OLD - Theme switching is now handled in SwagControlBase.cs
-            }
         }
         #endregion Methods
     }

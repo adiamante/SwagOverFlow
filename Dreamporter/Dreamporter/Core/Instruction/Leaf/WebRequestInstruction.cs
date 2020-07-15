@@ -23,7 +23,7 @@ namespace Dreamporter.Core
         #region Private Variables
         String _schema;
         String _limitField = "limit", _offSetField = "offset", _pageField = "page";
-        String _baseURL, _path, _postContent;
+        String _baseURL, _requestPath, _postContent;
         WebRequestType _requestType;
         WebRequestPostContentType _postContentType;
         Int32 _limit;
@@ -52,10 +52,10 @@ namespace Dreamporter.Core
         }
         #endregion BaseURL
         #region Path
-        public String Path
+        public String RequestPath
         {
-            get { return _path; }
-            set { SetValue(ref _path, value); }
+            get { return _requestPath; }
+            set { SetValue(ref _requestPath, value); }
         }
         #endregion Path
         #region PostContent
@@ -142,14 +142,14 @@ namespace Dreamporter.Core
         #endregion Properties
 
         #region Methods
-        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
+        public override void RunHandler(RunContext context, RunParams rp)
         {
             String cacheAddress = "", cacheKey = "", cacheVersion = "";
             WebRequestClient webRequestClient = new WebRequestClient();
             String strApply = JsonConvert.SerializeObject(this, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
             DataSet dsResult = null;
 
-            foreach (KeyValuePair<String, String> kvp in parameters)
+            foreach (KeyValuePair<String, String> kvp in rp.Params)
             {
                 strApply = strApply.Replace($"{{{kvp.Key}}}", kvp.Value);
             }
@@ -158,6 +158,7 @@ namespace Dreamporter.Core
             JsonHelper.ApplyJson(webRequestClient, jsonApply);
 
             String schemaName = (Schema == "" ? null : Schema) ?? Name ?? "";
+            schemaName = StringHelper.ToCamelCase(schemaName, '-');
 
             HttpResponseMessage response = null;
             Boolean useCache = CacheProperties?.Enabled ?? false && context.CacheProvider != null;
@@ -165,9 +166,9 @@ namespace Dreamporter.Core
             if (useCache)
             {
                 #region Get Cache Address and Key
-                cacheAddress = MessageTemplateHelper.ParseTemplate(CacheProperties?.AddressPattern ?? "", parameters);
-                cacheKey = Instruction.ResolveParameters(CacheProperties?.KeyPattern ?? "", parameters);
-                cacheVersion = Instruction.ResolveParameters(CacheProperties?.VersionPattern ?? "", parameters);
+                cacheAddress = MessageTemplateHelper.ParseTemplate(CacheProperties?.AddressPattern ?? "", rp.Params);
+                cacheKey = Instruction.ResolveParameters(CacheProperties?.KeyPattern ?? "", rp.Params);
+                cacheVersion = Instruction.ResolveParameters(CacheProperties?.VersionPattern ?? "", rp.Params);
                 #endregion Get Cache Address and Key
 
                 #region TryUseCache
@@ -288,7 +289,7 @@ namespace Dreamporter.Core
                     DateTime expireIn = DateTime.Now.AddHours(1);    //By default expire in an hour
                     Int32 expiresInMinutes = CacheProperties?.ExpiresInMinutes ?? 60;
 
-                    if (parameters.ContainsKey("CacheExpireOverrideTo1Hour") && Boolean.TryParse(parameters["CacheExpireOverrideTo1Hour"], out bool overrideToAnHour) && overrideToAnHour)
+                    if (rp.Params.ContainsKey("CacheExpireOverrideTo1Hour") && Boolean.TryParse(rp.Params["CacheExpireOverrideTo1Hour"], out bool overrideToAnHour) && overrideToAnHour)
                     {
                         expiresInMinutes = 60;
                     }
@@ -348,10 +349,10 @@ namespace Dreamporter.Core
                     for (int i = ParameterColumns.Count - 1; i >= 0; i--)       //reverse order
                     {
                         KeyValuePairViewModel<String, String> pcKvp = ParameterColumns[i];
-                        if (parameters.ContainsKey(pcKvp.Key) && !dt.Columns.Contains(pcKvp.Key))
+                        if (rp.Params.ContainsKey(pcKvp.Key) && !dt.Columns.Contains(pcKvp.Key))
                         {
                             DataColumn dc = dt.Columns.Add(pcKvp.Value);
-                            dc.Expression = $"'{parameters[pcKvp.Key]}'";
+                            dc.Expression = $"'{rp.Params[pcKvp.Key]}'";
                             dc.SetOrdinal(0);
                         }
                     }

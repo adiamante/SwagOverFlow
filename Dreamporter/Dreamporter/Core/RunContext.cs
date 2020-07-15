@@ -1,8 +1,10 @@
 ﻿using Dreamporter.Caching;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SwagOverFlow.Utils;
 using SwagOverFlow.Clients;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -19,6 +21,8 @@ namespace Dreamporter.Core
         //https://stackoverflow.com/questions/29411961/c-sharp-and-thread-safety-of-a-bool
         private int _inErrorStateBackValue = 0;
         private int _inAbortStateBackValue = 0;
+        ConcurrentDictionary<String, DataContext> _dataContexts = new ConcurrentDictionary<String, DataContext>();
+        ConcurrentDictionary<String, SqlClient> _sqlConnections = new ConcurrentDictionary<String, SqlClient>();
         #endregion Private Members
 
         #region Delegate/Events
@@ -61,11 +65,20 @@ namespace Dreamporter.Core
 
         #region Methods
 
+        #region DataContext
+        public void InitDataContexts(ICollection<DataContext> dataContexts)
+        {
+            foreach (DataContext dc in dataContexts)
+            {
+                _dataContexts.SafeSet(dc.Name, dc);
+            }
+        }
+        #endregion DataContext
+
         #region Main SQLite DB Methods
         public void Open()
         {
             _main.OpenConnection();
-            //AddSchema("util");
             #region Utility Table: util.numbers with column n
             _main.ExecuteNonQuery(@"CREATE TABLE [util.numbers](n integer primary key);
                 WITH RECURSIVE
@@ -86,6 +99,10 @@ namespace Dreamporter.Core
         public void Close()
         {
             _main.CloseConnection();
+            foreach (KeyValuePair<String, SqlClient> kvp in _sqlConnections)
+            {
+                kvp.Value.Close();
+            }
         }
 
         public void ExecuteNonQuery(String query)
@@ -108,10 +125,10 @@ namespace Dreamporter.Core
             DataSet ds = new DataSet();
             foreach (DataTable dt in _main.GetDataSet().Tables)
             {
-                if (dt.Rows.Count > 0)
-                {
+                //if (dt.Rows.Count > 0)
+                //{
                     ds.Tables.Add(dt.Copy());
-                }
+                //}
             }
 
             return ds;
@@ -135,7 +152,6 @@ namespace Dreamporter.Core
                 _main.BackupDatabase(dbFile);
             }
             catch { }
-
         }
 
         public Int32 GetNumRows(String query)
@@ -143,6 +159,39 @@ namespace Dreamporter.Core
             return _main.GetNumRows(query);
         }
         #endregion Main SQLite DB Methods
+
+        #region SqlConnections
+        public SqlClient GetSqlConnection(String connectionName, RunParams rp)
+        {
+            if (!_sqlConnections.ContainsKey(connectionName))
+            {
+                if (_dataContexts.ContainsKey(connectionName))
+                {
+                    if (_dataContexts[connectionName] is SqlConnectionDataContext sqlDataContext)
+                    {
+                        AddSqlConnection(sqlDataContext.Name, rp.ApplyParams(sqlDataContext.ConnectionString));
+                    }
+                    else
+                    {
+                        throw new Exception("SQL DataContext not found");
+                    }
+                }
+                else
+                {
+                    throw new Exception("SQL DataContext not found");
+                }
+            }
+
+            return _sqlConnections[connectionName];
+        }
+
+        public void AddSqlConnection(String connectionName, String connectionString)
+        {
+            SqlClient sqlClient = new SqlClient(connectionString);
+            _sqlConnections.AddOrUpdate(connectionName, sqlClient, (key, oldVal) => sqlClient);
+            sqlClient.Open();
+        }
+        #endregion SqlConnections
 
         #region Debug
         public JObject GetDebugObject()

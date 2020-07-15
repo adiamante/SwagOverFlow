@@ -56,7 +56,7 @@ namespace SwagOverFlow.Clients
     public class WebRequestClient : ViewModelBase
     {
         #region Private Variables
-        String _name, _baseURL, _path, _postContent, _limitField = "limit", _offSetField = "offset", _pageField = "page";
+        String _name, _baseURL, _requestPath, _postContent, _limitField = "limit", _offSetField = "offset", _pageField = "page";
         WebRequestType _requestType;
         WebRequestPostContentType _postContentType;
         Int32 _limit;
@@ -73,13 +73,13 @@ namespace SwagOverFlow.Clients
         }
         #endregion BaseURL
 
-        #region Path
-        public String Path
+        #region RequestPath
+        public String RequestPath
         {
-            get { return _path; }
-            set { SetValue(ref _path, value); }
+            get { return _requestPath; }
+            set { SetValue(ref _requestPath, value); }
         }
-        #endregion Path
+        #endregion RequestPath
 
         #region PostContent
         public String PostContent
@@ -176,8 +176,8 @@ namespace SwagOverFlow.Clients
             get
             {
                 String strParam = URLParamsString;
-                Path = Path.Replace('\\', '/');
-                String urlPath = string.Format("{0}{1}{2}{3}", Path, Path.EndsWith("/") || strParam == "" ? "" : "/", strParam != "" ? "?" : "", strParam);
+                RequestPath = RequestPath.Replace('\\', '/');
+                String urlPath = string.Format("{0}{1}{2}{3}", RequestPath, RequestPath.EndsWith("/") || strParam == "" ? "" : "/", strParam != "" ? "?" : "", strParam);
                 return $"{(BaseURL.TrimEnd(new char[] { '/' }))}/{(urlPath.TrimStart(new char[] { '/' }))}";
             }
         }
@@ -189,7 +189,7 @@ namespace SwagOverFlow.Clients
         public WebRequestClient()
         {
 
-            _name = _baseURL = _path = _postContent = "";
+            _name = _baseURL = _requestPath = _postContent = "";
             _forceFixXml = false;
         }
         #endregion Initialization
@@ -218,8 +218,8 @@ namespace SwagOverFlow.Clients
 
             #region Resolve URL Path
             String strParam = URLParamsString;
-            Path = Path.Replace('\\', '/');
-            String urlPath = string.Format("{0}{1}{2}{3}", Path, Path.EndsWith("/") || strParam == "" ? "" : "/", strParam != "" ? "?" : "", strParam);
+            RequestPath = RequestPath.Replace('\\', '/');
+            String urlPath = string.Format("{0}{1}{2}{3}", RequestPath, RequestPath.EndsWith("/") || strParam == "" ? "" : "/", strParam != "" ? "?" : "", strParam);
             #endregion Resolve URL Path
 
             switch (RequestType)
@@ -311,7 +311,7 @@ namespace SwagOverFlow.Clients
                         #endregion Loop Initialization
 
                         strParam = URLParamsString;
-                        urlPath = string.Format("{0}{1}{2}{3}", Path, Path.EndsWith("/") ? "" : "/", strParam != "" ? "?" : "", strParam);
+                        urlPath = string.Format("{0}{1}{2}{3}", RequestPath, RequestPath.EndsWith("/") ? "" : "/", strParam != "" ? "?" : "", strParam);
 
                         #region Get the Response by Request Type
                         switch (RequestType)

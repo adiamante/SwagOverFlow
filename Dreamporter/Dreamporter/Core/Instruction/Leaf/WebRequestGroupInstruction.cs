@@ -35,7 +35,7 @@ namespace Dreamporter.Core
         #endregion Properties
 
         #region Methods
-        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
+        public override void RunHandler(RunContext context, RunParams rp)
         {
             String cacheAddress = "", cacheKey = "", cacheVersion = "";
             WebRequestClient webReqTemplate = new WebRequestClient();
@@ -45,9 +45,10 @@ namespace Dreamporter.Core
             JsonHelper.ApplyJson(webReqTemplate, jsonApply);
 
             String schemaName = (Schema == "" ? null : Schema) ?? Name ?? "";
+            schemaName = StringHelper.ToCamelCase(schemaName, '-');
 
             String query = Query ?? "";
-            query = Instruction.ResolveParameters(query, parameters);
+            query = Instruction.ResolveParameters(query, rp.Params);
 
             DataTable dtblParameters = context.Query(query);
             String strWebReqTemplate = JsonHelper.ToJsonString(webReqTemplate);
@@ -59,9 +60,9 @@ namespace Dreamporter.Core
             if (useCache)
             {
                 #region Get Cache Address and Key
-                cacheAddress = MessageTemplateHelper.ParseTemplate(CacheProperties?.AddressPattern ?? "", parameters);
-                cacheKey = Instruction.ResolveParameters(CacheProperties?.KeyPattern ?? "", parameters);
-                cacheVersion = Instruction.ResolveParameters(CacheProperties?.VersionPattern ?? "", parameters);
+                cacheAddress = MessageTemplateHelper.ParseTemplate(CacheProperties?.AddressPattern ?? "", rp.Params);
+                cacheKey = Instruction.ResolveParameters(CacheProperties?.KeyPattern ?? "", rp.Params);
+                cacheVersion = Instruction.ResolveParameters(CacheProperties?.VersionPattern ?? "", rp.Params);
                 #endregion Get Cache Address and Key
 
                 #region TryUseCache
@@ -87,7 +88,7 @@ namespace Dreamporter.Core
                 {
                     Dictionary<String, String> dictParamSet = drParamSet.Table.Columns.Cast<DataColumn>().ToDictionary(c => c.ColumnName, c => drParamSet[c].ToString());
                     String strWebRequest = Instruction.ResolveParameters(strWebReqTemplate, dictParamSet);
-                    strWebRequest = Instruction.ResolveParameters(strWebRequest, parameters);
+                    strWebRequest = Instruction.ResolveParameters(strWebRequest, rp.Params);
 
                     WebRequestClient webRequest = JsonConvert.DeserializeObject<WebRequestClient>(strWebRequest);
                     response = webRequest.GetResponse();
@@ -177,7 +178,7 @@ namespace Dreamporter.Core
                     DateTime expireIn = DateTime.Now.AddHours(1);    //By default expire in an hour
                     Int32 expiresInMinutes = CacheProperties?.ExpiresInMinutes ?? 60;
 
-                    if (parameters.ContainsKey("CacheExpireOverrideTo1Hour") && Boolean.TryParse(parameters["CacheExpireOverrideTo1Hour"], out bool overrideToAnHour) && overrideToAnHour)
+                    if (rp.Params.ContainsKey("CacheExpireOverrideTo1Hour") && Boolean.TryParse(rp.Params["CacheExpireOverrideTo1Hour"], out bool overrideToAnHour) && overrideToAnHour)
                     {
                         expiresInMinutes = 60;
                     }
@@ -209,10 +210,10 @@ namespace Dreamporter.Core
                     for (int i = ParameterColumns.Count - 1; i >= 0; i--)       //reverse order
                     {
                         KeyValuePairViewModel<String, String> pcKvp = ParameterColumns[i];
-                        if (parameters.ContainsKey(pcKvp.Key) && !dt.Columns.Contains(pcKvp.Key))
+                        if (rp.Params.ContainsKey(pcKvp.Key) && !dt.Columns.Contains(pcKvp.Key))
                         {
                             DataColumn dc = dt.Columns.Add(pcKvp.Value);
-                            dc.Expression = $"'{parameters[pcKvp.Key]}'";
+                            dc.Expression = $"'{rp.Params[pcKvp.Key]}'";
                             dc.SetOrdinal(0);
                         }
                     }

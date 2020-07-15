@@ -327,7 +327,15 @@ namespace SwagOverFlow.WPF.Controls
         {
             FrameworkElement fe = (FrameworkElement)e.OriginalSource;
             BooleanExpression exp = (BooleanExpression)fe.DataContext;
-            exp.Parent.Children.Remove(exp);
+
+            if (exp.Parent == null)
+            {
+                ExpressionContainer.Remove(exp);
+            }
+            else
+            {
+                exp.Parent.Children.Remove(exp);
+            }
         }
 
         private void SwagItemsControl_TreeViewItemDropPreview(object sender, RoutedEventArgs e)
@@ -431,6 +439,14 @@ namespace SwagOverFlow.WPF.Controls
                                     }
                                 }
                                 droppedExpression.Sequence = targetSequence + (delta > 0 ? -1 : 0);
+                                if (targetExpression.Parent == null)
+                                {
+                                    CollectionViewSource.GetDefaultView(RootExpression).Refresh();
+                                }
+                                else
+                                {
+                                    CollectionViewSource.GetDefaultView(targetExpression.Parent.Children).Refresh();
+                                }
                             }
                             break;
                         case MoveType.Below:
@@ -444,6 +460,14 @@ namespace SwagOverFlow.WPF.Controls
                                     }
                                 }
                                 droppedExpression.Sequence = targetSequence + (delta > 0 ? 0 : 1);
+                                if (targetExpression.Parent == null)
+                                {
+                                    CollectionViewSource.GetDefaultView(RootExpression).Refresh();
+                                }
+                                else
+                                {
+                                    CollectionViewSource.GetDefaultView(targetExpression.Parent.Children).Refresh();
+                                }
                             }
                             break;
                     }

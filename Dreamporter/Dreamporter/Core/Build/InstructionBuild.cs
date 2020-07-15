@@ -7,16 +7,8 @@ namespace Dreamporter.Core
 {
     public class InstructionBuild : Build
     {
-        List<Schema> _requiredData = new List<Schema>();
         GroupInstruction _instructions = new GroupInstruction();
 
-        #region RequiredData
-        public List<Schema> RequiredData
-        {
-            get { return _requiredData; }
-            set { SetValue(ref _requiredData, value); }
-        }
-        #endregion RequiredData
         #region Instructions
         public GroupInstruction Instructions
         {
@@ -29,9 +21,9 @@ namespace Dreamporter.Core
         #endregion Type
 
         #region Methods
-        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
+        public override void RunHandler(RunContext context, RunParams rp)
         {
-            Instructions.Run(context, parameters);
+            Instructions.Run(context, rp);
         }
         #endregion Methods
     }

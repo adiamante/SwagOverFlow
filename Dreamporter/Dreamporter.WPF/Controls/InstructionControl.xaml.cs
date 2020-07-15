@@ -1,4 +1,8 @@
-﻿using Dreamporter.Core;
+﻿using ControlzEx.Standard;
+using Dreamporter.Core;
+using Newtonsoft.Json.Linq;
+using SwagOverFlow.Clients;
+using SwagOverFlow.Utils;
 using SwagOverFlow.WPF.Controls;
 using SwagOverFlow.WPF.UI;
 using System;
@@ -347,7 +351,7 @@ namespace Dreamporter.WPF.Controls
                     break;
             }
 
-            ins.Display = "NEW";
+            ins.Name = $"NEW {instructions.Count + 1}";
             instructions.Add(ins);
             CollectionViewSource.GetDefaultView(instructions).Refresh();
         }
@@ -464,6 +468,14 @@ namespace Dreamporter.WPF.Controls
                                     }
                                 }
                                 droppedInstruction.Sequence = targetSequence + (delta > 0 ? -1 : 0);
+                                if (targetInstruction.Parent == null)
+                                {
+                                    CollectionViewSource.GetDefaultView(InstructionCollection).Refresh();
+                                }
+                                else
+                                {
+                                    CollectionViewSource.GetDefaultView(targetInstruction.Parent.Children).Refresh();
+                                }
                             }
                             break;
                         case MoveType.Below:
@@ -477,6 +489,14 @@ namespace Dreamporter.WPF.Controls
                                     }
                                 }
                                 droppedInstruction.Sequence = targetSequence + (delta > 0 ? 0 : 1);
+                                if (targetInstruction.Parent == null)
+                                {
+                                    CollectionViewSource.GetDefaultView(InstructionCollection).Refresh();
+                                }
+                                else
+                                {
+                                    CollectionViewSource.GetDefaultView(targetInstruction.Parent.Children).Refresh();
+                                }
                             }
                             break;
                     }
@@ -518,15 +538,37 @@ namespace Dreamporter.WPF.Controls
 
             if (instruction != null)
             {
+                String originalStatus = instruction.Status;
+                instruction.Status = new JObject(
+                    new JProperty("Path",  instruction.Path)
+                    ).ToString();
                 SwagItemsControlHelper.SetClipBoardData<Instruction>(instruction);
+                instruction.Status = originalStatus;
             }
         }
 
         private void SwagItemsControl_Paste(object sender, RoutedEventArgs e)
         {
+            FrameworkElement fe = (FrameworkElement)e.OriginalSource;
             Instruction instruction = SwagItemsControlHelper.GetClipBoardData<Instruction>();
+
             if (instruction != null)
             {
+                JObject jStatus = JObject.Parse(instruction.Status);
+                instruction.Status = "";
+                switch (fe.Tag)
+                {
+                    case "TEMPLATE":
+                        TemplateInstruction templateInstruction = new TemplateInstruction();
+                        templateInstruction.Name = instruction.Name;
+                        GroupInstruction groupInstruction = new GroupInstruction();
+                        groupInstruction.Children.Add(instruction);
+                        templateInstruction.Template = groupInstruction;
+                        templateInstruction.TemplateKey = jStatus["Path"].ToString();
+                        instruction = templateInstruction;
+                        break;
+                }
+
                 switch (e.OriginalSource)
                 {
                     case MenuItem mi:
@@ -565,6 +607,36 @@ namespace Dreamporter.WPF.Controls
             {
                 InstructionControl ic = (InstructionControl)e.OriginalSource;
                 ic.InstructionCollection = (GroupInstruction)instruction;
+            }
+        }
+
+        private void SwagOptionControl_Save(object sender, RoutedEventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(SaveEvent));
+        }
+
+        private void BooleanExpressionControl_Save(object sender, RoutedEventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(SaveEvent));
+        }
+
+        private void SchemasControl_Save(object sender, RoutedEventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(SaveEvent));
+        }
+
+        private void SqlParams_Import(object sender, RoutedEventArgs e)
+        {
+            SwagItemsControl sic = (SwagItemsControl)sender;
+            String txt = Clipboard.GetText();
+            try
+            {
+                List<SqlParam> sqlParams = JsonHelper.ToObject<List<SqlParam>>(txt);
+                sic.SwagItemsSource = sqlParams;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
         #endregion Events
@@ -622,5 +694,6 @@ namespace Dreamporter.WPF.Controls
             return moveType;
         }
         #endregion Methods
+
     }
 }

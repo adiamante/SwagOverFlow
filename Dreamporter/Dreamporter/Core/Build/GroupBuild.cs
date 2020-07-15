@@ -125,11 +125,11 @@ namespace Dreamporter.Core
         #endregion ICollection
 
         #region Methods
-        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
+        public override void RunHandler(RunContext context, RunParams rp)
         {
             foreach (Build child in Children.OrderBy(c => c.Sequence))
             {
-                child.Run(context, parameters);
+                child.Run(context, rp);
             }
         }
         #endregion Methods

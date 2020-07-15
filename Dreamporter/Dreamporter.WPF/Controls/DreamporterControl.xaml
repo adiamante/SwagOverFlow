@@ -12,7 +12,7 @@
              xmlns:swcmd="clr-namespace:SwagOverFlow.WPF.Commands;assembly=SwagOverFlow.WPF"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              x:Name="ThisControl"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -50,6 +50,12 @@
                 <Button DockPanel.Dock="Left" Click="RunIntegration_Click">
                     <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Play}" />
                 </Button>
+                <Button DockPanel.Dock="Right" Click="ExportIntegration_Click">
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Export}" />
+                </Button>
+                <Button DockPanel.Dock="Right" Click="ImportIntegration_Click">
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Import}" />
+                </Button>
                 <Grid />
             </DockPanel>
         </Grid>
@@ -84,6 +90,15 @@
                     </dwctl:BuildControl>
                 </TabItem>
                 <TabItem>
+                    <TabItem.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Apply Templates" Click="InstructionTemplatesApply_Click">
+                                <MenuItem.Icon>
+                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Update}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </TabItem.ContextMenu>
                     <TabItem.HeaderTemplate>
                         <DataTemplate>
                             <swctl:IconControl Text="Instruction Templates" Kind="{x:Static iconPacks:PackIconMaterialKind.Shape}" />
@@ -175,6 +190,36 @@
                                           ShowSaveButton="True"
                                           Save="DataContextsControl_Save">
                     </dwctl:DataContextsControl>
+                </TabItem>
+                <TabItem>
+                    <TabItem.HeaderTemplate>
+                        <DataTemplate>
+                            <swctl:IconControl Text="Schema Groups" Kind="{x:Static iconPacks:PackIconMaterialKind.Group}" />
+                        </DataTemplate>
+                    </TabItem.HeaderTemplate>
+                    <swctl:SwagItemsControl SwagItemsSource="{Binding SelectedIntegration.SchemaGroups, Mode=TwoWay, ElementName=ThisControl}" 
+                                            ShowSaveContextMenuItem="True"
+                                            Add="SchemaGroups_Add"
+                                            ShowAddContextMenuItem="True"
+                                            ShowItemAddContextMenuItem="True"
+                                            UseDefaultClear="True"
+                                            ShowClearContextMenuItem="True"
+                                            UseDefaultRemove="True"
+                                            ShowItemRemoveContextMenuItem="True"
+                                            ShowSaveButton="True"
+                                            SaveButtonHorizontalAlignment="Right"
+                                            SaveButtonVerticalAlignment="Bottom"
+                                            Save="SchemaGroups_Save">
+                        <swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                            <swui:SwagTemplate Type="{x:Type sys:String}">
+                                <swui:SwagTemplate.DataTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding .}" />
+                                    </DataTemplate>
+                                </swui:SwagTemplate.DataTemplate>
+                            </swui:SwagTemplate>
+                        </swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                    </swctl:SwagItemsControl>
                 </TabItem>
             </TabControl>
         </Grid>

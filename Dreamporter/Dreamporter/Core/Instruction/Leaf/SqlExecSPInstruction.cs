@@ -49,7 +49,7 @@ namespace Dreamporter.Core
         #endregion Properties
 
         #region Methods
-        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
+        public override void RunHandler(RunContext context, RunParams rp)
         {
             Dictionary<String, SqlParam> sqlParams = new Dictionary<string, SqlParam>();
             if (SqlParams != null)
@@ -58,8 +58,8 @@ namespace Dreamporter.Core
                 {
                     SqlParam p = JsonHelper.Clone<SqlParam>(p0);
                     String key = p.Key, value = p.Value == null ? "" : p.Value.ToString();
-                    key = Instruction.ResolveParameters(key, parameters);
-                    value = Instruction.ResolveParameters(value, parameters);
+                    key = Instruction.ResolveParameters(key, rp.Params);
+                    value = Instruction.ResolveParameters(value, rp.Params);
 
                     p.Key = key;
                     if (p.Type == SqlDbType.Structured)
@@ -84,8 +84,7 @@ namespace Dreamporter.Core
 
             try
             {
-                //TODO: FIX through RuntimeContext with new SqlDBContext class (does not exist yet;
-                DataSet ds = new DataSet(); //context.SqlConnections[ConnectionName].ExecuteStoredProcedure(StoredProcedure, sqlParams);
+                DataSet ds = context.GetSqlConnection(DBContext, rp).ExecuteStoredProcedure(StoredProcedure, sqlParams);
                 foreach (DataTable dt in ds.Tables)
                 {
                     dt.TableName = targetTable;
@@ -96,20 +95,20 @@ namespace Dreamporter.Core
                 {
                     if (kvpOutParam.Value.Direction == ParameterDirection.Output)
                     {
-                        if (parameters.ContainsKey(kvpOutParam.Value.Key))
+                        if (rp.Params.ContainsKey(kvpOutParam.Value.Key))
                         {
-                            parameters[kvpOutParam.Value.Key] = kvpOutParam.Value.Value.ToString();
+                            rp.Params[kvpOutParam.Value.Key] = kvpOutParam.Value.Value.ToString();
                         }
                         else
                         {
-                            parameters.Add(kvpOutParam.Value.Key, kvpOutParam.Value.Value.ToString());
+                            rp.Params.Add(kvpOutParam.Value.Key, kvpOutParam.Value.Value.ToString());
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Exception exOuter = new Exception($"SQL Params: {JsonHelper.ToJsonString(SqlParams)}\nparameters: {JsonHelper.ToJsonString(parameters)}", ex);
+                Exception exOuter = new Exception($"SQL Params: {JsonHelper.ToJsonString(SqlParams)}\nparameters: {JsonHelper.ToJsonString(rp)}", ex);
                 throw exOuter;
             }
         }

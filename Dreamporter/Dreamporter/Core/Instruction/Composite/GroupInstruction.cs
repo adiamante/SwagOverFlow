@@ -51,8 +51,9 @@ namespace Dreamporter.Core
 
         public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
         {
-            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
-            Parent?.OnSwagItemChanged(swagItem, e);
+            //Don't need this right now
+            //SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+            //Parent?.OnSwagItemChanged(swagItem, e);
         }
         #endregion SwagItemChanged
 
@@ -138,14 +139,14 @@ namespace Dreamporter.Core
         #endregion ICollection
 
         #region Methods
-        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
+        public override void RunHandler(RunContext context, RunParams rp)
         {
             if (IsConcurrent)
             {
                 ConcurrentOrderedTasks tasks = new ConcurrentOrderedTasks();
                 foreach (Instruction child in Children.OrderBy(c => c.Sequence))
                 {
-                    Task task = new Task(() => child.Run(context, parameters));
+                    Task task = new Task(() => child.Run(context, rp));
                     tasks.Append(task);
                 }
                 tasks.Execute();
@@ -154,7 +155,7 @@ namespace Dreamporter.Core
             {
                 foreach (Instruction child in Children.OrderBy(c => c.Sequence))
                 {
-                    child.Run(context, parameters);
+                    child.Run(context, rp);
                 }
             }
         }

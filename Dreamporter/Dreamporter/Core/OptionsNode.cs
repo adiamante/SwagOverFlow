@@ -10,14 +10,22 @@ using System.Text;
 namespace Dreamporter.Core
 {
     [JsonObject]
-    public class OptionsNode : SwagItemBase, ICollection<OptionsNode>
+    public class OptionsNode : SwagItem<OptionsNode, OptionsNode>, ICollection<OptionsNode>, ISwagParent<OptionsNode>
     {
         #region Private Members
         String _name;
         SwagOptionGroup _options = new SwagOptionGroup();
-        OptionsNode _parent = null;
         ObservableCollection<OptionsNode> _children;
         #endregion Private Members
+
+        #region SwagItemChanged
+        public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
+
+        public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        {
+
+        }
+        #endregion SwagItemChanged
 
         #region Name
         public String Name

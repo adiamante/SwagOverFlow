@@ -91,6 +91,10 @@ namespace Dreamporter.Data
                     .HasConversion(
                         i => JsonHelper.ToJsonString(i),
                         i => JsonHelper.ToObject<ObservableCollection<DataContext>>(i));
+                builder.Property(i => i.SchemaGroups)
+                    .HasConversion(
+                        i => JsonHelper.ToJsonString(i),
+                        i => JsonHelper.ToObject<ObservableCollection<String>>(i));
             }
         }
         #endregion IntegrationEntityConfiguration
@@ -104,6 +108,10 @@ namespace Dreamporter.Data
                     .HasConversion(
                         b => JsonHelper.ToJsonString(b),
                         b => JsonHelper.ToObject<BooleanContainerExpression>(b));
+                builder.Property(b => b.RequiredData)
+                    .HasConversion(
+                        i => JsonHelper.ToJsonString(i),
+                        i => JsonHelper.ToObject<ObservableCollection<Schema>>(i));
             }
         }
         #endregion BuildEntityConfiguration
@@ -124,10 +132,6 @@ namespace Dreamporter.Data
         {
             public void Configure(EntityTypeBuilder<InstructionBuild> builder)
             {
-                builder.Property(b => b.RequiredData)
-                    .HasConversion(
-                        i => JsonHelper.ToJsonString(i),
-                        i => JsonHelper.ToObject<List<Schema>>(i));
                 builder.Property(b => b.Instructions)
                     .HasConversion(
                         i => JsonHelper.ToJsonString(i),

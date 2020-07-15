@@ -59,7 +59,7 @@
                         <MenuItem Header="Query" Tag="LF_QRY" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
                             <MenuItem.Icon>
-                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.DatabaseSearch}" />
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.DatabaseSql}" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="SQL SP" Tag="LF_SQL_SP" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
@@ -104,6 +104,15 @@
                     <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.ClipboardPaste}" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="Paste As Template"
+                          Command="{Binding Parent.Tag.PasteCommand, RelativeSource={RelativeSource Self}}" 
+                          CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                          Visibility="{Binding Parent.Tag.ShowItemPasteContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}"
+                          Tag="TEMPLATE">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Shape}" />
+                </MenuItem.Icon>
+            </MenuItem>
             <MenuItem Header="Remove" 
                       Command="{Binding Parent.Tag.RemoveCommand, RelativeSource={RelativeSource Self}}" 
                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -137,6 +146,15 @@
                     <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.ClipboardPaste}" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="Paste As Template"
+                          Command="{Binding Parent.Tag.PasteCommand, RelativeSource={RelativeSource Self}}" 
+                          CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                          Visibility="{Binding Parent.Tag.ShowItemPasteContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}"
+                          Tag="TEMPLATE">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Shape}" />
+                </MenuItem.Icon>
+            </MenuItem>
             <MenuItem Header="Remove" 
                       Command="{Binding Parent.Tag.RemoveCommand, RelativeSource={RelativeSource Self}}" 
                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -158,14 +176,38 @@
                 </Button>
             </Grid>
         </ControlTemplate>
+        <DataTemplate x:Key="ConditionHeaderDataTemplate">
+            <swctl:IconControl Text="Condition" Kind="{x:Static iconPacks:PackIconJamIconsKind.Directions}" />
+        </DataTemplate>
+        <DataTemplate x:Key="ConditionDataTemplate">
+            <swctl:BooleanExpressionControl ExpressionContainer="{Binding DataContext.Condition, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
+                                            ShowSaveContextMenuItem="True" 
+                                            ShowAddContextMenuItem="True"
+                                            ShowCopyContextMenuItem="True"
+                                            ShowPasteContextMenuItem="True"
+                                            ShowExportContextMenuItem="True"
+                                            ShowImportContextMenuItem="True"
+                                            ShowItemAddContextMenuItem="True"
+                                            ShowItemRemoveContextMenuItem="True"
+                                            Save="BooleanExpressionControl_Save">
+            </swctl:BooleanExpressionControl>
+        </DataTemplate>
+        <DataTemplate x:Key="RequiredDataHeaderTemplate">
+            <swctl:IconControl Text="Required Data" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
+        </DataTemplate>
+        <DataTemplate x:Key="RequiredDataDataTemplate">
+            <dwctl:SchemasControl Schemas="{Binding DataContext.RequiredData, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
+                                          Save="SchemasControl_Save">
+            </dwctl:SchemasControl>
+        </DataTemplate>
         <DataTemplate x:Key="GeneralHeaderTemplate">
             <swctl:IconControl Text="General" Kind="{x:Static iconPacks:PackIconMaterialKind.Cog}" />
         </DataTemplate>
         <ControlTemplate x:Key="GeneralFieldsControlTemplate" TargetType="{x:Type ContentControl}">
             <StackPanel>
                 <CheckBox IsChecked="{Binding IsEnabled}" Content="Enabled" />
-                <swctl:IconControl Text="Display" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaNBoxOutline}" />
-                <TextBox Text="{Binding Display}" />
+                <swctl:IconControl Text="Name" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaNBoxOutline}" />
+                <TextBox Text="{Binding Name}" />
                 <CheckBox IsChecked="{Binding DoLog}" Content="DoLog" />
                 <swctl:IconControl Text="LogPattern" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaLBoxOutline}" />
                 <TextBox Text="{Binding LogPattern}" />
@@ -213,8 +255,11 @@
                             </StackPanel>
                         </ContentControl>
                     </TabItem>
-                    <TabItem HeaderTemplate="{StaticResource CacheHeaderTemplate}">
-                        <ContentControl Template="{StaticResource CacheFieldsControlTemplate}" />
+                    <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource RequiredDataHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource RequiredDataDataTemplate}" />
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource DescriptionHeaderTemplate}">
                         <ContentControl Template="{StaticResource DescriptionFieldControlTemplate}" />
@@ -233,8 +278,11 @@
                             </StackPanel>
                         </ContentControl>
                     </TabItem>
-                    <TabItem HeaderTemplate="{StaticResource CacheHeaderTemplate}">
-                        <ContentControl Template="{StaticResource CacheFieldsControlTemplate}" />
+                    <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource RequiredDataHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource RequiredDataDataTemplate}" />
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource QueryHeaderTemplate}">
                         <ContentControl Template="{StaticResource QueryFieldControlTemplate}" />
@@ -256,6 +304,12 @@
                             </StackPanel>
                         </ContentControl>
                     </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource RequiredDataHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource RequiredDataDataTemplate}" />
+                    </TabItem>
                     <TabItem HeaderTemplate="{StaticResource CacheHeaderTemplate}">
                         <ContentControl Template="{StaticResource CacheFieldsControlTemplate}" />
                     </TabItem>
@@ -273,9 +327,11 @@
                 <swctl:IconControl Text="Key" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
                 <TextBox Text="{Binding Key}" />
                 <swctl:IconControl Text="Value" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaVBoxOutline}" />
-                <TextBox Text="{Binding Value}" />
+                <TextBox Text="{Binding Value}" AcceptsReturn="True" AcceptsTab="True" />
                 <swctl:IconControl Text="Type" Kind="{x:Static iconPacks:PackIconMaterialKind.ShapeOutline}" />
                 <ComboBox SelectedValue="{Binding Type}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sd:SqlDbType}}}" />
+                <swctl:IconControl Text="Size" Kind="{x:Static iconPacks:PackIconMaterialKind.Counter}" />
+                <metro:NumericUpDown Value="{Binding Size}" />
                 <swctl:IconControl Text="Direction" Kind="{x:Static iconPacks:PackIconBoxIconsKind.SolidDirections}" />
                 <ComboBox SelectedValue="{Binding Direction}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sd:ParameterDirection}}}" />
             </StackPanel>
@@ -303,7 +359,9 @@
                             <swctl:IconControl Text="TargetTable" Kind="{x:Static iconPacks:PackIconMaterialKind.TableEye}" />
                             <TextBox Text="{Binding TargetTable}" />
                             <swctl:IconControl Text="SQL Params" Kind="{x:Static iconPacks:PackIconUniconsKind.X}" />
-                            <swctl:SwagItemsControl SwagItemsSource="{Binding SqlParams}" 
+                            <swctl:SwagItemsControl SwagItemsSource="{Binding SqlParams, Mode=TwoWay}" 
+                                                    ShowImportContextMenuItem="True"
+                                                    Import="SqlParams_Import"
                                                     UseDefaultAdd="True"
                                                     ShowAddContextMenuItem="True"
                                                     ShowItemAddContextMenuItem="True"
@@ -317,6 +375,12 @@
                                 </swctl:SwagItemsControl.CustomDefaultItemTemplate>
                             </swctl:SwagItemsControl>
                         </StackPanel>
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource RequiredDataHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource RequiredDataDataTemplate}" />
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource CacheHeaderTemplate}">
                         <ContentControl Template="{StaticResource CacheFieldsControlTemplate}" />
@@ -339,12 +403,12 @@
                             <TextBox Text="{Binding Schema}" />
                             <swctl:IconControl Text="Base URL" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Website}" />
                             <TextBox Text="{Binding BaseURL}" />
-                            <swctl:IconControl Text="Path" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Path}" />
-                            <TextBox Text="{Binding Path}" />
+                            <swctl:IconControl Text="Request Path" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Path}" />
+                            <TextBox Text="{Binding RequestPath}" />
                             <swctl:IconControl Text="Request Type" Kind="{x:Static iconPacks:PackIconUniconsKind.CloudInfo}" />
                             <ComboBox SelectedValue="{Binding RequestType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestType}}}" />
                             <swctl:IconControl Text="Headers" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaHBoxOutline}" />
-                            <swctl:SwagItemsControl SwagItemsSource="{Binding Headers}" 
+                            <swctl:SwagItemsControl SwagItemsSource="{Binding Headers, Mode=TwoWay}" 
                                                     UseDefaultAdd="True"
                                                     ShowAddContextMenuItem="True"
                                                     ShowItemAddContextMenuItem="True"
@@ -358,7 +422,7 @@
                                 </swctl:SwagItemsControl.CustomDefaultItemTemplate>
                             </swctl:SwagItemsControl>
                             <swctl:IconControl Text="Url Params" Kind="{x:Static iconPacks:PackIconMaterialKind.Equal}" />
-                            <swctl:SwagItemsControl SwagItemsSource="{Binding UrlParams}" 
+                            <swctl:SwagItemsControl SwagItemsSource="{Binding UrlParams, Mode=TwoWay}" 
                                                     UseDefaultAdd="True"
                                                     ShowAddContextMenuItem="True"
                                                     ShowItemAddContextMenuItem="True"
@@ -372,7 +436,7 @@
                                 </swctl:SwagItemsControl.CustomDefaultItemTemplate>
                             </swctl:SwagItemsControl>
                             <swctl:IconControl Text="Parameter Columns" Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumnWidth}" />
-                            <swctl:SwagItemsControl SwagItemsSource="{Binding ParameterColumns}" 
+                            <swctl:SwagItemsControl SwagItemsSource="{Binding ParameterColumns, Mode=TwoWay}" 
                                                     UseDefaultAdd="True"
                                                     ShowAddContextMenuItem="True"
                                                     ShowItemAddContextMenuItem="True"
@@ -386,6 +450,12 @@
                                 </swctl:SwagItemsControl.CustomDefaultItemTemplate>
                             </swctl:SwagItemsControl>
                         </StackPanel>
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource RequiredDataHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource RequiredDataDataTemplate}" />
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource CacheHeaderTemplate}">
                         <ContentControl Template="{StaticResource CacheFieldsControlTemplate}" />
@@ -413,45 +483,54 @@
                             <swctl:IconControl Text="Request Type" Kind="{x:Static iconPacks:PackIconUniconsKind.CloudInfo}" />
                             <ComboBox SelectedValue="{Binding RequestType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestType}}}" />
                             <swctl:IconControl Text="Headers" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaHBoxOutline}" />
-                            <swctl:CollectionControl Collection="{Binding Headers}" MinHeight="30">
-                                <swctl:CollectionControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel>
-                                            <swctl:IconControl Text="Key" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                                            <TextBox Text="{Binding Key}" />
-                                            <swctl:IconControl Text="Value" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaVBoxOutline}" />
-                                            <TextBox Text="{Binding Value}" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </swctl:CollectionControl.ItemTemplate>
-                            </swctl:CollectionControl>
+                            <swctl:SwagItemsControl SwagItemsSource="{Binding Headers, Mode=TwoWay}" 
+                                                    UseDefaultAdd="True"
+                                                    ShowAddContextMenuItem="True"
+                                                    ShowItemAddContextMenuItem="True"
+                                                    UseDefaultClear="True"
+                                                    ShowClearContextMenuItem="True"
+                                                    UseDefaultRemove="True"
+                                                    ShowItemRemoveContextMenuItem="True"
+                                                    MinHeight="30">
+                                <swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                    <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
+                                </swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                            </swctl:SwagItemsControl>
                             <swctl:IconControl Text="Url Params" Kind="{x:Static iconPacks:PackIconMaterialKind.Equal}" />
-                            <swctl:CollectionControl Collection="{Binding UrlParams}" MinHeight="30">
-                                <swctl:CollectionControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel>
-                                            <swctl:IconControl Text="Key" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                                            <TextBox Text="{Binding Key}" />
-                                            <swctl:IconControl Text="Value" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaVBoxOutline}" />
-                                            <TextBox Text="{Binding Value}" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </swctl:CollectionControl.ItemTemplate>
-                            </swctl:CollectionControl>
+                            <swctl:SwagItemsControl SwagItemsSource="{Binding UrlParams, Mode=TwoWay}" 
+                                                    UseDefaultAdd="True"
+                                                    ShowAddContextMenuItem="True"
+                                                    ShowItemAddContextMenuItem="True"
+                                                    UseDefaultClear="True"
+                                                    ShowClearContextMenuItem="True"
+                                                    UseDefaultRemove="True"
+                                                    ShowItemRemoveContextMenuItem="True"
+                                                    MinHeight="30">
+                                <swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                    <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
+                                </swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                            </swctl:SwagItemsControl>
                             <swctl:IconControl Text="Parameter Columns" Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumnWidth}" />
-                            <swctl:CollectionControl Collection="{Binding ParameterColumns}" MinHeight="30">
-                                <swctl:CollectionControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel>
-                                            <swctl:IconControl Text="Key" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                                            <TextBox Text="{Binding Key}" />
-                                            <swctl:IconControl Text="Value" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaVBoxOutline}" />
-                                            <TextBox Text="{Binding Value}" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </swctl:CollectionControl.ItemTemplate>
-                            </swctl:CollectionControl>
+                            <swctl:SwagItemsControl SwagItemsSource="{Binding ParameterColumns, Mode=TwoWay}" 
+                                                    UseDefaultAdd="True"
+                                                    ShowAddContextMenuItem="True"
+                                                    ShowItemAddContextMenuItem="True"
+                                                    UseDefaultClear="True"
+                                                    ShowClearContextMenuItem="True"
+                                                    UseDefaultRemove="True"
+                                                    ShowItemRemoveContextMenuItem="True"
+                                                    MinHeight="30">
+                                <swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                    <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
+                                </swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                            </swctl:SwagItemsControl>
                         </StackPanel>
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource RequiredDataHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource RequiredDataDataTemplate}" />
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource CacheHeaderTemplate}">
                         <ContentControl Template="{StaticResource CacheFieldsControlTemplate}" />
@@ -461,6 +540,55 @@
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource DescriptionHeaderTemplate}">
                         <ContentControl Template="{StaticResource DescriptionFieldControlTemplate}" />
+                    </TabItem>
+                </TabControl>
+            </ContentControl>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type dc:TemplateInstruction}">
+            <ContentControl Template="{StaticResource InstructionControlTemplate}">
+                <TabControl>
+                    <TabItem HeaderTemplate="{StaticResource GeneralHeaderTemplate}">
+                        <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}">
+                            <StackPanel>
+                                <swctl:IconControl Text="Template Key" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaKBoxOutline}" />
+                                <TextBox Text="{Binding TemplateKey}" />
+                            </StackPanel>
+                        </ContentControl>
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource RequiredDataHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource RequiredDataDataTemplate}" />
+                    </TabItem>
+                    <TabItem>
+                        <TabItem.HeaderTemplate>
+                            <DataTemplate>
+                                <swctl:IconControl Text="Options" Kind="{x:Static iconPacks:PackIconIoniconsKind.OptionsMD}" />
+                            </DataTemplate>
+                        </TabItem.HeaderTemplate>
+                        <swctl:SwagOptionControl 
+                                ShowSaveContextMenuItem="True" 
+                                ShowAddContextMenuItem="True"
+                                ShowCopyContextMenuItem="True"
+                                ShowPasteContextMenuItem="True"
+                                ShowExportContextMenuItem="True"
+                                ShowImportContextMenuItem="True"
+                                ShowItemAddContextMenuItem="True"
+                                ShowItemRemoveContextMenuItem="True"
+                                OptionCollection="{Binding Options, Mode=TwoWay}"
+                            Save="SwagOptionControl_Save">
+                        </swctl:SwagOptionControl>
+                    </TabItem>
+                    <TabItem>
+                        <TabItem.HeaderTemplate>
+                            <DataTemplate>
+                                <swctl:IconControl Text="Template" Kind="{x:Static iconPacks:PackIconBoxIconsKind.SolidShapes}" />
+                            </DataTemplate>
+                        </TabItem.HeaderTemplate>
+                        <dwctl:InstructionControl InstructionCollection="{Binding Template, Mode=TwoWay}">
+                            
+                        </dwctl:InstructionControl>
                     </TabItem>
                 </TabControl>
             </ContentControl>
@@ -534,7 +662,7 @@
                                 <MenuItem Header="Query" Tag="LF_QRY" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
                                     <MenuItem.Icon>
-                                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.DatabaseSearch}" />
+                                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.DatabaseSql}" />
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem Header="SQL SP" Tag="LF_SQL_SP" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
@@ -647,60 +775,91 @@
                     <swui:SwagTemplate Type="{x:Type dc:ForEachTableGroupInstruction}">
                         <swui:SwagTemplate.DataTemplate>
                             <HierarchicalDataTemplate ItemsSource="{Binding Children, Converter={swui:CollectionToViewConverter Sort=Sequence}}">
-                                <DockPanel>
-                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
-                                    <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconMaterialKind.Table}" />
-                                </DockPanel>
+                                <Grid>
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
+                                        <swctl:IconControl Text="{Binding Name}" Kind="{x:Static iconPacks:PackIconMaterialKind.Table}" />
+                                    </DockPanel>
+                                    <Rectangle Fill="Gray" Opacity=".5" Visibility="{Binding IsEnabled, Converter={swui:BoolToVisibilityConverter TrueValue=Collapsed,FalseValue=Visible}}" />
+                                </Grid>
                             </HierarchicalDataTemplate>
                         </swui:SwagTemplate.DataTemplate>
                     </swui:SwagTemplate>
                     <swui:SwagTemplate Type="{x:Type dc:GroupInstruction}">
                         <swui:SwagTemplate.DataTemplate>
                             <HierarchicalDataTemplate ItemsSource="{Binding Children, Converter={swui:CollectionToViewConverter Sort=Sequence}}">
-                                <DockPanel>
-                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
-                                    <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.LightningTrio}" />
-                                </DockPanel>
+                                <Grid>
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
+                                        <swctl:IconControl Text="{Binding Name}" Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.LightningTrio}" />
+                                    </DockPanel>
+                                    <Rectangle Fill="Gray" Opacity=".5" Visibility="{Binding IsEnabled, Converter={swui:BoolToVisibilityConverter TrueValue=Collapsed,FalseValue=Visible}}" />
+                                </Grid>
                             </HierarchicalDataTemplate>
                         </swui:SwagTemplate.DataTemplate>
                     </swui:SwagTemplate>
                     <swui:SwagTemplate Type="{x:Type dc:QueryInstruction}">
                         <swui:SwagTemplate.DataTemplate>
                             <DataTemplate>
-                                <DockPanel>
-                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
-                                    <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconMaterialKind.DatabaseSearch}" />
-                                </DockPanel>
+                                <Grid>
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
+                                        <swctl:IconControl Text="{Binding Name}" Kind="{x:Static iconPacks:PackIconModernKind.DatabaseSql}" />
+                                    </DockPanel>
+                                    <Rectangle Fill="Gray" Opacity=".5" Visibility="{Binding IsEnabled, Converter={swui:BoolToVisibilityConverter TrueValue=Collapsed,FalseValue=Visible}}" />
+                                </Grid>
                             </DataTemplate>
                         </swui:SwagTemplate.DataTemplate>
                     </swui:SwagTemplate>
                     <swui:SwagTemplate Type="{x:Type dc:SqlExecSPInstruction}">
                         <swui:SwagTemplate.DataTemplate>
                             <DataTemplate>
-                                <DockPanel>
-                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
-                                    <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseRun}" />
-                                </DockPanel>
+                                <Grid>
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
+                                        <swctl:IconControl Text="{Binding Name}" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseRun}" />
+                                    </DockPanel>
+                                    <Rectangle Fill="Gray" Opacity=".5" Visibility="{Binding IsEnabled, Converter={swui:BoolToVisibilityConverter TrueValue=Collapsed,FalseValue=Visible}}" />
+                                </Grid>
                             </DataTemplate>
                         </swui:SwagTemplate.DataTemplate>
                     </swui:SwagTemplate>
                     <swui:SwagTemplate Type="{x:Type dc:ForEachTableWebRequestInstruction}">
                         <swui:SwagTemplate.DataTemplate>
                             <DataTemplate>
-                                <DockPanel>
-                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
-                                    <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconWeatherIconsKind.Thunderstorm}" />
-                                </DockPanel>
+                                <Grid>
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
+                                        <swctl:IconControl Text="{Binding Name}" Kind="{x:Static iconPacks:PackIconWeatherIconsKind.Thunderstorm}" />
+                                    </DockPanel>
+                                    <Rectangle Fill="Gray" Opacity=".5" Visibility="{Binding IsEnabled, Converter={swui:BoolToVisibilityConverter TrueValue=Collapsed,FalseValue=Visible}}" />
+                                </Grid>
                             </DataTemplate>
                         </swui:SwagTemplate.DataTemplate>
                     </swui:SwagTemplate>
                     <swui:SwagTemplate Type="{x:Type dc:WebRequestInstruction}">
                         <swui:SwagTemplate.DataTemplate>
                             <DataTemplate>
-                                <DockPanel>
-                                    <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
-                                    <swctl:IconControl Text="{Binding Display}" Kind="{x:Static iconPacks:PackIconBoxIconsKind.RegularCloudLightning}" />
-                                </DockPanel>
+                                <Grid>
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
+                                        <swctl:IconControl Text="{Binding Name}" Kind="{x:Static iconPacks:PackIconBoxIconsKind.RegularCloudLightning}" />
+                                    </DockPanel>
+                                    <Rectangle Fill="Gray" Opacity=".5" Visibility="{Binding IsEnabled, Converter={swui:BoolToVisibilityConverter TrueValue=Collapsed,FalseValue=Visible}}" />
+                                </Grid>
+                            </DataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
+                    <swui:SwagTemplate Type="{x:Type dc:TemplateInstruction}">
+                        <swui:SwagTemplate.DataTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
+                                        <swctl:IconControl Text="{Binding Name}" Kind="{x:Static iconPacks:PackIconBoxIconsKind.SolidShapes}" />
+                                    </DockPanel>
+                                    <Rectangle Fill="Gray" Opacity=".5" Visibility="{Binding IsEnabled, Converter={swui:BoolToVisibilityConverter TrueValue=Collapsed,FalseValue=Visible}}" />
+                                </Grid>
                             </DataTemplate>
                         </swui:SwagTemplate.DataTemplate>
                     </swui:SwagTemplate>

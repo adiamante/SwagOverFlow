@@ -31,12 +31,12 @@ namespace Dreamporter.Core
         #endregion TargetTable
         #endregion Properties
 
-        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
+        public override void RunHandler(RunContext context, RunParams rp)
         {
             String query = Query,
                 targetTable = TargetTable ?? "";
 
-            foreach (KeyValuePair<String, String> kvp in parameters)
+            foreach (KeyValuePair<String, String> kvp in rp.Params)
             {
                 targetTable = targetTable.Replace($"{{{kvp.Key}}}", kvp.Value);
                 query = query.Replace($"{{{kvp.Key}}}", kvp.Value);

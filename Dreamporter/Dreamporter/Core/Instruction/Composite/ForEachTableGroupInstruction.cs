@@ -36,10 +36,10 @@ namespace Dreamporter.Core
         #endregion Properties
 
         #region Methods
-        public override void RunHandler(RunContext context, Dictionary<String, String> parameters)
+        public override void RunHandler(RunContext context, RunParams rp)
         {
             String query = Query ?? "";
-            query = Instruction.ResolveParameters(query, parameters);
+            query = Instruction.ResolveParameters(query, rp.Params);
 
             DataTable targetTable = context.Query(query);
             Boolean firstRowDone = false;
@@ -51,32 +51,23 @@ namespace Dreamporter.Core
                 }
 
                 //String info = "";
-                Dictionary<String, String> localParameters = JsonHelper.Clone<Dictionary<String, String>>(parameters);
+                RunParams rpLocal = JsonHelper.Clone<RunParams>(rp);
                 foreach (DataColumn dc in targetTable.Columns)
                 {
-                    if (localParameters.ContainsKey(dc.ColumnName))
+                    if (rpLocal.Params.ContainsKey(dc.ColumnName))
                     {
-                        localParameters[dc.ColumnName] = dr[dc].ToString();
+                        rpLocal.Params[dc.ColumnName] = dr[dc].ToString();
                     }
                     else
                     {
-                        localParameters.Add(dc.ColumnName, dr[dc].ToString());
+                        rpLocal.Params.Add(dc.ColumnName, dr[dc].ToString());
                     }
                     //info += $"|{dr[dc].ToString()}|";
                 }
-
-                //if (localParameters.ContainsKey("Info"))
-                //{
-                //    localParameters["Info"] = localParameters["Info"] + info;
-                //}
-                //else
-                //{
-                //    localParameters.Add("Info", info);
-                //}
-
+                
                 foreach (Instruction child in Children.OrderBy(c => c.Sequence))
                 {
-                    child.Run(context, localParameters);
+                    child.Run(context, rpLocal);
                 }
 
                 firstRowDone = true;

@@ -318,7 +318,10 @@ namespace SwagOverFlow.WPF.Controls
                                 Object[] args = new object[typeArgs.Length];
                                 for (int i = 0; i < typeArgs.Length; i++)
                                 {
-                                    args[i] = Activator.CreateInstance(typeArgs[i]);
+                                    if (typeArgs[i].IsValueType)
+                                    {
+                                        args[i] = Activator.CreateInstance(typeArgs[i]);
+                                    }
                                     ReflectionHelper.MethodInfoCollection[SwagItemsSource.GetType()]["Add"].Invoke(SwagItemsSource, args);
                                     Refresh();
                                 }
@@ -1120,6 +1123,11 @@ namespace SwagOverFlow.WPF.Controls
         {
             ICollectionView view = CollectionViewSource.GetDefaultView(SwagItemsSource);
             view.Refresh();
+
+            //Reset ItemsSource
+            var temp = SwagItemsSource;
+            SwagItemsSource = null;
+            SwagItemsSource = temp;
         }
         #endregion Method
     }
@@ -1144,11 +1152,11 @@ namespace SwagOverFlow.WPF.Controls
             return default(T);
         }
 
-        public static void ExportDataToFile<T>(T item)
+        public static void ExportDataToFile<T>(T item, String name = "")
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            sfd.FileName = typeof(T).Name;
+            sfd.FileName = name == "" ? typeof(T).Name : name;
             sfd.Filter = "JSON files (*.json)|*.json";
             System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
             {

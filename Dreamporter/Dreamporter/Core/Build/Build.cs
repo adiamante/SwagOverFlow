@@ -1,7 +1,9 @@
 ﻿using Dreamporter.Core;
+using Newtonsoft.Json;
 using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Dreamporter.Core
@@ -13,8 +15,9 @@ namespace Dreamporter.Core
         Int32? _integrationId;
         String _name, _description;
         Boolean _isEnabled = true;
-        BooleanContainerExpression _condition = new BooleanContainerExpression();
         Integration _integration;
+        BooleanContainerExpression _condition = new BooleanContainerExpression();
+        ObservableCollection<Schema> _requiredData = new ObservableCollection<Schema>();
         #endregion Private Members
 
         #region Properties
@@ -53,14 +56,7 @@ namespace Dreamporter.Core
             get { return _description; }
             set { SetValue(ref _description, value); }
         }
-        #endregion Description
-        #region Condition
-        public BooleanContainerExpression Condition
-        {
-            get { return _condition; }
-            set { SetValue(ref _condition, value); }
-        }
-        #endregion Condition   
+        #endregion Description 
         #region IsEnabled
         public Boolean IsEnabled
         {
@@ -71,6 +67,38 @@ namespace Dreamporter.Core
         #region Type
         public abstract Type Type { get; }
         #endregion Type
+        #region Path
+        [JsonIgnore]
+        public String Path
+        {
+            get
+            {
+                String path = "";
+                Build temp = this;
+                while (temp != null)
+                {
+                    path = $"{temp.Name}/{path}";
+                    temp = temp.Parent;
+                }
+                path = path.Trim('/');
+                return path;
+            }
+        }
+        #endregion Path
+        #region Condition
+        public BooleanContainerExpression Condition
+        {
+            get { return _condition; }
+            set { SetValue(ref _condition, value); }
+        }
+        #endregion Condition  
+        #region RequiredData
+        public ObservableCollection<Schema> RequiredData
+        {
+            get { return _requiredData; }
+            set { SetValue(ref _requiredData, value); }
+        }
+        #endregion RequiredData
         #endregion Properties
 
         #region Initialization
@@ -81,11 +109,16 @@ namespace Dreamporter.Core
         #endregion Initialization
 
         #region Methods
-        abstract public void RunHandler(RunContext context, Dictionary<String, String> parameters);
+        abstract public void RunHandler(RunContext context, RunParams rp);
 
-        public void Run(RunContext context, Dictionary<String, String> parameters)
+        public void Run(RunContext context, RunParams rp)
         {
-            RunHandler(context, parameters);
+            if (IsEnabled && Condition.Evaluate(rp.Params))
+            {
+                //Passing parameters directly is not thread safe (Should run sequentially or create new instance)
+                rp.Build = Path;
+                RunHandler(context, rp);
+            }
         }
         #endregion Methods
     }
