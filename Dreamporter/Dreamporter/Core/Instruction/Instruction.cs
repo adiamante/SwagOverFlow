@@ -151,6 +151,9 @@ namespace Dreamporter.Core
 
             if (doExecute && !context.InAbortState)
             {
+                IsSelected = true;
+                IsExpanded = true;
+
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
@@ -198,6 +201,9 @@ namespace Dreamporter.Core
                     context.Log(fullPath, $"End - {sw.Elapsed.ToString("G")}", logMessage);
                 }
                 #endregion DoLog
+
+
+                IsExpanded = false;
             }
         }
 

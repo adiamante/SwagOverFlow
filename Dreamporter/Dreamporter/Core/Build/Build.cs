@@ -115,9 +115,12 @@ namespace Dreamporter.Core
         {
             if (IsEnabled && Condition.Evaluate(rp.Params))
             {
+                IsSelected = true;
+                IsExpanded = true;
                 //Passing parameters directly is not thread safe (Should run sequentially or create new instance)
                 rp.Build = Path;
                 RunHandler(context, rp);
+                IsExpanded = false;
             }
         }
         #endregion Methods

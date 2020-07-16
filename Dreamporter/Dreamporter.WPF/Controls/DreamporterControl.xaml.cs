@@ -80,6 +80,24 @@ namespace Dreamporter.WPF.Controls
         }
         #endregion Schemas
 
+        #region IsBusy
+        public static DependencyProperty IsBusyProperty =
+            DependencyProperty.Register(
+                "IsBusy",
+                typeof(bool),
+                typeof(DreamporterControl));
+
+        public bool IsBusy
+        {
+            get { return (bool)GetValue(IsBusyProperty); }
+            set 
+            {
+                SetValue(IsBusyProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion IsBusy
+
         #region Initialization
         public DreamporterControl()
         {
@@ -252,11 +270,12 @@ namespace Dreamporter.WPF.Controls
             }
         }
 
-        private void RunIntegration_Click(object sender, RoutedEventArgs e)
+        private async void RunIntegration_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedIntegration != null)
             {
-                RunContext runContext = SelectedIntegration.Run();
+                IsBusy = true;
+                RunContext runContext = await SelectedIntegration.RunAsync();
                 runContext.ExportDB($"Export\\{SelectedIntegration.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.db");
 
                 DataSet dsResult = runContext.GetDataSet();
@@ -329,6 +348,8 @@ namespace Dreamporter.WPF.Controls
                 swagWindow.Content = swagDataControl;
                 swagWindow.Show();
                 #endregion DataSets Window
+
+                IsBusy = false;
             }
         }
 
@@ -354,7 +375,7 @@ namespace Dreamporter.WPF.Controls
                                 {
                                     if (template.TemplateKey == insTemplate.Path)
                                     {
-                                        template.Template.Clear();
+                                        template.Template.Children.Clear();
                                         Instruction clone = JsonHelper.Clone<Instruction>(insTemplate);
                                         template.Template.Children.Add(clone);
                                     }

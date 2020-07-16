@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Dreamporter.Core
 {
@@ -145,6 +146,11 @@ namespace Dreamporter.Core
             Build.Run(rc, rp);
 
             return rc;
+        }
+
+        public async Task<RunContext> RunAsync(RunContext rc = null, RunParams rp = null)
+        {
+            return await Task.Run<RunContext>(() => { return Run(rc, rp); });
         }
 
         public RunParams GenerateRunParams()

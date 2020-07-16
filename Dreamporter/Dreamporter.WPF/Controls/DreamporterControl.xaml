@@ -47,7 +47,7 @@
                         Visibility="{Binding IsChecked, ElementName=tbIntegrationEdit, Converter={swui:BoolToVisibilityConverter}}">
                     <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Save}" />
                 </Button>
-                <Button DockPanel.Dock="Left" Click="RunIntegration_Click">
+                <Button DockPanel.Dock="Left" Click="RunIntegration_Click" IsEnabled="{Binding IsBusy, ElementName=ThisControl, Converter={swui:ObjectToBoolConverter TrueValue=False,FalseValue=True}}">
                     <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Play}" />
                 </Button>
                 <Button DockPanel.Dock="Right" Click="ExportIntegration_Click">

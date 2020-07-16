@@ -170,7 +170,7 @@
             </TabControl>
         </DataTemplate>
         <DataTemplate DataType="{x:Type dc:InstructionBuild}">
-            <TabControl>
+            <TabControl SelectedIndex="{Binding TabIndex, Mode=TwoWay}">
                 <TabItem HeaderTemplate="{StaticResource GeneralHeaderTemplate}">
                     <ContentControl ContentTemplate="{StaticResource GeneralFieldsDataTemplate}" />
                 </TabItem>

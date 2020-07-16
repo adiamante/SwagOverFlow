@@ -137,6 +137,7 @@ namespace SwagOverFlow.WPF.Controls
             {
                 Settings["Window"]["Theme"]["Base"].PropertyChanged += WindowSettingCollection_ThemePropertyChanged;
                 Settings["Window"]["Theme"]["Accent"].PropertyChanged += WindowSettingCollection_ThemePropertyChanged;
+                Settings["Window"]["Status"]["IsBusy"].PropertyChanged += WindowSettingCollection_StatusIsBusyPropertyChanged;
                 WindowSettingCollection_ThemePropertyChanged(this, new PropertyChangedEventArgs("Value"));
 
                 CommandManager.Attach(Settings);
@@ -152,6 +153,11 @@ namespace SwagOverFlow.WPF.Controls
 
             SettingsControl settingsControl = this.FindLogicalChild<SettingsControl>();
             settingsControl.Save += SwagWindowSettings_Save;
+        }
+
+        private void WindowSettingCollection_StatusIsBusyPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged("IsBusy");
         }
 
         protected virtual void SwagWindowSettings_Save(object sender, RoutedEventArgs e)
