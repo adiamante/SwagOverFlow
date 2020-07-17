@@ -80,6 +80,7 @@ namespace Dreamporter.Core
         {
             _main.OpenConnection();
             #region Utility Table: util.numbers with column n
+            _main.ExecuteNonQuery(@"CREATE TABLE [util.log](timestamp datetime, pid number, tid number, type text, name text, message text, info text);");
             _main.ExecuteNonQuery(@"CREATE TABLE [util.numbers](n integer primary key);
                 WITH RECURSIVE
                     cnt(x) AS(
@@ -92,7 +93,6 @@ namespace Dreamporter.Core
                 SELECT x
                 FROM cnt;"
             );
-            _main.ExecuteNonQuery(@"CREATE TABLE [util.log](timestamp datetime, pid number, tid number, type text, name text, message text, info text);");
             #endregion Utility Table: util.numbers with column n
         }
 

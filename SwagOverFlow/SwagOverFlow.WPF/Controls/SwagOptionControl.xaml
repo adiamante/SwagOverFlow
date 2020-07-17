@@ -300,7 +300,7 @@
                                 <swctl:IconControl Grid.Row="0" Grid.Column="2" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
                                 <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Name, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
                                 <swctl:IconControl Grid.Row="1" Grid.Column="2" Kind="{x:Static iconPacks:PackIconMaterialKind.Alphabetical}" />
-                                <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ValueT, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                <TextBox Grid.Row="1" Grid.Column="3" AcceptsReturn="True" AcceptsTab="True" Text="{Binding ValueT, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
                             </Grid>
                         </DataTemplate>
                     </swui:SwagTemplate.DataTemplate>

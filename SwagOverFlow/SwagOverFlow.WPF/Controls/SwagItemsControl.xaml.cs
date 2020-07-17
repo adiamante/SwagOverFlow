@@ -318,10 +318,7 @@ namespace SwagOverFlow.WPF.Controls
                                 Object[] args = new object[typeArgs.Length];
                                 for (int i = 0; i < typeArgs.Length; i++)
                                 {
-                                    if (typeArgs[i].IsValueType)
-                                    {
-                                        args[i] = Activator.CreateInstance(typeArgs[i]);
-                                    }
+                                    args[i] = Activator.CreateInstance(typeArgs[i]);
                                     ReflectionHelper.MethodInfoCollection[SwagItemsSource.GetType()]["Add"].Invoke(SwagItemsSource, args);
                                     Refresh();
                                 }

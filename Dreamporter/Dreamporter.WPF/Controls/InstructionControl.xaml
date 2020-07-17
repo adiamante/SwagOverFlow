@@ -398,17 +398,23 @@
                         <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}" />
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource AdvancedHeaderTemplate}">
-                        <StackPanel>
-                            <swctl:IconControl Text="Schema" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
-                            <TextBox Text="{Binding Schema}" />
-                            <swctl:IconControl Text="Base URL" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Website}" />
-                            <TextBox Text="{Binding BaseURL}" />
-                            <swctl:IconControl Text="Request Path" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Path}" />
-                            <TextBox Text="{Binding RequestPath}" />
-                            <swctl:IconControl Text="Request Type" Kind="{x:Static iconPacks:PackIconUniconsKind.CloudInfo}" />
-                            <ComboBox SelectedValue="{Binding RequestType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestType}}}" />
-                            <swctl:IconControl Text="Headers" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaHBoxOutline}" />
-                            <swctl:SwagItemsControl SwagItemsSource="{Binding Headers, Mode=TwoWay}" 
+                        <DockPanel>
+                            <swctl:IconControl DockPanel.Dock="Top" Text="Schema" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding Schema}" />
+                            <swctl:IconControl DockPanel.Dock="Top" Text="Base URL" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Website}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding BaseURL}" />
+                            <swctl:IconControl DockPanel.Dock="Top" Text="Request Path" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Path}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding RequestPath}" />
+                            <swctl:IconControl DockPanel.Dock="Top" Text="Request Type" Kind="{x:Static iconPacks:PackIconUniconsKind.CloudInfo}" />
+                            <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding RequestType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestType}}}" />
+                            <TabControl>
+                                <TabItem>
+                                    <TabItem.HeaderTemplate>
+                                        <DataTemplate>
+                                            <swctl:IconControl Text="Headers" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaHBoxOutline}" />
+                                        </DataTemplate>
+                                    </TabItem.HeaderTemplate>
+                                    <swctl:SwagItemsControl SwagItemsSource="{Binding Headers, Mode=TwoWay}" 
                                                     UseDefaultAdd="True"
                                                     ShowAddContextMenuItem="True"
                                                     ShowItemAddContextMenuItem="True"
@@ -417,12 +423,18 @@
                                                     UseDefaultRemove="True"
                                                     ShowItemRemoveContextMenuItem="True"
                                                     MinHeight="30">
-                                <swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                                    <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
-                                </swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                            </swctl:SwagItemsControl>
-                            <swctl:IconControl Text="Url Params" Kind="{x:Static iconPacks:PackIconMaterialKind.Equal}" />
-                            <swctl:SwagItemsControl SwagItemsSource="{Binding UrlParams, Mode=TwoWay}" 
+                                        <swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                            <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
+                                        </swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                    </swctl:SwagItemsControl>
+                                </TabItem>
+                                <TabItem>
+                                    <TabItem.HeaderTemplate>
+                                        <DataTemplate>
+                                            <swctl:IconControl Text="Url Params" Kind="{x:Static iconPacks:PackIconMaterialKind.Equal}" />
+                                        </DataTemplate>
+                                    </TabItem.HeaderTemplate>
+                                    <swctl:SwagItemsControl SwagItemsSource="{Binding UrlParams, Mode=TwoWay}" 
                                                     UseDefaultAdd="True"
                                                     ShowAddContextMenuItem="True"
                                                     ShowItemAddContextMenuItem="True"
@@ -431,12 +443,18 @@
                                                     UseDefaultRemove="True"
                                                     ShowItemRemoveContextMenuItem="True"
                                                     MinHeight="30">
-                                <swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                                    <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
-                                </swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                            </swctl:SwagItemsControl>
-                            <swctl:IconControl Text="Parameter Columns" Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumnWidth}" />
-                            <swctl:SwagItemsControl SwagItemsSource="{Binding ParameterColumns, Mode=TwoWay}" 
+                                        <swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                            <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
+                                        </swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                    </swctl:SwagItemsControl>
+                                </TabItem>
+                                <TabItem>
+                                    <TabItem.HeaderTemplate>
+                                        <DataTemplate>
+                                            <swctl:IconControl Text="Parameter Columns" Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumnWidth}" />
+                                        </DataTemplate>
+                                    </TabItem.HeaderTemplate>
+                                    <swctl:SwagItemsControl SwagItemsSource="{Binding ParameterColumns, Mode=TwoWay}" 
                                                     UseDefaultAdd="True"
                                                     ShowAddContextMenuItem="True"
                                                     ShowItemAddContextMenuItem="True"
@@ -445,11 +463,40 @@
                                                     UseDefaultRemove="True"
                                                     ShowItemRemoveContextMenuItem="True"
                                                     MinHeight="30">
-                                <swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                                    <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
-                                </swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                            </swctl:SwagItemsControl>
-                        </StackPanel>
+                                        <swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                            <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
+                                        </swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                    </swctl:SwagItemsControl>
+                                </TabItem>
+                                <TabItem>
+                                    <TabItem.HeaderTemplate>
+                                        <DataTemplate>
+                                            <swctl:IconControl Text="Post" Kind="{x:Static iconPacks:PackIconMaterialKind.Post}" />
+                                        </DataTemplate>
+                                    </TabItem.HeaderTemplate>
+                                    <DockPanel>
+                                        <swctl:IconControl DockPanel.Dock="Top" Text="Content Type" Kind="{x:Static iconPacks:PackIconFontAwesomeKind.MailBulkSolid}" />
+                                        <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding PostContentType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestPostContentType}}}" />
+                                        <TextBox Text="{Binding PostContent}" AcceptsReturn="True" AcceptsTab="True" />
+                                    </DockPanel>
+                                </TabItem>
+                                <TabItem>
+                                    <TabItem.HeaderTemplate>
+                                        <DataTemplate>
+                                            <swctl:IconControl Text="Misc" Kind="{x:Static iconPacks:PackIconMaterialKind.Information}" />
+                                        </DataTemplate>
+                                    </TabItem.HeaderTemplate>
+                                    <StackPanel>
+                                        <swctl:IconControl DockPanel.Dock="Top" Text="Limit Field" Kind="{x:Static iconPacks:PackIconEntypoKind.AlignTop}" />
+                                        <TextBox DockPanel.Dock="Top" Text="{Binding LimitField}" />
+                                        <swctl:IconControl DockPanel.Dock="Top" Text="Offset Field" Kind="{x:Static iconPacks:PackIconEntypoKind.AlignRight}" />
+                                        <TextBox DockPanel.Dock="Top" Text="{Binding OffsetField}" />
+                                        <swctl:IconControl DockPanel.Dock="Top" Text="PageField" Kind="{x:Static iconPacks:PackIconModernKind.TextAlignJustify}" />
+                                        <TextBox DockPanel.Dock="Top" Text="{Binding PageField}" />
+                                    </StackPanel>
+                                </TabItem>
+                            </TabControl>
+                        </DockPanel>
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
                         <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />
@@ -473,17 +520,23 @@
                         <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}" />
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource AdvancedHeaderTemplate}">
-                        <StackPanel>
-                            <swctl:IconControl Text="Schema" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
-                            <TextBox Text="{Binding Schema}" />
-                            <swctl:IconControl Text="Base URL" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Website}" />
-                            <TextBox Text="{Binding BaseURL}" />
-                            <swctl:IconControl Text="Path" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Path}" />
-                            <TextBox Text="{Binding Path}" />
-                            <swctl:IconControl Text="Request Type" Kind="{x:Static iconPacks:PackIconUniconsKind.CloudInfo}" />
-                            <ComboBox SelectedValue="{Binding RequestType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestType}}}" />
-                            <swctl:IconControl Text="Headers" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaHBoxOutline}" />
-                            <swctl:SwagItemsControl SwagItemsSource="{Binding Headers, Mode=TwoWay}" 
+                        <DockPanel>
+                            <swctl:IconControl DockPanel.Dock="Top" Text="Schema" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding Schema}" />
+                            <swctl:IconControl DockPanel.Dock="Top" Text="Base URL" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Website}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding BaseURL}" />
+                            <swctl:IconControl DockPanel.Dock="Top" Text="Request Path" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Path}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding RequestPath}" />
+                            <swctl:IconControl DockPanel.Dock="Top" Text="Request Type" Kind="{x:Static iconPacks:PackIconUniconsKind.CloudInfo}" />
+                            <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding RequestType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestType}}}" />
+                            <TabControl>
+                                <TabItem>
+                                    <TabItem.HeaderTemplate>
+                                        <DataTemplate>
+                                            <swctl:IconControl Text="Headers" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaHBoxOutline}" />
+                                        </DataTemplate>
+                                    </TabItem.HeaderTemplate>
+                                    <swctl:SwagItemsControl SwagItemsSource="{Binding Headers, Mode=TwoWay}" 
                                                     UseDefaultAdd="True"
                                                     ShowAddContextMenuItem="True"
                                                     ShowItemAddContextMenuItem="True"
@@ -492,12 +545,18 @@
                                                     UseDefaultRemove="True"
                                                     ShowItemRemoveContextMenuItem="True"
                                                     MinHeight="30">
-                                <swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                                    <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
-                                </swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                            </swctl:SwagItemsControl>
-                            <swctl:IconControl Text="Url Params" Kind="{x:Static iconPacks:PackIconMaterialKind.Equal}" />
-                            <swctl:SwagItemsControl SwagItemsSource="{Binding UrlParams, Mode=TwoWay}" 
+                                        <swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                            <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
+                                        </swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                    </swctl:SwagItemsControl>
+                                </TabItem>
+                                <TabItem>
+                                    <TabItem.HeaderTemplate>
+                                        <DataTemplate>
+                                            <swctl:IconControl Text="Url Params" Kind="{x:Static iconPacks:PackIconMaterialKind.Equal}" />
+                                        </DataTemplate>
+                                    </TabItem.HeaderTemplate>
+                                    <swctl:SwagItemsControl SwagItemsSource="{Binding UrlParams, Mode=TwoWay}" 
                                                     UseDefaultAdd="True"
                                                     ShowAddContextMenuItem="True"
                                                     ShowItemAddContextMenuItem="True"
@@ -506,12 +565,18 @@
                                                     UseDefaultRemove="True"
                                                     ShowItemRemoveContextMenuItem="True"
                                                     MinHeight="30">
-                                <swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                                    <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
-                                </swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                            </swctl:SwagItemsControl>
-                            <swctl:IconControl Text="Parameter Columns" Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumnWidth}" />
-                            <swctl:SwagItemsControl SwagItemsSource="{Binding ParameterColumns, Mode=TwoWay}" 
+                                        <swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                            <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
+                                        </swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                    </swctl:SwagItemsControl>
+                                </TabItem>
+                                <TabItem>
+                                    <TabItem.HeaderTemplate>
+                                        <DataTemplate>
+                                            <swctl:IconControl Text="Parameter Columns" Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumnWidth}" />
+                                        </DataTemplate>
+                                    </TabItem.HeaderTemplate>
+                                    <swctl:SwagItemsControl SwagItemsSource="{Binding ParameterColumns, Mode=TwoWay}" 
                                                     UseDefaultAdd="True"
                                                     ShowAddContextMenuItem="True"
                                                     ShowItemAddContextMenuItem="True"
@@ -520,11 +585,25 @@
                                                     UseDefaultRemove="True"
                                                     ShowItemRemoveContextMenuItem="True"
                                                     MinHeight="30">
-                                <swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                                    <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
-                                </swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                            </swctl:SwagItemsControl>
-                        </StackPanel>
+                                        <swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                            <swui:SwagTemplate DataTemplate="{StaticResource KeyValuePairDataTemplate}" />
+                                        </swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                                    </swctl:SwagItemsControl>
+                                </TabItem>
+                                <TabItem>
+                                    <TabItem.HeaderTemplate>
+                                        <DataTemplate>
+                                            <swctl:IconControl Text="Post" Kind="{x:Static iconPacks:PackIconMaterialKind.Post}" />
+                                        </DataTemplate>
+                                    </TabItem.HeaderTemplate>
+                                    <DockPanel>
+                                        <swctl:IconControl DockPanel.Dock="Top" Text="Content Type" Kind="{x:Static iconPacks:PackIconFontAwesomeKind.MailBulkSolid}" />
+                                        <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding PostContentType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestPostContentType}}}" />
+                                        <TextBox Text="{Binding PostContent}" AcceptsReturn="True" AcceptsTab="True" />
+                                    </DockPanel>
+                                </TabItem>
+                            </TabControl>
+                        </DockPanel>
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
                         <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />

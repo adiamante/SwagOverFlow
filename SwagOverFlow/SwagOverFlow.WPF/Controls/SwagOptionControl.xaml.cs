@@ -429,6 +429,14 @@ namespace SwagOverFlow.WPF.Controls
                                     }
                                 }
                                 droppedOpt.Sequence = targetSequence + (delta > 0 ? -1 : 0);
+                                if (targetOpt.Parent == null)
+                                {
+                                    CollectionViewSource.GetDefaultView(OptionCollection).Refresh();
+                                }
+                                else
+                                {
+                                    CollectionViewSource.GetDefaultView(targetOpt.Parent.Children).Refresh();
+                                }
                             }
                             break;
                         case MoveType.Below:
@@ -442,6 +450,14 @@ namespace SwagOverFlow.WPF.Controls
                                     }
                                 }
                                 droppedOpt.Sequence = targetSequence + (delta > 0 ? 0 : 1);
+                                if (targetOpt.Parent == null)
+                                {
+                                    CollectionViewSource.GetDefaultView(OptionCollection).Refresh();
+                                }
+                                else
+                                {
+                                    CollectionViewSource.GetDefaultView(targetOpt.Parent.Children).Refresh();
+                                }
                             }
                             break;
                     }

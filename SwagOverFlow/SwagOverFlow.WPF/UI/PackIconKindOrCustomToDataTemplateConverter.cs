@@ -90,6 +90,8 @@ namespace SwagOverFlow.WPF.UI
                 case PackIconFontAwesomeKind fontAwesomeKind:
                     baseWidth = 450m;
                     baseHeight = 450m;
+                    scaleX = 0.7m;
+                    scaleY = 0.7m;
                     break;
                 case PackIconIoniconsKind ioniconsKind:
                     baseWidth = 350m;

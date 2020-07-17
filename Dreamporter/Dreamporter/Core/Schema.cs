@@ -1,10 +1,13 @@
-﻿using SwagOverFlow.ViewModels;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
 
 namespace Dreamporter.Core
 {
+    #region SchemaColumnDataType
     public enum SchemaColumnDataType
     {
         String,
@@ -12,6 +15,7 @@ namespace Dreamporter.Core
         Integer,
         Real
     }
+    #endregion SchemaColumnDataType
 
     public abstract class SchemaBase : ViewModelBaseExtended
     {
@@ -102,6 +106,7 @@ namespace Dreamporter.Core
         SchemaColumnDataType _dataType;
 
         #region DataType
+        [JsonConverter(typeof(StringEnumConverter))]
         public SchemaColumnDataType DataType
         {
             get { return _dataType; }
