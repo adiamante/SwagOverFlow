@@ -118,13 +118,6 @@ namespace Dreamporter.Core
             set { SetValue(ref _dataContexts, value); }
         }
         #endregion DataContexts
-        #region SchemaGroups
-        public ObservableCollection<String> SchemaGroups
-        {
-            get { return _schemaGroups; }
-            set { SetValue(ref _schemaGroups, value); }
-        }
-        #endregion SchemaGroups
         #endregion Properties
 
         #region Methods

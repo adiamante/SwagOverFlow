@@ -28,6 +28,15 @@ namespace SwagOverFlow.Utils
     {
         public static bool Evaluate(string compareTarget, string compareValue, Boolean isCaseSensitive, FilterMode filterMode, Boolean bDefault)
         {
+            if (compareTarget == null)
+            {
+                compareTarget = "";
+            }
+            if (compareValue == null)
+            {
+                compareValue = "";
+            }
+
             String compareTargetResolved = isCaseSensitive ? compareTarget : compareTarget.ToLower();
             String compareValueResolved = isCaseSensitive ? compareValue : compareValue.ToLower();
             Boolean bPass = bDefault;

@@ -191,36 +191,6 @@
                                           Save="DataContextsControl_Save">
                     </dwctl:DataContextsControl>
                 </TabItem>
-                <TabItem>
-                    <TabItem.HeaderTemplate>
-                        <DataTemplate>
-                            <swctl:IconControl Text="Schema Groups" Kind="{x:Static iconPacks:PackIconMaterialKind.Group}" />
-                        </DataTemplate>
-                    </TabItem.HeaderTemplate>
-                    <swctl:SwagItemsControl SwagItemsSource="{Binding SelectedIntegration.SchemaGroups, Mode=TwoWay, ElementName=ThisControl}" 
-                                            ShowSaveContextMenuItem="True"
-                                            Add="SchemaGroups_Add"
-                                            ShowAddContextMenuItem="True"
-                                            ShowItemAddContextMenuItem="True"
-                                            UseDefaultClear="True"
-                                            ShowClearContextMenuItem="True"
-                                            UseDefaultRemove="True"
-                                            ShowItemRemoveContextMenuItem="True"
-                                            ShowSaveButton="True"
-                                            SaveButtonHorizontalAlignment="Right"
-                                            SaveButtonVerticalAlignment="Bottom"
-                                            Save="SchemaGroups_Save">
-                        <swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                            <swui:SwagTemplate Type="{x:Type sys:String}">
-                                <swui:SwagTemplate.DataTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding .}" />
-                                    </DataTemplate>
-                                </swui:SwagTemplate.DataTemplate>
-                            </swui:SwagTemplate>
-                        </swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                    </swctl:SwagItemsControl>
-                </TabItem>
             </TabControl>
         </Grid>
     </Grid>

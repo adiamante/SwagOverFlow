@@ -91,10 +91,6 @@ namespace Dreamporter.Data
                     .HasConversion(
                         i => JsonHelper.ToJsonString(i),
                         i => JsonHelper.ToObject<ObservableCollection<DataContext>>(i));
-                builder.Property(i => i.SchemaGroups)
-                    .HasConversion(
-                        i => JsonHelper.ToJsonString(i),
-                        i => JsonHelper.ToObject<ObservableCollection<String>>(i));
             }
         }
         #endregion IntegrationEntityConfiguration

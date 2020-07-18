@@ -248,25 +248,50 @@ namespace Dreamporter.WPF.Controls
             }
         }
 
-        private void SchemaGroups_Add(object sender, RoutedEventArgs e)
-        {
-            String group = UIHelper.StringInputDialog("Please enter Group Name:");
-            if (!String.IsNullOrEmpty(group))
-            {
-                SelectedIntegration.SchemaGroups.Add(group);
-            }
-        }
-
-        private void SchemaGroups_Save(object sender, RoutedEventArgs e)
+        private void InstructionTemplatesApply_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedIntegration != null)
             {
-                if (SelectedIntegration.IntegrationId != 0)
+                //Iterate through all templates
+                SwagItemPreOrderIterator<Instruction> insTemplateIterator = new SwagItemPreOrderIterator<Instruction>(SelectedIntegration.InstructionTemplates);
+                for (Instruction insTemplate = insTemplateIterator.First(); !insTemplateIterator.IsDone; insTemplate = insTemplateIterator.Next())
                 {
-                    SelectedIntegration.SchemaGroups = SelectedIntegration.SchemaGroups;
-                    DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
+                    //Iterate though all builds
+                    SwagItemPreOrderIterator<Build> bldIterator = new SwagItemPreOrderIterator<Build>(SelectedIntegration.Build);
+                    for (Build bld = bldIterator.First(); !bldIterator.IsDone; bld = bldIterator.Next())
+                    {
+                        if (bld is InstructionBuild insBld)
+                        {
+                            //Iterate through every InstructionBuild
+                            SwagItemPreOrderIterator<Instruction> insIterator = new SwagItemPreOrderIterator<Instruction>(insBld.Instructions);
+                            for (Instruction ins = insIterator.First(); !insIterator.IsDone; ins = insIterator.Next())
+                            {
+                                if (ins is TemplateInstruction template)
+                                {
+                                    if (template.TemplateKey == insTemplate.Path)
+                                    {
+                                        template.Template.Children.Clear();
+                                        Instruction clone = JsonHelper.Clone<Instruction>(insTemplate);
+                                        template.Template.Children.Add(clone);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-                DreamporterWPFContainer.Context.SaveChanges();
+            }
+        }
+
+        private void ImportIntegration_Click(object sender, RoutedEventArgs e)
+        {
+            Integration integation = SwagItemsControlHelper.GetDataFromFile<Integration>();
+        }
+
+        private void ExportIntegration_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedIntegration != null)
+            {
+                SwagItemsControlHelper.ExportDataToFile<Integration>(SelectedIntegration, SelectedIntegration.Name);
             }
         }
 
@@ -295,57 +320,45 @@ namespace Dreamporter.WPF.Controls
 
                 #region Resolve DataSets
                 SwagDataSetWPF data = new SwagDataSetWPF() { Display = $"Export\\{SelectedIntegration.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}" };
-                List<String> schemas = new List<string>() { "Util" };
                 Dictionary<String, DataSet> dictDataSets = new Dictionary<string, DataSet>();
 
-                foreach (String group in SelectedIntegration.SchemaGroups)
+                foreach (DataTable dtbl in dsResult.Tables)
                 {
-                    schemas.Add(group);
-                }
-
-                DataSet dsRaw = new DataSet();
-                foreach (DataTable dt in dsResult.Tables)
-                {
-                    Boolean bFoundSchema = false;
-                    foreach (String schema in schemas)
+                    String schemaName = "_____", tableName = "";
+                    String[] parts = dtbl.TableName.Split('.');   //period delimeter
+                    if (parts.Length == 2)  //schema + table
                     {
-                        if (dt.TableName.ToLower().StartsWith($"{schema.ToLower()}."))
+                        schemaName = parts[0];
+                        tableName = parts[1];
+                    }
+                    else if (parts.Length == 1)     //just table
+                    {
+                        tableName = parts[0];
+                    }
+
+                    if (dtbl.TableName.ToLower().StartsWith($"{schemaName.ToLower()}."))
+                    {
+                        if (!dictDataSets.ContainsKey(schemaName))
                         {
-                            if (!dictDataSets.ContainsKey(schema))
-                            {
-                                dictDataSets.Add(schema, new DataSet(schema));
-                            }
-                            dictDataSets[schema].Tables.Add(dt.Copy());
-                            bFoundSchema = true;
-                            break;
+                            dictDataSets.Add(schemaName, new DataSet(schemaName));
                         }
-                    }
-
-                    if (!bFoundSchema)
-                    {
-                        dsRaw.Tables.Add(dt.Copy());
+                        dictDataSets[schemaName].Tables.Add(dtbl.Copy());
                     }
                 }
 
-                if (dictDataSets.ContainsKey("Util"))
+                if (dictDataSets.ContainsKey("util"))
                 {
-                    DataSet dsUtil = dictDataSets["Util"];
+                    DataSet dsUtil = dictDataSets["util"];
                     if (dsUtil.Tables.Count > 0)
                     {
-                        SwagDataSetWPF util = new SwagDataSetWPF(dsUtil) { Display = "Util" };
+                        SwagDataSetWPF util = new SwagDataSetWPF(dsUtil) { Display = "util" };
                         data.Children.Add(util);
                     }
                 }
 
-                if (dsRaw.Tables.Count > 0)
-                {
-                    SwagDataSetWPF raw = new SwagDataSetWPF(dsRaw) { Display = "Raw" };
-                    data.Children.Add(raw);
-                }
-
                 foreach (KeyValuePair<string, DataSet> kvpDataSet in dictDataSets)
                 {
-                    if (kvpDataSet.Key != "Util")
+                    if (kvpDataSet.Key != "util")
                     {
                         SwagDataSetWPF sds = new SwagDataSetWPF(kvpDataSet.Value) { Display = kvpDataSet.Key };
                         data.Children.Add(sds);
@@ -393,53 +406,6 @@ namespace Dreamporter.WPF.Controls
                     }, System.Windows.Threading.DispatcherPriority.Background);
                 }
                 #endregion Select last Build and Instruction
-            }
-        }
-
-        private void InstructionTemplatesApply_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedIntegration != null)
-            {
-                //Iterate through all templates
-                SwagItemPreOrderIterator<Instruction> insTemplateIterator = new SwagItemPreOrderIterator<Instruction>(SelectedIntegration.InstructionTemplates);
-                for (Instruction insTemplate = insTemplateIterator.First(); !insTemplateIterator.IsDone; insTemplate = insTemplateIterator.Next())
-                {
-                    //Iterate though all builds
-                    SwagItemPreOrderIterator<Build> bldIterator = new SwagItemPreOrderIterator<Build>(SelectedIntegration.Build);
-                    for (Build bld = bldIterator.First(); !bldIterator.IsDone; bld = bldIterator.Next())
-                    {
-                        if (bld is InstructionBuild insBld)
-                        {
-                            //Iterate through every InstructionBuild
-                            SwagItemPreOrderIterator<Instruction> insIterator = new SwagItemPreOrderIterator<Instruction>(insBld.Instructions);
-                            for (Instruction ins = insIterator.First(); !insIterator.IsDone; ins = insIterator.Next())
-                            {
-                                if (ins is TemplateInstruction template)
-                                {
-                                    if (template.TemplateKey == insTemplate.Path)
-                                    {
-                                        template.Template.Children.Clear();
-                                        Instruction clone = JsonHelper.Clone<Instruction>(insTemplate);
-                                        template.Template.Children.Add(clone);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void ImportIntegration_Click(object sender, RoutedEventArgs e)
-        {
-            Integration integation = SwagItemsControlHelper.GetDataFromFile<Integration>();
-        }
-
-        private void ExportIntegration_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedIntegration != null)
-            {
-                SwagItemsControlHelper.ExportDataToFile<Integration>(SelectedIntegration, SelectedIntegration.Name);
             }
         }
         #endregion Events
