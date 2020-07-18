@@ -1,6 +1,8 @@
 ﻿using SwagOverFlow.Utils;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
@@ -420,35 +422,92 @@ namespace SwagOverFlow.Clients
         }
     }
 
-    [SQLiteFunction(Name = "DateTZConvert", Arguments = 3, FuncType = FunctionType.Scalar)]
+    [SQLiteFunction(Name = "DateTZConvert", Arguments = 4, FuncType = FunctionType.Scalar)]
     public class DateTimeZoneConvertSQLiteFunction : SQLiteFunction
     {
+        private static readonly ReadOnlyCollection<TimeZoneInfo> _timeZones = TimeZoneInfo.GetSystemTimeZones();
+        private static ConcurrentDictionary<String, TimeZoneInfo> _dictTimeZones = new ConcurrentDictionary<string, TimeZoneInfo>();
         public override object Invoke(object[] args)
         {
-            //First argument is the source date (expecing offset information from source date)
-            DateTime dt = DateTime.Parse(args[0].ToString());
+            //Argument 0: String Date
+            //Argument 1: Origin TimeZone
+            //Argument 2: Destination Timezone
+            //Argument 3: String format Ex. yyyy-mm-ddTHH:mm:sss.fffzzz
+            String strDate = args[0].ToString(),
+                strOrgTimeZone = args[1].ToString(),
+                strDestTimeZone = args[2].ToString(),
+                stringFormat = args[3].ToString();
 
-            //Second argument is the time zone
-            String timeZone = args[1].ToString();
-            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById($"{timeZone} Standard Time");
-            DateTime utcDateTime = dt.ToUniversalTime();
-            DateTime convertedDate = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, timeZoneInfo);
-            DateTimeOffset dateTimeOffset = new DateTimeOffset(utcDateTime, TimeSpan.Zero);
+            //strDate = "2020-06-28T16:44:20Z";
+            //strOrgTimeZone = "UTC";
+            //strDestTimeZone = "Pacific";
 
-            if (timeZoneInfo.IsDaylightSavingTime(convertedDate))
+            //strDate = "2020-06-28T04:00:00Z";
+            //strOrgTimeZone = "Pacific";
+            //strDestTimeZone = "UTC";
+
+            if (DateTimeOffset.TryParse(strDate, out DateTimeOffset dtoAuto))        //Auto because it automatically uses local timezone offset
             {
-                dateTimeOffset = dateTimeOffset.ToOffset(timeZoneInfo.BaseUtcOffset.Add(TimeSpan.FromHours(1)));
+                TimeZoneInfo orgTimeZone = ResolveTimeZoneInfo(strOrgTimeZone);
+                TimeZoneInfo destTimeZone = ResolveTimeZoneInfo(strDestTimeZone);
 
+                if ((orgTimeZone != null && strOrgTimeZone.ToLower() != "auto") && destTimeZone != null)
+                {
+                    DateTimeOffset dtoPure = DateTimeOffset.Parse(dtoAuto.ToString("yyyy-MM-ddTHH:mm:ss-00:00"));
+                    if (strOrgTimeZone.ToLower() == "auto")
+                    {
+                        dtoPure = dtoAuto;
+                    }
+                    else
+                    {
+                        //Do DateTimeOffset string parse to prevent the automatic conversion to local TimeZone
+                        Int32 orgBaseUtcOffset = orgTimeZone.BaseUtcOffset.Hours;
+                        String dtFormat = String.Format("yyyy-MM-ddTHH:mm:ss{0}{1}:00",
+                            (orgBaseUtcOffset == 0 ? "-" : (orgBaseUtcOffset > 0 ? "+" : "")),
+                            orgBaseUtcOffset.ToString("00"));
+
+                        dtoPure = DateTimeOffset.Parse(dtoAuto.ToString(dtFormat));
+                        if (orgTimeZone.IsDaylightSavingTime(dtoPure))
+                        {
+                            dtFormat = String.Format("yyyy-MM-ddTHH:mm:ss{0}{1}:00",
+                                (orgBaseUtcOffset + 1 == 0 ? "-" : (orgBaseUtcOffset + 1 > 0 ? "+" : "")),
+                                (orgBaseUtcOffset + 1).ToString("00"));
+                            dtoPure = DateTimeOffset.Parse(dtoAuto.ToString(dtFormat));
+                        }
+                    }
+
+                    DateTimeOffset dtoConverted = dtoPure.ToOffset(destTimeZone.BaseUtcOffset);
+                    if (destTimeZone.IsDaylightSavingTime(dtoConverted))
+                    {
+                        dtoConverted = dtoPure.ToOffset(destTimeZone.BaseUtcOffset.Add(TimeSpan.FromHours(1)));
+                    }
+
+                    return dtoConverted.ToString(stringFormat);
+                }
             }
-            else
+
+            return null;
+        }
+
+        private TimeZoneInfo ResolveTimeZoneInfo(String timeZone)
+        {
+            if (!_dictTimeZones.ContainsKey(timeZone))
             {
-                dateTimeOffset = dateTimeOffset.ToOffset(timeZoneInfo.BaseUtcOffset);
+                if (timeZone.ToLower() == "utc")
+                {
+                    _dictTimeZones.TryAdd("utc", TimeZoneInfo.Utc);
+                }
+                else
+                {
+                    TimeZoneInfo timeZoneInfo = _timeZones.FirstOrDefault(tz => tz.DisplayName.ToLower().Equals(timeZone.ToLower()));
+                    if (timeZoneInfo == null)
+                    {
+                        timeZoneInfo = _timeZones.FirstOrDefault(tz => tz.DisplayName.ToLower().Contains(timeZone.ToLower()));
+                    }
+                    _dictTimeZones.TryAdd(timeZone.ToLower(), timeZoneInfo);
+                }
             }
-
-            //Third argument is the format. Ex. yyyy-mm-ddTHH:mm:sss.fffzzz
-            String format = args[2].ToString();
-
-            return dateTimeOffset.ToString(format);
+            return _dictTimeZones[timeZone.ToLower()];
         }
     }
     #endregion SQLiteFunctions

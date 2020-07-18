@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SwagOverFlow.Data.Clients;
+using SwagOverFlow.Clients;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

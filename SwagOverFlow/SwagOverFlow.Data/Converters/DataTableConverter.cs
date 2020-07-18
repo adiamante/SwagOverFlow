@@ -1,7 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using DbfDataReader;
-using SwagOverFlow.Data.Clients;
+using SwagOverFlow.Clients;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
