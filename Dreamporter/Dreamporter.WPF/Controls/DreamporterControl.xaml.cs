@@ -274,6 +274,18 @@ namespace Dreamporter.WPF.Controls
         {
             if (SelectedIntegration != null)
             {
+                SelectedIntegration.Build.TabIndex = 3;
+
+                #region Keep track of Selected Build and Instruction
+                Build selectedBuild = SelectedIntegration.SelectedBuild;
+                Instruction selectedInstruction = null;
+
+                if (selectedBuild is InstructionBuild insbldStart)
+                {
+                    selectedInstruction = insbldStart.SelectedInstruction;
+                }
+                #endregion Keep track of Selected Build and Instruction
+
                 IsBusy = true;
                 RunContext runContext = await SelectedIntegration.RunAsync();
                 runContext.ExportDB($"Export\\{SelectedIntegration.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.db");
@@ -350,6 +362,37 @@ namespace Dreamporter.WPF.Controls
                 #endregion DataSets Window
 
                 IsBusy = false;
+
+                #region Select last Build and Instruction
+                if (selectedBuild != null)
+                {
+                    GroupBuild parent = selectedBuild.Parent;
+                    while (parent != null)
+                    {
+                        parent.IsExpanded = true;
+                        parent = parent.Parent;
+                    }
+                    SelectedIntegration.SelectedBuild = selectedBuild;
+                    selectedBuild.IsSelected = true;
+                }
+
+                if (selectedBuild is InstructionBuild insbldEnd && selectedInstruction != null)
+                {
+                    GroupInstruction parent = selectedInstruction.Parent;
+                    while (parent != null)
+                    {
+                        parent.IsExpanded = true;
+                        parent = parent.Parent;
+                    }
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        //Delay selection because Instruction gets selected automatically upon creation (last child gets selected)
+                        insbldEnd.SelectedInstruction = selectedInstruction;
+                        selectedInstruction.IsSelected = true;
+                    }, System.Windows.Threading.DispatcherPriority.Background);
+                }
+                #endregion Select last Build and Instruction
             }
         }
 

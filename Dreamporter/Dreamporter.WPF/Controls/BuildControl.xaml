@@ -143,6 +143,7 @@
         </DataTemplate>
         <DataTemplate x:Key="InstructionsDataTemplate">
             <dwctl:InstructionControl InstructionCollection="{Binding DataContext.Instructions, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
+                                    SelectedInstruction="{Binding DataContext.SelectedInstruction, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
                                     ShowSaveContextMenuItem="True" 
                                     ShowAddContextMenuItem="True"
                                     ShowCopyContextMenuItem="True"
@@ -157,7 +158,7 @@
             </dwctl:InstructionControl>
         </DataTemplate>
         <DataTemplate DataType="{x:Type dc:GroupBuild}">
-            <TabControl>
+            <TabControl SelectedIndex="{Binding TabIndex, Mode=TwoWay}">
                 <TabItem HeaderTemplate="{StaticResource GeneralHeaderTemplate}">
                     <ContentControl ContentTemplate="{StaticResource GeneralFieldsDataTemplate}" />
                 </TabItem>

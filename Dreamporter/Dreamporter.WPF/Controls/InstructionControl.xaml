@@ -247,7 +247,7 @@
         </ControlTemplate>
         <DataTemplate DataType="{x:Type dc:GroupInstruction}">
             <ContentControl Template="{StaticResource InstructionControlTemplate}">
-                <TabControl>
+                <TabControl SelectedIndex="{Binding TabIndex, Mode=TwoWay}">
                     <TabItem HeaderTemplate="{StaticResource GeneralHeaderTemplate}">
                         <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}">
                             <StackPanel>
@@ -269,7 +269,7 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type dc:ForEachTableGroupInstruction}">
             <ContentControl Template="{StaticResource InstructionControlTemplate}">
-                <TabControl>
+                <TabControl SelectedIndex="{Binding TabIndex, Mode=TwoWay}">
                     <TabItem HeaderTemplate="{StaticResource GeneralHeaderTemplate}">
                         <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}">
                             <StackPanel>
@@ -295,7 +295,7 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type dc:QueryInstruction}">
             <ContentControl Template="{StaticResource InstructionControlTemplate}">
-                <TabControl>
+                <TabControl SelectedIndex="{Binding TabIndex, Mode=TwoWay}">
                     <TabItem HeaderTemplate="{StaticResource GeneralHeaderTemplate}">
                         <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}">
                             <StackPanel>
@@ -393,7 +393,7 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type dc:WebRequestInstruction}">
             <ContentControl Template="{StaticResource InstructionControlTemplate}">
-                <TabControl>
+                <TabControl SelectedIndex="{Binding TabIndex, Mode=TwoWay}">
                     <TabItem HeaderTemplate="{StaticResource GeneralHeaderTemplate}">
                         <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}" />
                     </TabItem>
@@ -515,7 +515,7 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type dc:ForEachTableWebRequestInstruction}">
             <ContentControl Template="{StaticResource InstructionControlTemplate}">
-                <TabControl>
+                <TabControl SelectedIndex="{Binding TabIndex, Mode=TwoWay}">
                     <TabItem HeaderTemplate="{StaticResource GeneralHeaderTemplate}">
                         <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}" />
                     </TabItem>
@@ -625,7 +625,7 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type dc:TemplateInstruction}">
             <ContentControl Template="{StaticResource InstructionControlTemplate}">
-                <TabControl>
+                <TabControl SelectedIndex="{Binding TabIndex, Mode=TwoWay}">
                     <TabItem HeaderTemplate="{StaticResource GeneralHeaderTemplate}">
                         <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}">
                             <StackPanel>

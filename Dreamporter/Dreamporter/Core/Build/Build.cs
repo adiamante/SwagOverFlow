@@ -18,6 +18,7 @@ namespace Dreamporter.Core
         Integration _integration;
         BooleanContainerExpression _condition = new BooleanContainerExpression();
         ObservableCollection<Schema> _requiredData = new ObservableCollection<Schema>();
+        Int32 _tabIndex = 0;            //For the UI
         #endregion Private Members
 
         #region Properties
@@ -50,6 +51,15 @@ namespace Dreamporter.Core
             set { SetValue(ref _name, value); }
         }
         #endregion Name
+        #region TabIndex
+        [JsonIgnore]
+        [NotMapped]
+        public Int32 TabIndex
+        {
+            get { return _tabIndex; }
+            set { SetValue(ref _tabIndex, value); }
+        }
+        #endregion TabIndex
         #region Description
         public String Description
         {

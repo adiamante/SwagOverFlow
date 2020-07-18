@@ -79,7 +79,18 @@ namespace Dreamporter.WPF.Controls
             DependencyProperty.Register(
                 "SelectedInstruction",
                 typeof(Instruction),
-                typeof(InstructionControl));
+                typeof(InstructionControl), 
+                new FrameworkPropertyMetadata(null, SelectedInstruction_PropertyChanged));
+
+        private static void SelectedInstruction_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Instruction insOld = (Instruction)e.OldValue;
+            Instruction insNew = (Instruction)e.NewValue;
+            if (insOld != null && insNew != null)
+            {
+                insNew.TabIndex = insOld.TabIndex;
+            }
+        }
 
         public Instruction SelectedInstruction
         {

@@ -10,7 +10,7 @@ namespace Dreamporter.Core
     public class InstructionBuild : Build
     {
         GroupInstruction _instructions = new GroupInstruction();
-        Int32 _tabIndex = 0;            //For the UI
+        Instruction _selectedInstruction;
 
         #region Instructions
         public GroupInstruction Instructions
@@ -19,18 +19,18 @@ namespace Dreamporter.Core
             set { SetValue(ref _instructions, value); }
         }
         #endregion Instructions
+        #region SelectedInstruction
+        [JsonIgnore]
+        [NotMapped]
+        public Instruction SelectedInstruction
+        {
+            get { return _selectedInstruction; }
+            set { SetValue(ref _selectedInstruction, value); }
+        }
+        #endregion SelectedInstruction
         #region Type
         public override Type Type { get { return typeof(InstructionBuild); } }
         #endregion Type
-        #region TabIndex
-        [JsonIgnore]
-        [NotMapped]
-        public Int32 TabIndex
-        {
-            get { return _tabIndex; }
-            set { SetValue(ref _tabIndex, value); }
-        }
-        #endregion TabIndex
         #region Methods
         public override void RunHandler(RunContext context, RunParams rp)
         {

@@ -7,9 +7,9 @@ using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
-using SwagOverFlow.Utils;
 
 
 namespace Dreamporter.Core
@@ -23,6 +23,7 @@ namespace Dreamporter.Core
         InstructionCacheProperties _cacheProperties = new InstructionCacheProperties();
         BooleanContainerExpression _condition = new BooleanContainerExpression();
         ObservableCollection<Schema> _requiredData = new ObservableCollection<Schema>();
+        Int32 _tabIndex = 0;            //For the UI
         #endregion Private Members
 
         #region Properties
@@ -120,6 +121,15 @@ namespace Dreamporter.Core
             set { SetValue(ref _requiredData, value); }
         }
         #endregion RequiredData
+        #region TabIndex
+        [JsonIgnore]
+        [NotMapped]
+        public Int32 TabIndex
+        {
+            get { return _tabIndex; }
+            set { SetValue(ref _tabIndex, value); }
+        }
+        #endregion TabIndex
         #endregion Properties
 
         #region Initialization

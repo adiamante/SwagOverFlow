@@ -84,7 +84,20 @@ namespace Dreamporter.WPF.Controls
                 typeof(Build),
                 typeof(BuildControl), 
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault) 
-                { DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+                { 
+                    DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged, 
+                    PropertyChangedCallback = SelectedBuildPropertyChanged 
+                });
+
+        private static void SelectedBuildPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Build bldOld = (Build)e.OldValue;
+            Build bldNew = (Build)e.NewValue;
+            if (bldOld != null && bldNew != null && !(bldOld is GroupBuild && bldNew is InstructionBuild))
+            {
+                bldNew.TabIndex = bldOld.TabIndex;
+            }
+        }
 
         public Build SelectedBuild
         {
