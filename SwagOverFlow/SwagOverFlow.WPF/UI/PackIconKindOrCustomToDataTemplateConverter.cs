@@ -132,6 +132,12 @@ namespace SwagOverFlow.WPF.UI
                     scaleX = 0.7m;
                     scaleY = -0.7m;
                     break;
+                case PackIconTypiconsKind typeiconsKind:
+                    baseHeight = baseWidth = 350m;
+                    scaleX = 0.5m;
+                    scaleY = -0.5m;
+                    translateX = -baseWidth * scaleX;
+                    break;
                 case PackIconWeatherIconsKind weatherKind:
                     baseWidth = 30m;
                     baseHeight = 30m;

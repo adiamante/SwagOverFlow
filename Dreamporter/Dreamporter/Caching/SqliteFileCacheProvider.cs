@@ -52,21 +52,20 @@ namespace Dreamporter.Caching
 
         private UtilContext ResolveUtilContext(String cacheAddress)
         {
-            if (!_utilContextDict.ContainsKey(cacheAddress))
+            String fullCacheAddress = Path.Combine("DataCache", cacheAddress);
+            if (!_utilContextDict.ContainsKey(fullCacheAddress))
             {
                 DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();
-                string connectionString = $"Data Source={cacheAddress}";
+                string connectionString = $"Data Source={fullCacheAddress}";
                 optionsBuilder.UseSqlite(connectionString);
 
-                if (!File.Exists(cacheAddress))
+                if (!File.Exists(fullCacheAddress))
                 {
-                    string dir = Path.GetDirectoryName(cacheAddress);
+                    string dir = Path.GetDirectoryName(fullCacheAddress);
                     if (!Directory.Exists(dir))
                     {
                         Directory.CreateDirectory(dir);
                     }
-
-                    //File.Create(cacheAddress);
                 }
 
                 UtilContext context = new UtilContext(optionsBuilder.Options);

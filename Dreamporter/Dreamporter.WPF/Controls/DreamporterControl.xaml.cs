@@ -11,6 +11,8 @@ using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -98,6 +100,78 @@ namespace Dreamporter.WPF.Controls
         }
         #endregion IsBusy
 
+        #region InTestMode
+        public static DependencyProperty InTestModeProperty =
+            DependencyProperty.Register(
+                "InTestMode",
+                typeof(bool),
+                typeof(DreamporterControl),
+                new FrameworkPropertyMetadata(false, InTestMode_PropertyChanged));
+
+        private static void InTestMode_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DreamporterControl dc = (DreamporterControl)d;
+            if (e.NewValue != null)
+            {
+                if (dc.InTestMode)
+                {
+                    dc.RefreshSelectedBuild(dc.SelectedIntegration.TestBuild);
+                }
+                else
+                {
+                    dc.RefreshSelectedBuild(dc.SelectedIntegration.Build);
+                }
+            }
+        }
+
+        public void RefreshSelectedBuild(GroupBuild rootBuild)
+        {
+            Build selectedBuild = null;
+            Instruction selectedInstruction = null;
+            SwagItemPreOrderIterator<Build> bldIterator = new SwagItemPreOrderIterator<Build>(rootBuild);
+            for (Build bld = bldIterator.First(); !bldIterator.IsDone; bld = bldIterator.Next())
+            {
+                if (bld is InstructionBuild insBld)
+                {
+                    //Iterate through every InstructionBuild
+                    SwagItemPreOrderIterator<Instruction> insIterator = new SwagItemPreOrderIterator<Instruction>(insBld.Instructions);
+                    for (Instruction ins = insIterator.First(); !insIterator.IsDone; ins = insIterator.Next())
+                    {
+                        if (ins.IsSelected)
+                        {
+                            selectedInstruction = ins;
+                        }
+                    }
+                }
+
+                if (bld.IsSelected)
+                {
+                    selectedBuild = bld;
+                }
+            }
+
+            if (selectedBuild != null)
+            {
+                SelectedIntegration.SelectedBuild = selectedBuild;
+
+                if (selectedBuild is InstructionBuild insBld)
+                {
+                    insBld.SelectedInstruction = selectedInstruction;
+                }
+            }
+        }
+
+        public bool InTestMode
+        {
+            get { return (bool)GetValue(InTestModeProperty); }
+            set
+            {
+                SetValue(InTestModeProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        #endregion InTestMode
+
         #region Initialization
         public DreamporterControl()
         {
@@ -167,6 +241,30 @@ namespace Dreamporter.WPF.Controls
                 {
                     SelectedIntegration.Build = SelectedIntegration.Build;
                     SwagItemPreOrderIterator<Build> iterator = new SwagItemPreOrderIterator<Build>(SelectedIntegration.Build);
+                    for (Build b = iterator.First(); !iterator.IsDone; b = iterator.Next())
+                    {
+                        if (b.BuildId != 0)
+                        {
+                            DreamporterWPFContainer.BuildRepository.Update(b);
+                        }
+                        else
+                        {
+                            DreamporterWPFContainer.BuildRepository.Insert(b);
+                        }
+                    }
+                }
+                DreamporterWPFContainer.Context.SaveChanges();
+            }
+        }
+
+        private void TestBuildControl_Save(object sender, RoutedEventArgs e)
+        {
+            if (SelectedIntegration != null)
+            {
+                if (SelectedIntegration.IntegrationId != 0)
+                {
+                    SelectedIntegration.TestBuild = SelectedIntegration.TestBuild;
+                    SwagItemPreOrderIterator<Build> iterator = new SwagItemPreOrderIterator<Build>(SelectedIntegration.TestBuild);
                     for (Build b = iterator.First(); !iterator.IsDone; b = iterator.Next())
                     {
                         if (b.BuildId != 0)
@@ -285,6 +383,20 @@ namespace Dreamporter.WPF.Controls
         private void ImportIntegration_Click(object sender, RoutedEventArgs e)
         {
             Integration integation = SwagItemsControlHelper.GetDataFromFile<Integration>();
+            //Iterate though all builds
+            SwagItemPreOrderIterator<Build> bldIterator = new SwagItemPreOrderIterator<Build>(integation.Build);
+            integation.IntegrationId = 0;
+            integation.BuildId = 0;
+            integation.TestBuildId = 0;
+
+            for (Build bld = bldIterator.First(); !bldIterator.IsDone; bld = bldIterator.Next())
+            {
+                bld.BuildId = 0;
+            }
+
+            DreamporterWPFContainer.IntegrationDataRepository.Insert(integation);
+            Integrations.Add(integation);
+            SelectedIntegration = integation;
         }
 
         private void ExportIntegration_Click(object sender, RoutedEventArgs e)
@@ -292,6 +404,62 @@ namespace Dreamporter.WPF.Controls
             if (SelectedIntegration != null)
             {
                 SwagItemsControlHelper.ExportDataToFile<Integration>(SelectedIntegration, SelectedIntegration.Name);
+            }
+        }
+
+        private void ExportFolderOpen_Click(object sender, RoutedEventArgs e)
+        {
+            String directoryPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Export");
+            if (Directory.Exists(directoryPath))
+            {
+                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", directoryPath);
+            }
+            else
+            {
+                MessageBox.Show("Export Folder Not Found");
+            }
+            tbShortCuts.IsChecked = false;
+        }
+
+        private void CacheFolderOpen_Click(object sender, RoutedEventArgs e)
+        {
+            String directoryPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "DataCache");
+            if (Directory.Exists(directoryPath))
+            {
+                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", directoryPath);
+            }
+            else
+            {
+                MessageBox.Show("DataCache Folder Not Found");
+            }
+            tbShortCuts.IsChecked = false;
+        }
+
+        private void TestContexts_Save(object sender, RoutedEventArgs e)
+        {
+            if (SelectedIntegration != null)
+            {
+                if (SelectedIntegration.IntegrationId != 0)
+                {
+                    SelectedIntegration.TestContexts = SelectedIntegration.TestContexts;
+                    DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
+                }
+                DreamporterWPFContainer.Context.SaveChanges();
+            }
+        }
+
+        private void TestContexts_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                // Note that you can have more than one file.
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                foreach (String filePath in files)
+                {
+                    TestContext testContext = new TestContext() { InitialDB = filePath };
+                    SelectedIntegration.TestContexts.Add(testContext);
+                }
             }
         }
 
@@ -312,8 +480,9 @@ namespace Dreamporter.WPF.Controls
                 #endregion Keep track of Selected Build and Instruction
 
                 IsBusy = true;
-                RunContext runContext = await SelectedIntegration.RunAsync();
-                runContext.ExportDB($"Export\\{SelectedIntegration.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.db");
+                RunContext runContext = null;
+                runContext = await SelectedIntegration.RunAsync(inTestMode: InTestMode);
+                runContext.ExportDB($"Export\\{SelectedIntegration.Name}{(InTestMode ? "_Test" : "")}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.db");
 
                 DataSet dsResult = runContext.GetDataSet();
                 runContext.Close();

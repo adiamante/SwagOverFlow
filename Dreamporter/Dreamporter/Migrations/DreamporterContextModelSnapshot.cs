@@ -72,6 +72,9 @@ namespace Dreamporter.Migrations
                     b.Property<int>("Sequence")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TestIntegrationId")
+                        .HasColumnType("int");
+
                     b.HasKey("BuildId");
 
                     b.HasIndex("ParentId");
@@ -112,9 +115,18 @@ namespace Dreamporter.Migrations
                     b.Property<int>("Sequence")
                         .HasColumnType("int");
 
+                    b.Property<int>("TestBuildId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TestContexts")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("IntegrationId");
 
                     b.HasIndex("BuildId")
+                        .IsUnique();
+
+                    b.HasIndex("TestBuildId")
                         .IsUnique();
 
                     b.ToTable("Integrations");
@@ -150,7 +162,13 @@ namespace Dreamporter.Migrations
                     b.HasOne("Dreamporter.Core.GroupBuild", "Build")
                         .WithOne("Integration")
                         .HasForeignKey("Dreamporter.Core.Integration", "BuildId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Dreamporter.Core.GroupBuild", "TestBuild")
+                        .WithOne("TestIntegration")
+                        .HasForeignKey("Dreamporter.Core.Integration", "TestBuildId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

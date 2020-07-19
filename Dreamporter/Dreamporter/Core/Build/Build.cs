@@ -12,12 +12,14 @@ namespace Dreamporter.Core
     {
         #region Private Members
         Int32 _buildId;
-        Int32? _integrationId;
         String _name, _description;
         Boolean _isEnabled = true;
-        Integration _integration;
         BooleanContainerExpression _condition = new BooleanContainerExpression();
         ObservableCollection<Schema> _requiredData = new ObservableCollection<Schema>();
+        Integration _integration;
+        Integration _testIntegration;
+        Int32? _integrationId;
+        Int32? _testIntegrationId;
         Int32 _tabIndex = 0;            //For the UI
         #endregion Private Members
 
@@ -29,21 +31,6 @@ namespace Dreamporter.Core
             set { SetValue(ref _buildId, value); }
         }
         #endregion BuildId
-        #region IntegrationId
-        public Int32? IntegrationId
-        {
-            get { return _integrationId; }
-            set { SetValue(ref _integrationId, value); }
-        }
-        #endregion IntegrationId
-        #region Integration
-        [NotMapped]     //Opt out of one to zero to one convention with Integration
-        public Integration Integration
-        {
-            get { return _integration; }
-            set { SetValue(ref _integration, value); }
-        }
-        #endregion Integration
         #region Name
         public String Name
         {
@@ -109,6 +96,37 @@ namespace Dreamporter.Core
             set { SetValue(ref _requiredData, value); }
         }
         #endregion RequiredData
+
+        #region IntegrationId
+        public Int32? IntegrationId
+        {
+            get { return _integrationId; }
+            set { SetValue(ref _integrationId, value); }
+        }
+        #endregion IntegrationId
+        #region Integration
+        [NotMapped]     //Opt out of one to zero to one convention with Integration
+        public Integration Integration
+        {
+            get { return _integration; }
+            set { SetValue(ref _integration, value); }
+        }
+        #endregion Integration
+        #region TestIntegrationId
+        public Int32? TestIntegrationId
+        {
+            get { return _testIntegrationId; }
+            set { SetValue(ref _testIntegrationId, value); }
+        }
+        #endregion TestIntegrationId
+        #region TestIntegration
+        [NotMapped]     //Opt out of one to zero to one convention with Integration
+        public Integration TestIntegration
+        {
+            get { return _testIntegration; }
+            set { SetValue(ref _testIntegration, value); }
+        }
+        #endregion TestIntegration
         #endregion Properties
 
         #region Initialization

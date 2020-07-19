@@ -17,12 +17,13 @@ namespace DreamporterWPF
             get
             {
                 IIntegrationRepository integrationRepo = DreamporterWPFContainer.IntegrationDataRepository;
-                IEnumerable<Integration> integrations = integrationRepo.Get(includeProperties: "Build");
+                IEnumerable<Integration> integrations = integrationRepo.Get(includeProperties: "Build,TestBuild");
                 foreach (Integration integration in integrations)
                 {
                     DreamporterWPFContainer.BuildRepository.RecursiveLoadCollection(integration.Build, "Children");
+                    DreamporterWPFContainer.BuildRepository.RecursiveLoadCollection(integration.TestBuild, "Children");
                 }
-                return new ObservableCollection<Integration>(integrationRepo.Get(includeProperties: "Build"));
+                return new ObservableCollection<Integration>(integrations);
             }
         }
 

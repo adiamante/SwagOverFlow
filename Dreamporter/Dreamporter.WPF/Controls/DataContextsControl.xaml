@@ -32,7 +32,7 @@
                                                     SaveButtonVerticalAlignment="Bottom"
                                                     MinHeight="30">
         <swctl:SwagItemsControl.ContextMenu>
-            <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (InstructionControl)-->
+            <!--PlacementTarget here is SwagItemsControl, PlacementTarget.Tag is ThisControl (DataContextsControl)-->
             <ContextMenu DataContext="{Binding PlacementTarget.Tag.DataContexts, RelativeSource={RelativeSource Self}}" Tag="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                 <MenuItem Header="Add">
                     <MenuItem.Icon>

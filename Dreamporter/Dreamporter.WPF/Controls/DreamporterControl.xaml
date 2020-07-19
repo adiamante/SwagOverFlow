@@ -56,17 +56,27 @@
                 <Button DockPanel.Dock="Right" Click="ImportIntegration_Click">
                     <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Import}" />
                 </Button>
+                <TextBlock Text="     ******TEST MODE******" VerticalAlignment="Center" Visibility="{Binding InTestMode, ElementName=ThisControl, Converter={swui:BoolToVisibilityConverter}}" />
+                <ToggleButton x:Name="tbShortCuts" DockPanel.Dock="Right">
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconTypiconsKind.ArrowForwardOutline}" />
+                </ToggleButton>
+                <ToggleButton DockPanel.Dock="Right" IsChecked="{Binding InTestMode, ElementName=ThisControl}">
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconOcticonsKind.Beaker}" />
+                </ToggleButton>
+                <Popup PlacementTarget="{Binding ElementName=tbShortCuts}" IsOpen="{Binding IsChecked, ElementName=tbShortCuts}">
+                    <StackPanel>
+                        <Button Click="ExportFolderOpen_Click">
+                            Export Folder
+                        </Button>
+                        <Button Click="CacheFolderOpen_Click">
+                            DataCache Folder
+                        </Button>
+                    </StackPanel>
+                </Popup>
                 <Grid />
             </DockPanel>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="0">
-            <Grid.ColumnDefinitions>
-
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <!--<RowDefinition Height="*" />-->
-            </Grid.RowDefinitions>
+        <Grid Grid.Row="1" Grid.Column="0" Visibility="{Binding InTestMode, ElementName=ThisControl, Converter={swui:BoolToVisibilityConverter TrueValue=Hidden,FalseValue=Visible}}">
             <TabControl Grid.Row="0">
                 <TabItem>
                     <TabItem.HeaderTemplate>
@@ -190,6 +200,123 @@
                                           ShowSaveButton="True"
                                           Save="DataContextsControl_Save">
                     </dwctl:DataContextsControl>
+                </TabItem>
+            </TabControl>
+        </Grid>
+        <Grid Grid.Row="1" Grid.Column="0" Visibility="{Binding InTestMode, ElementName=ThisControl, Converter={swui:BoolToVisibilityConverter}}">
+            <TabControl Grid.Row="0">
+                <TabItem>
+                    <TabItem.HeaderTemplate>
+                        <DataTemplate>
+                            <swctl:IconControl Text="Build" Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.Cubes}" />
+                        </DataTemplate>
+                    </TabItem.HeaderTemplate>
+                    <dwctl:BuildControl RootBuild="{Binding SelectedIntegration.TestBuild, Mode=TwoWay, ElementName=ThisControl}"
+                                    SelectedBuild="{Binding SelectedIntegration.SelectedBuild, ElementName=ThisControl}"
+                                    ShowSaveContextMenuItem="True" 
+                                    ShowAddContextMenuItem="True"
+                                    ShowCopyContextMenuItem="True"
+                                    ShowPasteContextMenuItem="True"
+                                    ShowExportContextMenuItem="True"
+                                    ShowImportContextMenuItem="True"
+                                    ShowItemAddContextMenuItem="True"
+                                    ShowItemCopyContextMenuItem="True"
+                                    ShowItemPasteContextMenuItem="True"
+                                    ShowItemRemoveContextMenuItem="True"
+                                    Save="TestBuildControl_Save">
+                    </dwctl:BuildControl>
+                </TabItem>
+                <TabItem>
+                    <TabItem.HeaderTemplate>
+                        <DataTemplate>
+                            <swctl:IconControl Text="Options" Kind="{x:Static iconPacks:PackIconIoniconsKind.OptionsMD}" />
+                        </DataTemplate>
+                    </TabItem.HeaderTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Grid.Column="0">
+                            <GroupBox.Header>
+                                <swctl:IconControl Text="Default" Kind="{x:Static iconPacks:PackIconUniconsKind.AlignCenterAlt}" />
+                            </GroupBox.Header>
+                            <swctl:SwagOptionControl 
+                                ShowSaveButton="True" 
+                                ShowSaveContextMenuItem="True" 
+                                ShowAddContextMenuItem="True"
+                                ShowCopyContextMenuItem="True"
+                                ShowPasteContextMenuItem="True"
+                                ShowExportContextMenuItem="True"
+                                ShowImportContextMenuItem="True"
+                                ShowItemAddContextMenuItem="True"
+                                ShowItemRemoveContextMenuItem="True"
+                                OptionCollection="{Binding SelectedIntegration.DefaultOptions, Mode=TwoWay, ElementName=ThisControl}"
+                                Save="DefaultOptions_Save">
+                            </swctl:SwagOptionControl>
+                        </GroupBox>
+                        <GroupBox Grid.Column="1">
+                            <GroupBox.Header>
+                                <DockPanel>
+                                    <swctl:IconControl DockPanel.Dock="Left" Text="Options Tree" Kind="{x:Static iconPacks:PackIconBoxIconsKind.SolidTree}" />
+                                </DockPanel>
+                            </GroupBox.Header>
+                            <dwctl:OptionsTreeControl RootOptions="{Binding SelectedIntegration.OptionsTree, Mode=TwoWay, ElementName=ThisControl}"
+                                    SelectedOptions="{Binding SelectedIntegration.SelectedOptions, Mode=TwoWay, ElementName=ThisControl}"
+                                    ShowSaveContextMenuItem="True" 
+                                    ShowAddContextMenuItem="True"
+                                    ShowExportContextMenuItem="True"
+                                    ShowImportContextMenuItem="True"
+                                    ShowItemAddContextMenuItem="True"
+                                    ShowItemCopyContextMenuItem="True"
+                                    ShowItemPasteContextMenuItem="True"
+                                    ShowItemRemoveContextMenuItem="True"
+                                    Save="OptionsTreeControl_Save">
+                            </dwctl:OptionsTreeControl>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+                <TabItem>
+                    <TabItem.HeaderTemplate>
+                        <DataTemplate>
+                            <swctl:IconControl Text="Test Contexts" Kind="{x:Static iconPacks:PackIconMaterialKind.Beaker}" />
+                        </DataTemplate>
+                    </TabItem.HeaderTemplate>
+                    <swctl:SwagItemsControl SwagItemsSource="{Binding SelectedIntegration.TestContexts, Mode=TwoWay, ElementName=ThisControl}" 
+                                            SelectedItem="{Binding SelectedIntegration.SelectedTestContext, ElementName=ThisControl}"
+                                            ShowSaveContextMenuItem="True"
+                                            UseDefaultAdd="True"
+                                            ShowAddContextMenuItem="True"
+                                            ShowItemAddContextMenuItem="True"
+                                            UseDefaultClear="True"
+                                            ShowClearContextMenuItem="True"
+                                            UseDefaultRemove="True"
+                                            ShowItemRemoveContextMenuItem="True"
+                                            ShowSaveButton="True"
+                                            SaveButtonHorizontalAlignment="Right"
+                                            SaveButtonVerticalAlignment="Bottom"
+                                            Save="TestContexts_Save"
+                                            AllowDrop="True"
+                                            Drop="TestContexts_Drop">
+                        <swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                            <swui:SwagTemplate Type="{x:Type dc:TestContext}">
+                                <swui:SwagTemplate.DataTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding InitialDB}" />
+                                    </DataTemplate>
+                                </swui:SwagTemplate.DataTemplate>
+                            </swui:SwagTemplate>
+                        </swctl:SwagItemsControl.CustomDefaultItemTemplate>
+                        <swctl:SwagItemsControl.CustomDefaultItemContainerStyle>
+                            <swui:SwagStyle Type="{x:Type dc:TestContext}">
+                                <swui:SwagStyle.Style>
+                                    <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                                    </Style>
+                                </swui:SwagStyle.Style>
+                            </swui:SwagStyle>
+                        </swctl:SwagItemsControl.CustomDefaultItemContainerStyle>
+                    </swctl:SwagItemsControl>
                 </TabItem>
             </TabControl>
         </Grid>

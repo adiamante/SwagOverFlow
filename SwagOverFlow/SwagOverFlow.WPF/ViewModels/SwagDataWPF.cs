@@ -723,6 +723,7 @@ namespace SwagOverFlow.WPF.ViewModels
                         {
                             BindingListCollectionView bindingView = (BindingListCollectionView)view;
                             //https://stackoverflow.com/questions/9385489/why-errors-when-filters-datatable-with-collectionview
+                            bindingView.CancelEdit();
 
                             String combinedFilter = "";
                             foreach (KeyValuePair<string, SwagDataColumn> kvp in Columns)

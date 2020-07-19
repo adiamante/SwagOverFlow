@@ -93,7 +93,7 @@ namespace Dreamporter.WPF.Controls
         {
             Build bldOld = (Build)e.OldValue;
             Build bldNew = (Build)e.NewValue;
-            if (bldOld != null && bldNew != null && !(bldOld is GroupBuild && bldNew is InstructionBuild))
+            if (bldOld != null && bldNew != null && bldOld.GetType().Name == bldNew.GetType().Name)
             {
                 bldNew.TabIndex = bldOld.TabIndex;
             }

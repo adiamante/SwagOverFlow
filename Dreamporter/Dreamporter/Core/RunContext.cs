@@ -79,9 +79,21 @@ namespace Dreamporter.Core
         public void Open()
         {
             _main.OpenConnection();
+            InitUtil();
+        }
+
+        public void Open(String connectionString)
+        {
+            _main = new SqliteClient(connectionString);
+            _main.OpenConnection();
+            //InitUtil();       //Skip this for now because util.numbers values will be generated again
+        }
+
+        private void InitUtil()
+        {
             #region Utility Table: util.numbers with column n
-            _main.ExecuteNonQuery(@"CREATE TABLE [util.log](timestamp datetime, pid number, tid number, type text, name text, message text, info text);");
-            _main.ExecuteNonQuery(@"CREATE TABLE [util.numbers](n integer primary key);
+            _main.ExecuteNonQuery(@"CREATE TABLE IF NOT EXISTS [util.log](timestamp datetime, pid number, tid number, type text, name text, message text, info text);");
+            _main.ExecuteNonQuery(@"CREATE TABLE IF NOT EXISTS [util.numbers](n integer primary key);
                 WITH RECURSIVE
                     cnt(x) AS(
                      SELECT -100

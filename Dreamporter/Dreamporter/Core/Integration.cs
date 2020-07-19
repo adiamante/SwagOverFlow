@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -15,9 +16,10 @@ namespace Dreamporter.Core
     public class Integration : ViewModelBaseExtended
     {
         #region Private Members
-        Int32 _integrationId, _buildId, _sequence;
+        Int32 _integrationId, _buildId, _testBuildId, _sequence;
         String _name;
-        GroupBuild _build = new GroupBuild() { Sequence = 0 };      //Iterator is dependent on Sequence
+        GroupBuild _build = new GroupBuild();
+        GroupBuild _testBuild = new GroupBuild();
         Build _selectedBuild;
         GroupInstruction _instructionTemplates = new GroupInstruction();
         SwagOptionGroup _defaultOptions = new SwagOptionGroup();
@@ -25,7 +27,8 @@ namespace Dreamporter.Core
         OptionsNode _optionsTree = new OptionsNode();
         ObservableCollection<Schema> _initialSchemas = new ObservableCollection<Schema>();
         ObservableCollection<DataContext> _dataContexts = new ObservableCollection<DataContext>();
-        ObservableCollection<String> _schemaGroups = new ObservableCollection<String>();
+        ObservableCollection<TestContext> _testContexts = new ObservableCollection<TestContext>();
+        TestContext _selectedTestContext;
         #endregion Private Members
 
         #region Properties
@@ -65,6 +68,21 @@ namespace Dreamporter.Core
             set { SetValue(ref _build, value); }
         }
         #endregion Build
+        #region TestBuildId
+        public Int32 TestBuildId
+        {
+            get { return _testBuildId; }
+            set { SetValue(ref _testBuildId, value); }
+        }
+        #endregion TestBuildId
+        #region TestBuild
+        [NotMapped] //Opt out of one to zero to one convention with Group Build
+        public GroupBuild TestBuild
+        {
+            get { return _testBuild; }
+            set { SetValue(ref _testBuild, value); }
+        }
+        #endregion TestBuild
         #region SelectedBuild
         [JsonIgnore]
         [NotMapped]
@@ -118,32 +136,62 @@ namespace Dreamporter.Core
             set { SetValue(ref _dataContexts, value); }
         }
         #endregion DataContexts
+        #region TestContexts
+        public ObservableCollection<TestContext> TestContexts
+        {
+            get { return _testContexts; }
+            set { SetValue(ref _testContexts, value); }
+        }
+        #endregion TestContexts
+        #region SelectedTestContext
+        [JsonIgnore]
+        [NotMapped]
+        public TestContext SelectedTestContext
+        {
+            get { return _selectedTestContext; }
+            set { SetValue(ref _selectedTestContext, value); }
+        }
+        #endregion SelectedTestContext
         #endregion Properties
 
         #region Methods
-        public RunContext Run(RunContext rc = null, RunParams rp = null)
+        public RunContext Run(RunContext rc = null, RunParams rp = null, Boolean inTestMode = false)
         {
             if (rc == null)
             {
                 rc = new RunContext();
-                rc.Open();
             }
-
-            InitRunContext(rc);
 
             if (rp == null)
             {
                 rp = GenerateRunParams();
             }
 
-            Build.Run(rc, rp);
+            if  (inTestMode)
+            {
+                if (SelectedTestContext != null && File.Exists(SelectedTestContext.InitialDB))
+                {
+                    rc.Open($"Data Source = {SelectedTestContext.InitialDB};Version=3;");
+                }
+                else
+                {
+                    rc.Open();
+                }
+                TestBuild.Run(rc, rp);
+            }
+            else
+            {
+                rc.Open();
+                InitRunContext(rc, inTestMode);
+                Build.Run(rc, rp);
+            }
 
             return rc;
         }
 
-        public async Task<RunContext> RunAsync(RunContext rc = null, RunParams rp = null)
+        public async Task<RunContext> RunAsync(RunContext rc = null, RunParams rp = null, Boolean inTestMode = false)
         {
-            return await Task.Run<RunContext>(() => { return Run(rc, rp); });
+            return await Task.Run<RunContext>(() => { return Run(rc, rp, inTestMode); });
         }
 
         public RunParams GenerateRunParams()
@@ -186,17 +234,20 @@ namespace Dreamporter.Core
             return rp;
         }
 
-        public void InitRunContext(RunContext runContext)
+        public void InitRunContext(RunContext runContext, Boolean inTestMode = false)
         {
             runContext.InitDataContexts(DataContexts);
 
-            foreach (Schema schema in InitialSchemas)
+            if (!inTestMode)
             {
-                DataSet ds = schema.GetDataSet();
-
-                foreach (DataTable dtbl in ds.Tables)
+                foreach (Schema schema in InitialSchemas)
                 {
-                    runContext.AddTables(dtbl);
+                    DataSet ds = schema.GetDataSet();
+
+                    foreach (DataTable dtbl in ds.Tables)
+                    {
+                        runContext.AddTables(dtbl);
+                    }
                 }
             }
         }

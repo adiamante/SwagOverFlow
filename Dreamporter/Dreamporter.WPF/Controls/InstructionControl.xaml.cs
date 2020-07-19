@@ -86,7 +86,7 @@ namespace Dreamporter.WPF.Controls
         {
             Instruction insOld = (Instruction)e.OldValue;
             Instruction insNew = (Instruction)e.NewValue;
-            if (insOld != null && insNew != null)
+            if (insOld != null && insNew != null && insOld.GetType().Name == insNew.GetType().Name)
             {
                 insNew.TabIndex = insOld.TabIndex;
             }

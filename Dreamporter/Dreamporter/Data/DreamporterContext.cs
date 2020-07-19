@@ -60,7 +60,13 @@ namespace Dreamporter.Data
                 builder.HasKey(i => i.IntegrationId);
                 builder.HasOne(i => i.Build)
                     .WithOne(b => b.Integration)
-                    .HasForeignKey<Integration>(i => i.BuildId);
+                    .HasForeignKey<Integration>(i => i.BuildId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                builder.HasOne(i => i.TestBuild)
+                    .WithOne(b => b.TestIntegration)
+                    .HasForeignKey<Integration>(i => i.TestBuildId)
+                    .OnDelete(DeleteBehavior.NoAction);
 
                 builder.Property(i => i.InstructionTemplates)
                     .HasConversion(
@@ -91,6 +97,10 @@ namespace Dreamporter.Data
                     .HasConversion(
                         i => JsonHelper.ToJsonString(i),
                         i => JsonHelper.ToObject<ObservableCollection<DataContext>>(i));
+                builder.Property(i => i.TestContexts)
+                    .HasConversion(
+                        i => JsonHelper.ToJsonString(i),
+                        i => JsonHelper.ToObject<ObservableCollection<TestContext>>(i));
             }
         }
         #endregion IntegrationEntityConfiguration

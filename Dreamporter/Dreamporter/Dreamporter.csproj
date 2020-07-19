@@ -29,10 +29,30 @@
     <Compile Remove="Migrations\20200704171054_M0.Designer.cs" />
     <Compile Remove="Migrations\20200704171358_M1.cs" />
     <Compile Remove="Migrations\20200704171358_M1.Designer.cs" />
+    <Compile Remove="Migrations\20200704214422_M0.cs" />
+    <Compile Remove="Migrations\20200704214422_M0.Designer.cs" />
+    <Compile Remove="Migrations\20200707035717_M1.cs" />
+    <Compile Remove="Migrations\20200707035717_M1.Designer.cs" />
     <Compile Remove="Migrations\20200708020208_M2.cs" />
     <Compile Remove="Migrations\20200708020208_M2.Designer.cs" />
+    <Compile Remove="Migrations\20200710135340_M2.cs" />
+    <Compile Remove="Migrations\20200710135340_M2.Designer.cs" />
     <Compile Remove="Migrations\20200714000558_M3.cs" />
     <Compile Remove="Migrations\20200714000558_M3.Designer.cs" />
+    <Compile Remove="Migrations\20200715025213_M3.cs" />
+    <Compile Remove="Migrations\20200715025213_M3.Designer.cs" />
+    <Compile Remove="Migrations\20200718143015_M4.cs" />
+    <Compile Remove="Migrations\20200718143015_M4.Designer.cs" />
+    <Compile Remove="Migrations\20200719041540_TestContexts.cs" />
+    <Compile Remove="Migrations\20200719041540_TestContexts.Designer.cs" />
+    <Compile Remove="Migrations\20200719044236_M5.cs" />
+    <Compile Remove="Migrations\20200719044236_M5.Designer.cs" />
+    <Compile Remove="Migrations\20200719045128_M5.cs" />
+    <Compile Remove="Migrations\20200719045128_M5.Designer.cs" />
+    <Compile Remove="Migrations\20200719045332_M5.cs" />
+    <Compile Remove="Migrations\20200719045332_M5.Designer.cs" />
+    <Compile Remove="Migrations\20200719053244_M0.cs" />
+    <Compile Remove="Migrations\20200719053244_M0.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

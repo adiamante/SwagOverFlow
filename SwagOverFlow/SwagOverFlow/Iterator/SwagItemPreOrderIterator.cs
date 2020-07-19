@@ -18,7 +18,7 @@ namespace SwagOverFlow.Iterator
     {
         private ISwagParent<TChild> _root;
         private TChild _current;
-        private Boolean _isDone = false, _isSecondToLast = false;
+        private Boolean _isDone = false;
 
         public SwagItemPreOrderIterator(ISwagParent<TChild> root)
         {

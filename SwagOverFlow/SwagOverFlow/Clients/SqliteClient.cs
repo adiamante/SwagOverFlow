@@ -482,6 +482,7 @@ namespace SwagOverFlow.Clients
                         dtoConverted = dtoPure.ToOffset(destTimeZone.BaseUtcOffset.Add(TimeSpan.FromHours(1)));
                     }
 
+                    //String str = dtoConverted.ToString(stringFormat);
                     return dtoConverted.ToString(stringFormat);
                 }
             }

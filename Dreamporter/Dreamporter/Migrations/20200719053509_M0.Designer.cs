@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dreamporter.Migrations
 {
     [DbContext(typeof(DreamporterContext))]
-    [Migration("20200707035717_M1")]
-    partial class M1
+    [Migration("20200719053509_M0")]
+    partial class M0
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -68,7 +68,13 @@ namespace Dreamporter.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
+                    b.Property<string>("RequiredData")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Sequence")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TestIntegrationId")
                         .HasColumnType("int");
 
                     b.HasKey("BuildId");
@@ -105,15 +111,24 @@ namespace Dreamporter.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OptionsSet")
+                    b.Property<string>("OptionsTree")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Sequence")
                         .HasColumnType("int");
 
+                    b.Property<int>("TestBuildId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TestContexts")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("IntegrationId");
 
                     b.HasIndex("BuildId")
+                        .IsUnique();
+
+                    b.HasIndex("TestBuildId")
                         .IsUnique();
 
                     b.ToTable("Integrations");
@@ -133,11 +148,6 @@ namespace Dreamporter.Migrations
                     b.Property<string>("Instructions")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RequiredData")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasIndex("IntegrationId");
-
                     b.HasDiscriminator().HasValue("InstructionBuild");
                 });
 
@@ -154,15 +164,14 @@ namespace Dreamporter.Migrations
                     b.HasOne("Dreamporter.Core.GroupBuild", "Build")
                         .WithOne("Integration")
                         .HasForeignKey("Dreamporter.Core.Integration", "BuildId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("Dreamporter.Core.InstructionBuild", b =>
-                {
-                    b.HasOne("Dreamporter.Core.Integration", "Integration")
-                        .WithMany()
-                        .HasForeignKey("IntegrationId");
+                    b.HasOne("Dreamporter.Core.GroupBuild", "TestBuild")
+                        .WithOne("TestIntegration")
+                        .HasForeignKey("Dreamporter.Core.Integration", "TestBuildId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
