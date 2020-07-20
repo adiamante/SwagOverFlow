@@ -233,13 +233,20 @@ namespace SwagOverFlow.Clients
             return ds;
         }
 
-        public void BackupDatabase(string filePath)
+        public void BackupDatabaseToFile(string filePath)
         {
             //https://stackoverflow.com/questions/11383775/memory-stream-as-db/11385280
             SQLiteConnection fileConnection = new SQLiteConnection($"Data Source={filePath};Version=3;");
             fileConnection.Open();
             _connection.BackupDatabase(fileConnection, "main", "main", -1, null, 0);
             fileConnection.Close();
+        }
+
+        public void BackupDatabaseToClient(SqliteClient client)
+        {
+            OpenConnection();
+            client.OpenConnection();
+            _connection.BackupDatabase(client._connection, "main", "main", -1, null, 0);
         }
 
         #endregion Methods

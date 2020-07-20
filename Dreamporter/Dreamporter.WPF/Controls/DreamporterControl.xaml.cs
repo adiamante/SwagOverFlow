@@ -116,6 +116,13 @@ namespace Dreamporter.WPF.Controls
                 if (dc.InTestMode)
                 {
                     dc.RefreshSelectedBuild(dc.SelectedIntegration.TestBuild);
+                    foreach (TestContext testContext in dc.SelectedIntegration.TestContexts)
+                    {
+                        if (testContext.IsSelected)
+                        {
+                            dc.SelectedIntegration.SelectedTestContext = testContext;
+                        }
+                    }
                 }
                 else
                 {
@@ -525,14 +532,40 @@ namespace Dreamporter.WPF.Controls
                     }
                 }
 
-                foreach (KeyValuePair<string, DataSet> kvpDataSet in dictDataSets)
+                if (InTestMode)
                 {
-                    if (kvpDataSet.Key != "util")
+                    List<String> targetSchemas = new List<string>();
+                    RunParams rp = SelectedIntegration.GenerateRunParams();
+                    if (rp.Params.ContainsKey("TestTargetSchemas"))
                     {
-                        SwagDataSetWPF sds = new SwagDataSetWPF(kvpDataSet.Value) { Display = kvpDataSet.Key };
-                        data.Children.Add(sds);
+                        String[] schemas = rp.Params["TestTargetSchemas"].Split(',');
+                        foreach (String schema in schemas)
+                        {
+                            targetSchemas.Add(schema.ToLower());
+                        }
+                    }
+
+                    foreach (KeyValuePair<string, DataSet> kvpDataSet in dictDataSets)
+                    {
+                        if (kvpDataSet.Key != "util" && (targetSchemas.Count == 0 || targetSchemas.Contains(kvpDataSet.Key.ToLower())))
+                        {
+                            SwagDataSetWPF sds = new SwagDataSetWPF(kvpDataSet.Value) { Display = kvpDataSet.Key };
+                            data.Children.Add(sds);
+                        }
                     }
                 }
+                else
+                {
+                    foreach (KeyValuePair<string, DataSet> kvpDataSet in dictDataSets)
+                    {
+                        if (kvpDataSet.Key != "util")
+                        {
+                            SwagDataSetWPF sds = new SwagDataSetWPF(kvpDataSet.Value) { Display = kvpDataSet.Key };
+                            data.Children.Add(sds);
+                        }
+                    }
+                }
+                
                 #endregion Resolve DataSets
 
                 #region DataSets Window

@@ -89,6 +89,15 @@ namespace Dreamporter.Core
             //InitUtil();       //Skip this for now because util.numbers values will be generated again
         }
 
+        public void OpenFileToMemory(String connectionString)
+        {
+            SqliteClient fileClient = new SqliteClient(connectionString);
+            fileClient.OpenConnection();
+            _main.OpenConnection();
+            fileClient.BackupDatabaseToClient(_main);
+            fileClient.CloseConnection();
+        }
+
         private void InitUtil()
         {
             #region Utility Table: util.numbers with column n
@@ -161,7 +170,7 @@ namespace Dreamporter.Core
                 {
                     File.Delete(dbFile);
                 }
-                _main.BackupDatabase(dbFile);
+                _main.BackupDatabaseToFile(dbFile);
             }
             catch { }
         }

@@ -171,7 +171,8 @@ namespace Dreamporter.Core
             {
                 if (SelectedTestContext != null && File.Exists(SelectedTestContext.InitialDB))
                 {
-                    rc.Open($"Data Source = {SelectedTestContext.InitialDB};Version=3;");
+                    //Copy to In Memory connection so we don't keep appending
+                    rc.OpenFileToMemory($"Data Source = {SelectedTestContext.InitialDB};Version=3;");
                 }
                 else
                 {

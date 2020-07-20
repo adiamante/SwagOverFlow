@@ -302,7 +302,7 @@ namespace SwagOverFlow.Data.Converters
             SqliteClient sqliteClient = _dataSetSqliteClientConverter.FromDataSet(context, ds);
             sqliteClient.OpenConnection();
             String dbPath = args.Length > 0 ? args[0].ToString() : $"{ds.DataSetName}.db";
-            sqliteClient.BackupDatabase(dbPath);
+            sqliteClient.BackupDatabaseToFile(dbPath);
             sqliteClient.CloseConnection();
             return dbPath;
         }
