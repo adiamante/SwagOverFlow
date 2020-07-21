@@ -20,6 +20,8 @@ namespace Dreamporter.WPF.Controls
     /// </summary>
     public partial class InstructionControl : SwagControlBase
     {
+        Int32 _currentTabIndex = 0;
+
         #region MoveType
         enum MoveType
         {
@@ -84,11 +86,22 @@ namespace Dreamporter.WPF.Controls
 
         private static void SelectedInstruction_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            InstructionControl ic = (InstructionControl)d;
             Instruction insOld = (Instruction)e.OldValue;
             Instruction insNew = (Instruction)e.NewValue;
             if (insOld != null && insNew != null && insOld.GetType().Name == insNew.GetType().Name)
             {
                 insNew.TabIndex = insOld.TabIndex;
+            }
+
+            if (insOld != null && insNew == null)
+            {
+                ic._currentTabIndex = insOld.TabIndex;
+            }
+
+            if (insOld == null && insNew != null)
+            {
+                insNew.TabIndex = ic._currentTabIndex;
             }
         }
 

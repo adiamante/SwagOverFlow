@@ -3,6 +3,8 @@ using Newtonsoft.Json.Converters;
 using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Data;
 
 namespace Dreamporter.Core
@@ -19,7 +21,7 @@ namespace Dreamporter.Core
 
     public abstract class SchemaBase : ViewModelBaseExtended
     {
-        Boolean _isExpanded = true;
+        Boolean _isExpanded = true, _isSelected;
         String _name;
 
         #region Name
@@ -37,14 +39,38 @@ namespace Dreamporter.Core
             set { SetValue(ref _isExpanded, value); }
         }
         #endregion IsExpanded
+
+        #region IsSelected
+        public Boolean IsSelected
+        {
+            get { return _isSelected; }
+            set { SetValue(ref _isSelected, value); }
+        }
+        #endregion IsSelected
     }
 
     public class Schema : SchemaBase
     {
-        List<SchemaTable> _tables = new List<SchemaTable>();
+        ObservableCollection<SchemaTable> _tables = new ObservableCollection<SchemaTable>();
+
+        public Schema()
+        {
+            _tables.CollectionChanged += _tables_CollectionChanged;
+        }
+
+        private void _tables_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (SchemaTable table in e.NewItems)
+                {
+                    table.Schema = this;
+                }
+            }
+        }
 
         #region Tables
-        public List<SchemaTable> Tables
+        public ObservableCollection<SchemaTable> Tables
         {
             get { return _tables; }
             set { SetValue(ref _tables, value); }
@@ -86,25 +112,60 @@ namespace Dreamporter.Core
             return ds;
         }
         #endregion GetDataSet
+
+        public void Init()
+        {
+            foreach (SchemaTable table in Tables)
+            {
+                table.Schema = this;
+                table.Init();
+            }
+        }
     }
 
     public class SchemaTable : SchemaBase
     {
-        List<SchemaColumn> _columns = new List<SchemaColumn>();
+        ObservableCollection<SchemaColumn> _columns = new ObservableCollection<SchemaColumn>();
 
+        public Schema Schema { get; set; }
         #region Columns
-        public List<SchemaColumn> Columns
+        public ObservableCollection<SchemaColumn> Columns
         {
             get { return _columns; }
             set { SetValue(ref _columns, value); }
         }
         #endregion Columns
+
+        public SchemaTable()
+        {
+            _columns.CollectionChanged += _columns_CollectionChanged;
+        }
+
+        private void _columns_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (SchemaColumn column in e.NewItems)
+                {
+                    column.Table = this;
+                }
+            }
+        }
+
+        public void Init()
+        {
+            foreach (SchemaColumn column in Columns)
+            {
+                column.Table = this;
+            }
+        }
     }
 
     public class SchemaColumn : SchemaBase
     {
         SchemaColumnDataType _dataType;
 
+        public SchemaTable Table { get; set; }
         #region DataType
         [JsonConverter(typeof(StringEnumConverter))]
         public SchemaColumnDataType DataType

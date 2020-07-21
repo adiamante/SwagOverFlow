@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -81,7 +82,6 @@ namespace Dreamporter.WPF.Controls
                 case Schema schema:
                     schema.Tables.Add(new SchemaTable());
                     Refresh(schema.Tables);
-                    
                     break;
                 case SchemaTable table:
                     table.Columns.Add(new SchemaColumn());
@@ -131,6 +131,73 @@ namespace Dreamporter.WPF.Controls
         private void SwagItemsControl_Save(object sender, RoutedEventArgs e)
         {
             RaiseEvent(new RoutedEventArgs(SaveEvent));
+        }
+
+
+        private void Table_GenerateCTE_Click(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement fe = (FrameworkElement)e.OriginalSource;
+            SchemaTable table = (SchemaTable)fe.DataContext;
+
+            String alias = table.Schema.Name.Length > 0 ? Char.ToLower(table.Schema.Name[0]).ToString() : "";
+
+            for (int i = 0; i < table.Name.Length; i++)
+            {
+                Char c = table.Name[i];
+                if (i == 0 && Char.IsLetter(c))
+                {
+                    alias += Char.ToLower(c);
+                }
+                else if (c == '.' && i + 1 < table.Name.Length)
+                {
+                    i++;
+                    c = table.Name[i];
+                    alias += Char.ToLower(c);
+                }
+                else if (Char.IsUpper(c))
+                {
+                    alias += Char.ToLower(c);
+                }
+            }
+
+            if (alias == "or")
+            {
+                alias = "or0";
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"WITH {table.Name} (");
+
+            foreach (SchemaColumn column in table.Columns)
+            {
+                sb.Append($"{column.Name}, ");
+            }
+
+            //Remove last two characters
+            sb.Length--;    //removes space
+            sb.Length--;    //removes last comma
+
+            sb.Append(") AS\n");
+            sb.Append("(\n");
+            sb.Append("\tSELECT ");
+
+            foreach (SchemaColumn column in table.Columns)
+            {
+                sb.Append($"{alias}.{column.Name}, ");
+            }
+
+            //Remove last two characters
+            sb.Length--;    //removes space
+            sb.Length--;    //removes last comma
+
+            sb.Append("\n");
+            sb.Append($"\tFROM [{table.Schema.Name}.{table.Name}] {alias}\n");
+            sb.Append(")\n");
+            sb.Append("SELECT *\n");
+            sb.Append($"FROM {table.Name}");
+
+            UIHelper.StringInputDialog($"Generated CTE for {table.Schema.Name}.{table.Name}", sb.ToString());
+
         }
         #endregion Events
 

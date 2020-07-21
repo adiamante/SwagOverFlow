@@ -97,6 +97,20 @@ namespace Dreamporter.WPF.Controls
             {
                 bldNew.TabIndex = bldOld.TabIndex;
             }
+
+            if (bldNew is InstructionBuild insBld)
+            {
+                //Iterate through every InstructionBuild
+                SwagItemPreOrderIterator<Instruction> insIterator = new SwagItemPreOrderIterator<Instruction>(insBld.Instructions);
+                for (Instruction ins = insIterator.First(); !insIterator.IsDone; ins = insIterator.Next())
+                {
+                    if (ins.IsSelected)
+                    {
+                        insBld.SelectedInstruction = ins;
+                        break;
+                    }
+                }
+            }
         }
 
         public Build SelectedBuild

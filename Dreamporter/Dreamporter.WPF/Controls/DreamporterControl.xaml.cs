@@ -134,23 +134,9 @@ namespace Dreamporter.WPF.Controls
         public void RefreshSelectedBuild(GroupBuild rootBuild)
         {
             Build selectedBuild = null;
-            Instruction selectedInstruction = null;
             SwagItemPreOrderIterator<Build> bldIterator = new SwagItemPreOrderIterator<Build>(rootBuild);
             for (Build bld = bldIterator.First(); !bldIterator.IsDone; bld = bldIterator.Next())
             {
-                if (bld is InstructionBuild insBld)
-                {
-                    //Iterate through every InstructionBuild
-                    SwagItemPreOrderIterator<Instruction> insIterator = new SwagItemPreOrderIterator<Instruction>(insBld.Instructions);
-                    for (Instruction ins = insIterator.First(); !insIterator.IsDone; ins = insIterator.Next())
-                    {
-                        if (ins.IsSelected)
-                        {
-                            selectedInstruction = ins;
-                        }
-                    }
-                }
-
                 if (bld.IsSelected)
                 {
                     selectedBuild = bld;
@@ -160,11 +146,6 @@ namespace Dreamporter.WPF.Controls
             if (selectedBuild != null)
             {
                 SelectedIntegration.SelectedBuild = selectedBuild;
-
-                if (selectedBuild is InstructionBuild insBld)
-                {
-                    insBld.SelectedInstruction = selectedInstruction;
-                }
             }
         }
 
@@ -603,8 +584,8 @@ namespace Dreamporter.WPF.Controls
                     Dispatcher.Invoke(() =>
                     {
                         //Delay selection because Instruction gets selected automatically upon creation (last child gets selected)
-                        insbldEnd.SelectedInstruction = selectedInstruction;
                         selectedInstruction.IsSelected = true;
+                        insbldEnd.SelectedInstruction = selectedInstruction;
                     }, System.Windows.Threading.DispatcherPriority.Background);
                 }
                 #endregion Select last Build and Instruction

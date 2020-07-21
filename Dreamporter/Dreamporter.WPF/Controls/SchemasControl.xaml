@@ -18,6 +18,65 @@
              x:Name="ThisControl"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <swctl:SwagControlBase.Resources>
+        <ContextMenu x:Key="TableContextMenu" 
+                     Tag="{Binding PlacementTarget,
+                     RelativeSource={RelativeSource Self},
+                     Converter={swui:AncestorFindConverter},
+                     ConverterParameter={x:Type swctl:SwagItemsControl}}"
+                     swcmd:CommandBehavior.Event="Opened"
+                     swcmd:CommandBehavior.Command="{Binding Tag.ItemContextMenuOpenedCommand, RelativeSource={RelativeSource Self}}"
+                     swcmd:CommandBehavior.CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+            <MenuItem Header="Add" Command="{Binding Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                                  Visibility="{Binding Parent.Tag.ShowItemAddContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Add}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Generate CTE" Click="Table_GenerateCTE_Click"
+                      CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TableRefresh}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Copy" Command="{Binding Parent.Tag.CopyCommand, RelativeSource={RelativeSource Self}}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                                  Visibility="{Binding Parent.Tag.ShowItemCopyContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.Clipboard}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Paste" Command="{Binding Parent.Tag.PasteCommand, RelativeSource={RelativeSource Self}}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                                  Visibility="{Binding Parent.Tag.ShowItemPasteContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconModernKind.ClipboardPaste}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Export" Command="{Binding Parent.Tag.ExportCommand, RelativeSource={RelativeSource Self}}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                                  Visibility="{Binding Parent.Tag.ShowItemExportContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Export}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Import" Command="{Binding Parent.Tag.ImportCommand, RelativeSource={RelativeSource Self}}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                                  Visibility="{Binding Parent.Tag.ShowItemImportContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Import}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Remove" Command="{Binding Parent.Tag.RemoveCommand, RelativeSource={RelativeSource Self}}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                                  Visibility="{Binding Parent.Tag.ShowItemRemoveContextMenuItem, RelativeSource={RelativeSource Self}, Converter={swui:BoolToVisibilityConverter}}">
+                <MenuItem.Icon>
+                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Close}" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+    </swctl:SwagControlBase.Resources>
     <swctl:SwagItemsControl x:Name="SwagItemsControl" 
                             AllowDrop="True"
                             Drop="SwagItemsControl_Drop"
@@ -34,6 +93,19 @@
                             SaveButtonHorizontalAlignment="Right"
                             SaveButtonVerticalAlignment="Bottom"
                             MinHeight="30">
+        <swctl:SwagItemsControl.ItemContainerStyles>
+            <swui:SwagStyleCollection>
+                <swui:SwagStyle Type="{x:Type db:SchemaTable}">
+                    <swui:SwagStyle.Style>
+                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            <Setter Property="ContextMenu" Value="{StaticResource TableContextMenu}" />
+                        </Style>
+                    </swui:SwagStyle.Style>
+                </swui:SwagStyle>
+            </swui:SwagStyleCollection>
+        </swctl:SwagItemsControl.ItemContainerStyles>
         <swctl:SwagItemsControl.ItemTemplates>
             <swui:SwagTemplateCollection>
                 <swui:SwagTemplate Type="{x:Type db:Schema}">

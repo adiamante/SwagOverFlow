@@ -214,6 +214,7 @@ namespace Dreamporter.Core
 
 
                 IsExpanded = false;
+                IsSelected = false;
             }
         }
 

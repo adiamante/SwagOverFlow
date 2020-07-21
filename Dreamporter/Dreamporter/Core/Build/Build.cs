@@ -148,6 +148,7 @@ namespace Dreamporter.Core
                 //Passing parameters directly is not thread safe (Should run sequentially or create new instance)
                 rp.Build = Path;
                 RunHandler(context, rp);
+                IsSelected = false;
                 IsExpanded = false;
             }
         }

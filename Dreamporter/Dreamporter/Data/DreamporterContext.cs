@@ -78,7 +78,7 @@ namespace Dreamporter.Data
                         i => JsonHelper.ToJsonString(i),
                         i => JsonHelper.ToObject<SwagOptionGroup>(i));
 
-                Func<String, OptionsNode> stringToOptionsNod = (str) =>
+                Func<String, OptionsNode> stringToOptionsNode = (str) =>
                 {
                     OptionsNode node = JsonHelper.ToObject<OptionsNode>(str);
                     node.Init();
@@ -87,12 +87,21 @@ namespace Dreamporter.Data
                 builder.Property(i => i.OptionsTree)
                     .HasConversion(
                         i => JsonHelper.ToJsonString(i),
-                        i => stringToOptionsNod(i));
+                        i => stringToOptionsNode(i));
 
+                Func<String, ObservableCollection<Schema>> stringToSchemas = (str) =>
+                {
+                    ObservableCollection<Schema> schemas = JsonHelper.ToObject<ObservableCollection<Schema>>(str);
+                    foreach (Schema schema in schemas)
+                    {
+                        schema.Init();
+                    }
+                    return schemas;
+                };
                 builder.Property(i => i.InitialSchemas)
                     .HasConversion(
                         i => JsonHelper.ToJsonString(i),
-                        i => JsonHelper.ToObject<ObservableCollection<Schema>>(i));
+                        i => stringToSchemas(i));
                 builder.Property(i => i.DataContexts)
                     .HasConversion(
                         i => JsonHelper.ToJsonString(i),
