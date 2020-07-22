@@ -458,7 +458,7 @@ namespace SwagOverFlow.Clients
                 TimeZoneInfo orgTimeZone = ResolveTimeZoneInfo(strOrgTimeZone);
                 TimeZoneInfo destTimeZone = ResolveTimeZoneInfo(strDestTimeZone);
 
-                if ((orgTimeZone != null && strOrgTimeZone.ToLower() != "auto") && destTimeZone != null)
+                if ((orgTimeZone != null || strOrgTimeZone.ToLower() == "auto") && destTimeZone != null)
                 {
                     DateTimeOffset dtoPure = DateTimeOffset.Parse(dtoAuto.ToString("yyyy-MM-ddTHH:mm:ss-00:00"));
                     if (strOrgTimeZone.ToLower() == "auto")
@@ -508,6 +508,10 @@ namespace SwagOverFlow.Clients
                 else
                 {
                     TimeZoneInfo timeZoneInfo = _timeZones.FirstOrDefault(tz => tz.DisplayName.ToLower().Equals(timeZone.ToLower()));
+                    if (timeZoneInfo == null)
+                    {
+                        timeZoneInfo = _timeZones.FirstOrDefault(tz => tz.Id.ToLower().Equals($"{timeZone} Standard Time".ToLower()));
+                    }
                     if (timeZoneInfo == null)
                     {
                         timeZoneInfo = _timeZones.FirstOrDefault(tz => tz.DisplayName.ToLower().Contains(timeZone.ToLower()));
