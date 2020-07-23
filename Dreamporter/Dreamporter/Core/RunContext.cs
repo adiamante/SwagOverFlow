@@ -161,7 +161,7 @@ namespace Dreamporter.Core
             {
                 String dir = Path.GetDirectoryName(dbFile);
 
-                if (!Directory.Exists(dir))
+                if (dir != dbFile && !Directory.Exists(dir))    //Not file and directory does not exist 
                 {
                     Directory.CreateDirectory(dir);
                 }
