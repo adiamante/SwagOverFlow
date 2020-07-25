@@ -507,6 +507,7 @@ namespace Dreamporter.WPF.Controls
         private void SwagItemsControl_Paste(object sender, RoutedEventArgs e)
         {
             OptionsNode node = SwagItemsControlHelper.GetClipBoardData<OptionsNode>();
+            node.Init();
             if (node != null)
             {
                 switch (e.OriginalSource)
