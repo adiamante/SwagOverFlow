@@ -14,6 +14,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -61,7 +62,35 @@ namespace Dreamporter.WPF.Controls
             DependencyProperty.Register(
                 "SelectedIntegration",
                 typeof(Integration),
-                typeof(DreamporterControl));
+                typeof(DreamporterControl),
+                new FrameworkPropertyMetadata(null, SelectedIntegration_PropertyChanged));
+
+        private async static void SelectedIntegration_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DreamporterControl dc = (DreamporterControl)d;
+
+            //Delay is needed because of shared binding to SelectedBuild (Integration.Build and Integration.TestBuild)
+            //When switching between integrations SelectedBuild becomes Integration.Build even when we set it to Integration.TestBuild
+            await Task.Delay(100);      
+            if (e.NewValue != null && e.NewValue is Integration integration)
+            {
+                if (dc.InTestMode)
+                {
+                    dc.RefreshSelectedBuild(integration.TestBuild);
+                    foreach (TestContext testContext in integration.TestContexts)
+                    {
+                        if (testContext.IsSelected)
+                        {
+                            integration.SelectedTestContext = testContext;
+                        }
+                    }
+                }
+                else
+                {
+                    dc.RefreshSelectedBuild(integration.Build);
+                }
+            }
+        }
 
         public Integration SelectedIntegration
         {
