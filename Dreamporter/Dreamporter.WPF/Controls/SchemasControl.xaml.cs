@@ -133,7 +133,6 @@ namespace Dreamporter.WPF.Controls
             RaiseEvent(new RoutedEventArgs(SaveEvent));
         }
 
-
         private void Table_GenerateCTE_Click(object sender, RoutedEventArgs e)
         {
             FrameworkElement fe = (FrameworkElement)e.OriginalSource;
@@ -198,6 +197,35 @@ namespace Dreamporter.WPF.Controls
 
             UIHelper.StringInputDialog($"Generated CTE for {table.Schema.Name}.{table.Name}", sb.ToString());
 
+        }
+
+        private void Schema_GenerateSummary_Click(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement fe = (FrameworkElement)e.OriginalSource;
+            Schema schema = (Schema)fe.DataContext;
+            StringBuilder sb = new StringBuilder();
+            
+            foreach (SchemaTable table in schema.Tables)
+            {
+                String numericColumn = "0";
+                
+                //Find last numeric column and that will be summed as Total
+                foreach (SchemaColumn column in table.Columns)
+                {
+                    if (column.DataType == SchemaColumnDataType.Integer || column.DataType == SchemaColumnDataType.Real)
+                    {
+                        numericColumn = column.Name;
+                    }
+                }
+
+                sb.AppendLine($"SELECT '{table.Name}' AS [Table], COUNT(*) AS Count, SUM({numericColumn}) AS Total, '{numericColumn}' AS TotalCriteria");
+                sb.AppendLine($"FROM [{schema.Name}.{table.Name}]");
+                sb.AppendLine($"UNION ALL");
+            }
+
+            sb.Length -= 13;    //Remove last Union All
+
+            UIHelper.StringInputDialog($"Generated CTE Summary {schema.Name}", sb.ToString());
         }
         #endregion Events
 
