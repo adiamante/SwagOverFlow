@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 
 namespace Dreamporter.Core
 {
@@ -143,6 +144,9 @@ namespace Dreamporter.Core
         {
             if (IsEnabled && Condition.Evaluate(rp.Params))
             {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                context.Log(Path, "Start", "");
                 IsSelected = true;
                 IsExpanded = true;
                 //Passing parameters directly is not thread safe (Should run sequentially or create new instance)
@@ -150,6 +154,7 @@ namespace Dreamporter.Core
                 RunHandler(context, rp);
                 IsSelected = false;
                 IsExpanded = false;
+                context.Log(Path, $"End - {sw.Elapsed.ToString("G")}", "");
             }
         }
         #endregion Methods
