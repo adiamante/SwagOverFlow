@@ -23,6 +23,7 @@ namespace Dreamporter.Core
         InstructionCacheProperties _cacheProperties = new InstructionCacheProperties();
         BooleanContainerExpression _condition = new BooleanContainerExpression();
         ObservableCollection<Schema> _requiredData = new ObservableCollection<Schema>();
+        SwagOptionGroup _options = new SwagOptionGroup();
         Int32 _tabIndex = 0;            //For the UI
         #endregion Private Members
 
@@ -121,6 +122,13 @@ namespace Dreamporter.Core
             set { SetValue(ref _requiredData, value); }
         }
         #endregion RequiredData
+        #region Options
+        public SwagOptionGroup Options
+        {
+            get { return _options; }
+            set { SetValue(ref _options, value); }
+        }
+        #endregion Options
         #region TabIndex
         [JsonIgnore]
         [NotMapped]

@@ -86,6 +86,17 @@
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
+                    <MenuItem Header="Util">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconOcticonsKind.Tools}" />
+                        </MenuItem.Icon>
+                        <MenuItem Header="Set RunParams" Tag="LF_UT_SRP" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                            <MenuItem.Icon>
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconFeatherIconsKind.Tool}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Copy"
@@ -204,15 +215,36 @@
             <swctl:IconControl Text="General" Kind="{x:Static iconPacks:PackIconMaterialKind.Cog}" />
         </DataTemplate>
         <ControlTemplate x:Key="GeneralFieldsControlTemplate" TargetType="{x:Type ContentControl}">
-            <StackPanel>
-                <CheckBox IsChecked="{Binding IsEnabled}" Content="Enabled" />
-                <swctl:IconControl Text="Name" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaNBoxOutline}" />
-                <TextBox Text="{Binding Name}" />
-                <CheckBox IsChecked="{Binding DoLog}" Content="DoLog" />
-                <swctl:IconControl Text="LogPattern" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaLBoxOutline}" />
-                <TextBox Text="{Binding LogPattern}" />
-                <ContentPresenter />
-            </StackPanel>
+            <DockPanel>
+                <Grid DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Enabled  " VerticalAlignment="Center" />
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsEnabled}" />
+                    <swctl:IconControl Grid.Row="0" Grid.Column="2"  Text="  " Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaNBoxOutline}" />
+                    <TextBox Grid.Row="0" Grid.Column="3"  Text="{Binding Name}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="DoLog  " VerticalAlignment="Center" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding DoLog}" />
+                    <swctl:IconControl Grid.Row="1" Grid.Column="2"  Text="  " Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaLBoxOutline}" />
+                    <TextBox Grid.Row="1" Grid.Column="3"  Text="{Binding LogPattern}" />
+                    <ContentPresenter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" />
+                </Grid>
+                <GroupBox>
+                    <GroupBox.Header>
+                        <swctl:IconControl Text="Description" Kind="{x:Static iconPacks:PackIconMaterialKind.Information}" />
+                    </GroupBox.Header>
+                    <TextBox Text="{Binding Description}" AcceptsReturn="True" AcceptsTab="True" />
+                </GroupBox>
+            </DockPanel>
         </ControlTemplate>
         <DataTemplate x:Key="AdvancedHeaderTemplate">
             <swctl:IconControl Text="Advanced" Kind="{x:Static iconPacks:PackIconFontAwesomeKind.CogsSolid}" />
@@ -233,18 +265,29 @@
                 <metro:NumericUpDown Value="{Binding CacheProperties.ExpiresInMinutes}" />
             </StackPanel>
         </ControlTemplate>
-        <DataTemplate x:Key="DescriptionHeaderTemplate">
-            <swctl:IconControl Text="Description" Kind="{x:Static iconPacks:PackIconMaterialKind.Information}" />
-        </DataTemplate>
-        <ControlTemplate x:Key="DescriptionFieldControlTemplate" TargetType="{x:Type ContentControl}">
-            <TextBox AcceptsReturn="True" AcceptsTab="True" Text="{Binding Description}" />
-        </ControlTemplate>
         <DataTemplate x:Key="QueryHeaderTemplate">
             <swctl:IconControl Text="Query" Kind="{x:Static iconPacks:PackIconModernKind.DatabaseSql}" />
         </DataTemplate>
         <ControlTemplate x:Key="QueryFieldControlTemplate" TargetType="{x:Type ContentControl}">
             <TextBox AcceptsReturn="True" AcceptsTab="True" Text="{Binding Query}" />
         </ControlTemplate>
+        <DataTemplate x:Key="OptionsHeaderTemplate">
+            <swctl:IconControl Text="Options" Kind="{x:Static iconPacks:PackIconIoniconsKind.OptionsMD}" />
+        </DataTemplate>
+        <DataTemplate x:Key="OptionsDataTemplate">
+            <swctl:SwagOptionControl 
+                                ShowSaveContextMenuItem="True" 
+                                ShowAddContextMenuItem="True"
+                                ShowCopyContextMenuItem="True"
+                                ShowPasteContextMenuItem="True"
+                                ShowExportContextMenuItem="True"
+                                ShowImportContextMenuItem="True"
+                                ShowItemAddContextMenuItem="True"
+                                ShowItemRemoveContextMenuItem="True"
+                                OptionCollection="{Binding DataContext.Options, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
+                            Save="SwagOptionControl_Save">
+            </swctl:SwagOptionControl>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type dc:GroupInstruction}">
             <ContentControl Template="{StaticResource InstructionControlTemplate}">
                 <TabControl SelectedIndex="{Binding TabIndex, Mode=TwoWay}">
@@ -260,9 +303,6 @@
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource RequiredDataHeaderTemplate}">
                         <ContentControl ContentTemplate="{StaticResource RequiredDataDataTemplate}" />
-                    </TabItem>
-                    <TabItem HeaderTemplate="{StaticResource DescriptionHeaderTemplate}">
-                        <ContentControl Template="{StaticResource DescriptionFieldControlTemplate}" />
                     </TabItem>
                 </TabControl>
             </ContentControl>
@@ -286,9 +326,6 @@
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource QueryHeaderTemplate}">
                         <ContentControl Template="{StaticResource QueryFieldControlTemplate}" />
-                    </TabItem>
-                    <TabItem HeaderTemplate="{StaticResource DescriptionHeaderTemplate}">
-                        <ContentControl Template="{StaticResource DescriptionFieldControlTemplate}" />
                     </TabItem>
                 </TabControl>
             </ContentControl>
@@ -316,8 +353,8 @@
                     <TabItem HeaderTemplate="{StaticResource QueryHeaderTemplate}">
                         <ContentControl Template="{StaticResource QueryFieldControlTemplate}" />
                     </TabItem>
-                    <TabItem HeaderTemplate="{StaticResource DescriptionHeaderTemplate}">
-                        <ContentControl Template="{StaticResource DescriptionFieldControlTemplate}" />
+                    <TabItem HeaderTemplate="{StaticResource OptionsHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource OptionsDataTemplate}" />
                     </TabItem>
                 </TabControl>
             </ContentControl>
@@ -384,9 +421,6 @@
                     </TabItem>
                     <TabItem HeaderTemplate="{StaticResource CacheHeaderTemplate}">
                         <ContentControl Template="{StaticResource CacheFieldsControlTemplate}" />
-                    </TabItem>
-                    <TabItem HeaderTemplate="{StaticResource DescriptionHeaderTemplate}">
-                        <ContentControl Template="{StaticResource DescriptionFieldControlTemplate}" />
                     </TabItem>
                 </TabControl>
             </ContentControl>
@@ -507,8 +541,8 @@
                     <TabItem HeaderTemplate="{StaticResource CacheHeaderTemplate}">
                         <ContentControl Template="{StaticResource CacheFieldsControlTemplate}" />
                     </TabItem>
-                    <TabItem HeaderTemplate="{StaticResource DescriptionHeaderTemplate}">
-                        <ContentControl Template="{StaticResource DescriptionFieldControlTemplate}" />
+                    <TabItem HeaderTemplate="{StaticResource OptionsHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource OptionsDataTemplate}" />
                     </TabItem>
                 </TabControl>
             </ContentControl>
@@ -617,8 +651,8 @@
                     <TabItem HeaderTemplate="{StaticResource QueryHeaderTemplate}">
                         <ContentControl Template="{StaticResource QueryFieldControlTemplate}" />
                     </TabItem>
-                    <TabItem HeaderTemplate="{StaticResource DescriptionHeaderTemplate}">
-                        <ContentControl Template="{StaticResource DescriptionFieldControlTemplate}" />
+                    <TabItem HeaderTemplate="{StaticResource OptionsHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource OptionsDataTemplate}" />
                     </TabItem>
                 </TabControl>
             </ContentControl>
@@ -640,24 +674,8 @@
                     <TabItem HeaderTemplate="{StaticResource RequiredDataHeaderTemplate}">
                         <ContentControl ContentTemplate="{StaticResource RequiredDataDataTemplate}" />
                     </TabItem>
-                    <TabItem>
-                        <TabItem.HeaderTemplate>
-                            <DataTemplate>
-                                <swctl:IconControl Text="Options" Kind="{x:Static iconPacks:PackIconIoniconsKind.OptionsMD}" />
-                            </DataTemplate>
-                        </TabItem.HeaderTemplate>
-                        <swctl:SwagOptionControl 
-                                ShowSaveContextMenuItem="True" 
-                                ShowAddContextMenuItem="True"
-                                ShowCopyContextMenuItem="True"
-                                ShowPasteContextMenuItem="True"
-                                ShowExportContextMenuItem="True"
-                                ShowImportContextMenuItem="True"
-                                ShowItemAddContextMenuItem="True"
-                                ShowItemRemoveContextMenuItem="True"
-                                OptionCollection="{Binding Options, Mode=TwoWay}"
-                            Save="SwagOptionControl_Save">
-                        </swctl:SwagOptionControl>
+                    <TabItem HeaderTemplate="{StaticResource OptionsHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource OptionsDataTemplate}" />
                     </TabItem>
                     <TabItem>
                         <TabItem.HeaderTemplate>
@@ -668,6 +686,24 @@
                         <dwctl:InstructionControl InstructionCollection="{Binding Template, Mode=TwoWay}">
                             
                         </dwctl:InstructionControl>
+                    </TabItem>
+                </TabControl>
+            </ContentControl>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type dc:SetRunParamsInstruction}">
+            <ContentControl Template="{StaticResource InstructionControlTemplate}">
+                <TabControl SelectedIndex="{Binding TabIndex, Mode=TwoWay}">
+                    <TabItem HeaderTemplate="{StaticResource GeneralHeaderTemplate}">
+                        <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}" />
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource ConditionHeaderDataTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource ConditionDataTemplate}" />
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource RequiredDataHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource RequiredDataDataTemplate}" />
+                    </TabItem>
+                    <TabItem HeaderTemplate="{StaticResource OptionsHeaderTemplate}">
+                        <ContentControl ContentTemplate="{StaticResource OptionsDataTemplate}" />
                     </TabItem>
                 </TabControl>
             </ContentControl>
@@ -765,6 +801,17 @@
                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
                                     <MenuItem.Icon>
                                         <swctl:IconControl Kind="{x:Static iconPacks:PackIconWeatherIconsKind.Thunderstorm}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </MenuItem>
+                            <MenuItem Header="Util">
+                                <MenuItem.Icon>
+                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconOcticonsKind.Tools}" />
+                                </MenuItem.Icon>
+                                <MenuItem Header="Set RunParams" Tag="LF_UT_SRP" Command="{Binding Parent.Parent.Parent.Parent.Tag.AddCommand, RelativeSource={RelativeSource Self}}"
+                                    CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                                    <MenuItem.Icon>
+                                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconFeatherIconsKind.Tool}" />
                                     </MenuItem.Icon>
                                 </MenuItem>
                             </MenuItem>
@@ -936,6 +983,19 @@
                                     <DockPanel>
                                         <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
                                         <swctl:IconControl Text="{Binding Name}" Kind="{x:Static iconPacks:PackIconBoxIconsKind.SolidShapes}" />
+                                    </DockPanel>
+                                    <Rectangle Fill="Gray" Opacity=".5" Visibility="{Binding IsEnabled, Converter={swui:BoolToVisibilityConverter TrueValue=Collapsed,FalseValue=Visible}}" />
+                                </Grid>
+                            </DataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
+                    <swui:SwagTemplate Type="{x:Type dc:SetRunParamsInstruction}">
+                        <swui:SwagTemplate.DataTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding Sequence}" VerticalAlignment="Center" DockPanel.Dock="Left" Visibility="{Binding ShowSequence, Converter={swui:BoolToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dwctl:InstructionControl}}}" />
+                                        <swctl:IconControl Text="{Binding Name}" Kind="{x:Static iconPacks:PackIconFeatherIconsKind.Tool}" />
                                     </DockPanel>
                                     <Rectangle Fill="Gray" Opacity=".5" Visibility="{Binding IsEnabled, Converter={swui:BoolToVisibilityConverter TrueValue=Collapsed,FalseValue=Visible}}" />
                                 </Grid>

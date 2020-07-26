@@ -373,6 +373,9 @@ namespace Dreamporter.WPF.Controls
                 case "LF_WR_WRGRP":
                     ins = new ForEachTableWebRequestInstruction();
                     break;
+                case "LF_UT_SRP":
+                    ins = new SetRunParamsInstruction();
+                    break;
             }
 
             ins.Name = $"NEW {instructions.Count + 1}";

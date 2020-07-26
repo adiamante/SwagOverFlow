@@ -3,14 +3,12 @@ using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Dreamporter.Core
 {
     public class TemplateInstruction : Instruction
     {
         String _templateKey;
-        SwagOptionGroup _options = new SwagOptionGroup();
         GroupInstruction _template;
 
         #region Type
@@ -23,13 +21,6 @@ namespace Dreamporter.Core
             set { SetValue(ref _templateKey, value); }
         }
         #endregion TemplateKey
-        #region Options
-        public SwagOptionGroup Options
-        {
-            get { return _options; }
-            set { SetValue(ref _options, value); }
-        }
-        #endregion Options
         #region Template
         public GroupInstruction Template
         {
