@@ -21,6 +21,7 @@ namespace Dreamporter.Core
         //https://stackoverflow.com/questions/29411961/c-sharp-and-thread-safety-of-a-bool
         private int _inErrorStateBackValue = 0;
         private int _inAbortStateBackValue = 0;
+        private int _inDebugModeStateBackValue = 0;
         ConcurrentDictionary<String, DataContext> _dataContexts = new ConcurrentDictionary<String, DataContext>();
         ConcurrentDictionary<String, SqlClient> _sqlConnections = new ConcurrentDictionary<String, SqlClient>();
         #endregion Private Members
@@ -61,6 +62,17 @@ namespace Dreamporter.Core
             }
         }
         #endregion InAbortState
+        #region InDebugMode
+        public Boolean InDebugMode
+        {
+            get { return (Interlocked.CompareExchange(ref _inDebugModeStateBackValue, 1, 1) == 1); }
+            set
+            {
+                if (value) Interlocked.CompareExchange(ref _inDebugModeStateBackValue, 1, 0);
+                else Interlocked.CompareExchange(ref _inDebugModeStateBackValue, 0, 1);
+            }
+        }
+        #endregion InDebugMode
         #endregion Properties
 
         #region Methods
@@ -138,6 +150,16 @@ namespace Dreamporter.Core
 
         public void AddTables(params DataTable[] tables)
         {
+            //if (InDebugMode)
+            //{
+            //    foreach (DataTable dtbl in tables)
+            //    {
+            //        if (!dtbl.TableName.StartsWith("debug."))
+            //        {
+            //            dtbl.TableName = $"debug.{dtbl.TableName}";
+            //        }
+            //    }
+            //}
             _main.InsertToTable(tables);
         }
 

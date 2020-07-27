@@ -208,7 +208,17 @@
                 <TabItem>
                     <TabItem.HeaderTemplate>
                         <DataTemplate>
-                            <swctl:IconControl Text="Build" Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.Cubes}" />
+                            <swctl:IconControl Text="Build" Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.Cubes}">
+                                <swctl:IconControl.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Apply Queries by TargetPath" Click="TestBuild_ApplyQueriesByTargetPath">
+                                            <MenuItem.Icon>
+                                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconRPGAwesomeKind.OnTarget}" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </swctl:IconControl.ContextMenu>
+                            </swctl:IconControl>
                         </DataTemplate>
                     </TabItem.HeaderTemplate>
                     <dwctl:BuildControl RootBuild="{Binding SelectedIntegration.TestBuild, Mode=TwoWay, ElementName=ThisControl}"

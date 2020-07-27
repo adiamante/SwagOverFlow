@@ -178,6 +178,7 @@ namespace Dreamporter.Core
                 {
                     rc.Open();
                 }
+                rc.InDebugMode = true;
                 TestBuild.Run(rc, rp);
             }
             else

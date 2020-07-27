@@ -284,7 +284,7 @@
                                 ShowImportContextMenuItem="True"
                                 ShowItemAddContextMenuItem="True"
                                 ShowItemRemoveContextMenuItem="True"
-                                OptionCollection="{Binding DataContext.Options, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
+                                OptionCollection="{Binding DataContext.Options, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
                             Save="SwagOptionControl_Save">
             </swctl:SwagOptionControl>
         </DataTemplate>

@@ -371,7 +371,7 @@ namespace Dreamporter.WPF.Controls
                 SwagItemPreOrderIterator<Instruction> insTemplateIterator = new SwagItemPreOrderIterator<Instruction>(SelectedIntegration.InstructionTemplates);
                 for (Instruction insTemplate = insTemplateIterator.First(); !insTemplateIterator.IsDone; insTemplate = insTemplateIterator.Next())
                 {
-                    //Iterate though all builds
+                    //Iterate through all builds
                     SwagItemPreOrderIterator<Build> bldIterator = new SwagItemPreOrderIterator<Build>(SelectedIntegration.Build);
                     for (Build bld = bldIterator.First(); !bldIterator.IsDone; bld = bldIterator.Next())
                     {
@@ -407,6 +407,12 @@ namespace Dreamporter.WPF.Controls
             integation.TestBuildId = 0;
 
             for (Build bld = bldIterator.First(); !bldIterator.IsDone; bld = bldIterator.Next())
+            {
+                bld.BuildId = 0;
+            }
+
+            SwagItemPreOrderIterator<Build> tstBldIterator = new SwagItemPreOrderIterator<Build>(integation.TestBuild);
+            for (Build bld = tstBldIterator.First(); !tstBldIterator.IsDone; bld = tstBldIterator.Next())
             {
                 bld.BuildId = 0;
             }
@@ -480,6 +486,53 @@ namespace Dreamporter.WPF.Controls
             }
         }
 
+        private void TestBuild_ApplyQueriesByTargetPath(object sender, RoutedEventArgs e)
+        {
+            if (SelectedIntegration != null)
+            {
+                //Iterate through all test builds
+                SwagItemPreOrderIterator<Build> testBldIterator = new SwagItemPreOrderIterator<Build>(SelectedIntegration.TestBuild);
+                for (Build testBld = testBldIterator.First(); !testBldIterator.IsDone; testBld = testBldIterator.Next())
+                {
+                    if (testBld is InstructionBuild testInsBld)
+                    {
+                        //Iterate through all test build instructions
+                        SwagItemPreOrderIterator<Instruction> testInsIterator = new SwagItemPreOrderIterator<Instruction>(testInsBld.Instructions);
+
+                        for (Instruction testIns = testInsIterator.First(); !testInsIterator.IsDone; testIns = testInsIterator.Next())
+                        {
+                            if (testIns is QueryInstruction testQryIns && testQryIns.Options.Dict.ContainsKey("TargetPath"))
+                            {
+                                //Iterate though all builds
+                                SwagItemPreOrderIterator<Build> bldIterator = new SwagItemPreOrderIterator<Build>(SelectedIntegration.Build);
+                                for (Build bld = bldIterator.First(); !bldIterator.IsDone; bld = bldIterator.Next())
+                                {
+                                    if (bld is InstructionBuild insBld)
+                                    {
+                                        String buildPath = insBld.Path;
+                                        //Iterate through every InstructionBuild
+                                        SwagItemPreOrderIterator<Instruction> insIterator = new SwagItemPreOrderIterator<Instruction>(insBld.Instructions);
+                                        for (Instruction ins = insIterator.First(); !insIterator.IsDone; ins = insIterator.Next())
+                                        {
+                                            String insPath = ins.Path;
+                                            String fullPath = $"[{buildPath}] {insPath}";
+                                            System.Diagnostics.Debug.WriteLine(fullPath);
+
+                                            //If path matches
+                                            if (ins is QueryInstruction qryIns && fullPath == testQryIns.Options.Dict["TargetPath"])
+                                            {
+                                                qryIns.Query = testQryIns.Query;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private async void RunIntegration_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedIntegration != null)
@@ -512,7 +565,17 @@ namespace Dreamporter.WPF.Controls
                 {
                     String schemaName = "_____", tableName = "";
                     String[] parts = dtbl.TableName.Split('.');   //period delimeter
-                    if (parts.Length == 2)  //schema + table
+                    if (parts.Length > 2)
+                    {
+                        tableName = parts[parts.Length - 1];
+                        schemaName = "";
+                        for (int i = 0; i < parts.Length - 1; i++)
+                        {
+                            schemaName += $"{parts[i]}.";
+                        }
+                        schemaName = schemaName.TrimEnd('.');
+                    }
+                    else if (parts.Length == 2)  //schema + table
                     {
                         schemaName = parts[0];
                         tableName = parts[1];
