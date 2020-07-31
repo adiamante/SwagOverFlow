@@ -591,7 +591,10 @@ namespace Dreamporter.WPF.Controls
                         {
                             dictDataSets.Add(schemaName, new DataSet(schemaName));
                         }
-                        dictDataSets[schemaName].Tables.Add(dtbl.Copy());
+
+                        DataTable dtblcopy = dtbl.Copy();
+                        DataTableHelper.AutoConvertColumns(dtblcopy);
+                        dictDataSets[schemaName].Tables.Add(dtblcopy);
                     }
                 }
 
