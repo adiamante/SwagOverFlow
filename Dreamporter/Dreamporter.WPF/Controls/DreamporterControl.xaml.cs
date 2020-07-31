@@ -3,6 +3,7 @@ using Dreamporter.Core;
 using Dreamporter.WPF.Services;
 using MahApps.Metro.IconPacks;
 using SwagOverFlow.Iterator;
+using SwagOverFlow.Logger;
 using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
 using SwagOverFlow.WPF.Controls;
@@ -247,6 +248,7 @@ namespace Dreamporter.WPF.Controls
                     DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
                 }
                 DreamporterWPFContainer.Context.SaveChanges();
+                SwagLogger.Log("Integration {Integration} Saved {timeStamp}", SelectedIntegration.Name, DateTime.Now);
             }
         }
 
@@ -271,6 +273,7 @@ namespace Dreamporter.WPF.Controls
                     }
                 }
                 DreamporterWPFContainer.Context.SaveChanges();
+                SwagLogger.Log("Build Saved {timeStamp}", DateTime.Now);
             }
         }
 
@@ -295,6 +298,7 @@ namespace Dreamporter.WPF.Controls
                     }
                 }
                 DreamporterWPFContainer.Context.SaveChanges();
+                SwagLogger.Log("Test Build Saved {timeStamp}", DateTime.Now);
             }
         }
 
@@ -308,6 +312,7 @@ namespace Dreamporter.WPF.Controls
                     DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
                 }
                 DreamporterWPFContainer.Context.SaveChanges();
+                SwagLogger.Log("InstructionTemplates Saved {timeStamp}", DateTime.Now);
             }
         }
 
@@ -321,6 +326,7 @@ namespace Dreamporter.WPF.Controls
                     DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
                 }
                 DreamporterWPFContainer.Context.SaveChanges();
+                SwagLogger.Log("Default Options Saved {timeStamp}", DateTime.Now);
             }
         }
 
@@ -334,6 +340,7 @@ namespace Dreamporter.WPF.Controls
                     DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
                 }
                 DreamporterWPFContainer.Context.SaveChanges();
+                SwagLogger.Log("Options Tree Saved {timeStamp}", DateTime.Now);
             }
         }
 
@@ -347,6 +354,7 @@ namespace Dreamporter.WPF.Controls
                     DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
                 }
                 DreamporterWPFContainer.Context.SaveChanges();
+                SwagLogger.Log("InitialSchemas Saved {timeStamp}", DateTime.Now);
             }
         }
 
@@ -360,6 +368,7 @@ namespace Dreamporter.WPF.Controls
                     DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
                 }
                 DreamporterWPFContainer.Context.SaveChanges();
+                SwagLogger.Log("DataContexts Saved {timeStamp}", DateTime.Now);
             }
         }
 
@@ -468,6 +477,7 @@ namespace Dreamporter.WPF.Controls
                     DreamporterWPFContainer.IntegrationDataRepository.Update(SelectedIntegration);
                 }
                 DreamporterWPFContainer.Context.SaveChanges();
+                SwagLogger.Log("Test Contexts Saved {timeStamp}", DateTime.Now);
             }
         }
 
