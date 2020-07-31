@@ -231,18 +231,18 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Enabled  " VerticalAlignment="Center" />
                     <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsEnabled}" />
                     <swctl:IconControl Grid.Row="0" Grid.Column="2"  Text="  " Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaNBoxOutline}" />
-                    <TextBox Grid.Row="0" Grid.Column="3"  Text="{Binding Name}" />
+                    <TextBox Grid.Row="0" Grid.Column="3"  Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="DoLog  " VerticalAlignment="Center" />
                     <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding DoLog}" />
                     <swctl:IconControl Grid.Row="1" Grid.Column="2"  Text="  " Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaLBoxOutline}" />
-                    <TextBox Grid.Row="1" Grid.Column="3"  Text="{Binding LogPattern}" />
+                    <TextBox Grid.Row="1" Grid.Column="3"  Text="{Binding LogPattern, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                     <ContentPresenter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" />
                 </Grid>
                 <GroupBox>
                     <GroupBox.Header>
                         <swctl:IconControl Text="Description" Kind="{x:Static iconPacks:PackIconMaterialKind.Information}" />
                     </GroupBox.Header>
-                    <TextBox Text="{Binding Description}" AcceptsReturn="True" AcceptsTab="True" />
+                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Delay=250}" AcceptsReturn="True" AcceptsTab="True" />
                 </GroupBox>
             </DockPanel>
         </ControlTemplate>
@@ -256,11 +256,11 @@
             <StackPanel>
                 <CheckBox IsChecked="{Binding CacheProperties.Enabled}" Content="Enabled" />
                 <swctl:IconControl Text="AddressPattern" Kind="{x:Static iconPacks:PackIconIoniconsKind.PinMD}" />
-                <TextBox Text="{Binding CacheProperties.AddressPattern}" />
+                <TextBox Text="{Binding CacheProperties.AddressPattern, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                 <swctl:IconControl Text="KeyPattern" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                <TextBox Text="{Binding CacheProperties.KeyPattern}" />
+                <TextBox Text="{Binding CacheProperties.KeyPattern, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                 <swctl:IconControl Text="VersionPattern" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaVBoxOutline}" />
-                <TextBox Text="{Binding CacheProperties.VersionPattern}" />
+                <TextBox Text="{Binding CacheProperties.VersionPattern, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                 <swctl:IconControl Text="ExpiresInMinutes" Kind="{x:Static iconPacks:PackIconMaterialKind.ClockOutline}" />
                 <metro:NumericUpDown Value="{Binding CacheProperties.ExpiresInMinutes}" />
             </StackPanel>
@@ -269,7 +269,7 @@
             <swctl:IconControl Text="Query" Kind="{x:Static iconPacks:PackIconModernKind.DatabaseSql}" />
         </DataTemplate>
         <ControlTemplate x:Key="QueryFieldControlTemplate" TargetType="{x:Type ContentControl}">
-            <TextBox AcceptsReturn="True" AcceptsTab="True" Text="{Binding Query}" />
+            <TextBox AcceptsReturn="True" AcceptsTab="True" Text="{Binding Query, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
         </ControlTemplate>
         <DataTemplate x:Key="OptionsHeaderTemplate">
             <swctl:IconControl Text="Options" Kind="{x:Static iconPacks:PackIconIoniconsKind.OptionsMD}" />
@@ -337,7 +337,7 @@
                         <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}">
                             <StackPanel>
                                 <swctl:IconControl Text="TargetTable" Kind="{x:Static iconPacks:PackIconMaterialKind.TableEye}" />
-                                <TextBox Text="{Binding TargetTable}" />
+                                <TextBox Text="{Binding TargetTable, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             </StackPanel>
                         </ContentControl>
                     </TabItem>
@@ -362,9 +362,9 @@
         <DataTemplate x:Key="SqlParamDataTemplate" DataType="{x:Type sc:SqlParam}">
             <StackPanel>
                 <swctl:IconControl Text="Key" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                <TextBox Text="{Binding Key}" />
+                <TextBox Text="{Binding Key, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                 <swctl:IconControl Text="Value" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaVBoxOutline}" />
-                <TextBox Text="{Binding Value}" AcceptsReturn="True" AcceptsTab="True" />
+                <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, Delay=250}" AcceptsReturn="True" AcceptsTab="True" />
                 <swctl:IconControl Text="Type" Kind="{x:Static iconPacks:PackIconMaterialKind.ShapeOutline}" />
                 <ComboBox SelectedValue="{Binding Type}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sd:SqlDbType}}}" />
                 <swctl:IconControl Text="Size" Kind="{x:Static iconPacks:PackIconMaterialKind.Counter}" />
@@ -376,9 +376,9 @@
         <DataTemplate x:Key="KeyValuePairDataTemplate">
             <StackPanel>
                 <swctl:IconControl Text="Key" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                <TextBox Text="{Binding Key}" />
+                <TextBox Text="{Binding Key, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                 <swctl:IconControl Text="Value" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaVBoxOutline}" />
-                <TextBox Text="{Binding Value}" />
+                <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type dc:SqlExecSPInstruction}">
@@ -390,11 +390,11 @@
                     <TabItem HeaderTemplate="{StaticResource AdvancedHeaderTemplate}">
                         <DockPanel>
                             <swctl:IconControl DockPanel.Dock="Top" Text="DB Context" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
-                            <TextBox DockPanel.Dock="Top" Text="{Binding DBContext}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding DBContext, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             <swctl:IconControl DockPanel.Dock="Top" Text="Stored Procedure" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseRun}" />
-                            <TextBox DockPanel.Dock="Top" Text="{Binding StoredProcedure}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding StoredProcedure, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             <swctl:IconControl DockPanel.Dock="Top" Text="TargetTable" Kind="{x:Static iconPacks:PackIconMaterialKind.TableEye}" />
-                            <TextBox DockPanel.Dock="Top" Text="{Binding TargetTable}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding TargetTable, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             <swctl:IconControl DockPanel.Dock="Top" Text="SQL Params" Kind="{x:Static iconPacks:PackIconUniconsKind.X}" />
                             <swctl:SwagItemsControl SwagItemsSource="{Binding SqlParams, Mode=TwoWay}" 
                                                     ShowImportContextMenuItem="True"
@@ -434,11 +434,11 @@
                     <TabItem HeaderTemplate="{StaticResource AdvancedHeaderTemplate}">
                         <DockPanel>
                             <swctl:IconControl DockPanel.Dock="Top" Text="Schema" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
-                            <TextBox DockPanel.Dock="Top" Text="{Binding Schema}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding Schema, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             <swctl:IconControl DockPanel.Dock="Top" Text="Base URL" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Website}" />
-                            <TextBox DockPanel.Dock="Top" Text="{Binding BaseURL}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding BaseURL, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             <swctl:IconControl DockPanel.Dock="Top" Text="Request Path" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Path}" />
-                            <TextBox DockPanel.Dock="Top" Text="{Binding RequestPath}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding RequestPath, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             <swctl:IconControl DockPanel.Dock="Top" Text="Request Type" Kind="{x:Static iconPacks:PackIconUniconsKind.CloudInfo}" />
                             <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding RequestType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestType}}}" />
                             <TabControl>
@@ -511,7 +511,7 @@
                                     <DockPanel>
                                         <swctl:IconControl DockPanel.Dock="Top" Text="Content Type" Kind="{x:Static iconPacks:PackIconFontAwesomeKind.MailBulkSolid}" />
                                         <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding PostContentType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestPostContentType}}}" />
-                                        <TextBox Text="{Binding PostContent}" AcceptsReturn="True" AcceptsTab="True" />
+                                        <TextBox Text="{Binding PostContent, UpdateSourceTrigger=PropertyChanged, Delay=250}" AcceptsReturn="True" AcceptsTab="True" />
                                     </DockPanel>
                                 </TabItem>
                                 <TabItem>
@@ -522,11 +522,11 @@
                                     </TabItem.HeaderTemplate>
                                     <StackPanel>
                                         <swctl:IconControl DockPanel.Dock="Top" Text="Limit Field" Kind="{x:Static iconPacks:PackIconEntypoKind.AlignTop}" />
-                                        <TextBox DockPanel.Dock="Top" Text="{Binding LimitField}" />
+                                        <TextBox DockPanel.Dock="Top" Text="{Binding LimitField, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                                         <swctl:IconControl DockPanel.Dock="Top" Text="Offset Field" Kind="{x:Static iconPacks:PackIconEntypoKind.AlignRight}" />
-                                        <TextBox DockPanel.Dock="Top" Text="{Binding OffsetField}" />
+                                        <TextBox DockPanel.Dock="Top" Text="{Binding OffsetField, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                                         <swctl:IconControl DockPanel.Dock="Top" Text="PageField" Kind="{x:Static iconPacks:PackIconModernKind.TextAlignJustify}" />
-                                        <TextBox DockPanel.Dock="Top" Text="{Binding PageField}" />
+                                        <TextBox DockPanel.Dock="Top" Text="{Binding PageField, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                                     </StackPanel>
                                 </TabItem>
                             </TabControl>
@@ -556,11 +556,11 @@
                     <TabItem HeaderTemplate="{StaticResource AdvancedHeaderTemplate}">
                         <DockPanel>
                             <swctl:IconControl DockPanel.Dock="Top" Text="Schema" Kind="{x:Static iconPacks:PackIconPicolIconsKind.DatabaseInformation}" />
-                            <TextBox DockPanel.Dock="Top" Text="{Binding Schema}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding Schema, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             <swctl:IconControl DockPanel.Dock="Top" Text="Base URL" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Website}" />
-                            <TextBox DockPanel.Dock="Top" Text="{Binding BaseURL}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding BaseURL, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             <swctl:IconControl DockPanel.Dock="Top" Text="Request Path" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Path}" />
-                            <TextBox DockPanel.Dock="Top" Text="{Binding RequestPath}" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding RequestPath, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             <swctl:IconControl DockPanel.Dock="Top" Text="Request Type" Kind="{x:Static iconPacks:PackIconUniconsKind.CloudInfo}" />
                             <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding RequestType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestType}}}" />
                             <TabControl>
@@ -633,7 +633,7 @@
                                     <DockPanel>
                                         <swctl:IconControl DockPanel.Dock="Top" Text="Content Type" Kind="{x:Static iconPacks:PackIconFontAwesomeKind.MailBulkSolid}" />
                                         <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding PostContentType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestPostContentType}}}" />
-                                        <TextBox Text="{Binding PostContent}" AcceptsReturn="True" AcceptsTab="True" />
+                                        <TextBox Text="{Binding PostContent, UpdateSourceTrigger=PropertyChanged, Delay=250}" AcceptsReturn="True" AcceptsTab="True" />
                                     </DockPanel>
                                 </TabItem>
                             </TabControl>
@@ -664,7 +664,7 @@
                         <ContentControl Template="{StaticResource GeneralFieldsControlTemplate}">
                             <StackPanel>
                                 <swctl:IconControl Text="Template Key" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaKBoxOutline}" />
-                                <TextBox Text="{Binding TemplateKey}" />
+                                <TextBox Text="{Binding TemplateKey, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             </StackPanel>
                         </ContentControl>
                     </TabItem>

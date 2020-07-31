@@ -117,13 +117,13 @@
                     <TextBlock Grid.Column="0" Text="Enabled  " VerticalAlignment="Center" />
                     <CheckBox Grid.Column="1" IsChecked="{Binding DataContext.IsEnabled, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}" />
                     <swctl:IconControl Grid.Column="2"  Text="  " Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaNBoxOutline}" />
-                    <TextBox Grid.Column="3"  Text="{Binding DataContext.Name, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}" />
+                    <TextBox Grid.Column="3"  Text="{Binding DataContext.Name, UpdateSourceTrigger=PropertyChanged, Delay=250, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}" />
                 </Grid>
                 <GroupBox>
                     <GroupBox.Header>
                         <swctl:IconControl Text="Description" Kind="{x:Static iconPacks:PackIconMaterialKind.Information}" />
                     </GroupBox.Header>
-                    <TextBox Text="{Binding DataContext.Description, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}" AcceptsReturn="True" AcceptsTab="True" />
+                    <TextBox Text="{Binding DataContext.Description, UpdateSourceTrigger=PropertyChanged, Delay=250, RelativeSource={RelativeSource AncestorType={x:Type ContentControl}, AncestorLevel=2}}" AcceptsReturn="True" AcceptsTab="True" />
                 </GroupBox>
             </DockPanel>
         </DataTemplate>
