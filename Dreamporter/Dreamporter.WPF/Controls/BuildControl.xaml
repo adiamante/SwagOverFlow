@@ -219,6 +219,7 @@
                             Remove="SwagItemsControl_Remove"
                             Clear="SwagItemsControl_Clear"
                             UseDefaultItemContextMenuOpened="True"
+                            UseDefaultLevel="True"
                             ShowItemRemoveContextMenuItem="{Binding ShowItemRemoveContextMenuItem, ElementName=ThisControl}"
                             ShowItemAddContextMenuItem="{Binding ShowItemAddContextMenuItem, ElementName=ThisControl}"
                             ShowItemCopyContextMenuItem="{Binding ShowItemCopyContextMenuItem, ElementName=ThisControl}"
@@ -249,6 +250,33 @@
                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
                             <MenuItem.Icon>
                                 <swctl:IconControl Kind="{x:Static iconPacks:PackIconFontAwesomeKind.CubeSolid}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="Level">
+                        <MenuItem.Icon>
+                            <swctl:IconControl Kind="{x:Static iconPacks:PackIconEntypoKind.LevelDown}" />
+                        </MenuItem.Icon>
+                        <MenuItem Header="Collapse" Command="{Binding Parent.Parent.Tag.CollapseCommand, RelativeSource={RelativeSource Self}}"
+                                  CommandParameter="{Binding Parent.Parent.PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" >
+                            <MenuItem.Icon>
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconFontAwesomeKind.AngleDoubleUpSolid}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Set Expand Level">
+                            <MenuItem.Icon>
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconFontAwesomeKind.AngleDownSolid}" />
+                            </MenuItem.Icon>
+                            <MenuItem Header="1" Command="{Binding Parent.Parent.Parent.Tag.SetExpandLevelCommand, RelativeSource={RelativeSource Self}}" Tag="1" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                            <MenuItem Header="2" Command="{Binding Parent.Parent.Parent.Tag.SetExpandLevelCommand, RelativeSource={RelativeSource Self}}" Tag="2" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                            <MenuItem Header="3" Command="{Binding Parent.Parent.Parent.Tag.SetExpandLevelCommand, RelativeSource={RelativeSource Self}}" Tag="3" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                            <MenuItem Header="4" Command="{Binding Parent.Parent.Parent.Tag.SetExpandLevelCommand, RelativeSource={RelativeSource Self}}" Tag="4" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                            <MenuItem Header="5" Command="{Binding Parent.Parent.Parent.Tag.SetExpandLevelCommand, RelativeSource={RelativeSource Self}}" Tag="5" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                            <MenuItem Header="6" Command="{Binding Parent.Parent.Parent.Tag.SetExpandLevelCommand, RelativeSource={RelativeSource Self}}" Tag="6" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                        </MenuItem>
+                        <MenuItem Header="Expand" Command="{Binding Parent.Parent.Tag.ExpandCommand, RelativeSource={RelativeSource Self}}">
+                            <MenuItem.Icon>
+                                <swctl:IconControl Kind="{x:Static iconPacks:PackIconFontAwesomeKind.AngleDoubleDownSolid}" />
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>

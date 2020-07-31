@@ -105,14 +105,25 @@
                 <MenuItem.Icon>
                     <swctl:IconControl Kind="{x:Static iconPacks:PackIconEntypoKind.LevelDown}" />
                 </MenuItem.Icon>
-                <MenuItem Header="Expand" Command="{Binding ExpandCommand}">
-                    <MenuItem.Icon>
-                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconFontAwesomeKind.AngleDoubleDownSolid}" />
-                    </MenuItem.Icon>
-                </MenuItem>
                 <MenuItem Header="Collapse" Command="{Binding CollapseCommand}">
                     <MenuItem.Icon>
                         <swctl:IconControl Kind="{x:Static iconPacks:PackIconFontAwesomeKind.AngleDoubleUpSolid}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Set Expand Level">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconFontAwesomeKind.AngleDownSolid}" />
+                    </MenuItem.Icon>
+                    <MenuItem Header="1" Command="{Binding SetExpandCommand}" Tag="1" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                    <MenuItem Header="2" Command="{Binding SetExpandCommand}" Tag="2" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                    <MenuItem Header="3" Command="{Binding SetExpandCommand}" Tag="3" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                    <MenuItem Header="4" Command="{Binding SetExpandCommand}" Tag="4" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                    <MenuItem Header="5" Command="{Binding SetExpandCommand}" Tag="5" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                    <MenuItem Header="6" Command="{Binding SetExpandCommand}" Tag="6" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                </MenuItem>
+                <MenuItem Header="Expand" Command="{Binding ExpandCommand}">
+                    <MenuItem.Icon>
+                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconFontAwesomeKind.AngleDoubleDownSolid}" />
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>

@@ -102,6 +102,13 @@
         <Setter Property="HorizontalContentAlignment" Value="Left" />
     </Style>
 
+    <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MahApps.Styles.TreeViewItem}">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+    </Style>
+
     <Style TargetType="{x:Type TabControl}" BasedOn="{StaticResource MahApps.Styles.TabControl}">
 
     </Style>

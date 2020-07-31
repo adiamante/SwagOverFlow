@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -22,7 +23,7 @@ namespace SwagOverFlow.WPF.Controls
         #region Private Members
         Point _startPoint;
         bool _isDragging = false;
-        ICommand _searchCommand, _saveCommand, _expandCommand, _collapseCommand, _addCommand, _copyCommand, _pasteCommand,
+        ICommand _searchCommand, _saveCommand, _collapseCommand, _setExpandLevelCommand, _expandCommand, _addCommand, _copyCommand, _pasteCommand,
             _importCommand, _exportCommand, _clearCommand, _itemContextMenuOpenedCommand, _removeCommand;
         #endregion Private Members
 
@@ -218,33 +219,20 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion SaveCommand
-        #region Expand
-        public static readonly RoutedEvent ExpandEvent =
-            EventManager.RegisterRoutedEvent(
-            "Expand",
-            RoutingStrategy.Bubble,
-            typeof(RoutedEventHandler),
-            typeof(SwagItemsControl));
+        #region UseDefaultLevel
+        public static DependencyProperty UseDefaultLevelProperty =
+            DependencyProperty.Register(
+                "UseDefaultLevel",
+                typeof(Boolean),
+                typeof(SwagItemsControl),
+                new PropertyMetadata(false));
 
-        public event RoutedEventHandler Expand
+        public Boolean UseDefaultLevel
         {
-            add { AddHandler(ExpandEvent, value); }
-            remove { RemoveHandler(ExpandEvent, value); }
+            get { return (Boolean)GetValue(UseDefaultLevelProperty); }
+            set { SetValue(UseDefaultLevelProperty, value); }
         }
-        #endregion Expand
-        #region ExpandCommand
-        public ICommand ExpandCommand
-        {
-            get
-            {
-                return _expandCommand ??
-                    (_expandCommand = new RelayCommand<object>((s) =>
-                    {
-                        RaiseEvent(new RoutedEventArgs(ExpandEvent, s ?? this));
-                    }));
-            }
-        }
-        #endregion ExpandCommand
+        #endregion UseDefaultLevel
         #region Collapse
         public static readonly RoutedEvent CollapseEvent =
             EventManager.RegisterRoutedEvent(
@@ -267,11 +255,129 @@ namespace SwagOverFlow.WPF.Controls
                 return _collapseCommand ??
                     (_collapseCommand = new RelayCommand<object>((s) =>
                     {
-                        RaiseEvent(new RoutedEventArgs(CollapseEvent, s ?? this));
+                        if (UseDefaultLevel)
+                        {
+                            //Assuming top level
+                            PropertyInfo isExpandedProp = ReflectionHelper.PropertyInfoCollection[SwagItemsSource.GetType()]["IsExpanded"];
+                            if (isExpandedProp != null)
+                            {
+                                SetLevel(SwagItemsSource, 0, Int32.MinValue);
+                            }
+
+                            if (SwagItemsSource is IEnumerable col)
+                            {
+                                foreach (var child in col)
+                                {
+                                    SetLevel(child, 1, Int32.MinValue);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            RaiseEvent(new RoutedEventArgs(CollapseEvent, s ?? this));
+                        }
                     }));
             }
         }
         #endregion CollapseCommand
+        #region SetExpandLevel
+        public static readonly RoutedEvent SetExpandLevelEvent =
+            EventManager.RegisterRoutedEvent(
+            "SetExpandLevel",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler SetExpandLevel
+        {
+            add { AddHandler(SetExpandLevelEvent, value); }
+            remove { RemoveHandler(SetExpandLevelEvent, value); }
+        }
+        #endregion SetExpandLevel
+        #region SetExpandLevelCommand
+        public ICommand SetExpandLevelCommand
+        {
+            get
+            {
+                return _setExpandLevelCommand ??
+                    (_setExpandLevelCommand = new RelayCommand<object>((s) =>
+                    {
+                        if (UseDefaultLevel)
+                        {
+                            FrameworkElement fe = (FrameworkElement)s;
+                            if (fe != null && Int32.TryParse(fe.Tag.ToString(), out int level))
+                            {
+                                //Assuming top level
+                                PropertyInfo isExpandedProp = ReflectionHelper.PropertyInfoCollection[SwagItemsSource.GetType()]["IsExpanded"];
+                                if (isExpandedProp != null)
+                                {
+                                    SetLevel(SwagItemsSource, 0, level);
+                                }
+
+                                if (SwagItemsSource is IEnumerable col)
+                                {
+                                    foreach (var child in col)
+                                    {
+                                        SetLevel(child, 1, level - 1);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            RaiseEvent(new RoutedEventArgs(SetExpandLevelEvent, s ?? this));
+                        }
+                    }));
+            }
+        }
+        #endregion SetExpandLevelCommand
+        #region Expand
+        public static readonly RoutedEvent ExpandEvent =
+            EventManager.RegisterRoutedEvent(
+            "Expand",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(SwagItemsControl));
+
+        public event RoutedEventHandler Expand
+        {
+            add { AddHandler(ExpandEvent, value); }
+            remove { RemoveHandler(ExpandEvent, value); }
+        }
+        #endregion Expand
+        #region ExpandCommand
+        public ICommand ExpandCommand
+        {
+            get
+            {
+                return _expandCommand ??
+                    (_expandCommand = new RelayCommand<object>((s) =>
+                    {
+                        if (UseDefaultLevel)
+                        {
+                            //Assuming top level
+                            PropertyInfo isExpandedProp = ReflectionHelper.PropertyInfoCollection[SwagItemsSource.GetType()]["IsExpanded"];
+                            if (isExpandedProp != null)
+                            {
+                                SetLevel(SwagItemsSource, 0, Int32.MaxValue);
+                            }
+
+                            if (SwagItemsSource is IEnumerable col)
+                            {
+                                foreach (var child in col)
+                                {
+                                    SetLevel(child, 1, Int32.MaxValue);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            RaiseEvent(new RoutedEventArgs(ExpandEvent, s ?? this));
+                        }
+                    }));
+            }
+        }
+        #endregion ExpandCommand
         #region Add
         public static readonly RoutedEvent AddEvent =
             EventManager.RegisterRoutedEvent(
@@ -1114,6 +1220,24 @@ namespace SwagOverFlow.WPF.Controls
             return ControlTreeView
                        .ItemContainerGenerator
                        .ContainerFromItemRecursive(item);
+        }
+
+        private void SetLevel(Object item, Int32 level, Int32 maxExpandLevel)
+        {
+            PropertyInfo isExpandedProp = ReflectionHelper.PropertyInfoCollection[item.GetType()]["IsExpanded"];
+            if (isExpandedProp != null)
+            {
+                isExpandedProp.SetValue(item, level <= maxExpandLevel);
+
+                PropertyInfo childrenProp = ReflectionHelper.PropertyInfoCollection[item.GetType()]["Children"];
+                if (childrenProp != null && childrenProp.GetValue(item) is IEnumerable col)
+                {
+                    foreach (var child in col)
+                    {
+                        SetLevel(child, level + 1, maxExpandLevel);
+                    }
+                }
+            }
         }
 
         private void Refresh()
