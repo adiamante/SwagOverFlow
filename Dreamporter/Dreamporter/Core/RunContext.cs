@@ -150,17 +150,33 @@ namespace Dreamporter.Core
 
         public void AddTables(params DataTable[] tables)
         {
-            //if (InDebugMode)
-            //{
-            //    foreach (DataTable dtbl in tables)
-            //    {
-            //        if (!dtbl.TableName.StartsWith("debug."))
-            //        {
-            //            dtbl.TableName = $"debug.{dtbl.TableName}";
-            //        }
-            //    }
-            //}
-            _main.InsertToTable(tables);
+            if (InDebugMode)
+            {
+                List<DataTable> debugTables = new List<DataTable>();
+                foreach (DataTable dtbl in tables)
+                {
+                    if (!dtbl.TableName.StartsWith("debug"))
+                    {
+                        DataTable dtblCopy = dtbl.Copy();
+                        dtblCopy.TableName = $"debug.{dtbl.TableName}";
+                        debugTables.Add(dtblCopy);
+                    }
+
+                    String tableName = dtbl.TableName;
+                    if (_main.TableExists(tableName))
+                    {
+                        String query = $"DELETE FROM [{tableName}]";
+                        _main.ExecuteNonQuery(query);
+                    }
+                }
+
+                _main.InsertToTable(tables);
+                _main.InsertToTable(debugTables.ToArray());
+            }
+            else
+            {
+                _main.InsertToTable(tables);
+            }
         }
 
         public DataSet GetDataSet()

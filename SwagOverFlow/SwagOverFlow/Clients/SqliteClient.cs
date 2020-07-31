@@ -218,6 +218,11 @@ namespace SwagOverFlow.Clients
             return GetNumRows("SELECT name FROM sqlite_master WHERE type = 'table'");
         }
 
+        public Boolean TableExists(String tableName)
+        {
+            return GetNumRows($"SELECT name FROM sqlite_master WHERE type = 'table' AND tbl_name='{tableName}'") > 0;
+        }
+
         public DataSet GetDataSet()
         {
             DataSet ds = new DataSet(_connection.Database);
