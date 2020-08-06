@@ -9,6 +9,8 @@ using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using SwagOverFlow.Iterator;
+using SwagOverFlow.Collections;
+using System.ComponentModel;
 
 namespace SwagOverFlow.ViewModels
 {
@@ -280,6 +282,71 @@ namespace SwagOverFlow.ViewModels
         #endregion Properties
     }
     #endregion SwagDataCell
+
+    #region SwagColumnDistinctValues
+    public class SwagColumnDistinctValues : SwagObservableDictionary<Object, SwagDataCell>
+    {
+        #region Private Members
+        SwagDataColumn _column;
+        #endregion Private Members
+
+        #region Initialization
+        public SwagColumnDistinctValues(SwagDataColumn column)
+        {
+            _column = column;
+            if (_column.SwagDataTable != null && _column.SwagDataTable.DataTable != null)
+            {
+                _column.SwagDataTable.DataTable.DefaultView.ListChanged += DefaultView_ListChanged;
+                Init();
+            }
+        }
+
+        public void Init()
+        {
+            foreach (DataRow dr in _column.SwagDataTable.DataTable.Rows)
+            {
+                Object val = dr[_column.ColumnName];
+                if (!this.ContainsKey(val))
+                {
+                    this.Add(val, new SwagDataCell() { Value = val, Column = _column });
+                }
+            }
+
+            foreach (DataRowView drv in _column.SwagDataTable.DataTable.DefaultView)
+            {
+                Object val = drv[_column.ColumnName];
+                this[val].Count++;
+            }
+        }
+        #endregion Initialization
+
+        #region Events
+        private void DefaultView_ListChanged(object sender, ListChangedEventArgs e)
+        {
+            if (e.ListChangedType == ListChangedType.Reset)
+            {
+                Reset();
+            }
+        }
+        #endregion Events
+
+        #region Methods
+        public void Reset()
+        {
+            foreach (KeyValuePair<Object, SwagDataCell> kvp in this)
+            {
+                kvp.Value.Count = 0;
+            }
+
+            foreach (DataRowView drv in _column.SwagDataTable.DataTable.DefaultView)
+            {
+                Object val = drv[_column.ColumnName];
+                this[val].Count++;
+            }
+        }
+        #endregion Methods
+    }
+    #endregion SwagColumnDistinctValues
 
     #region SwagDataColumn
     public class SwagDataColumn : SwagData

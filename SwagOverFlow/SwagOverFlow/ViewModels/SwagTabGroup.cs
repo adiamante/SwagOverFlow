@@ -8,9 +8,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Windows.Data;
 
-namespace SwagOverFlow.WPF.ViewModels
+namespace SwagOverFlow.ViewModels
 {
     public class SwagTabItem : SwagIndexedItem<SwagTabCollection, SwagTabItem>
     {
@@ -104,7 +103,6 @@ namespace SwagOverFlow.WPF.ViewModels
         Int32 _selectedIndex = -1;
         protected ObservableCollection<SwagTabItem> _children = new ObservableCollection<SwagTabItem>();
         Dictionary<String, SwagTabItem> _dict = new Dictionary<string, SwagTabItem>();
-        CollectionViewSource _childrenCollectionViewSource;
         #endregion Private/Protected Members
 
         #region Events
@@ -118,13 +116,6 @@ namespace SwagOverFlow.WPF.ViewModels
         #endregion Events
 
         #region Properties
-        #region ChildrenView
-        [JsonIgnore]
-        public ICollectionView ChildrenView
-        {
-            get { return _childrenCollectionViewSource.View; }
-        }
-        #endregion ChildrenView
         #region Children
         public ObservableCollection<SwagTabItem> Children
         {
@@ -209,8 +200,6 @@ namespace SwagOverFlow.WPF.ViewModels
         {
             _children.CollectionChanged += _children_CollectionChanged;
             this.PropertyChanged += SwagTabCollection_PropertyChanged;
-            _childrenCollectionViewSource = new CollectionViewSource() { Source = _children };
-            _childrenCollectionViewSource.View.SortDescriptions.Add(new SortDescription("Sequence", ListSortDirection.Ascending));
         }
 
         private void SwagTabCollection_PropertyChanged(object sender, PropertyChangedEventArgs e)

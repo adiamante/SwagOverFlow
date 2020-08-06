@@ -3,26 +3,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:ui="clr-namespace:SwagOverFlow.WPF.UI"
+             xmlns:swui="clr-namespace:SwagOverFlow.WPF.UI"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:local="clr-namespace:SwagOverFlow.WPF.Controls"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:vm="clr-namespace:SwagOverFlow.WPF.ViewModels"
+             xmlns:svm="clr-namespace:SwagOverFlow.ViewModels;assembly=SwagOverFlow"
              mc:Ignorable="d" 
              x:Name="ControlInstance"
              d:DesignHeight="450" d:DesignWidth="800">
     <local:SwagControlBase.Resources>
         <CollectionViewSource x:Key="TabItemTemplates" Source="{Binding TabItemTemplates, RelativeSource={RelativeSource AncestorType={x:Type local:SwagSidePanelControl}}}" />
-        <ui:BoolToVisibilityConverter x:Key="BoolToVisibilityInverseConverter" TrueValue="Collapsed" FalseValue="Visible" />
-        <ui:SwagTemplateSelector x:Key="SwagTemplateSelector" ComparePath="Path">
-            <ui:SwagTemplateSelector.StaticTemplates>
-                <ui:SwagTemplateCollection>
-                    <ui:SwagTemplate Type="{x:Type vm:SwagTabCollection}" >
-                        <ui:SwagTemplate.DataTemplate>
+        <swui:BoolToVisibilityConverter x:Key="BoolToVisibilityInverseConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        <swui:SwagTemplateSelector x:Key="SwagTemplateSelector" ComparePath="Path">
+            <swui:SwagTemplateSelector.StaticTemplates>
+                <swui:SwagTemplateCollection>
+                    <swui:SwagTemplate Type="{x:Type svm:SwagTabCollection}" >
+                        <swui:SwagTemplate.DataTemplate>
                             <DataTemplate>
                                 <DockPanel>
                                     <GroupBox Header="{Binding Display}">
-                                        <TabControl ItemsSource="{Binding ChildrenView}"
+                                        <TabControl ItemsSource="{Binding Children, Converter={swui:CollectionToViewConverter Sort=Sequence}}"
                                             Loaded="ControlInstance_Loaded"
                                             TabStripPlacement="Left"
                                             SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
@@ -31,20 +31,20 @@
                                             metro:HeaderedControlHelper.HeaderFontWeight="Bold"
                                             ItemTemplate="{DynamicResource TabItemHeaderTemplate}"
                                             Template="{DynamicResource TabControlTemplate}">
-                                            <ui:SwagTemplateSelector.CustomTemplates>
+                                            <swui:SwagTemplateSelector.CustomTemplates>
                                                 <CompositeCollection>
                                                     <CollectionContainer Collection="{Binding Source={StaticResource TabItemTemplates}}" />
                                                 </CompositeCollection>
-                                            </ui:SwagTemplateSelector.CustomTemplates>
+                                            </swui:SwagTemplateSelector.CustomTemplates>
                                         </TabControl>
                                     </GroupBox>
                                 </DockPanel>
                             </DataTemplate>
-                        </ui:SwagTemplate.DataTemplate>
-                    </ui:SwagTemplate>
-                </ui:SwagTemplateCollection>
-            </ui:SwagTemplateSelector.StaticTemplates>
-        </ui:SwagTemplateSelector>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
+                </swui:SwagTemplateCollection>
+            </swui:SwagTemplateSelector.StaticTemplates>
+        </swui:SwagTemplateSelector>
         <CollectionViewSource x:Key="TabItemCollection" Source="{Binding SwagSidePanel.Items, ElementName=ControlInstance}" />
         <DataTemplate x:Key="TabItemHeaderTemplate">
             <local:IconControl HorizontalAlignment="Left" ShowText="{Binding ShowText}" Kind="{Binding Icon}" Text="{Binding Display}" />
@@ -139,7 +139,7 @@
         </ControlTemplate>
     </local:SwagControlBase.Resources>
     <DockPanel DataContext="{Binding SwagTabCollection, ElementName=ControlInstance}">
-        <TabControl ItemsSource="{Binding ChildrenView}"
+        <TabControl ItemsSource="{Binding Children, Converter={swui:CollectionToViewConverter Sort=Sequence}}"
                     Loaded="ControlInstance_Loaded"
                     TabStripPlacement="Left" 
                     SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
@@ -148,11 +148,11 @@
                     metro:HeaderedControlHelper.HeaderFontWeight="Bold"
                     ItemTemplate="{StaticResource TabItemHeaderTemplate}"
                     Template="{StaticResource TabControlTemplate}">
-            <ui:SwagTemplateSelector.CustomTemplates>
+            <swui:SwagTemplateSelector.CustomTemplates>
                 <CompositeCollection>
                     <CollectionContainer Collection="{Binding Source={StaticResource TabItemTemplates}}" />
                 </CompositeCollection>
-            </ui:SwagTemplateSelector.CustomTemplates>
+            </swui:SwagTemplateSelector.CustomTemplates>
         </TabControl>
     </DockPanel>
 </local:SwagControlBase>
