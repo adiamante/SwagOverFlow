@@ -51,19 +51,13 @@ namespace SwagOverFlow.WPF.Services
                 DataTable dt = new DataTable();
 
                 #region Resolve Columns
-                foreach (SwagDataColumn originalColumn in columns)
+                foreach (SwagDataColumn sdc in columns)
                 {
-                    SwagDataColumnWPF newColumn = new SwagDataColumnWPF(originalColumn);
-                    sdtDataTable.Columns.Add(newColumn.ColumnName, newColumn);
-                    dt.Columns.Add(newColumn.DataColumn);
-                    if (newColumn.ColSeq < dt.Columns.Count)
+                    dt.Columns.Add(sdc.DataColumn());
+                    if (sdc.ColSeq < dt.Columns.Count)
                     {
-                        dt.Columns[newColumn.ColumnName].SetOrdinal(newColumn.ColSeq);
+                        dt.Columns[sdc.ColumnName].SetOrdinal(sdc.ColSeq);
                     }
-
-                    sdtDataTable.Children.Remove(originalColumn);
-                    work.Data.Detach(originalColumn);
-                    work.Data.Attach(newColumn);
                 }
                 #endregion Resolve Columns
 

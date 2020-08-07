@@ -11,6 +11,8 @@ using System.Data;
 using SwagOverFlow.Iterator;
 using SwagOverFlow.Collections;
 using System.ComponentModel;
+using System.Windows.Input;
+using SwagOverFlow.Commands;
 
 namespace SwagOverFlow.ViewModels
 {
@@ -361,6 +363,9 @@ namespace SwagOverFlow.ViewModels
         protected FilterMode _searchFilterMode, _listValuesFilterMode;
         protected Type _dataType;
         protected String _dataTypeString;
+        SwagColumnDistinctValues _distinctValues;
+        ICommand _applySearchFilterCommand, _applyListFilterCommand, _applyListValuesFilterCommand, _toggleListCheckAllCommand, _clearFilterCommand,
+            _hideCommand, _removeCommand;
         #endregion Private/Protected Members
 
         #region Properties
@@ -428,7 +433,11 @@ namespace SwagOverFlow.ViewModels
         public virtual Boolean ListCheckAll
         {
             get { return _listCheckAll; }
-            set { SetValue(ref _listCheckAll, value); }
+            set 
+            {
+                SetValue(ref _listCheckAll, value);
+                ToggleListCheckAllCommand.Execute(_listCheckAll);
+            }
         }
         #endregion ListCheckAll
         #region SearchFilter
@@ -556,7 +565,11 @@ namespace SwagOverFlow.ViewModels
         public virtual Boolean ShowAllDistinctValues
         {
             get { return _showAllDistinctValues; }
-            set { SetValue(ref _showAllDistinctValues, value); }
+            set 
+            { 
+                SetValue(ref _showAllDistinctValues, value);
+                OnApplyDistinctValuesFilter();
+            }
         }
         #endregion ShowAllDistinctValues   
         #region ColSeq
@@ -566,7 +579,202 @@ namespace SwagOverFlow.ViewModels
             set { SetValue(ref _colSeq, value); }
         }
         #endregion ColSeq
+        #region DataTemplate
+        public String DataTemplate
+        {
+            get { return _dataTemplate; }
+            set { SetValue(ref _dataTemplate, value); }
+        }
+        #endregion DataTemplate
+        #region ApplySearchFilterCommand
+        [NotMapped]
+        public ICommand ApplySearchFilterCommand
+        {
+            get
+            {
+                return _applySearchFilterCommand ?? (_applySearchFilterCommand =
+                    new RelayCommand(() =>
+                    {
+                        String filterFormat = "";
+
+                        switch (_searchFilterMode)
+                        {
+                            default:
+                            case FilterMode.CONTAINS:
+                                filterFormat = "CONVERT([{0}], 'System.String') LIKE '%{1}%'";
+                                break;
+                            case FilterMode.EQUALS:
+                                filterFormat = "CONVERT([{0}], 'System.String') = '{1}'";
+                                break;
+                            case FilterMode.STARTS_WITH:
+                                filterFormat = "CONVERT([{0}], 'System.String') LIKE '{1}%'";
+                                break;
+                            case FilterMode.ENDS_WITH:
+                                filterFormat = "CONVERT([{0}], 'System.String') LIKE '%{1}'";
+                                break;
+                        }
+
+                        AppliedFilter = string.Format(filterFormat, ColumnName, SearchFilter);
+                        OnApplyDistinctValuesFilter();
+                    }));
+            }
+        }
+        #endregion ApplySearchFilterCommand
+        #region ApplyListValuesFilterCommand
+        [NotMapped]
+        public ICommand ApplyListValuesFilterCommand
+        {
+            get
+            {
+                return _applyListValuesFilterCommand ?? (_applyListValuesFilterCommand =
+                    new RelayCommand(() =>
+                    {
+                        OnApplyDistinctValuesFilter();
+                    }));
+            }
+        }
+        #endregion ApplyListValuesFilterCommand
+        #region ApplyListFilterCommand
+        [NotMapped]
+        public ICommand ApplyListFilterCommand
+        {
+            get
+            {
+                return _applyListFilterCommand ?? (_applyListFilterCommand =
+                    new RelayCommand(() =>
+                    {
+                        List<String> lstItemPicks = new List<string>();
+
+                        foreach (KeyValuePair<Object, SwagDataCell> kvp in _distinctValues)
+                        {
+                            SwagDataCell cell = kvp.Value;
+                            if (cell.IsChecked)
+                            {
+                                lstItemPicks.Add(string.Format("'{0}'", cell.Value.ToString().Replace("'", "''")));
+                            }
+                        }
+
+                        string items = string.Join(",", lstItemPicks);
+                        String filterFormat = "CONVERT([{0}], 'System.String') IN ({1})";
+                        AppliedFilter = string.Format(filterFormat, ColumnName, items);
+                        OnApplyDistinctValuesFilter();
+                    }));
+            }
+        }
+        #endregion ApplyListFilterCommand
+        #region ClearFilterCommand
+        [NotMapped]
+        public ICommand ClearFilterCommand
+        {
+            get
+            {
+                return _clearFilterCommand ?? (_clearFilterCommand =
+                    new RelayCommand(() =>
+                    {
+                        AppliedFilter = "";
+                        OnApplyDistinctValuesFilter();
+                    }));
+            }
+        }
+        #endregion ClearFilterCommand
+        #region HideCommand
+        [NotMapped]
+        public ICommand HideCommand
+        {
+            get
+            {
+                return _hideCommand ?? (_hideCommand =
+                    new RelayCommand(() =>
+                    {
+                        IsVisible = false;
+                    }));
+            }
+        }
+        #endregion HideCommand
+        #region RemoveCommand
+        [NotMapped]
+        public ICommand RemoveCommand
+        {
+            get
+            {
+                return _removeCommand ?? (_removeCommand =
+                    new RelayCommand(() =>
+                    {
+                        Remove();
+                    }));
+            }
+        }
+        #endregion RemoveCommand
+        #region ToggleListCheckAllCommand
+        [NotMapped]
+        public ICommand ToggleListCheckAllCommand
+        {
+            get
+            {
+                return _toggleListCheckAllCommand ?? (_toggleListCheckAllCommand =
+                    new RelayCommand<Boolean>((isChecked) =>
+                    {
+                        if (SwagDataTable != null && SwagDataTable.DataTable != null)
+                        {
+                            foreach (KeyValuePair<Object, SwagDataCell> kvp in DistinctValues)
+                            {
+                                SwagDataCell cell = kvp.Value;
+                                cell.IsChecked = isChecked;
+                            }
+                        }
+                    }));
+            }
+        }
+        #endregion ToggleListCheckAllCommand  
+        #region DistinctValues
+        [NotMapped]
+        public SwagColumnDistinctValues DistinctValues
+        {
+            get
+            {
+                if (_distinctValues == null)
+                {
+                    _distinctValues = new SwagColumnDistinctValues(this);
+                    OnApplyDistinctValuesFilter();
+                }
+
+                return _distinctValues;
+            }
+        }
+        #endregion DistinctValues
+        #region HasApplyDistinctValuesFilterHandler
+        public Boolean HasApplyDistinctValuesFilterHandler
+        {
+            get
+            {
+                EventHandler<EventArgs> handler = ApplyDistinctValuesFilter;
+                return handler != null;
+            }
+        }
+        #endregion HasApplyDistinctValuesFilterHandler
         #endregion Properties
+
+        #region Events
+        public event EventHandler<EventArgs> ApplyDistinctValuesFilter;
+        #endregion Events
+
+        #region Initialization
+        public SwagDataColumn()
+        {
+            PropertyChangedExtended += SwagDataColumn_PropertyChangedExtended;
+        }
+
+        private void SwagDataColumn_PropertyChangedExtended(object sender, PropertyChangedExtendedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "AppliedFilter":
+                case "IsVisible":
+                    SwagDataTable?.OnSwagItemChanged(this, e);
+                    break;
+            }
+        }
+        #endregion Initialization
 
         #region Methods
         public override SwagDataResult Search(String searchValue, FilterMode filterMode, Func<SwagDataColumn, SwagDataRow, String, FilterMode, bool> searchFunc)
@@ -593,6 +801,62 @@ namespace SwagOverFlow.ViewModels
             }
 
             return null;
+        }
+
+        public void SetSequence(Int32 ordinal)
+        {
+            //FIX_THIS
+            //SwagDataTableWPF sdtWpf = (SwagDataTableWPF)SwagDataTable;
+            //sdtWpf.DataTable.Columns[ColumnName].SetOrdinal(ordinal);
+            //foreach (DataColumn dc in SwagDataTable.DataTable.Columns)
+            //{
+            //    sdtWpf.Columns[dc.ColumnName].ColSeq = dc.Ordinal;
+            //}
+            //sdtWpf.ResetColumns();
+            //sdtWpf.InvalidateColumns();
+            //sdtWpf.Save();
+        }
+
+        public void Rename(String newColName)
+        {
+            //FIX_THIS
+            //SwagDataTableWPF sdtWpf = (SwagDataTableWPF)SwagDataTable;
+            //Int32 originalColSeq = ColSeq;
+            ////Update DataTable to have the new name
+            //sdtWpf.DataTable.Columns[ColumnName].ColumnName = newColName;
+            //sdtWpf.Columns.Remove(ColumnName);
+            //ColumnName = newColName;
+            //Binding = null;         //will need a new binding
+            //sdtWpf.Columns.Add(ColumnName, this);
+            //SetSequence(originalColSeq);        //When a column is added with 0 or lower sequence, it gets the value SwagDataTable.Columns.Count - 1
+            //sdtWpf.DelaySave = true;
+            //sdtWpf.ResetColumns();
+            //sdtWpf.InvalidateColumns();
+            //sdtWpf.InvalidateRows();
+            //sdtWpf.DelaySave = false;
+            //sdtWpf.Save();
+        }
+
+        public void Remove()
+        {
+            //FIX_THIS
+            //SwagDataTableWPF sdtWpf = (SwagDataTableWPF)SwagDataTable;
+            //sdtWpf.Columns.Remove(ColumnName);
+            //foreach (DataColumn dc in sdtWpf.DataTable.Columns)
+            //{
+            //    sdtWpf.Columns[dc.ColumnName].ColSeq = dc.Ordinal;
+            //}
+            //sdtWpf.InvalidateColumns();
+            //sdtWpf.Save();
+        }
+
+        public void OnApplyDistinctValuesFilter()
+        {
+            EventHandler<EventArgs> handler = ApplyDistinctValuesFilter;
+            if (handler != null)
+            {
+                handler(this, null);
+            }
         }
         #endregion Methods
     }

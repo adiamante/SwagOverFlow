@@ -24,381 +24,10 @@ using System.Windows.Markup;
 using System.Xml;
 using SwagOverFlow.Collections;
 using SwagOverFlow.Data.Persistence;
+using SwagOverFlow.Commands;
 
 namespace SwagOverFlow.WPF.ViewModels
 {
-    #region SwagDataColumnWPF
-    public class SwagDataColumnWPF : SwagDataColumn
-    {
-        #region Private Members
-        SwagColumnDistinctValues _distinctValuesSource;
-        CollectionViewSource _distinctValues;
-        Binding _binding;
-        ICommand _applySearchFilterCommand, _applyListFilterCommand, _applyListValuesFilterCommand, _toggleListCheckAllCommand, _clearFilterCommand,
-            _hideCommand, _removeCommand;
-        #endregion Private Members
-
-        #region Properties
-        #region DataTemplate
-        public String DataTemplate
-        {
-            get { return _dataTemplate; }
-            set { SetValue(ref _dataTemplate, value); }
-        }
-        #endregion DataTemplate
-        #region Binding
-        [NotMapped]
-        public Binding Binding
-        {
-            get
-            {
-                if (_binding == null)
-                {
-                    _binding = new Binding(_display);
-                }
-                return _binding;
-            }
-            set { SetValue(ref _binding, value); }
-        }
-        #endregion Binding
-        #region DataGridColumn
-        [NotMapped]
-        public DataGridColumn DataGridColumn
-        {
-            get
-            {
-                if (!String.IsNullOrEmpty(DataTemplate))
-                {
-                    StringReader stringReader = new StringReader(DataTemplate);
-                    XmlReader xmlReader = XmlReader.Create(stringReader);
-                    DataTemplate template = XamlReader.Load(xmlReader) as DataTemplate;
-                    DataGridTemplateColumn dgtc = new DataGridTemplateColumn();
-                    PropertyCopy.Copy(this, dgtc);
-                    dgtc.CellTemplate = template;
-                    return dgtc;
-                }
-
-                DataGridTextColumn dgc = new DataGridTextColumn();
-                PropertyCopy.Copy(this, dgc);
-
-                return dgc;
-            }
-        }
-        #endregion DataGridColumn
-        #region DataColumn
-        [NotMapped]
-        public DataColumn DataColumn
-        {
-            get
-            {
-                DataColumn dc = new DataColumn();
-                if (String.IsNullOrEmpty(Expression))
-                {
-                    PropertyCopy.Copy(this, dc);
-                }
-                else
-                {
-                    PropertyCopy.Copy(this, dc, new List<string>() { "ReadOnly" });
-                }
-                return dc;
-            }
-        }
-        #endregion DataColumn
-        #region ApplySearchFilterCommand
-        [NotMapped]
-        public ICommand ApplySearchFilterCommand
-        {
-            get
-            {
-                return _applySearchFilterCommand ?? (_applySearchFilterCommand =
-                    new RelayCommand(() =>
-                    {
-                        String filterFormat = "";
-
-                        switch (_searchFilterMode)
-                        {
-                            default:
-                            case FilterMode.CONTAINS:
-                                filterFormat = "CONVERT([{0}], 'System.String') LIKE '%{1}%'";
-                                break;
-                            case FilterMode.EQUALS:
-                                filterFormat = "CONVERT([{0}], 'System.String') = '{1}'";
-                                break;
-                            case FilterMode.STARTS_WITH:
-                                filterFormat = "CONVERT([{0}], 'System.String') LIKE '{1}%'";
-                                break;
-                            case FilterMode.ENDS_WITH:
-                                filterFormat = "CONVERT([{0}], 'System.String') LIKE '%{1}'";
-                                break;
-                        }
-
-                        AppliedFilter = string.Format(filterFormat, ColumnName, SearchFilter);                        
-                        ApplyDistinctValuesFilter();
-                    }));
-            }
-        }
-        #endregion ApplySearchFilterCommand
-        #region ApplyListValuesFilterCommand
-        [NotMapped]
-        public ICommand ApplyListValuesFilterCommand
-        {
-            get
-            {
-                return _applyListValuesFilterCommand ?? (_applyListValuesFilterCommand =
-                    new RelayCommand(() =>
-                    {
-                        ApplyDistinctValuesFilter();
-                    }));
-            }
-        }
-        #endregion ApplyListValuesFilterCommand
-        #region ApplyListFilterCommand
-        [NotMapped]
-        public ICommand ApplyListFilterCommand
-        {
-            get
-            {
-                return _applyListFilterCommand ?? (_applyListFilterCommand =
-                    new RelayCommand(() =>
-                    {
-                        List<String> lstItemPicks = new List<string>();
-
-                        foreach (KeyValuePair<Object, SwagDataCell> kvp in _distinctValuesSource)
-                        {
-                            SwagDataCell cell = kvp.Value;
-                            if (cell.IsChecked)
-                            {
-                                lstItemPicks.Add(string.Format("'{0}'", cell.Value.ToString().Replace("'", "''")));
-                            }
-                        }
-
-                        string items = string.Join(",", lstItemPicks);
-                        String filterFormat = "CONVERT([{0}], 'System.String') IN ({1})";
-                        AppliedFilter = string.Format(filterFormat, ColumnName, items);
-                        ApplyDistinctValuesFilter();
-                    }));
-            }
-        }
-        #endregion ApplyListFilterCommand
-        #region ClearFilterCommand
-        [NotMapped]
-        public ICommand ClearFilterCommand
-        {
-            get
-            {
-                return _clearFilterCommand ?? (_clearFilterCommand =
-                    new RelayCommand(() =>
-                    {
-                        AppliedFilter = "";
-                        ApplyDistinctValuesFilter();
-                    }));
-            }
-        }
-        #endregion ClearFilterCommand
-        #region HideCommand
-        [NotMapped]
-        public ICommand HideCommand
-        {
-            get
-            {
-                return _hideCommand ?? (_hideCommand =
-                    new RelayCommand(() =>
-                    {
-                        IsVisible = false;
-                    }));
-            }
-        }
-        #endregion HideCommand
-        #region RemoveCommand
-        [NotMapped]
-        public ICommand RemoveCommand
-        {
-            get
-            {
-                return _removeCommand ?? (_removeCommand =
-                    new RelayCommand(() =>
-                    {
-                        Remove();
-                    }));
-            }
-        }
-        #endregion RemoveCommand
-        #region ToggleListCheckAllCommand
-        [NotMapped]
-        public ICommand ToggleListCheckAllCommand
-        {
-            get
-            {
-                return _toggleListCheckAllCommand ?? (_toggleListCheckAllCommand =
-                    new RelayCommand<Boolean>((isChecked) =>
-                    {
-                        if (SwagDataTable != null && SwagDataTable.DataTable != null)
-                        {
-                            foreach (KeyValuePair<Object, SwagDataCell> kvp in DistinctValuesView)
-                            {
-                                SwagDataCell cell = kvp.Value;
-                                cell.IsChecked = isChecked;
-                            }
-                        }
-                    }));
-            }
-        }
-        #endregion ToggleListCheckAllCommand
-        #region DistinctValuesView
-        [NotMapped]
-        public ICollectionView DistinctValuesView
-        {
-            get
-            {
-                if (_distinctValuesSource == null)
-                {
-                    _distinctValuesSource = new SwagColumnDistinctValues(this);
-                    _distinctValues = new CollectionViewSource() { Source = _distinctValuesSource };
-                    _distinctValues.SortDescriptions.Add(new SortDescription("Value.Value", ListSortDirection.Ascending));
-                    ApplyDistinctValuesFilter();
-                }
-
-                return _distinctValues.View;
-            }
-        }
-        #endregion DistinctValuesView
-        #region ShowAllDistinctValues
-        [NotMapped]
-        public override Boolean ShowAllDistinctValues
-        {
-            get { return _showAllDistinctValues; }
-            set
-            {
-                SetValue(ref _showAllDistinctValues, value);
-                ApplyDistinctValuesFilter();
-            }
-        }
-        #endregion ShowAllDistinctValues   
-        #region ListCheckAll
-        [NotMapped]
-        public override Boolean ListCheckAll
-        {
-            get { return _listCheckAll; }
-            set
-            {
-                SetValue(ref _listCheckAll, value);
-                ToggleListCheckAllCommand.Execute(_listCheckAll);
-            }
-        }
-        #endregion ListCheckAll
-        #region AppliedFilter
-        [NotMapped]
-        public override String AppliedFilter
-        {
-            get { return _appliedFilter; }
-            set
-            {
-                SetValue(ref _appliedFilter, value);
-                OnPropertyChanged("HasAppliedFilter");
-            }
-        }
-        #endregion AppliedFilter
-        #endregion Properties
-
-        #region Initialization
-        public SwagDataColumnWPF()
-        {
-            PropertyChangedExtended += SwagDataColumn_PropertyChangedExtended;
-        }
-
-        private void SwagDataColumn_PropertyChangedExtended(object sender, PropertyChangedExtendedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "AppliedFilter":
-                case "IsVisible":
-                    SwagDataTable?.OnSwagItemChanged(this, e);
-                    break;
-            }
-        }
-
-        public SwagDataColumnWPF(DataColumn dc) : this()
-        {
-            PropertyCopy.Copy(dc, this);
-        }
-
-        public SwagDataColumnWPF(SwagDataColumn sdc) : this()
-        {
-            PropertyCopy.Copy(sdc, this);
-        }
-        #endregion Initialization
-
-        #region Methods
-        public void SetSequence(Int32 ordinal)
-        {
-            SwagDataTableWPF sdtWpf = (SwagDataTableWPF)SwagDataTable;
-            sdtWpf.DataTable.Columns[ColumnName].SetOrdinal(ordinal);
-            foreach (DataColumn dc in SwagDataTable.DataTable.Columns)
-            {
-                sdtWpf.Columns[dc.ColumnName].ColSeq = dc.Ordinal;
-            }
-            sdtWpf.ResetColumns();
-            sdtWpf.InvalidateColumns();
-            sdtWpf.Save();
-        }
-
-        public void Rename(String newColName)
-        {
-            SwagDataTableWPF sdtWpf = (SwagDataTableWPF)SwagDataTable;
-            Int32 originalColSeq = ColSeq;
-            //Update DataTable to have the new name
-            sdtWpf.DataTable.Columns[ColumnName].ColumnName = newColName;
-            sdtWpf.Columns.Remove(ColumnName);
-            ColumnName = newColName;
-            Binding = null;         //will need a new binding
-            sdtWpf.Columns.Add(ColumnName, this);
-            SetSequence(originalColSeq);        //When a column is added with 0 or lower sequence, it gets the value SwagDataTable.Columns.Count - 1
-            sdtWpf.DelaySave = true;
-            sdtWpf.ResetColumns();
-            sdtWpf.InvalidateColumns();
-            sdtWpf.InvalidateRows();
-            sdtWpf.DelaySave = false;
-            sdtWpf.Save();
-        }
-
-        public void Remove()
-        {
-            SwagDataTableWPF sdtWpf = (SwagDataTableWPF)SwagDataTable;
-            sdtWpf.Columns.Remove(ColumnName);
-            foreach (DataColumn dc in sdtWpf.DataTable.Columns)
-            {
-                sdtWpf.Columns[dc.ColumnName].ColSeq = dc.Ordinal;
-            }
-            sdtWpf.InvalidateColumns();
-            sdtWpf.Save();
-        }
-
-        public void ApplyDistinctValuesFilter()
-        {
-            if (_distinctValues != null)
-            {
-                DistinctValuesView.Filter = item =>
-                {
-                    KeyValuePair<Object, SwagDataCell> kvp = (KeyValuePair<Object, SwagDataCell>)item;
-
-                    if (String.IsNullOrEmpty(_listValuesFilter))
-                    {
-                        return kvp.Value.Count > 0 || _showAllDistinctValues;
-                    }
-                    else
-                    {
-                        return SearchHelper.Evaluate(kvp.Value.Value.ToString(), _listValuesFilter, false, _listValuesFilterMode, true)
-                            && (kvp.Value.Count > 0 || _showAllDistinctValues);
-                    }
-
-                };
-            }
-        }
-
-        #endregion Methods
-    }
-    #endregion SwagDataColumnWPF
-
     #region SwagTableImportType
     public enum SwagTableImportType
     {
@@ -1048,7 +677,7 @@ namespace SwagOverFlow.WPF.ViewModels
                 #region Add Columns and Rows for instance
                 foreach (DataColumn dc in dt.Columns)
                 {
-                    SwagDataColumn sdc = new SwagDataColumnWPF() { ColumnName = dc.ColumnName, DataType = dc.DataType };
+                    SwagDataColumn sdc = new SwagDataColumn() { ColumnName = dc.ColumnName, DataType = dc.DataType };
                     sdc.SwagDataTable = this;
                     sdc.DataTypeString = sdc.DataTypeString;
                     Children.Add(sdc);
@@ -1132,7 +761,7 @@ namespace SwagOverFlow.WPF.ViewModels
                     {
                         if (!_dataTable.Columns.Contains(sdcKvp.Key))
                         {
-                            _dataTable.Columns.Add(((SwagDataColumnWPF)sdcKvp.Value).DataColumn);
+                            _dataTable.Columns.Add(sdcKvp.Value.DataColumn());
                             _dataTable.Columns[sdcKvp.Key].SetOrdinal(e.NewStartingIndex);
                             this.Children.Add(sdcKvp.Value);
                         }
@@ -1634,4 +1263,21 @@ namespace SwagOverFlow.WPF.ViewModels
         }
     }
     #endregion SwagDataHelper
+
+    static class SwagDataColumnExtensions
+    {
+        public static DataColumn DataColumn(this SwagDataColumn sdc)
+        {
+            DataColumn dc = new DataColumn();
+            if (String.IsNullOrEmpty(sdc.Expression))
+            {
+                PropertyCopy.Copy(sdc, dc);
+            }
+            else
+            {
+                PropertyCopy.Copy(sdc, dc, new List<string>() { "ReadOnly" });
+            }
+            return dc;
+        }
+    }
 }

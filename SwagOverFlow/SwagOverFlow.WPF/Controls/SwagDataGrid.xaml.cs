@@ -17,6 +17,10 @@ using System.Data;
 using SwagOverFlow.Logger;
 using System.Windows.Controls.Primitives;
 using SwagOverFlow.ViewModels;
+using System.IO;
+using System.Xml;
+using System.Windows.Markup;
+using SwagOverFlow.WPF.Extensions;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -69,7 +73,8 @@ namespace SwagOverFlow.WPF.Controls
 
                     foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in columns)
                     {
-                        dataGrid.Columns.Add(((SwagDataColumnWPF)sdcKvp.Value).DataGridColumn);
+                        dataGrid.Columns.Add(sdcKvp.Value.DataGridColumn());
+                        sdcKvp.Value.Init();
                     }
 
                     if (e.OldValue == null)
@@ -85,20 +90,21 @@ namespace SwagOverFlow.WPF.Controls
                                     dataGrid.Columns.Clear();
                                     foreach (KeyValuePair<String, SwagDataColumn> kvp in columns)
                                     {
-                                        dataGrid.Columns.Add(((SwagDataColumnWPF)kvp.Value).DataGridColumn);
+                                        dataGrid.Columns.Add(kvp.Value.DataGridColumn());
                                     }
                                     break;
                                 case NotifyCollectionChangedAction.Add:
                                     foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
                                     {
-                                        dataGrid.Columns.Add(((SwagDataColumnWPF)kvp.Value).DataGridColumn);
+                                        kvp.Value.Init();
+                                        dataGrid.Columns.Add(kvp.Value.DataGridColumn());
                                     }
                                     break;
                                 case NotifyCollectionChangedAction.Move:
                                     foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
                                     {
                                         dataGrid.Columns.RemoveAt(ne.OldStartingIndex);
-                                        dataGrid.Columns.Add(((SwagDataColumnWPF)kvp.Value).DataGridColumn);
+                                        dataGrid.Columns.Add(kvp.Value.DataGridColumn());
                                     }
                                     //dataGrid.Columns.Move(ne.OldStartingIndex, ne.NewStartingIndex);
                                     break;
@@ -206,7 +212,7 @@ namespace SwagOverFlow.WPF.Controls
         #region DataGrid Events
         private void DataGrid_ColumnReordered(object sender, DataGridColumnEventArgs e)
         {
-            ((SwagDataColumnWPF)SwagDataTable.Columns[e.Column.Header.ToString()]).SetSequence(e.Column.DisplayIndex);
+            SwagDataTable.Columns[e.Column.Header.ToString()].SetSequence(e.Column.DisplayIndex);
         }
 
         private void DataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
@@ -326,7 +332,7 @@ namespace SwagOverFlow.WPF.Controls
         {
             MenuItem menuItem = (MenuItem)sender;
             MenuItem miParent = (MenuItem)menuItem.Parent;
-            SwagDataColumnWPF originalSwagDataColumn = (SwagDataColumnWPF)menuItem.DataContext;
+            SwagDataColumn originalSwagDataColumn = (SwagDataColumn)menuItem.DataContext;
             SwagDataTableWPF swagDataTable = (SwagDataTableWPF)originalSwagDataColumn.SwagDataTable;
             Type targetType = (Type)menuItem.Tag;
             Grid grid = miParent.FindLogicalChild<Grid>("gridConvertOptions");
@@ -345,7 +351,7 @@ namespace SwagOverFlow.WPF.Controls
                 count++;
             }
 
-            SwagDataColumnWPF newSwagDataColumn = new SwagDataColumnWPF() { ColumnName = newColName, DataType = targetType };
+            SwagDataColumn newSwagDataColumn = new SwagDataColumn() { ColumnName = newColName, DataType = targetType };
             swagDataTable.Columns.Add(newSwagDataColumn.ColumnName, newSwagDataColumn);
 
             #region Resolve defaultValue
@@ -397,7 +403,7 @@ namespace SwagOverFlow.WPF.Controls
         private void SwagColumnHeader_MoveClick(object sender, RoutedEventArgs e)
         {
             MenuItem menuItem = (MenuItem)sender;
-            SwagDataColumnWPF swagDataColumn = (SwagDataColumnWPF)menuItem.DataContext;
+            SwagDataColumn swagDataColumn = (SwagDataColumn)menuItem.DataContext;
             SwagLogger.LogStart(this, "Move Column |col={Column}|", swagDataColumn.ColumnName);
 
             Int32 offSet = Int32.Parse(menuItem.Tag.ToString());
@@ -420,7 +426,7 @@ namespace SwagOverFlow.WPF.Controls
         {
             Button btnRename = (Button)sender;
             MenuItem miParent = (MenuItem)((MenuItem)((Grid)btnRename.Parent).Parent).Parent;
-            SwagDataColumnWPF swagDataColumn = (SwagDataColumnWPF)btnRename.DataContext;
+            SwagDataColumn swagDataColumn = (SwagDataColumn)btnRename.DataContext;
             ContextMenu contextMenu = DependencyObjectHelper.TryFindParent<ContextMenu>(btnRename);
 
             Grid grid = miParent.FindLogicalChild<Grid>("gridRename");
@@ -547,7 +553,6 @@ namespace SwagOverFlow.WPF.Controls
         }
 
         #endregion SwagColumnHeader
-
 
     }
 }

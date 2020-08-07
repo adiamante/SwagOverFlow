@@ -347,10 +347,10 @@
                                                                                 </CheckBox>
                                                                             </ListViewItem>
                                                                         </ListView>
-                                                                        <ListView ItemsSource="{Binding DistinctValuesView, Mode=OneTime}"
-                                                                      VirtualizingPanel.IsVirtualizing="True"
-                                                                      VirtualizingPanel.VirtualizationMode="Recycling"
-                                                                      ScrollViewer.CanContentScroll="True">
+                                                                        <ListView ItemsSource="{Binding DistinctValues, Mode=OneTime}"
+                                                                              VirtualizingPanel.IsVirtualizing="True"
+                                                                              VirtualizingPanel.VirtualizationMode="Recycling"
+                                                                              ScrollViewer.CanContentScroll="True">
                                                                             <ItemsControl.ItemsPanel>
                                                                                 <ItemsPanelTemplate>
                                                                                     <VirtualizingStackPanel IsItemsHost="True"/>

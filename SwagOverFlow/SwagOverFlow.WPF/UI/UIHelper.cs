@@ -1,13 +1,21 @@
 ﻿using SwagOverFlow.WPF.Controls;
 using System;
+using System.Collections;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace SwagOverFlow.WPF.UI
 {
     public static class UIHelper
     {
+        public static ICollectionView GetCollectionView(IEnumerable col)
+        {
+            return CollectionViewSource.GetDefaultView(col);
+        }
+
         public static string StringInputDialog(string message = "Please enter input:", String strDefault = "")
         {
             #region Window Setup

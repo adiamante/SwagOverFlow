@@ -3,6 +3,7 @@ using SwagOverFlow.Utils;
 using SwagOverFlow.WPF.Collections;
 using System;
 using System.Windows.Input;
+using SwagOverFlow.Commands;
 
 namespace SwagOverFlow.WPF.Commands
 {

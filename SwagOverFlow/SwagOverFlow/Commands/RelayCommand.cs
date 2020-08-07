@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace SwagOverFlow.WPF.Commands
+namespace SwagOverFlow.Commands
 {
     public class RelayCommand : ICommand
     {

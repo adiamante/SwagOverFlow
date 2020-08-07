@@ -1,4 +1,5 @@
-﻿using SwagOverFlow.ViewModels;
+﻿using SwagOverFlow.Commands;
+using SwagOverFlow.ViewModels;
 using SwagOverFlow.WPF.Commands;
 using SwagOverFlow.WPF.UI;
 using System;

@@ -9,6 +9,7 @@ using SwagOverFlow.WPF.ViewModels;
 using System.Text;
 using System.Collections;
 using SwagOverFlow.Data.Converters;
+using SwagOverFlow.ViewModels;
 
 namespace TestWPF
 {
@@ -113,12 +114,12 @@ namespace TestWPF
                 #region DestID
                 if (!Source.Columns.ContainsKey("DestID"))
                 {
-                    SwagDataColumnWPF sdc = new SwagDataColumnWPF()
+                    SwagDataColumn sdc = new SwagDataColumn()
                     {
                         ColumnName = "DestID",
-                        DataType = typeof(string),
+                        DataType = typeof(string)
                         //Saving a binding is currently not working
-                        Binding = new Binding("[DestID]") { TargetNullValue = "----------", FallbackValue = "----------" }
+                        //Binding = new Binding("[DestID]") { TargetNullValue = "----------", FallbackValue = "----------" }
                     };
 
                     Source.Columns.Add("DestID", sdc);
@@ -142,7 +143,7 @@ namespace TestWPF
                             </DataTemplate>";
                     mappingTemplate = mappingTemplate.Replace("{{descriptionField}}", descriptionField);
 
-                    SwagDataColumnWPF sdc = new SwagDataColumnWPF()
+                    SwagDataColumn sdc = new SwagDataColumn()
                     {
                         ColumnName = "Mapping",
                         DataType = typeof(string),

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Windows.Input;
 using SwagOverFlow.WPF.Commands;
 using System;
+using SwagOverFlow.Commands;
 
 namespace SwagOverFlow.WPF.ViewModels
 {
