@@ -868,7 +868,7 @@ namespace SwagOverFlow.ViewModels
         #region Private/Protected Members
         String _name, _message;
         DataTable _dataTable;
-        Boolean _showDebug = false, _showColumnTotals = false, _columnVisibilityCheckAll = false, _columnFiltersCheckAll = false;
+        Boolean _isInitialized = false, _showDebug = false, _showColumnTotals = false, _columnVisibilityCheckAll = false, _columnFiltersCheckAll = false;
         IDictionary<String, SwagDataColumn> _columns;
         Dictionary<DataRow, SwagDataRow> _dictRows = new Dictionary<DataRow, SwagDataRow>();
         ICommand _filterCommand, _exportCommand, _importCommand, _applyColumnVisibilityCommand, _toggleColumnVisibilityCheckedAll, _applyColumnVisibilityFilterCommand,
@@ -898,6 +898,13 @@ namespace SwagOverFlow.ViewModels
             set { SetValue(ref _message, value); }
         }
         #endregion Message
+        #region IsInitialized
+        public Boolean IsInitialized
+        {
+            get { return _isInitialized; }
+            set { SetValue(ref _isInitialized, value); }
+        }
+        #endregion IsInitialized
         #region DataTable
         [JsonIgnore]
         [NotMapped]
@@ -1528,7 +1535,129 @@ namespace SwagOverFlow.ViewModels
     #region SwagDataSet
     public class SwagDataSet : SwagDataGroup
     {
+        #region Private Members
+        SwagSettingGroup _settings;
+        SwagTabGroup _tabs;
+        ICommand _filterTabsCommand, _addDataSetCommand, _addDataTableCommand;
+        SwagData _selectedChild;
+        #endregion Private Members
+
+        #region Properties
+        #region Settings
+        [JsonIgnore]
+        [NotMapped]
+        public SwagSettingGroup Settings
+        {
+            get { return _settings; }
+            set { SetValue(ref _settings, value); }
+        }
+        #endregion Settings
+        #region Tabs
+        [NotMapped]
+        [JsonIgnore]
+        public SwagTabGroup Tabs
+        {
+            get { return _tabs; }
+            set { SetValue(ref _tabs, value); }
+        }
+        #endregion Tabs
+        #region SelectedChild
+        [NotMapped]
+        [JsonIgnore]
+        public SwagData SelectedChild
+        {
+            get { return _selectedChild; }
+            set { SetValue(ref _selectedChild, value); }
+        }
+        #endregion SelectedChild
+        #region FilterTabsCommand
+        [NotMapped]
+        [JsonIgnore]
+        public ICommand FilterTabsCommand
+        {
+            get { return _filterTabsCommand; }
+            set { SetValue(ref _filterTabsCommand, value); }
+        }
+        #endregion FilterTabsCommand
+        #region AddDataSetCommand
+        [NotMapped]
+        [JsonIgnore]
+        public ICommand AddDataSetCommand
+        {
+            get
+            {
+                return _addDataSetCommand ?? (_addDataSetCommand =
+                    new RelayCommand(() =>
+                    {
+                        SwagDataSet newDataSet = new SwagDataSet();
+                        newDataSet.Display = $"Set {this.Children.Count + 1}";
+                        Children.Add(newDataSet);
+                    }));
+            }
+        }
+        #endregion AddDataSetCommand
+        #region AddDataTableCommand
+        [NotMapped]
+        [JsonIgnore]
+        public ICommand AddDataTableCommand
+        {
+            get
+            {
+                return _addDataTableCommand ?? (_addDataTableCommand =
+                    new RelayCommand(() =>
+                    {
+                        SwagDataTable newDataTable = new SwagDataTable();
+                        newDataTable.Display = $"Table {this.Children.Count + 1}";
+                        Children.Add(newDataTable);
+                    }));
+            }
+        }
+        #endregion AddDataTableCommand
+        #endregion Properties
+
+        #region Initialization
+        public SwagDataSet()
+        {
+            
+        }
+
+        public SwagDataSet(DataSet dataSet) : this()
+        {
+            foreach (DataTable dt in dataSet.Tables)
+            {
+                Children.Add(new SwagDataTable(dt) { Display = dt.TableName });
+            }
+        }
+        #endregion Initialization
+
         #region Methods
+        public override DataSet GetDataSet()
+        {
+            DataSet ds = new DataSet(Display);
+            foreach (SwagData swagData in Children)
+            {
+                switch (swagData)
+                {
+                    case SwagDataTable swagDataTable:
+                        foreach (DataTable dt in swagDataTable.GetDataSet().Tables)
+                        {
+                            DataTable dtCopy = dt.Copy();
+                            ds.Tables.Add(dtCopy);
+                        }
+                        break;
+                    case SwagDataSet swagDataSet:
+                        foreach (DataTable dt in swagDataSet.GetDataSet().Tables)
+                        {
+                            DataTable dtCopy = dt.Copy();
+                            dtCopy.TableName = $"{swagDataSet.Display}.{dt.TableName}";
+                            ds.Tables.Add(dtCopy);
+                        }
+                        break;
+                }
+            }
+            return ds;
+        }
+
         public override SwagDataResult Search(String searchValue, FilterMode filterMode, Func<SwagDataColumn, SwagDataRow, String, FilterMode, bool> searchFunc)
         {
             List<SwagDataResult> lstSwagDataResults = new List<SwagDataResult>();

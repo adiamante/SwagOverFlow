@@ -12,11 +12,11 @@ namespace SwagOverFlow.WPF.SwagDataWindow
     {
         #region SwagDataSet
         private static readonly DependencyProperty SwagDataSetProperty =
-            DependencyProperty.Register("SwagDataSet", typeof(SwagDataSetWPF), typeof(SwagDataWindow));
+            DependencyProperty.Register("SwagDataSet", typeof(SwagDataSet), typeof(SwagDataWindow));
 
-        public SwagDataSetWPF SwagDataSet
+        public SwagDataSet SwagDataSet
         {
-            get { return (SwagDataSetWPF)GetValue(SwagDataSetProperty); }
+            get { return (SwagDataSet)GetValue(SwagDataSetProperty); }
             set { SetValue(SwagDataSetProperty, value); }
         }
         #endregion SwagDataSet
@@ -25,7 +25,7 @@ namespace SwagOverFlow.WPF.SwagDataWindow
         {
             InitializeComponent();
 
-            SwagDataSet = new SwagDataSetWPF();
+            SwagDataSet = new SwagDataSet();
         }
     }
 }

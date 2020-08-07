@@ -14,6 +14,8 @@ using System.Windows.Controls;
 using SwagOverFlow.ViewModels;
 using System.ComponentModel;
 using SwagOverFlow.Data.Converters;
+using SwagOverFlow.Logger;
+using SwagOverFlow.Commands;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -27,12 +29,47 @@ namespace SwagOverFlow.WPF.Controls
         public static DependencyProperty SwagDataSetProperty =
                 DependencyProperty.Register(
                     "SwagDataSet",
-                    typeof(SwagDataSetWPF),
-                    typeof(SwagDataControl));
+                    typeof(SwagDataSet),
+                    typeof(SwagDataControl),
+                    new FrameworkPropertyMetadata(null, SwagDataSetPropertyChanged));
 
-        public SwagDataSetWPF SwagDataSet
+        private static void SwagDataSetPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            get { return (SwagDataSetWPF)GetValue(SwagDataSetProperty); }
+            SwagDataControl swagDataControl = (SwagDataControl)d;
+            if (swagDataControl.SwagDataSet != null)
+            {
+                SwagDataSet swagDataSet = swagDataControl.SwagDataSet;
+                swagDataSet.FilterTabsCommand =
+                new RelayCommand(() =>
+                {
+                    String filter = swagDataSet.Settings["Tabs"]["Search"]["Text"].GetValue<String>();
+                    FilterMode filterMode = swagDataSet.Settings["Tabs"]["Search"]["FilterMode"].GetValue<FilterMode>();
+                    UIHelper.GetCollectionView(swagDataSet.Children).Filter = (item) =>
+                    {
+                        SwagData swagData = (SwagData)item;
+                        Boolean itemMatch = SearchHelper.Evaluate(swagData.Display, filter, false, filterMode, false);
+                        Boolean childDataSetMatch = false;
+
+                        if (swagData is SwagDataSet subDataSet)
+                        {
+                            subDataSet.FilterTabsCommand = swagDataSet.FilterTabsCommand;
+                            SwagDataSet childDataSet = (SwagDataSet)swagData;
+                            childDataSet.Settings["Tabs"]["Search"]["Text"].SetValue(filter);
+                            childDataSet.Settings["Tabs"]["Search"]["FilterMode"].SetValue(filterMode);
+                            childDataSet.FilterTabsCommand.Execute(null);
+                            ICollectionView subchildren = UIHelper.GetCollectionView(childDataSet.Children);
+                            childDataSetMatch = !subchildren.IsEmpty;
+                        }
+
+                        return itemMatch || childDataSetMatch;
+                    };
+                });
+            }
+        }
+
+        public SwagDataSet SwagDataSet
+        {
+            get { return (SwagDataSet)GetValue(SwagDataSetProperty); }
             set
             {
                 SetValue(SwagDataSetProperty, value);
@@ -208,7 +245,7 @@ namespace SwagOverFlow.WPF.Controls
             switch (currentResult)
             {
                 case SwagDataSetResultGroup setResult:
-                    View((SwagDataSetWPF)setResult.SwagData);
+                    View((SwagDataSet)setResult.SwagData);
                     break;
                 case SwagDataTableResultGroup tableResult:
                     View((SwagDataTable)tableResult.SwagData);
@@ -222,11 +259,11 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
 
-        private void View(SwagDataSetWPF swagDataSet)
+        private void View(SwagDataSet swagDataSet)
         {
-            if (swagDataSet.Parent != null && swagDataSet.Parent is SwagDataSetWPF)
+            if (swagDataSet.Parent != null && swagDataSet.Parent is SwagDataSet)
             {
-                SwagDataSetWPF parent = (SwagDataSetWPF)swagDataSet.Parent;
+                SwagDataSet parent = (SwagDataSet)swagDataSet.Parent;
                 parent.SelectedChild = swagDataSet;
                 View(parent);
             }
@@ -234,9 +271,9 @@ namespace SwagOverFlow.WPF.Controls
 
         private void View(SwagDataTable swagDataTable)
         {
-            if (swagDataTable.Parent != null && swagDataTable.Parent is SwagDataSetWPF)
+            if (swagDataTable.Parent != null && swagDataTable.Parent is SwagDataSet)
             {
-                SwagDataSetWPF parent = (SwagDataSetWPF)swagDataTable.Parent;
+                SwagDataSet parent = (SwagDataSet)swagDataTable.Parent;
                 parent.SelectedChild = swagDataTable;
                 View(parent);
             }
@@ -300,9 +337,9 @@ namespace SwagOverFlow.WPF.Controls
         private void SwagDataHeader_ContextMenuOpened(object sender, RoutedEventArgs e)
         {
             SwagData swagData = (SwagData)((FrameworkElement)sender).DataContext;
-            if (swagData.Parent != null && swagData.Parent is SwagDataSetWPF)
+            if (swagData.Parent != null && swagData.Parent is SwagDataSet)
             {
-                SwagDataSetWPF swagDataSet = (SwagDataSetWPF)swagData.Parent;
+                SwagDataSet swagDataSet = (SwagDataSet)swagData.Parent;
                 if (swagDataSet.SelectedChild != null)
                 {
                     swagDataSet.SelectedChild.IsSelected = false;
@@ -347,4 +384,88 @@ namespace SwagOverFlow.WPF.Controls
         #endregion SwagDataHeader ContextMenu
 
     }
+
+    #region SwagDataHelper
+    public static class SwagDataHelper
+    {
+        public static void LoadFiles(this SwagDataSet swagDataSet, IEnumerable<String> files, IEnumerable<KeyValuePairViewModel<String, ParseViewModel>> parseMappers)
+        {
+            foreach (String file in files)
+            {
+                SwagLogger.LogStart(swagDataSet, "Load {file}", file);
+                SwagData child = SwagDataHelper.FromFile(file, parseMappers);
+                SwagLogger.LogEnd(swagDataSet, "Load {file}", file);
+
+                if (child != null)
+                {
+                    swagDataSet.Children.Add(child);
+                }
+                else
+                {
+                    SwagLogger.Log("Load {file} did not yield data (unsupported extenstion).", file);
+                }
+            }
+        }
+
+        public static SwagData FromFile(String file, IEnumerable<KeyValuePairViewModel<String, ParseViewModel>> parseMappers)
+        {
+            String filename = Path.GetFileName(file);
+            String ext = Path.GetExtension(file).TrimStart('.');
+
+            KeyValuePairViewModel<String, ParseViewModel> parseMapper = parseMappers.FirstOrDefault(pm => pm.Key != null && pm.Key.ToLower() == ext.ToLower());
+            if (parseMapper != null)
+            {
+                switch (parseMapper.Value.ParseStrategy)
+                {
+                    case ParseStrategy.Csv:
+                    case ParseStrategy.Dbf:
+                        DataTableConvertContext dataTableConvertContext = new DataTableConvertContext();
+                        switch (parseMapper.Value.ParseStrategy)
+                        {
+                            case ParseStrategy.Csv:
+                                dataTableConvertContext.Converter = new DataTableCsvFileConverter();
+                                break;
+                            case ParseStrategy.Dbf:
+                                dataTableConvertContext.Converter = new DataTableDbfFileConverter();
+                                break;
+                        }
+                        dataTableConvertContext.Params = new DataTableConvertParams();
+                        PropertyCopy.Copy(parseMapper.Value, dataTableConvertContext.Params);
+                        DataTableConverterHelper.ConverterFileContexts[ext] = dataTableConvertContext;
+                        break;
+                    case ParseStrategy.Xml:
+                    case ParseStrategy.Json:
+                        DataSetConvertContext dataSetConvertContext = new DataSetConvertContext();
+                        switch (parseMapper.Value.ParseStrategy)
+                        {
+                            case ParseStrategy.Xml:
+                                dataSetConvertContext.Converter = new DataSetXmlFileConverter();
+                                break;
+                            case ParseStrategy.Json:
+                                dataSetConvertContext.Converter = new DataSetJsonFileConverter();
+                                break;
+                        }
+                        dataSetConvertContext.Params = new DataSetConvertParams();
+                        PropertyCopy.Copy(parseMapper.Value, dataSetConvertContext.Params);
+                        DataSetConverterHelper.ConverterFileContexts[ext] = dataSetConvertContext;
+                        break;
+                }
+            }
+
+            DataSetConvertContext dataSetContext = DataSetConverterHelper.ConverterFileContexts[ext];
+            if (dataSetContext != null)
+            {
+                return new SwagDataSet(dataSetContext.ToDataSet(file)) { Display = filename };
+            }
+
+            DataTableConvertContext dataTableContext = DataTableConverterHelper.ConverterFileContexts[ext];
+            if (dataTableContext != null)
+            {
+                return new SwagDataTable(dataTableContext.ToDataTable(file)) { Display = filename };
+            }
+
+            return null;
+        }
+    }
+    #endregion SwagDataHelper
 }

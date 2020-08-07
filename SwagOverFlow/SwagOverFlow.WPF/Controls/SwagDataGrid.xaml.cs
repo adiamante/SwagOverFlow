@@ -77,7 +77,7 @@ namespace SwagOverFlow.WPF.Controls
         private static void SwagDataTablePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             SwagDataGrid swagDataGrid = (SwagDataGrid)d;
-            if (swagDataGrid != null && swagDataGrid.SwagDataTable != null && swagDataGrid.SwagDataTable.DataTable != null)
+            if (swagDataGrid != null && swagDataGrid.SwagDataTable != null && !swagDataGrid.SwagDataTable.IsInitialized && swagDataGrid.SwagDataTable.DataTable != null)
             {
                 SwagDataTable swagDataTable = swagDataGrid.SwagDataTable;
                 //swagDataGrid.SwagDataTable.PropertyChanged += SwagDataTable_PropertyChanged;
@@ -344,6 +344,7 @@ namespace SwagOverFlow.WPF.Controls
                 }
                 #endregion InitTabs
 
+                swagDataTable.IsInitialized = true;
                 //swagDataTable.Settings.SwagItemChanged += _settings_SwagItemChanged;
             }
         }

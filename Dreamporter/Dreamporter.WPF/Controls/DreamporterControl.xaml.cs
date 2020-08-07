@@ -568,7 +568,7 @@ namespace Dreamporter.WPF.Controls
                 runContext.Close();
 
                 #region Resolve DataSets
-                SwagDataSetWPF data = new SwagDataSetWPF() { Display = $"Export\\{SelectedIntegration.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}" };
+                SwagDataSet data = new SwagDataSet() { Display = $"Export\\{SelectedIntegration.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}" };
                 Dictionary<String, DataSet> dictDataSets = new Dictionary<string, DataSet>();
 
                 foreach (DataTable dtbl in dsResult.Tables)
@@ -613,7 +613,7 @@ namespace Dreamporter.WPF.Controls
                     DataSet dsUtil = dictDataSets["util"];
                     if (dsUtil.Tables.Count > 0)
                     {
-                        SwagDataSetWPF util = new SwagDataSetWPF(dsUtil) { Display = "util" };
+                        SwagDataSet util = new SwagDataSet(dsUtil) { Display = "util" };
                         data.Children.Add(util);
                     }
                 }
@@ -635,7 +635,7 @@ namespace Dreamporter.WPF.Controls
                     {
                         if (kvpDataSet.Key != "util" && (targetSchemas.Count == 0 || targetSchemas.Contains(kvpDataSet.Key.ToLower())))
                         {
-                            SwagDataSetWPF sds = new SwagDataSetWPF(kvpDataSet.Value) { Display = kvpDataSet.Key };
+                            SwagDataSet sds = new SwagDataSet(kvpDataSet.Value) { Display = kvpDataSet.Key };
                             data.Children.Add(sds);
                         }
                     }
@@ -646,7 +646,7 @@ namespace Dreamporter.WPF.Controls
                     {
                         if (kvpDataSet.Key != "util")
                         {
-                            SwagDataSetWPF sds = new SwagDataSetWPF(kvpDataSet.Value) { Display = kvpDataSet.Key };
+                            SwagDataSet sds = new SwagDataSet(kvpDataSet.Value) { Display = kvpDataSet.Key };
                             data.Children.Add(sds);
                         }
                     }
