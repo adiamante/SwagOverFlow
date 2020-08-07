@@ -16,7 +16,7 @@ namespace SwagOverFlow.WPF.Controls
         public static DependencyProperty SwagTabCollectionProperty =
                 DependencyProperty.Register(
                     "SwagTabCollection",
-                    typeof(SwagTabCollection),
+                    typeof(SwagTabGroup),
                     typeof(SwagSidePanelControl),
                     new UIPropertyMetadata(null, SwagTabCollectionPropertyChanged));
 
@@ -29,9 +29,9 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
 
-        public SwagTabCollection SwagTabCollection
+        public SwagTabGroup SwagTabCollection
         {
-            get { return (SwagTabCollection)GetValue(SwagTabCollectionProperty); }
+            get { return (SwagTabGroup)GetValue(SwagTabCollectionProperty); }
             set
             {
                 SetValue(SwagTabCollectionProperty, value);
@@ -81,9 +81,9 @@ namespace SwagOverFlow.WPF.Controls
             {
                 TabControl tabControl = (TabControl)sender;
 
-                if (tabControl.DataContext is SwagTabCollection)
+                if (tabControl.DataContext is SwagTabGroup)
                 {
-                    SwagTabCollection swagTabCollection = tabControl.DataContext as SwagTabCollection;
+                    SwagTabGroup swagTabCollection = tabControl.DataContext as SwagTabGroup;
                     swagTabCollection.IsInitialized = true;
                 }
             }

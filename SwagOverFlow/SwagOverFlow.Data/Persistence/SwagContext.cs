@@ -184,7 +184,7 @@ namespace SwagOverFlow.Data.Persistence
             //builder.Property(si => si.Tabs)
             //    .HasConversion(
             //        si => JsonHelper.ToJsonString(si),
-            //        si => JsonHelper.ToObject<SwagTabCollection>(si));
+            //        si => JsonHelper.ToObject<SwagTabGroup>(si));
         }
     }
 

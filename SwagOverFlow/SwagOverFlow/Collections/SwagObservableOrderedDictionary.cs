@@ -1,14 +1,10 @@
 ﻿using SwagOverFlow.ViewModels;
-using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
-namespace SwagOverFlow.WPF.Collections
+namespace SwagOverFlow.Collections
 {
     public class SwagObservableOrderedDictionary<TKey, TValue> : ViewModelBaseExtended, ICollection<KeyValuePair<TKey, TValue>>, IDictionary<TKey, TValue>, INotifyCollectionChanged
     {
@@ -104,7 +100,7 @@ namespace SwagOverFlow.WPF.Collections
             return Remove(key);
         }
 
-        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
+        public bool TryGetValue(TKey key, out TValue value)
         {
             return ((IDictionary<TKey, TValue>)_dict).TryGetValue(key, out value);
         }
@@ -116,7 +112,12 @@ namespace SwagOverFlow.WPF.Collections
             if (_dict.ContainsKey(key))
             {
                 _dict[key] = value;
-                _list[IndexOfKey(key)] = new KeyValuePair<TKey, TValue>(key, value);
+                //FIX_THIS This probably hides some underlying issue
+                Int32 index = IndexOfKey(key);
+                if (index != -1)
+                {
+                    _list[index] = new KeyValuePair<TKey, TValue>(key, value);
+                }
             }
             else
             {

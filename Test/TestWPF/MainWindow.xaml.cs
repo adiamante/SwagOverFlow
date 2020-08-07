@@ -18,13 +18,13 @@ namespace TestWPF
     /// </summary>
     public partial class MainWindow : SwagWindow
     {
-        SwagDataTableWPF _sdtSource = null, _sdtDest = null;
+        SwagDataTable _sdtSource = null, _sdtDest = null;
         String descriptionField = "FullDescription";
         IEnumerable _comboboxSource = null;
         String _combobxText = "";
 
         #region Source
-        public SwagDataTableWPF Source
+        public SwagDataTable Source
         {
             get { return _sdtSource; }
             set { SetValue(ref _sdtSource, value); }
@@ -32,7 +32,7 @@ namespace TestWPF
         #endregion Source
 
         #region Dest
-        public SwagDataTableWPF Dest
+        public SwagDataTable Dest
         {
             get { return _sdtDest; }
             set { SetValue(ref _sdtDest, value); }
@@ -169,7 +169,8 @@ namespace TestWPF
                 //}
                 #endregion (Source, Dest)
 
-                Source.Save();
+                //FIX_THIS
+                //Source.Save();
             }
         }
 
@@ -179,7 +180,8 @@ namespace TestWPF
 
             await this.RunInBackground(() =>
             {
-                Source.SetContext(null);
+                //FIX_THIS
+                //Source.SetContext(null);
                 for (int r = 0; r < dt.Rows.Count; r++)
                 {
                     DataRow drSource = Source.DataTable.Rows[r];
@@ -195,7 +197,8 @@ namespace TestWPF
                 }
             });
 
-            Source.SetContext(SwagWPFContainer.Context);
+            //FIX_THIS
+            //Source.SetContext(SwagWPFContainer.Context);
             Source.DataTable = dt;
         }
 

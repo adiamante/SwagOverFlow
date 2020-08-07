@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using SwagOverFlow.Data.Persistence;
+using SwagOverFlow.WPF.Extensions;
 
 namespace SwagOverFlow.WPF.Services
 {
@@ -16,9 +17,9 @@ namespace SwagOverFlow.WPF.Services
 
         public SwagDataTableService(SwagContext context) => this._context = context;
 
-        public SwagDataTableWPF GetDataTableByName(String groupName)
+        public SwagDataTable GetDataTableByName(String groupName)
         {
-            SwagDataTableWPF sdtDataTable = null;
+            SwagDataTable sdtDataTable = null;
             SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
             SwagDataTable sdtStored = work.DataTables.Get(sg => sg.Name == groupName, null).FirstOrDefault();
 
@@ -44,7 +45,7 @@ namespace SwagOverFlow.WPF.Services
                 }
                 #endregion Get Rows and Columns
 
-                sdtDataTable = new SwagDataTableWPF(sdtStored) { DelaySave = true };
+                sdtDataTable = sdtStored;
                 work.DataTables.Detach(sdtStored);
                 work.DataTables.Attach(sdtDataTable);
 
@@ -80,21 +81,23 @@ namespace SwagOverFlow.WPF.Services
                 }
                 #endregion Resolve Rows
 
-                sdtDataTable.SetDataTable(dt, true);
+                //FIX_THIS
+                //sdtDataTable.SetDataTable(dt, true);
                 sdtDataTable.DelaySave = false;
             }
 
             if (sdtDataTable == null)
             {
                 #region Create SwagDataTable
-                sdtDataTable = new SwagDataTableWPF();
+                sdtDataTable = new SwagDataTable();
                 sdtDataTable.Name = sdtDataTable.AlternateId = groupName;
                 work.DataTables.Insert(sdtDataTable);
                 work.Complete();
                 #endregion Create SwagDataTable
             }
 
-            sdtDataTable.SetContext(_context);
+            //FIX_THIS
+            //sdtDataTable.SetContext(_context);
             return sdtDataTable;
         }
     }

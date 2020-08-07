@@ -1,6 +1,5 @@
 ﻿using Microsoft.Win32;
 //using Microsoft.WindowsAPICodePack.Shell;
-using SwagOverFlow.Data;
 using SwagOverFlow.Utils;
 using SwagOverFlow.WPF.UI;
 using SwagOverFlow.WPF.ViewModels;
@@ -212,7 +211,7 @@ namespace SwagOverFlow.WPF.Controls
                     View((SwagDataSetWPF)setResult.SwagData);
                     break;
                 case SwagDataTableResultGroup tableResult:
-                    View((SwagDataTableWPF)tableResult.SwagData);
+                    View((SwagDataTable)tableResult.SwagData);
                     break;
                 case SwagDataColumnResultGroup columnResult:
                     View((SwagDataColumn)columnResult.SwagData);
@@ -233,7 +232,7 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
 
-        private void View(SwagDataTableWPF swagDataTable)
+        private void View(SwagDataTable swagDataTable)
         {
             if (swagDataTable.Parent != null && swagDataTable.Parent is SwagDataSetWPF)
             {
@@ -245,9 +244,9 @@ namespace SwagOverFlow.WPF.Controls
 
         private void View(SwagDataColumn swagDataColumn)
         {
-            if (swagDataColumn.Parent != null && swagDataColumn.Parent is SwagDataTableWPF)
+            if (swagDataColumn.Parent != null && swagDataColumn.Parent is SwagDataTable)
             {
-                SwagDataTableWPF parent = (SwagDataTableWPF)swagDataColumn.Parent;
+                SwagDataTable parent = (SwagDataTable)swagDataColumn.Parent;
                 parent.SelectedColumn = swagDataColumn;
                 View(parent);
             }
@@ -256,7 +255,7 @@ namespace SwagOverFlow.WPF.Controls
         private void View(SwagDataRowResult rowResult)
         {
             SwagDataColumn swagDataColumn = (SwagDataColumn)rowResult.Parent.SwagData;
-            ((SwagDataTableWPF)swagDataColumn.SwagDataTable).SelectedRow = rowResult;
+            swagDataColumn.SwagDataTable.SelectedRow = rowResult;
             View(swagDataColumn);
         }
         #endregion Search

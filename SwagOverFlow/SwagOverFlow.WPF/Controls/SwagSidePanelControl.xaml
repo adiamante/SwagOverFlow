@@ -17,7 +17,7 @@
         <swui:SwagTemplateSelector x:Key="SwagTemplateSelector" ComparePath="Path">
             <swui:SwagTemplateSelector.StaticTemplates>
                 <swui:SwagTemplateCollection>
-                    <swui:SwagTemplate Type="{x:Type svm:SwagTabCollection}" >
+                    <swui:SwagTemplate Type="{x:Type svm:SwagTabGroup}" >
                         <swui:SwagTemplate.DataTemplate>
                             <DataTemplate>
                                 <DockPanel>

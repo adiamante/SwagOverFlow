@@ -866,10 +866,19 @@ namespace SwagOverFlow.ViewModels
     public class SwagDataTable : SwagDataGroup
     {
         #region Private/Protected Members
-        protected String _name, _message;
-        protected DataTable _dataTable;
-        protected Boolean _showDebug = false, _showColumnTotals = false, _columnVisibilityCheckAll = false, _columnFiltersCheckAll = false;
-        protected IDictionary<String, SwagDataColumn> _columns;
+        String _name, _message;
+        DataTable _dataTable;
+        Boolean _showDebug = false, _showColumnTotals = false, _columnVisibilityCheckAll = false, _columnFiltersCheckAll = false;
+        IDictionary<String, SwagDataColumn> _columns;
+        Dictionary<DataRow, SwagDataRow> _dictRows = new Dictionary<DataRow, SwagDataRow>();
+        ICommand _filterCommand, _exportCommand, _importCommand, _applyColumnVisibilityCommand, _toggleColumnVisibilityCheckedAll, _applyColumnVisibilityFilterCommand,
+            _toggleShowDebugCommand, _toggleShowColumnTotalsCommand, _resetColumnsCommand,
+            _toggleColumnFiltersCheckedAll, _applyColumnFiltersFilterCommand, _clearColumnFiltersCommand;
+        SwagSettingGroup _settings;
+        SwagTabGroup _tabs;
+        SwagDataColumn _selectedColumn;
+        SwagDataRowResult _selectedRow;
+        INotifyCollectionChanged _columnsVisibilityView, _columnsFilterView;
         #endregion Private/Protected Members
 
         #region Properties
@@ -890,14 +899,16 @@ namespace SwagOverFlow.ViewModels
         }
         #endregion Message
         #region DataTable
-        public virtual DataTable DataTable
+        [JsonIgnore]
+        [NotMapped]
+        public DataTable DataTable
         {
             get { return _dataTable; }
             set { SetValue(ref _dataTable, value); }
         }
         #endregion DataTable
         #region Columns
-        //Leaving to the derived class to fill and manage for the time being
+        [JsonIgnore]
         [NotMapped]
         public IDictionary<String, SwagDataColumn> Columns
         {
@@ -905,7 +916,509 @@ namespace SwagOverFlow.ViewModels
             set { SetValue(ref _columns, value); }
         }
         #endregion Columns
+        #region RowCount
+        [JsonIgnore]
+        [NotMapped]
+        public Int32 RowCount
+        {
+            get
+            {
+                if (_dataTable == null)
+                {
+                    return 0;
+                }
+                return _dataTable.DefaultView.Count;
+            }
+        }
+        #endregion RowCount
+        #region ColumnCount
+        [JsonIgnore]
+        [NotMapped]
+        public Int32 ColumnCount
+        {
+            get { return Columns.Count; }
+        }
+        #endregion ColumnCount
+        #region ColumnVisibilityCheckAll
+        [JsonIgnore]
+        [NotMapped]
+        public Boolean ColumnVisibilityCheckAll
+        {
+            get { return _columnVisibilityCheckAll; }
+            set
+            {
+                SetValue(ref _columnVisibilityCheckAll, value);
+                ToggleColumnVisibilityCheckedAll.Execute(_columnVisibilityCheckAll);
+            }
+        }
+        #endregion ColumnVisibilityCheckAll
+        #region ColumnFiltersCheckAll
+        [JsonIgnore]
+        [NotMapped]
+        public Boolean ColumnFiltersCheckAll
+        {
+            get { return _columnFiltersCheckAll; }
+            set
+            {
+                SetValue(ref _columnFiltersCheckAll, value);
+                ToggleColumnFilterCheckedAll.Execute(_columnFiltersCheckAll);
+            }
+        }
+        #endregion ColumnFiltersCheckAll
+        #region FilterCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand FilterCommand
+        {
+            get { return _filterCommand; }
+            set { SetValue(ref _filterCommand, value); }
+        }
+        #endregion FilterCommand
+        #region ExportCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand ExportCommand
+        {
+            get { return _exportCommand; }
+            set { SetValue(ref _exportCommand, value); }
+        }
+        #endregion ExportCommand
+        #region ImportCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand ImportCommand
+        {
+            get { return _importCommand; }
+            set { SetValue(ref _importCommand, value); }
+        }
+        #endregion ImportCommand
+        #region ApplyColumnVisibilityFilterCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand ApplyColumnVisibilityFilterCommand
+        {
+            get { return _applyColumnVisibilityFilterCommand; }
+            set { SetValue(ref _applyColumnVisibilityFilterCommand, value); }
+        }
+        #endregion ApplyColumnVisibilityFilterCommand
+        #region ToggleColumnVisibilityCheckedAll
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand ToggleColumnVisibilityCheckedAll
+        {
+            get
+            {
+                return _toggleColumnVisibilityCheckedAll ?? (_toggleColumnVisibilityCheckedAll =
+                    new RelayCommand<Boolean>((checkAll) =>
+                    {
+                        foreach (KeyValuePair<String, SwagDataColumn> kvp in _columns)
+                        {
+                            SwagDataColumn col = kvp.Value;
+                            col.IsCheckedVisibility = checkAll;
+                        }
+                    }));
+            }
+        }
+        #endregion ToggleColumnVisibilityCheckedAll
+        #region ApplyColumnVisibilityCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand ApplyColumnVisibilityCommand
+        {
+            get
+            {
+                return _applyColumnVisibilityCommand ?? (_applyColumnVisibilityCommand =
+                    new RelayCommand(() =>
+                    {
+                        foreach (KeyValuePair<String, SwagDataColumn> kvp in _columns)
+                        {
+                            SwagDataColumn col = kvp.Value;
+                            col.IsVisible = col.IsCheckedVisibility;
+                        }
+                    }));
+            }
+        }
+        #endregion ApplyColumnVisibilityCommand
+        #region ApplyColumnFiltersFilterCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand ApplyColumnFiltersFilterCommand
+        {
+            get { return _applyColumnFiltersFilterCommand; }
+            set { SetValue(ref _applyColumnFiltersFilterCommand, value); }
+        }
+        #endregion ApplyColumnFiltersFilterCommand
+        #region ClearColumnFiltersCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand ClearColumnFiltersCommand
+        {
+            get
+            {
+                return _clearColumnFiltersCommand ?? (_clearColumnFiltersCommand =
+                    new RelayCommand(() =>
+                    {
+                        foreach (KeyValuePair<String, SwagDataColumn> kvp in _columns)
+                        {
+                            SwagDataColumn col = kvp.Value;
+                            if (col.IsCheckedFilter)
+                            {
+                                col.AppliedFilter = "";
+                            }
+                        }
+
+                        FilterCommand.Execute(null);
+                    }));
+            }
+        }
+        #endregion ClearColumnFiltersCommand
+        #region ToggleColumnFilterCheckedAll
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand ToggleColumnFilterCheckedAll
+        {
+            get
+            {
+                return _toggleColumnFiltersCheckedAll ?? (_toggleColumnFiltersCheckedAll =
+                    new RelayCommand<Boolean>((checkAll) =>
+                    {
+                        foreach (KeyValuePair<String, SwagDataColumn> kvp in _columns)
+                        {
+                            SwagDataColumn col = kvp.Value;
+                            col.IsCheckedFilter = checkAll;
+                        }
+                    }));
+            }
+        }
+        #endregion ToggleColumnFilterCheckedAll
+        #region ResetColumnsCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand ResetColumnsCommand
+        {
+            get { return _resetColumnsCommand; }
+            set { SetValue(ref _resetColumnsCommand, value); }
+        }
+        #endregion ResetColumnsCommand
+        #region ToggleShowDebugCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand ToggleShowDebugCommand
+        {
+            get
+            {
+                return _toggleShowDebugCommand ?? (_toggleShowDebugCommand =
+                    new RelayCommand(() =>
+                    {
+                        ShowDebug = !ShowDebug;
+                    }));
+            }
+        }
+        #endregion ToggleShowDebugCommand
+        #region ToggleShowColumnTotalsCommand
+        [JsonIgnore]
+        [NotMapped]
+        public ICommand ToggleShowColumnTotalsCommand
+        {
+            get
+            {
+                return _toggleShowColumnTotalsCommand ?? (_toggleShowColumnTotalsCommand =
+                    new RelayCommand(() =>
+                    {
+                        ShowColumnTotals = !ShowColumnTotals;
+                    }));
+            }
+        }
+        #endregion ToggleShowColumnTotalsCommand
+        #region Settings
+        [JsonIgnore]
+        [NotMapped]
+        public SwagSettingGroup Settings
+        {
+            get { return _settings; }
+            set { SetValue(ref _settings, value); }
+        }
+        #endregion Settings
+        #region Tabs
+        [NotMapped]
+        [JsonIgnore]
+        public SwagTabGroup Tabs
+        {
+            get { return _tabs; }
+            set { SetValue(ref _tabs, value); }
+        }
+        #endregion Tabs
+        #region DelaySave
+        [NotMapped]
+        [JsonIgnore]
+        public Boolean DelaySave { get; set; } = false;
+        #endregion DelaySave
+        #region ShowDebug
+        [NotMapped]
+        [JsonIgnore]
+        public Boolean ShowDebug
+        {
+            get { return _showDebug; }
+            set { SetValue(ref _showDebug, value); }
+        }
+        #endregion ShowDebug
+        #region ShowColumnTotals
+        [NotMapped]
+        [JsonIgnore]
+        public Boolean ShowColumnTotals
+        {
+            get { return _showColumnTotals; }
+            set { SetValue(ref _showColumnTotals, value); }
+        }
+        #endregion ShowColumnTotals
+        #region SelectedColumn
+        [NotMapped]
+        [JsonIgnore]
+        public SwagDataColumn SelectedColumn
+        {
+            get { return _selectedColumn; }
+            set { SetValue(ref _selectedColumn, value); }
+        }
+        #endregion SelectedColumn
+        #region SelectedRow
+        [NotMapped]
+        [JsonIgnore]
+        public SwagDataRowResult SelectedRow
+        {
+            get { return _selectedRow; }
+            set { SetValue(ref _selectedRow, value); }
+        }
+        #endregion SelectedRow
+        #region DictRows
+        [NotMapped]
+        [JsonIgnore]
+        public Dictionary<DataRow, SwagDataRow> DictRows
+        {
+            get { return _dictRows; }
+            set { SetValue(ref _dictRows, value); }
+        }
+        #endregion DictRows
+        #region ColumnsVisibilityView
+        [NotMapped]
+        [JsonIgnore]
+        public INotifyCollectionChanged ColumnsVisibilityView
+        {
+            get { return _columnsVisibilityView; }
+            set { SetValue(ref _columnsVisibilityView, value); }
+        }
+        #endregion ColumnsVisibilityView
+        #region ColumnsFilterView
+        [NotMapped]
+        [JsonIgnore]
+        public INotifyCollectionChanged ColumnsFilterView
+        {
+            get { return _columnsFilterView; }
+            set { SetValue(ref _columnsFilterView, value); }
+        }
+        #endregion ColumnsFilterView
         #endregion Properties
+
+        #region Initialization
+        public SwagDataTable()
+        {
+            _columns = new SwagObservableOrderedDictionary<String, SwagDataColumn>();
+            _children.CollectionChanged += _children_CollectionChanged;
+        }
+
+        private void _children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (SwagData newItem in e.NewItems)
+                {
+                    newItem.CanUndo = false;
+                    newItem.Parent = this;
+                    newItem.CanUndo = true;
+                }
+            }
+        }
+
+        public SwagDataTable(DataTable dt) : this()
+        {
+            DataTable = dt;
+        }
+
+        public override void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        {
+            switch (e.Object)
+            {
+                case SwagDataColumn sdc:
+                    e.Message = $"{this.Name}.{sdc.ColumnName}({e.OldValue}) => {e.NewValue}";
+                    switch (e.PropertyName)
+                    {
+                        //FIX_THIS BY MOVING TO VIEW
+                        //case "IsVisible":
+                        //    _columnCollectionViewSource.View.Refresh();
+                        //    break;
+                        case "AppliedFilter":
+                            FilterCommand.Execute(null);
+                            break;
+                    }
+                    break;
+                    //case SwagDataRow sdr:
+                    //    switch (e.PropertyName)
+                    //    {
+                    //        case "Value":
+                    //            break;
+                    //    }
+                    //    break;
+            }
+
+            base.OnSwagItemChanged(swagItem, e);
+        }
+        #endregion Initialization
+
+        #region Column Events
+        private void viewModel_Columns_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            //FIX_THIS
+            //switch (e.Action)
+            //{
+            //    case NotifyCollectionChangedAction.Add:
+            //        foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in e.NewItems)
+            //        {
+            //            if (!_dataTable.Columns.Contains(sdcKvp.Key))
+            //            {
+            //                _dataTable.Columns.Add(sdcKvp.Value.DataColumn());
+            //                _dataTable.Columns[sdcKvp.Key].SetOrdinal(e.NewStartingIndex);
+            //                this.Children.Add(sdcKvp.Value);
+            //            }
+
+            //            if (sdcKvp.Value.ColSeq <= 0)
+            //            {
+            //                sdcKvp.Value.ColSeq = _columns.Count - 1;
+            //            }
+            //            sdcKvp.Value.Parent = this;
+            //            InvalidateRows();
+            //        }
+            //        break;
+            //    case NotifyCollectionChangedAction.Remove:
+            //        foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in e.OldItems)
+            //        {
+            //            if (_dataTable.Columns.Contains(sdcKvp.Key))
+            //            {
+            //                _dataTable.Columns.Remove(sdcKvp.Key);
+            //                //This orphans the child
+            //                this.Children.Remove(sdcKvp.Value);
+            //                if (_context != null)
+            //                {
+            //                    SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
+            //                    work.Data.Delete(sdcKvp.Value);
+            //                    work.Complete();
+            //                }
+            //            }
+            //        }
+            //        InvalidateRows();
+            //        break;
+            //    case NotifyCollectionChangedAction.Reset:
+            //        break;
+            //}
+            //InvalidateColumns();
+            //OnPropertyChanged("ColumnCount");
+        }
+        #endregion Column Events
+
+        #region RowEvents
+        private void dataTable_RowChanged(object sender, DataRowChangeEventArgs e)
+        {
+            //FIX_THIS
+            //if (!DelaySave)
+            //{
+            //    SwagDataRow row = _dictChildren[e.Row];
+            //    row.ObjValue = row.ObjValue;
+
+            //    if (_context != null)
+            //    {
+            //        SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
+            //        work.Data.Update(row);
+            //        work.Complete();
+            //    }
+            //}
+        }
+
+        private void dataView_ListChanged(object sender, ListChangedEventArgs e)
+        {
+            foreach (KeyValuePair<String, SwagDataColumn> kvp in _columns)
+            {
+                if (_dataTable.Columns.Contains(kvp.Key))
+                {
+                    SwagDataColumn swagDataColumn = kvp.Value;
+                    Decimal colTotal = 0.0m;
+                    if (swagDataColumn.DataType.IsNumericType())
+                    {
+                        foreach (DataRowView drv in _dataTable.DefaultView)
+                        {
+                            Object objVal = drv[swagDataColumn.ColumnName];
+                            if (objVal != null && objVal != DBNull.Value)
+                            {
+                                Decimal val = Decimal.Parse(objVal.ToString());
+                                colTotal += val;
+                            }
+                        }
+                        swagDataColumn.Total = colTotal;
+                    }
+                }
+            }
+            OnPropertyChanged("RowCount");
+        }
+        #endregion RowEvents
+
+        #region Context Methods
+        //public void SetContext(SwagContext context)
+        //{
+        //    _context = context;
+        //}
+
+        //public void Save()
+        //{
+        //    if (!DelaySave && _context != null)
+        //    {
+        //        SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
+        //        work.DataTables.Update(this);
+        //        work.Complete();
+        //    }
+        //}
+
+        //public void InvalidateColumns()
+        //{
+        //    DelaySave = true;
+        //    foreach (SwagData swagData in Children)
+        //    {
+        //        switch (swagData)
+        //        {
+        //            case SwagDataColumn swagDataColumn:
+        //                swagDataColumn.CanUndo = false;
+        //                swagDataColumn.DataTypeString = swagDataColumn.DataTypeString;
+        //                swagDataColumn.Value = swagDataColumn.Value;
+        //                swagDataColumn.CanUndo = true;
+        //                break;
+        //        }
+        //    }
+        //    DelaySave = false;
+        //}
+
+        //public void InvalidateRows()
+        //{
+        //    DelaySave = true;
+        //    foreach (SwagData swagData in Children)
+        //    {
+        //        switch (swagData)
+        //        {
+        //            case SwagDataRow swagDataRow:
+        //                swagDataRow.CanUndo = false;
+        //                swagDataRow.Value = swagDataRow.Value;
+        //                swagDataRow.CanUndo = true;
+        //                break;
+        //        }
+        //    }
+        //    DelaySave = false;
+        //}
+        #endregion Context Methods
 
         #region Methods
         public SwagItemPreOrderIterator<SwagData> CreateIterator()
@@ -934,6 +1447,79 @@ namespace SwagOverFlow.ViewModels
             }
 
             return null;
+        }
+
+        public void InitSettings()
+        {
+            //FIX_THIS
+            //Settings.SwagItemChanged += _settings_SwagItemChanged;
+        }
+
+        private void _settings_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
+        {
+            //FIX_THIS maybe fix this
+            //switch (e.PropertyChangedArgs.PropertyName)
+            //{
+            //    case "Value":
+            //    case "IsExpanded":
+            //        if (_context != null)
+            //        {
+            //            SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
+            //            this.Settings = Settings;
+            //            work.DataTables.Update(this);
+            //            work.Complete();
+            //        }
+            //        break;
+            //}
+        }
+
+        public void InitTabs()
+        {
+            if (_tabs != null)
+            {
+                SwagItemPreOrderIterator<SwagTabItem> iterator = _tabs.CreateIterator();
+                for (SwagTabItem tabItem = iterator.First(); !iterator.IsDone; tabItem = iterator.Next())
+                {
+                    tabItem.ViewModel = this;
+                }
+                _tabs.SwagItemChanged += _tabs_SwagItemChanged;
+                _tabs.PropertyChangedExtended += _tabs_PropertyChangedExtended;
+            }
+        }
+
+        private void _tabs_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
+        {
+            _tabs_PropertyChangedExtended(sender, e.PropertyChangedArgs);
+        }
+
+        private void _tabs_PropertyChangedExtended(object sender, PropertyChangedExtendedEventArgs e)
+        {
+            //FIX_THIS Maybe fix this
+            //switch (e.PropertyName)
+            //{
+            //    case "SelectedIndex":
+            //        if (_context != null)
+            //        {
+            //            SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
+            //            this.Tabs = Tabs;
+            //            work.DataTables.Update(this);
+            //            work.Complete();
+            //        }
+            //        break;
+            //}
+        }
+
+        public override DataSet GetDataSet()
+        {
+            DataSet ds = new DataSet();
+            DataTable dt = _dataTable.Copy();
+            ds.Tables.Add(dt);
+            return ds;
+        }
+
+        public void OnPropertyChangedPublic(String propertyName)
+        {
+            OnPropertyChanged(propertyName);
         }
         #endregion Methods
     }

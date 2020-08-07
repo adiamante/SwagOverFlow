@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SwagOverFlow.ViewModels
 {
-    public class SwagTabItem : SwagIndexedItem<SwagTabCollection, SwagTabItem>
+    public class SwagTabItem : SwagIndexedItem<SwagTabGroup, SwagTabItem>
     {
         #region Private/Protected Members
         Enum _icon;
@@ -96,7 +96,7 @@ namespace SwagOverFlow.ViewModels
         #endregion Methods
     }
 
-    public class SwagTabCollection : SwagTabItem, ISwagParent<SwagTabItem>
+    public class SwagTabGroup : SwagTabItem, ISwagParent<SwagTabItem>
     {
         #region Private/Protected Members
         Boolean _showChildText = false, _isInitialized = false;
@@ -117,6 +117,7 @@ namespace SwagOverFlow.ViewModels
 
         #region Properties
         #region Children
+        [NotMapped]
         public ObservableCollection<SwagTabItem> Children
         {
             get { return _children; }
@@ -132,6 +133,8 @@ namespace SwagOverFlow.ViewModels
         }
         #endregion Dictionary
         #region HasChildren
+        [JsonIgnore]
+        [NotMapped]
         public Boolean HasChildren
         {
             get { return _children.Count > 0; }
@@ -196,7 +199,7 @@ namespace SwagOverFlow.ViewModels
         #endregion Properties
 
         #region Initialization
-        public SwagTabCollection()
+        public SwagTabGroup()
         {
             _children.CollectionChanged += _children_CollectionChanged;
             this.PropertyChanged += SwagTabCollection_PropertyChanged;
