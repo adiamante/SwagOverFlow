@@ -107,7 +107,7 @@ namespace Dreamporter.WPF.Controls
         #region SelectedIntegrationName
         public String SelectedIntegrationName
         {
-            get { return (String)SwagWindow.GlobalSettings["Dreamporter"]["SelectedIntegration"].GetValue<String>(); }
+            get { return SwagWindow.GlobalSettings["Dreamporter"]["SelectedIntegration"].GetValue<String>(); }
             set { SwagWindow.GlobalSettings["Dreamporter"]["SelectedIntegration"].SetValue<String>(value); }
         }
         #endregion Schemas

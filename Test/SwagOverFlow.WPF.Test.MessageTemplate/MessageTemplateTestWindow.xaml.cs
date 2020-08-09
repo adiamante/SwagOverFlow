@@ -31,27 +31,7 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
         #region MessageTemplate
         public String MessageTemplate
         {
-            get 
-            {
-                if (!((ViewModels.SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("MessageTemplate"))
-                {
-                    SwagSettingString ssMessageTemplate = new SwagSettingString()
-                    {
-                        Icon = PackIconCustomKind.Template,
-                        Value = ""
-                    };
-
-                    ssMessageTemplate.IconString = ssMessageTemplate.IconString;
-                    ssMessageTemplate.IconTypeString = ssMessageTemplate.IconTypeString;
-                    ssMessageTemplate.ValueTypeString = ssMessageTemplate.ValueTypeString;
-                    ssMessageTemplate.ObjValue = ssMessageTemplate.ObjValue;
-
-                    SwagWindow.GlobalSettings["Test"]["MessageTemplate"] = ssMessageTemplate;
-                    //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-                }
-
-                return SwagWindow.GlobalSettings["Test"]["MessageTemplate"].GetValue<String>(); 
-            }
+            get {return SwagWindow.GlobalSettings["Test"]["MessageTemplate"].GetValue<String>(); }
             set { SwagWindow.GlobalSettings["Test"]["MessageTemplate"].SetValue(value); }
         }
         #endregion MessageTemplate
@@ -59,26 +39,7 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
         #region Options
         public SwagOptionGroup Options
         {
-            get
-            {
-                if (!((ViewModels.SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Options"))
-                {
-                    SwagSetting<SwagOptionGroup> ssOpt = new SwagSetting<SwagOptionGroup>()
-                    {
-                        Icon = PackIconCustomKind.Variable,
-                        Value = new SwagOptionGroup()
-                    };
-
-                    ssOpt.IconString = ssOpt.IconString;
-                    ssOpt.IconTypeString = ssOpt.IconTypeString;
-                    ssOpt.ValueTypeString = ssOpt.ValueTypeString;
-                    ssOpt.ObjValue = ssOpt.ObjValue;
-                    SwagWindow.GlobalSettings["Test"]["Options"] = ssOpt;
-                    //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-                }
-
-                return (SwagOptionGroup)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
-            }
+            get { return (SwagOptionGroup)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>(); }
         }
         #endregion Option
 
@@ -105,16 +66,9 @@ namespace SwagOverFlow.Test.MessageTemplate.WPF
             }
             #endregion Prevents Designer Error
 
-            #region Test
-            if (!SwagWindow.GlobalSettings.ContainsKey("Test"))
-            {
-                SwagSettingGroup swagDataSetting = new SwagSettingGroup() { Icon = PackIconCustomKind.ClipboardTest };
-                SwagWindow.GlobalSettings["Test"] = swagDataSetting;
-                swagDataSetting.IconString = swagDataSetting.IconString;
-                swagDataSetting.IconTypeString = swagDataSetting.IconTypeString;
-                //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-            }
-            #endregion Test
+            SwagWindow.GlobalSettings.TryAddChildSetting("Test", new SwagSettingGroup() { Icon = PackIconCustomKind.ClipboardTest });
+            SwagWindow.GlobalSettings["Test"].TryAddChildSetting("MessageTemplate", new SwagSettingString() { Icon = PackIconCustomKind.Template });
+            SwagWindow.GlobalSettings["Test"].TryAddChildSetting("Options", new SwagSetting<SwagOptionGroup>() { Icon = PackIconCustomKind.Variable, Value = new SwagOptionGroup() });
         }
 
         private void GenerateMessage(object sender, RoutedEventArgs e)

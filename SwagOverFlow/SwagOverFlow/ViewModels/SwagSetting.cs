@@ -35,6 +35,7 @@ namespace SwagOverFlow.ViewModels
         Enum _icon;
         protected String _iconString, _iconTypeString, _itemsSourceTypeString;
         protected Object _objItemsSource;
+        JObject _data = new JObject();
         #endregion Private/Protected Members
 
         #region Properties
@@ -44,44 +45,20 @@ namespace SwagOverFlow.ViewModels
         {
             get 
             {
-                if (_icon == null && !String.IsNullOrEmpty(_iconTypeString) && !String.IsNullOrEmpty(_iconTypeString))
+                if (_icon == null)
                 {
-                    Type iconType = JsonConvert.DeserializeObject<Type>(_iconTypeString);
-                    _icon = (Enum)Enum.Parse(iconType, _iconString);
+                    _icon = IconHelper.ToEnum(_data);
                 }
-                return _icon; 
+                return _icon;
             }
-            set { SetValue(ref _icon, value); }
+            set 
+            { 
+                SetValue(ref _icon, value);
+                JObject iconData = IconHelper.ToObject(_icon);
+                Data.Merge(iconData);
+            }
         }
         #endregion Icon
-        #region IconString
-        public String IconString
-        {
-            get 
-            {
-                if (_icon != null)
-                {
-                    return _icon.ToString();
-                }
-                return _iconString; 
-            }
-            set { SetValue(ref _iconString, value); }
-        }
-        #endregion IconString
-        #region IconTypeString
-        public String IconTypeString
-        {
-            get 
-            {
-                if (_icon != null)
-                {
-                    return JsonHelper.ToJsonString(_icon.GetType());
-                }
-                return _iconTypeString;
-            }
-            set { SetValue(ref _iconTypeString, value); }
-        }
-        #endregion IconTypeString
         #region SettingType
         public SettingType SettingType
         {
@@ -103,6 +80,13 @@ namespace SwagOverFlow.ViewModels
             set { SetValue(ref _itemsSourceTypeString, value); }
         }
         #endregion ItemsSourceTypeString
+        #region Data
+        public JObject Data
+        {
+            get { return _data; }
+            set { SetValue(ref _data, value); }
+        }
+        #endregion Data
         #endregion Properties
 
         #region Initialization
@@ -342,10 +326,9 @@ namespace SwagOverFlow.ViewModels
                 if (!grp.ContainsKey(key))
                 {
                     grp[key] = child;
-                    child.IconString = child.IconString;
-                    child.IconTypeString = child.IconTypeString;
                     child.ValueTypeString = child.ValueTypeString;
                     child.ObjValue = child.ObjValue;
+                    child.Data = child.Data;
                 }
             }
             else

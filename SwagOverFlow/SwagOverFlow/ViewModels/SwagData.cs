@@ -106,6 +106,13 @@ namespace SwagOverFlow.ViewModels
             }
         }
         #endregion Initialization
+
+        #region Iterator
+        public SwagItemPreOrderIterator<SwagData> CreateIterator()
+        {
+            return new SwagItemPreOrderIterator<SwagData>(this);
+        }
+        #endregion Iterator
     }
     #endregion SwagDataGroup
 
@@ -874,8 +881,8 @@ namespace SwagOverFlow.ViewModels
         ICommand _filterCommand, _exportCommand, _importCommand, _applyColumnVisibilityCommand, _toggleColumnVisibilityCheckedAll, _applyColumnVisibilityFilterCommand,
             _toggleShowDebugCommand, _toggleShowColumnTotalsCommand, _resetColumnsCommand,
             _toggleColumnFiltersCheckedAll, _applyColumnFiltersFilterCommand, _clearColumnFiltersCommand;
-        SwagSettingGroup _settings;
-        SwagTabGroup _tabs;
+        SwagSettingGroup _settings = new SwagSettingGroup();
+        SwagTabGroup _tabs = new SwagTabGroup();
         SwagDataColumn _selectedColumn;
         SwagDataRowResult _selectedRow;
         INotifyCollectionChanged _columnsVisibilityView, _columnsFilterView;
@@ -1428,10 +1435,6 @@ namespace SwagOverFlow.ViewModels
         #endregion Context Methods
 
         #region Methods
-        public SwagItemPreOrderIterator<SwagData> CreateIterator()
-        {
-            return new SwagItemPreOrderIterator<SwagData>(this);
-        }
 
         public override SwagDataResult Search(String searchValue, FilterMode filterMode, Func<SwagDataColumn, SwagDataRow, String, FilterMode, bool> searchFunc)
         {
@@ -1536,8 +1539,8 @@ namespace SwagOverFlow.ViewModels
     public class SwagDataSet : SwagDataGroup
     {
         #region Private Members
-        SwagSettingGroup _settings;
-        SwagTabGroup _tabs;
+        SwagSettingGroup _settings = new SwagSettingGroup();
+        SwagTabGroup _tabs = new SwagTabGroup();
         ICommand _filterTabsCommand, _addDataSetCommand, _addDataTableCommand;
         SwagData _selectedChild;
         #endregion Private Members

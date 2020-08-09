@@ -4,7 +4,6 @@ using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Linq;
 using SwagOverFlow.ViewModels;
-using System.Collections.Generic;
 using SwagOverFlow.Data.Persistence;
 
 namespace SwagOverFlow.WPF.Services
@@ -147,8 +146,7 @@ namespace SwagOverFlow.WPF.Services
                     setting.ValueTypeString = setting.ValueTypeString;
                     setting.ObjItemsSource = setting.ObjItemsSource;
                     setting.ItemsSourceTypeString = setting.ItemsSourceTypeString;
-                    setting.IconString = setting.IconString;
-                    setting.IconTypeString = setting.IconTypeString;
+                    setting.Data = setting.Data;
                 }
 
                 _context.SaveChanges();

@@ -9,6 +9,7 @@ using System;
 using System.Data;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace SwagOverFlow.Data.Persistence
 {
@@ -105,11 +106,11 @@ namespace SwagOverFlow.Data.Persistence
     {
         public void Configure(EntityTypeBuilder<SwagSetting> builder)
         {
-            //SwagSettingViewModel SettingType => Convert to String
+            //SwagSetting SettingType => Convert to String
             EnumToStringConverter<SettingType> settingTypeconverter = new EnumToStringConverter<SettingType>();
             builder.Property(ss => ss.SettingType).HasConversion(settingTypeconverter);
 
-            //SwagSettingViewModel ObjItemsSource => Convert to String
+            //SwagSetting ObjItemsSource => Convert to String
             builder.Property(ss => ss.ObjItemsSource)
                 .HasConversion(
                     ss => JsonHelper.ToJsonString(ss),
@@ -117,6 +118,12 @@ namespace SwagOverFlow.Data.Persistence
 
             //SwagSetting Icon => Ignore
             builder.Ignore(ss => ss.Icon);
+
+            //SwagSetting Data => Convert to String
+            builder.Property(ss => ss.Data)
+                .HasConversion(
+                    ss => JsonHelper.ToJsonString(ss),
+                    ss => JsonConvert.DeserializeObject<JObject>(ss));
         }
     }
 

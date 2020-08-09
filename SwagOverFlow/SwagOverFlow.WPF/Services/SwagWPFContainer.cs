@@ -38,6 +38,7 @@ namespace SwagOverFlow.WPF.Services
             //abstract hierarchy conversion between native and wpf classes (Ex. BooleanExpression)
             //SwagContext uses JsonHelper to dynamically convert SwagItem values
             JsonHelper.ResolveServices(_serviceProvider);
+            IconHelper.ResolveServices(_serviceProvider);
         }
 
         private static void ConfigureServices()
@@ -52,6 +53,7 @@ namespace SwagOverFlow.WPF.Services
             services.AddSingleton<SwagWindowSettingService>();
             //services.AddTransient<SwagDataTableService>();
             services.AddSingleton<IJsonConverterProviderService, JsonConverterProviderServiceWPF>();
+            services.AddSingleton<IJObjectToIconEnumService, JObjectToIconEnumServiceWPF>();
             _serviceProvider = services.BuildServiceProvider();
         }
     }

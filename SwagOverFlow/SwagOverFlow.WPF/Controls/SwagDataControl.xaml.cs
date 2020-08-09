@@ -16,6 +16,7 @@ using System.ComponentModel;
 using SwagOverFlow.Data.Converters;
 using SwagOverFlow.Logger;
 using SwagOverFlow.Commands;
+using SwagOverFlow.Iterator;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -39,31 +40,58 @@ namespace SwagOverFlow.WPF.Controls
             if (swagDataControl.SwagDataSet != null)
             {
                 SwagDataSet swagDataSet = swagDataControl.SwagDataSet;
-                swagDataSet.FilterTabsCommand =
-                new RelayCommand(() =>
+                #region FilterTabsCommand
+
+                SwagItemPreOrderIterator<SwagData> iterator = swagDataSet.CreateIterator();
+                for (SwagData swagData = iterator.First(); !iterator.IsDone; swagData = iterator.Next())
                 {
-                    String filter = swagDataSet.Settings["Tabs"]["Search"]["Text"].GetValue<String>();
-                    FilterMode filterMode = swagDataSet.Settings["Tabs"]["Search"]["FilterMode"].GetValue<FilterMode>();
-                    UIHelper.GetCollectionView(swagDataSet.Children).Filter = (item) =>
+                    if (swagData is SwagDataSet sds)
                     {
-                        SwagData swagData = (SwagData)item;
-                        Boolean itemMatch = SearchHelper.Evaluate(swagData.Display, filter, false, filterMode, false);
-                        Boolean childDataSetMatch = false;
-
-                        if (swagData is SwagDataSet subDataSet)
+                        sds.FilterTabsCommand =
+                        new RelayCommand(() =>
                         {
-                            subDataSet.FilterTabsCommand = swagDataSet.FilterTabsCommand;
-                            SwagDataSet childDataSet = (SwagDataSet)swagData;
-                            childDataSet.Settings["Tabs"]["Search"]["Text"].SetValue(filter);
-                            childDataSet.Settings["Tabs"]["Search"]["FilterMode"].SetValue(filterMode);
-                            childDataSet.FilterTabsCommand.Execute(null);
-                            ICollectionView subchildren = UIHelper.GetCollectionView(childDataSet.Children);
-                            childDataSetMatch = !subchildren.IsEmpty;
-                        }
+                            String filter = sds.Settings["Tabs"]["Search"]["Text"].GetValue<String>();
+                            FilterMode filterMode = sds.Settings["Tabs"]["Search"]["FilterMode"].GetValue<FilterMode>();
+                            UIHelper.GetCollectionView(sds.Children).Filter = (item) =>
+                            {
+                                SwagData swagData = (SwagData)item;
+                                Boolean itemMatch = SearchHelper.Evaluate(swagData.Display, filter, false, filterMode, false);
+                                Boolean childDataSetMatch = false;
 
-                        return itemMatch || childDataSetMatch;
-                    };
-                });
+                                if (swagData is SwagDataSet subDataSet)
+                                {
+                                    SwagDataSet childDataSet = (SwagDataSet)swagData;
+                                    childDataSet.Settings["Tabs"]["Search"]["Text"].SetValue(filter);
+                                    childDataSet.Settings["Tabs"]["Search"]["FilterMode"].SetValue(filterMode);
+                                    childDataSet.FilterTabsCommand.Execute(null);
+                                    ICollectionView subchildren = UIHelper.GetCollectionView(childDataSet.Children);
+                                    childDataSetMatch = !subchildren.IsEmpty;
+                                }
+
+                                return itemMatch || childDataSetMatch;
+                            };
+                        });
+                    }
+                }
+                #endregion FilterTabsCommand
+
+                #region InitSettings
+                swagDataSet.Settings.TryAddChildSetting("Tabs", new SwagSettingGroup() { Icon = PackIconCustomKind.TableSearch });
+                swagDataSet.Settings["Tabs"].TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.Search });
+                swagDataSet.Settings["Tabs"]["Search"].TryAddChildSetting("Text", new SwagSettingString() { Icon = PackIconCustomKind.KeyValue });
+                swagDataSet.Settings["Tabs"]["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
+                swagDataSet.Settings.TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.GlobalSearch });
+                swagDataSet.Settings["Search"].TryAddChildSetting("Text", new SwagSettingString { Icon = PackIconCustomKind.KeyValue });
+                swagDataSet.Settings["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
+                #endregion InitSettings
+
+                #region InitTabs
+                SwagTabGroup tabs = new SwagTabGroup();
+                tabs["Tabs"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSearch, ViewModel = swagDataSet };
+                tabs["Search"] = new SwagTabItem() { Icon = PackIconCustomKind.GlobalSearch, ViewModel = swagDataSet };
+                tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.Settings, ViewModel = swagDataSet };
+                swagDataSet.Tabs = tabs;
+                #endregion InitTabs
             }
         }
 
@@ -121,31 +149,14 @@ namespace SwagOverFlow.WPF.Controls
             }
             #endregion Prevents Designer Error
 
-            if (!SwagWindow.GlobalSettings.ContainsKey("SwagData"))
-            {
-                SwagSettingGroup swagDataSetting = new SwagSettingGroup() { Icon = PackIconCustomKind.Dataset };
-                SwagWindow.GlobalSettings["SwagData"] = swagDataSetting;
-                swagDataSetting.IconString = swagDataSetting.IconString;
-                swagDataSetting.IconTypeString = swagDataSetting.IconTypeString;
-                //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-            }
-
-            if (!((SwagSettingGroup)SwagWindow.GlobalSettings["SwagData"]).ContainsKey("ParseMapper"))
-            {
-                SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>> ssParseMapper =
+            SwagWindow.GlobalSettings.TryAddChildSetting("SwagData", new SwagSettingGroup() { Icon = PackIconCustomKind.Dataset });
+            SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>> ssParseMapper =
                     new SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>>()
                     {
                         Icon = PackIconCustomKind.ArrowMultipleSweepRight,
                         Value = new SwagValueItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>()
                     };
-
-                ssParseMapper.IconString = ssParseMapper.IconString;
-                ssParseMapper.IconTypeString = ssParseMapper.IconTypeString;
-                ssParseMapper.ValueTypeString = ssParseMapper.ValueTypeString;
-                ssParseMapper.ObjValue = ssParseMapper.ObjValue;
-                SwagWindow.GlobalSettings["SwagData"]["ParseMapper"] = ssParseMapper;
-                //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-            }
+            SwagWindow.GlobalSettings["SwagData"].TryAddChildSetting("ParseMapper", ssParseMapper);
 
             ParseMapper.SwagItemChanged += (s, e) =>
             {

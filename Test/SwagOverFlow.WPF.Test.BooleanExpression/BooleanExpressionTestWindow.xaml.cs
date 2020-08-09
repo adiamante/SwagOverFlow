@@ -22,53 +22,14 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
         #region Expression
         public BooleanContainerExpression Expression
         {
-            get 
-            {
-                if (!((SwagOverFlow.ViewModels.SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Expression"))
-                {
-                    BooleanContainerExpression cnt = new BooleanContainerExpression() { Display = "Root" };
-                    SwagSetting<BooleanContainerExpression> ssCnt = new SwagSetting<BooleanContainerExpression>()
-                    {
-                        Icon = PackIconMaterialKind.IframeVariable,
-                        Value = cnt
-                    };
-
-                    ssCnt.IconString = ssCnt.IconString;
-                    ssCnt.IconTypeString = ssCnt.IconTypeString;
-                    ssCnt.ValueTypeString = ssCnt.ValueTypeString;
-                    ssCnt.ObjValue = ssCnt.ObjValue;
-                    SwagWindow.GlobalSettings["Test"]["Expression"] = ssCnt;
-                    //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-                }
-
-                return SwagWindow.GlobalSettings["Test"]["Expression"].GetValue<BooleanContainerExpression>(); 
-            }
+            get { return SwagWindow.GlobalSettings["Test"]["Expression"].GetValue<BooleanContainerExpression>(); }
         }
         #endregion Expression
 
         #region Options
         public SwagOptionGroup Options
         {
-            get
-            {
-                if (!((SwagOverFlow.ViewModels.SwagSettingGroup)SwagWindow.GlobalSettings["Test"]).ContainsKey("Options"))
-                {
-                    SwagSetting<SwagOptionGroup> ssOpt = new SwagSetting<SwagOptionGroup>()
-                    {
-                        Icon = PackIconCustomKind.Variable,
-                        Value = new SwagOptionGroup()
-                    };
-
-                    ssOpt.IconString = ssOpt.IconString;
-                    ssOpt.IconTypeString = ssOpt.IconTypeString;
-                    ssOpt.ValueTypeString = ssOpt.ValueTypeString;
-                    ssOpt.ObjValue = ssOpt.ObjValue;
-                    SwagWindow.GlobalSettings["Test"]["Options"] = ssOpt;
-                    //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-                }
-
-                return (SwagOptionGroup)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>();
-            }
+            get { return (SwagOptionGroup)SwagWindow.GlobalSettings["Test"]["Options"].GetValue<SwagOptionGroup>(); }
         }
         #endregion Option
 
@@ -88,16 +49,21 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
             }
             #endregion Prevents Designer Error
 
-            #region Test
-            if (!SwagWindow.GlobalSettings.ContainsKey("Test"))
+            SwagWindow.GlobalSettings.TryAddChildSetting("Test", new SwagSettingGroup() { Icon = PackIconCustomKind.ClipboardTest });
+            BooleanContainerExpression cnt = new BooleanContainerExpression() { Display = "Root" };
+            SwagSetting<BooleanContainerExpression> ssCnt = new SwagSetting<BooleanContainerExpression>()
             {
-                SwagSettingGroup swagDataSetting = new SwagSettingGroup() { Icon = PackIconCustomKind.ClipboardTest };
-                SwagWindow.GlobalSettings["Test"] = swagDataSetting;
-                swagDataSetting.IconString = swagDataSetting.IconString;
-                swagDataSetting.IconTypeString = swagDataSetting.IconTypeString;
-                //((SwagWindowSettingGroup)SwagWindow.GlobalSettings).Save();
-            }
-            #endregion Test
+                Icon = PackIconMaterialKind.IframeVariable,
+                Value = cnt
+            };
+            SwagWindow.GlobalSettings["Test"].TryAddChildSetting("Expression", ssCnt);
+            SwagSetting<SwagOptionGroup> ssOpt = new SwagSetting<SwagOptionGroup>()
+            {
+                Icon = PackIconCustomKind.Variable,
+                Value = new SwagOptionGroup()
+            };
+            SwagWindow.GlobalSettings["Test"].TryAddChildSetting("Options", ssOpt);
+
         }
         #endregion Initialization
 
