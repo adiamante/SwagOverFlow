@@ -1607,11 +1607,21 @@ namespace SwagOverFlow.ViewModels
             get
             {
                 return _addDataTableCommand ?? (_addDataTableCommand =
-                    new RelayCommand(() =>
+                    new RelayCommand<DataTable>((dtbl) =>
                     {
-                        SwagDataTable newDataTable = new SwagDataTable();
-                        newDataTable.Display = $"Table {this.Children.Count + 1}";
+                        String defaultTableName = $"Table {this.Children.Count + 1}";
+                        if (dtbl == null)
+                        {
+                            dtbl = new DataTable(defaultTableName);
+                        }
+                        else if (dtbl.TableName == "")
+                        {
+                            dtbl.TableName = defaultTableName;
+                        }
+                        SwagDataTable newDataTable = new SwagDataTable(dtbl);
+                        newDataTable.Display = dtbl.TableName;
                         Children.Add(newDataTable);
+                        SelectedChild = newDataTable;
                     }));
             }
         }

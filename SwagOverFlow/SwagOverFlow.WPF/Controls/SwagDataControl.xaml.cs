@@ -17,6 +17,8 @@ using SwagOverFlow.Data.Converters;
 using SwagOverFlow.Logger;
 using SwagOverFlow.Commands;
 using SwagOverFlow.Iterator;
+using MahApps.Metro.IconPacks;
+using System.Windows.Input;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -41,9 +43,8 @@ namespace SwagOverFlow.WPF.Controls
             {
                 SwagDataSet swagDataSet = swagDataControl.SwagDataSet;
                 #region FilterTabsCommand
-
-                SwagItemPreOrderIterator<SwagData> iterator = swagDataSet.CreateIterator();
-                for (SwagData swagData = iterator.First(); !iterator.IsDone; swagData = iterator.Next())
+                SwagItemPreOrderIterator<SwagData> itrSwagData = swagDataSet.CreateIterator();
+                for (SwagData swagData = itrSwagData.First(); !itrSwagData.IsDone; swagData = itrSwagData.Next())
                 {
                     if (swagData is SwagDataSet sds)
                     {
@@ -87,10 +88,18 @@ namespace SwagOverFlow.WPF.Controls
 
                 #region InitTabs
                 SwagTabGroup tabs = new SwagTabGroup();
-                tabs["Tabs"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSearch, ViewModel = swagDataSet };
-                tabs["Search"] = new SwagTabItem() { Icon = PackIconCustomKind.GlobalSearch, ViewModel = swagDataSet };
-                tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.Settings, ViewModel = swagDataSet };
+                tabs["Tabs"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSearch };
+                tabs["Parse"] = new SwagTabGroup() { Icon = PackIconZondiconsKind.DocumentAdd };
+                tabs["Parse"]["Paste"] = new SwagTabGroup() { Icon = PackIconZondiconsKind.Paste };
+                tabs["Parse"]["Paste"]["TSV"] = new SwagTabItem() { Icon = PackIconMaterialKind.AlphaTBoxOutline };
+                tabs["Search"] = new SwagTabItem() { Icon = PackIconCustomKind.GlobalSearch };
+                tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.Settings };
                 swagDataSet.Tabs = tabs;
+                SwagItemPreOrderIterator<SwagTabItem> itrTabs = tabs.CreateIterator();
+                for (SwagTabItem tabItem = itrTabs.First(); !itrTabs.IsDone; tabItem = itrTabs.Next())
+                {
+                    tabItem.ViewModel = swagDataSet;
+                }
                 #endregion InitTabs
             }
         }
@@ -392,8 +401,27 @@ namespace SwagOverFlow.WPF.Controls
             SwagDataResult swagResult = (SwagDataResult)fe.DataContext;
             swagResult.IsSelected = true;
         }
+
         #endregion SwagDataHeader ContextMenu
 
+        #region Parse
+        #region Paste
+        #region TSV
+        private void Parse_Paste_TSV_txtPreviewExecuted(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        {
+            if (e.Command == ApplicationCommands.Paste)
+            {
+                String text = Clipboard.GetText();
+                DataTableConvertParams cp = new DataTableConvertParams() { FieldDelim = '\t' };
+                IDataTableConverter converter = new DataTableCsvStringConverter();
+                DataTable dt = converter.ToDataTable(cp, text);
+                SwagDataSet.AddDataTableCommand.Execute(dt);
+                e.Handled = true;
+            }
+        }
+        #endregion TSV
+        #endregion Paste
+        #endregion Parse
     }
 
     #region SwagDataHelper

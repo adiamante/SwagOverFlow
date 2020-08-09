@@ -226,6 +226,15 @@
                             </DataTemplate>
                         </swui:SwagTemplate.DataTemplate>
                     </swui:SwagTemplate>
+                    <swui:SwagTemplate CompareValue="Parse/Paste/TSV">
+                        <swui:SwagTemplate.DataTemplate>
+                            <DataTemplate>
+                                <ContentControl Template="{StaticResource TabItemTemplate}">
+                                    <TextBox CommandManager.PreviewExecuted="Parse_Paste_TSV_txtPreviewExecuted" />
+                                </ContentControl>
+                            </DataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
                     <swui:SwagTemplate CompareValue="Settings">
                         <swui:SwagTemplate.DataTemplate>
                             <DataTemplate>
