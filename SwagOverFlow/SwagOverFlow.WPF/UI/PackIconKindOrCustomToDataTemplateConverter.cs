@@ -59,8 +59,21 @@ namespace SwagOverFlow.WPF.UI
         /// <summary>
         /// Gets the ImageSource for the given kind.
         /// </summary>
-        //protected ImageSource CreateImageSource(object iconKind, Brush foregroundBrush)
-        protected DataTemplate CreateImageSource(object iconKind, Brush foregroundBrush)
+        public ImageSource CreateImageSource(object iconKind, Brush foregroundBrush)
+        {
+            string path = this.GetPathData(iconKind);
+
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+
+            var drawingImage = new DrawingImage(GetDrawingGroup(iconKind, foregroundBrush, path));
+            drawingImage.Freeze();
+            return drawingImage;
+        }
+
+        protected DataTemplate CreateImageDataTemplate(object iconKind, Brush foregroundBrush)
         {
             string path = this.GetPathData(iconKind);
 
@@ -207,7 +220,7 @@ namespace SwagOverFlow.WPF.UI
                 return DependencyProperty.UnsetValue;
             }
 
-            var imageSource = CreateImageSource(value, parameter as Brush ?? this.Brush ?? Brushes.Black);
+            var imageSource = CreateImageDataTemplate(value, parameter as Brush ?? this.Brush ?? Brushes.Black);
             return imageSource ?? DependencyProperty.UnsetValue;
         }
 
