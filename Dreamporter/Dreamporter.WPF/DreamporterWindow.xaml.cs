@@ -1,9 +1,12 @@
 ﻿using Dreamporter.Core;
 using Dreamporter.Data;
 using Dreamporter.WPF.Services;
+using MahApps.Metro.IconPacks;
 using SwagOverFlow.WPF.Controls;
+using SwagOverFlow.WPF.UI;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Media;
 
 namespace DreamporterWPF
 {
@@ -30,6 +33,7 @@ namespace DreamporterWPF
         public DreamporterWindow()
         {
             InitializeComponent();
+            Icon = UIHelper.GetImageSource(PackIconJamIconsKind.Universe, Brushes.White);
         }
     }
 }

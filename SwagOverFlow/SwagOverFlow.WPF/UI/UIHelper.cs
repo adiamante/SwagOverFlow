@@ -6,11 +6,18 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace SwagOverFlow.WPF.UI
 {
     public static class UIHelper
     {
+        static PackIconKindOrCustomToDataTemplateConverter _iconCnvtr = new PackIconKindOrCustomToDataTemplateConverter();
+        public static ImageSource GetImageSource(Enum iconEnum, Brush brush = null)
+        {
+            return _iconCnvtr.CreateImageSource(iconEnum, brush ?? Brushes.Black);
+        }
+
         public static ICollectionView GetCollectionView(IEnumerable col)
         {
             return CollectionViewSource.GetDefaultView(col);

@@ -29,8 +29,7 @@ namespace SwagOverFlow.WPF.SwagDataWindow
             InitializeComponent();
 
             SwagDataSet = new SwagDataSet();
-            PackIconKindOrCustomToDataTemplateConverter cnvtr = new PackIconKindOrCustomToDataTemplateConverter();
-            Icon = cnvtr.CreateImageSource(PackIconFontAwesomeKind.SearchDollarSolid, Brushes.White);
+            Icon = UIHelper.GetImageSource(PackIconFontAwesomeKind.SearchDollarSolid, Brushes.White);
         }
     }
 }
