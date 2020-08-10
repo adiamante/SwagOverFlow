@@ -118,6 +118,8 @@ namespace SwagOverFlow.WPF.Controls
                     KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
                     return kvp.Value.HasAppliedFilter;
                 };
+                swagDataTable.ColumnsVisibilityView = columnsVisibilitySource.View;
+                swagDataTable.ColumnsFilterView = columnsFilterSource.View;
                 #endregion InitViews
 
                 #region FilterCommand
@@ -284,7 +286,7 @@ namespace SwagOverFlow.WPF.Controls
                 {
                     columnsVisibilitySource.View.Filter = (itm) =>
                     {
-                        KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
+                     KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
                         return SearchHelper.Evaluate(
                             kvp.Key,
                             swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"]["Text"].GetValue<string>(),
@@ -328,6 +330,8 @@ namespace SwagOverFlow.WPF.Controls
                     swagDataTable.OnPropertyChangedPublic("ColumnsView");
                     swagDataTable.OnPropertyChangedPublic("ColumnCount");
                     swagDataTable.DelaySave = false;
+                    swagDataGrid.Columns = null;
+                    swagDataGrid.Columns = swagDataTable.Columns;
                 });
                 #endregion ResetColumnsCommand
 
@@ -361,8 +365,8 @@ namespace SwagOverFlow.WPF.Controls
                 tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSettings };
                 tabs["ColumnEditor"]["Visibility"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnVisibility };
                 tabs["ColumnEditor"]["Filters"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnFilter };
-                tabs["ColumnEditor"]["Add"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnAdd };
-                tabs["ColumnEditor"]["View"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnView };
+                //tabs["ColumnEditor"]["Add"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnAdd };
+                //tabs["ColumnEditor"]["View"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnView };
                 swagDataTable.Tabs = tabs;
                 SwagItemPreOrderIterator<SwagTabItem> iterator = tabs.CreateIterator();
                 for (SwagTabItem tabItem = iterator.First(); !iterator.IsDone; tabItem = iterator.Next())
@@ -373,6 +377,7 @@ namespace SwagOverFlow.WPF.Controls
                 //swagDataTable.Tabs.PropertyChangedExtended += _tabs_PropertyChangedExtended;
                 #endregion InitTabs
 
+                swagDataTable.InitDataTable();
                 swagDataTable.IsInitialized = true;
                 //swagDataTable.Settings.SwagItemChanged += _settings_SwagItemChanged;
             }
@@ -517,6 +522,16 @@ namespace SwagOverFlow.WPF.Controls
                         };
                     }
                 }));
+            }
+        }
+
+        public IDictionary<String, SwagDataColumn> Columns
+        {
+            get { return (IDictionary<String, SwagDataColumn>)GetValue(ColumnsProperty); }
+            set
+            {
+                SetValue(ColumnsProperty, value);
+                OnPropertyChanged();
             }
         }
         #endregion Columns

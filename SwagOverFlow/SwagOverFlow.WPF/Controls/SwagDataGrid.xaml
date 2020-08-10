@@ -604,7 +604,7 @@
                                 </DataTemplate>
                             </ui:SwagTemplate.DataTemplate>
                         </ui:SwagTemplate>
-                        <ui:SwagTemplate CompareValue="ColumnEditor/Add">
+                        <!--<ui:SwagTemplate CompareValue="ColumnEditor/Add">
                             <ui:SwagTemplate.DataTemplate>
                                 <DataTemplate>
                                     <ContentControl Template="{StaticResource TabItemTemplate}">
@@ -621,7 +621,7 @@
                                     </ContentControl>
                                 </DataTemplate>
                             </ui:SwagTemplate.DataTemplate>
-                        </ui:SwagTemplate>
+                        </ui:SwagTemplate>-->
                         <ui:SwagTemplate CompareValue="Search">
                             <ui:SwagTemplate.DataTemplate>
                                 <DataTemplate>

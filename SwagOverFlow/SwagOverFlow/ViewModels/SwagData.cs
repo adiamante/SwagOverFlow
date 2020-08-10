@@ -13,6 +13,7 @@ using SwagOverFlow.Collections;
 using System.ComponentModel;
 using System.Windows.Input;
 using SwagOverFlow.Commands;
+using System.Collections;
 
 namespace SwagOverFlow.ViewModels
 {
@@ -885,7 +886,7 @@ namespace SwagOverFlow.ViewModels
         SwagTabGroup _tabs = new SwagTabGroup();
         SwagDataColumn _selectedColumn;
         SwagDataRowResult _selectedRow;
-        INotifyCollectionChanged _columnsVisibilityView, _columnsFilterView;
+        INotifyCollectionChanged _columnsView, _columnsVisibilityView, _columnsFilterView;
         #endregion Private/Protected Members
 
         #region Properties
@@ -1025,10 +1026,13 @@ namespace SwagOverFlow.ViewModels
                 return _toggleColumnVisibilityCheckedAll ?? (_toggleColumnVisibilityCheckedAll =
                     new RelayCommand<Boolean>((checkAll) =>
                     {
-                        foreach (KeyValuePair<String, SwagDataColumn> kvp in _columns)
+                        if (ColumnsVisibilityView is IEnumerable columnsVisibilityView)
                         {
-                            SwagDataColumn col = kvp.Value;
-                            col.IsCheckedVisibility = checkAll;
+                            foreach (KeyValuePair<String, SwagDataColumn> kvp in columnsVisibilityView)
+                            {
+                                SwagDataColumn col = kvp.Value;
+                                col.IsCheckedVisibility = checkAll;
+                            }
                         }
                     }));
             }
@@ -1049,6 +1053,7 @@ namespace SwagOverFlow.ViewModels
                             SwagDataColumn col = kvp.Value;
                             col.IsVisible = col.IsCheckedVisibility;
                         }
+                        ResetColumnsCommand.Execute(null);
                     }));
             }
         }
@@ -1212,6 +1217,15 @@ namespace SwagOverFlow.ViewModels
             set { SetValue(ref _dictRows, value); }
         }
         #endregion DictRows
+        #region ColumnsView
+        [NotMapped]
+        [JsonIgnore]
+        public INotifyCollectionChanged ColumnsView
+        {
+            get { return _columnsView; }
+            set { SetValue(ref _columnsView, value); }
+        }
+        #endregion ColumnsVisibilityView
         #region ColumnsVisibilityView
         [NotMapped]
         [JsonIgnore]
@@ -1284,6 +1298,11 @@ namespace SwagOverFlow.ViewModels
             }
 
             base.OnSwagItemChanged(swagItem, e);
+        }
+
+        public void InitDataTable()
+        {
+            _dataTable.DefaultView.ListChanged += dataView_ListChanged;
         }
         #endregion Initialization
 
