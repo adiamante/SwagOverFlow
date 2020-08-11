@@ -8,12 +8,15 @@ using SwagOverFlow.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Markup;
+using System.Windows.Media;
+using System.Xml;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -174,6 +177,31 @@ namespace SwagOverFlow.WPF.Controls
             if (e.PropertyName == "Value")
             {
                 Theme theme = Settings.GetCurrentTheme();
+
+                #region Add Custom Brushes
+                //Available Resources https://mahapps.com/docs/themes/thememanager
+                String strGradientXaml =
+                    @"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+                            xmlns:options=""http://schemas.microsoft.com/winfx/2006/xaml/presentation/options""
+                            EndPoint =""0.5,1"" StartPoint=""0.5,0""
+                            options:Freeze=""True"">
+                        <GradientStop Color=""{DynamicResource MahApps.Colors.Accent}"" Offset=""0""/>
+                        <GradientStop Color=""{DynamicResource MahApps.Colors.Accent2}"" Offset=""0.01""/>
+                        <GradientStop Color=""{DynamicResource MahApps.Colors.Accent3}"" Offset=""0.2""/>
+                        <GradientStop Color=""{DynamicResource MahApps.Colors.ThemeBackground}"" Offset=""0.21""/>
+                    </LinearGradientBrush>";
+                XmlReader xmlReader = XmlReader.Create(new StringReader(strGradientXaml));
+                LinearGradientBrush linearGradientBrush = (LinearGradientBrush)XamlReader.Load(xmlReader);
+
+                //theme.Resources["MahApps.Brushes.ThemeBackground"] = linearGradientBrush;
+                theme.Resources["MahApps.Brushes.Control.Background"] = linearGradientBrush;
+                //theme.Resources["MahApps.Brushes.Window.Background"] = linearGradientBrush;
+                theme.Resources["MahApps.Brushes.Menu.Background"] = linearGradientBrush;
+                theme.Resources["MahApps.Brushes.ContextMenu.Background"] = linearGradientBrush;
+                theme.Resources["MahApps.Brushes.SubMenu.Background"] = linearGradientBrush;
+                theme.Resources["MahApps.Brushes.MenuItem.Background"] = linearGradientBrush;
+                #endregion Add Custom Brushes
+
                 ThemeManager.Current.ChangeTheme(this, this.Resources, theme);
 
                 #region OLD - Theme switching is now handled in SwagControlBase.cs
