@@ -80,306 +80,7 @@ namespace SwagOverFlow.WPF.Controls
             if (swagDataGrid != null && swagDataGrid.SwagDataTable != null && !swagDataGrid.SwagDataTable.IsInitialized && swagDataGrid.SwagDataTable.DataTable != null)
             {
                 SwagDataTable swagDataTable = swagDataGrid.SwagDataTable;
-                //swagDataGrid.SwagDataTable.PropertyChanged += SwagDataTable_PropertyChanged;
-                #region Clear Columns and Rows for instance
-                swagDataTable.Columns.Clear();
-                swagDataTable.Children.Clear();
-                #endregion Clear Columns and Rows for instance
-
-                #region Add Columns and Rows for instance
-                //FIX_THIS
-                //Should be different depending on if swagDataTable is already initialized or not
-                foreach (DataColumn dc in swagDataTable.DataTable.Columns)
-                {
-                    SwagDataColumn sdc = new SwagDataColumn() { ColumnName = dc.ColumnName, DataType = dc.DataType };
-                    sdc.SwagDataTable = swagDataTable;
-                    sdc.DataTypeString = sdc.DataTypeString;
-                    swagDataTable.Children.Add(sdc);
-                    swagDataTable.Columns.Add(dc.ColumnName, sdc);
-                }
-
-                swagDataTable.DictRows.Clear();
-                foreach (DataRow dr in swagDataTable.DataTable.Rows)
-                {
-                    SwagDataRow row = new SwagDataRow(dr);
-                    row.Value = row.Value;
-                    row.ValueTypeString = row.ValueTypeString;
-                    swagDataTable.Children.Add(row);
-                    swagDataTable.DictRows.Add(row.DataRow, row);
-                }
-                #endregion Add Columns and Rows for instance
-
-                #region InitViews
-                CollectionViewSource columnsVisibilitySource, columnsFilterSource;
-                columnsVisibilitySource = new CollectionViewSource() { Source = swagDataTable.Columns };
-                columnsFilterSource = new CollectionViewSource() { Source = swagDataTable.Columns };
-                columnsFilterSource.View.Filter = (itm) =>
-                {
-                    KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
-                    return kvp.Value.HasAppliedFilter;
-                };
-                swagDataTable.ColumnsVisibilityView = columnsVisibilitySource.View;
-                swagDataTable.ColumnsFilterView = columnsFilterSource.View;
-                #endregion InitViews
-
-                #region FilterCommand
-                swagDataTable.FilterCommand = new RelayCommand(() =>
-                {
-                    ICollectionView view = CollectionViewSource.GetDefaultView(swagDataTable.DataTable.DefaultView);
-                    if (view is BindingListCollectionView)      //Assuming you are DataView for now
-                    {
-                         BindingListCollectionView bindingView = (BindingListCollectionView)view;
-                        //https://stackoverflow.com/questions/9385489/why-errors-when-filters-datatable-with-collectionview
-                        bindingView.CancelEdit();
-
-                        String combinedFilter = "";
-                        foreach (KeyValuePair<string, SwagDataColumn> kvp in swagDataTable.Columns)
-                        {
-                            if (kvp.Value.HasAppliedFilter)
-                            {
-                                String filterTemp = kvp.Value.AppliedFilter;
-                                if (kvp.Value.AppliedFilter.Contains("'(Blanks)'"))
-                                {
-                                    filterTemp = string.Format("({0} OR CONVERT([{1}], 'System.String') = '' OR [{1}] IS NULL)", kvp.Value.AppliedFilter, kvp.Key);
-                                }
-                                combinedFilter = string.Format("{0}{1} AND ", combinedFilter, filterTemp);
-                            }
-                        }
-
-                        if (combinedFilter.EndsWith("AND "))
-                        {
-                            combinedFilter = combinedFilter.Substring(0, combinedFilter.Length - 4);
-                        }
-
-                        bindingView.CustomFilter = combinedFilter;
-                    }
-
-                    columnsFilterSource.View.Refresh();
-                });
-                #endregion FilterCommand
-
-                #region ExportCommand
-                swagDataTable.ExportCommand = new RelayCommand(() =>
-                {
-                    IDataTableConverter converter = null;
-                    string dialogFilter = "";
-                    SwagTableExportType exportType = swagDataTable.Settings["Export"]["Type"].GetValue<SwagTableExportType>();
-                    switch (exportType)
-                    {
-                        case SwagTableExportType.Csv:
-                            converter = new DataTableCsvStringConverter();
-                            dialogFilter = "CSV files (*.csv)|*.csv";
-                            break;
-                        case SwagTableExportType.TSql_Command:
-                            converter = new DataTableTSqlCommandConverter();
-                            dialogFilter = "SQL files (*.sql)|*.sql";
-                            break;
-                        case SwagTableExportType.Sqlite:
-                            SaveFileDialog sfd = new SaveFileDialog();
-                            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                            sfd.FileName = Path.ChangeExtension(swagDataTable.DataTable.TableName, null);
-                            sfd.Filter = "SQLite files (*.db;*.sqlite)|*.db;*.sqlite";
-                            System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
-                            {
-                                if (sfd.ShowDialog() ?? false)
-                                {
-                                    DataSetSqliteFileConverter dsConverter = new DataSetSqliteFileConverter();
-                                    DataSet ds = new DataSet();
-                                    ds.Tables.Add(swagDataTable.DataTable.Copy());
-                                    dsConverter.FromDataSet(null, ds, sfd.FileName);
-                                }
-                            }));
-                            return;
-                        case SwagTableExportType.Sqlite_Command:
-                            converter = new DataTableSqliteCommandConverter();
-                            dialogFilter = "SQLite command files (*.cmd)|*.cmd";
-                            break;
-                    }
-
-                    Object output = converter.FromDataTableToObject(new DataTableConvertParams(), swagDataTable.DataTable);
-
-                    switch (swagDataTable.Settings["Export"]["Destination"].GetValue<SwagTableDestinationType>())
-                    {
-                        case SwagTableDestinationType.Clipboard:
-                            Clipboard.SetText(output.ToString());
-                            break;
-                        case SwagTableDestinationType.File:
-                            SaveFileDialog sfd = new SaveFileDialog();
-                            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                            sfd.FileName = swagDataTable.DataTable.TableName;
-                            sfd.Filter = dialogFilter;
-
-                            System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
-                            {
-                                if (sfd.ShowDialog() ?? false)
-                                {
-                                    File.WriteAllText(sfd.FileName, output.ToString());
-                                }
-                            }));
-                            break;
-                        case SwagTableDestinationType.New_Window:
-                            Window window = new Window();
-                            TextBox textBox = new TextBox();
-                            textBox.AcceptsReturn = textBox.AcceptsTab = true;
-                            textBox.Text = output.ToString();
-                            window.Content = textBox;
-                            window.Show();
-                            break;
-                    }
-                });
-                #endregion ExportCommand
-
-                #region ImportCommand
-                swagDataTable.ImportCommand = new RelayCommand(() =>
-                {
-                    IDataTableConverter converter = null;
-                    DataTableConvertParams cp = new DataTableConvertParams();
-
-                    string dialogFilter = "";
-                    String inputText = "";
-
-                    switch (swagDataTable.Settings["Import"]["Type"].GetValue<SwagTableImportType>())
-                    {
-                        case SwagTableImportType.Csv:
-                            converter = new DataTableCsvStringConverter();
-                            dialogFilter = "CSV files (*.csv)|*.csv";
-                            break;
-                        case SwagTableImportType.Tsv:
-                            converter = new DataTableCsvStringConverter();
-                            cp.FieldDelim = '\t';
-                            dialogFilter = "TSV files (*.tsv)|*.tsv";
-                            break;
-                    }
-
-                    switch (swagDataTable.Settings["Import"]["Source"].GetValue<SwagTableSourceType>())
-                    {
-                        case SwagTableSourceType.File:
-                            OpenFileDialog ofd = new OpenFileDialog();
-                            ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                            ofd.Filter = dialogFilter;
-
-                            System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
-                            {
-                                if (ofd.ShowDialog() ?? false)
-                                {
-                                    inputText = File.ReadAllText(ofd.FileName);
-                                }
-                                else
-                                {
-                                    return;
-                                }
-                            }));
-                            break;
-                        case SwagTableSourceType.Clipboard:
-                            inputText = Clipboard.GetText();
-                            break;
-                    }
-
-                    DataTable dtInput = converter.ToDataTable(cp, inputText);
-                    swagDataTable.DataTable = dtInput;
-                });
-                #endregion ImportCommand
-
-                #region ApplyColumnVisibilityFilterCommand
-                swagDataTable.ApplyColumnVisibilityFilterCommand =
-                new RelayCommand(() =>
-                {
-                    columnsVisibilitySource.View.Filter = (itm) =>
-                    {
-                     KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
-                        return SearchHelper.Evaluate(
-                            kvp.Key,
-                            swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"]["Text"].GetValue<string>(),
-                            false,
-                            swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"]["FilterMode"].GetValue<FilterMode>(),
-                            false);
-                    };
-                });
-                #endregion ApplyColumnVisibilityFilterCommand
-
-                #region ApplyColumnFiltersFilterCommand
-                swagDataTable.ApplyColumnFiltersFilterCommand =
-                new RelayCommand(() =>
-                {
-                    columnsFilterSource.View.Filter = (itm) =>
-                    {
-                        KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
-                        return kvp.Value.HasAppliedFilter && (SearchHelper.Evaluate(
-                            kvp.Key,
-                            swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"]["Text"].GetValue<string>(),
-                            false,
-                            swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"]["FilterMode"].GetValue<FilterMode>(),
-                            false) || SearchHelper.Evaluate(
-                            kvp.Value.AppliedFilter,
-                            swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"]["Text"].GetValue<string>(),
-                            false,
-                            swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"]["FilterMode"].GetValue<FilterMode>(),
-                            false));
-                    };
-                });
-                #endregion ApplyColumnFiltersFilterCommand
-
-                #region ResetColumnsCommand
-                swagDataTable.ResetColumnsCommand =
-                new RelayCommand(() =>
-                {
-                    swagDataTable.DelaySave = true;
-                    columnsVisibilitySource.Source = columnsFilterSource.Source = swagDataTable.Columns;
-                    columnsVisibilitySource.View.Refresh();
-                    columnsFilterSource.View.Refresh();
-                    swagDataTable.OnPropertyChangedPublic("ColumnsView");
-                    swagDataTable.OnPropertyChangedPublic("ColumnCount");
-                    swagDataTable.DelaySave = false;
-                    swagDataGrid.Columns = null;
-                    swagDataGrid.Columns = swagDataTable.Columns;
-                });
-                #endregion ResetColumnsCommand
-
-                #region InitSettings
-                swagDataTable.Settings.TryAddChildSetting("ColumnEditor", new SwagSettingGroup() { Icon = PackIconCustomKind.TableColumnEdit });
-                swagDataTable.Settings["ColumnEditor"].TryAddChildSetting("Visibility", new SwagSettingGroup() { Icon = PackIconCustomKind.Eye });
-                swagDataTable.Settings["ColumnEditor"]["Visibility"].TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.Search });
-                swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"].TryAddChildSetting("Text", new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue });
-                swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
-                swagDataTable.Settings["ColumnEditor"].TryAddChildSetting("Filters", new SwagSettingGroup() { Icon = PackIconCustomKind.TableColumnFilter });
-                swagDataTable.Settings["ColumnEditor"]["Filters"].TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.Search });
-                swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"].TryAddChildSetting("Text", new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue });
-                swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
-                swagDataTable.Settings.TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.TableSearch });
-                swagDataTable.Settings["Search"].TryAddChildSetting("Text", new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue });
-                swagDataTable.Settings["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
-                swagDataTable.Settings.TryAddChildSetting("Export", new SwagSettingGroup() { Icon = PackIconCustomKind.Export });
-                swagDataTable.Settings["Export"].TryAddChildSetting("Type", new SwagSetting<SwagTableExportType>() { SettingType = SettingType.DropDown, Value = SwagTableExportType.Csv, Icon = PackIconCustomKind.ExportType, ItemsSource = (SwagTableExportType[])Enum.GetValues(typeof(SwagTableExportType)) });
-                swagDataTable.Settings["Export"].TryAddChildSetting("Destination", new SwagSetting<SwagTableDestinationType>() { SettingType = SettingType.DropDown, Value = SwagTableDestinationType.Clipboard, Icon = PackIconCustomKind.Destination, ItemsSource = (SwagTableDestinationType[])Enum.GetValues(typeof(SwagTableDestinationType)) });
-                swagDataTable.Settings.TryAddChildSetting("Import", new SwagSettingGroup() { Icon = PackIconCustomKind.Import });
-                swagDataTable.Settings["Import"].TryAddChildSetting("Type", new SwagSetting<SwagTableImportType>() { SettingType = SettingType.DropDown, Value = SwagTableImportType.Tsv, Icon = PackIconCustomKind.ExportType, ItemsSource = (SwagTableImportType[])Enum.GetValues(typeof(SwagTableImportType)) });
-                swagDataTable.Settings["Import"].TryAddChildSetting("Source", new SwagSetting<SwagTableSourceType>() { SettingType = SettingType.DropDown, Value = SwagTableSourceType.Clipboard, Icon = PackIconCustomKind.Destination, ItemsSource = (SwagTableSourceType[])Enum.GetValues(typeof(SwagTableSourceType)) });
-                #endregion InitSettings
-
-                #region InitTabs
-                SwagTabGroup tabs = new SwagTabGroup();
-                tabs["ColumnEditor"] = new SwagTabGroup() { Icon = PackIconCustomKind.TableColumnEdit, Display = "Column Editor" };
-                tabs["Search"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSearch };
-                tabs["Export"] = new SwagTabItem() { Icon = PackIconCustomKind.TableExport };
-                tabs["Import"] = new SwagTabItem() { Icon = PackIconCustomKind.TableImport };
-                tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSettings };
-                tabs["ColumnEditor"]["Visibility"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnVisibility };
-                tabs["ColumnEditor"]["Filters"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnFilter };
-                //tabs["ColumnEditor"]["Add"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnAdd };
-                //tabs["ColumnEditor"]["View"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnView };
-                swagDataTable.Tabs = tabs;
-                SwagItemPreOrderIterator<SwagTabItem> iterator = tabs.CreateIterator();
-                for (SwagTabItem tabItem = iterator.First(); !iterator.IsDone; tabItem = iterator.Next())
-                {
-                    tabItem.ViewModel = swagDataTable;
-                }
-                //swagDataTable.Tabs.SwagItemChanged += _tabs_SwagItemChanged;
-                //swagDataTable.Tabs.PropertyChangedExtended += _tabs_PropertyChangedExtended;
-                #endregion InitTabs
-
-                swagDataTable.InitDataTable();
-                swagDataTable.IsInitialized = true;
-                //swagDataTable.Settings.SwagItemChanged += _settings_SwagItemChanged;
+                InitSwagDataTable(swagDataTable);
             }
         }
 
@@ -430,6 +131,311 @@ namespace SwagOverFlow.WPF.Controls
         //            break;
         //    }
         //}
+
+        public static void InitSwagDataTable(SwagDataTable swagDataTable)
+        {
+            //swagDataTable.PropertyChanged += SwagDataTable_PropertyChanged;
+            #region Clear Columns and Rows for instance
+            swagDataTable.Columns.Clear();
+            swagDataTable.Children.Clear();
+            #endregion Clear Columns and Rows for instance
+
+            #region Add Columns and Rows for instance
+            //FIX_THIS
+            //Should be different depending on if swagDataTable is already initialized or not
+            foreach (DataColumn dc in swagDataTable.DataTable.Columns)
+            {
+                SwagDataColumn sdc = new SwagDataColumn() { ColumnName = dc.ColumnName, DataType = dc.DataType };
+                sdc.SwagDataTable = swagDataTable;
+                sdc.DataTypeString = sdc.DataTypeString;
+                swagDataTable.Children.Add(sdc);
+                swagDataTable.Columns.Add(dc.ColumnName, sdc);
+            }
+
+            swagDataTable.DictRows.Clear();
+            foreach (DataRow dr in swagDataTable.DataTable.Rows)
+            {
+                SwagDataRow row = new SwagDataRow(dr);
+                row.Value = row.Value;
+                row.ValueTypeString = row.ValueTypeString;
+                swagDataTable.Children.Add(row);
+                swagDataTable.DictRows.Add(row.DataRow, row);
+            }
+            #endregion Add Columns and Rows for instance
+
+            #region InitViews
+            CollectionViewSource columnsVisibilitySource, columnsFilterSource;
+            columnsVisibilitySource = new CollectionViewSource() { Source = swagDataTable.Columns };
+            columnsFilterSource = new CollectionViewSource() { Source = swagDataTable.Columns };
+            columnsFilterSource.View.Filter = (itm) =>
+            {
+                KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
+                return kvp.Value.HasAppliedFilter;
+            };
+            swagDataTable.ColumnsVisibilityView = columnsVisibilitySource.View;
+            swagDataTable.ColumnsFilterView = columnsFilterSource.View;
+            #endregion InitViews
+
+            #region FilterCommand
+            swagDataTable.FilterCommand = new RelayCommand(() =>
+            {
+                ICollectionView view = CollectionViewSource.GetDefaultView(swagDataTable.DataTable.DefaultView);
+                if (view is BindingListCollectionView)      //Assuming you are DataView for now
+                {
+                    BindingListCollectionView bindingView = (BindingListCollectionView)view;
+                    //https://stackoverflow.com/questions/9385489/why-errors-when-filters-datatable-with-collectionview
+                    bindingView.CancelEdit();
+
+                    String combinedFilter = "";
+                    foreach (KeyValuePair<string, SwagDataColumn> kvp in swagDataTable.Columns)
+                    {
+                        if (kvp.Value.HasAppliedFilter)
+                        {
+                            String filterTemp = kvp.Value.AppliedFilter;
+                            if (kvp.Value.AppliedFilter.Contains("'(Blanks)'"))
+                            {
+                                filterTemp = string.Format("({0} OR CONVERT([{1}], 'System.String') = '' OR [{1}] IS NULL)", kvp.Value.AppliedFilter, kvp.Key);
+                            }
+                            combinedFilter = string.Format("{0}{1} AND ", combinedFilter, filterTemp);
+                        }
+                    }
+
+                    if (combinedFilter.EndsWith("AND "))
+                    {
+                        combinedFilter = combinedFilter.Substring(0, combinedFilter.Length - 4);
+                    }
+
+                    bindingView.CustomFilter = combinedFilter;
+                }
+
+                columnsFilterSource.View.Refresh();
+            });
+            #endregion FilterCommand
+
+            #region ExportCommand
+            swagDataTable.ExportCommand = new RelayCommand(() =>
+            {
+                IDataTableConverter converter = null;
+                string dialogFilter = "";
+                SwagTableExportType exportType = swagDataTable.Settings["Export"]["Type"].GetValue<SwagTableExportType>();
+                switch (exportType)
+                {
+                    case SwagTableExportType.Csv:
+                        converter = new DataTableCsvStringConverter();
+                        dialogFilter = "CSV files (*.csv)|*.csv";
+                        break;
+                    case SwagTableExportType.TSql_Command:
+                        converter = new DataTableTSqlCommandConverter();
+                        dialogFilter = "SQL files (*.sql)|*.sql";
+                        break;
+                    case SwagTableExportType.Sqlite:
+                        SaveFileDialog sfd = new SaveFileDialog();
+                        sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                        sfd.FileName = Path.ChangeExtension(swagDataTable.DataTable.TableName, null);
+                        sfd.Filter = "SQLite files (*.db;*.sqlite)|*.db;*.sqlite";
+                        System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+                            if (sfd.ShowDialog() ?? false)
+                            {
+                                DataSetSqliteFileConverter dsConverter = new DataSetSqliteFileConverter();
+                                DataSet ds = new DataSet();
+                                ds.Tables.Add(swagDataTable.DataTable.Copy());
+                                dsConverter.FromDataSet(null, ds, sfd.FileName);
+                            }
+                        }));
+                        return;
+                    case SwagTableExportType.Sqlite_Command:
+                        converter = new DataTableSqliteCommandConverter();
+                        dialogFilter = "SQLite command files (*.cmd)|*.cmd";
+                        break;
+                }
+
+                Object output = converter.FromDataTableToObject(new DataTableConvertParams(), swagDataTable.DataTable);
+
+                switch (swagDataTable.Settings["Export"]["Destination"].GetValue<SwagTableDestinationType>())
+                {
+                    case SwagTableDestinationType.Clipboard:
+                        Clipboard.SetText(output.ToString());
+                        break;
+                    case SwagTableDestinationType.File:
+                        SaveFileDialog sfd = new SaveFileDialog();
+                        sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                        sfd.FileName = swagDataTable.DataTable.TableName;
+                        sfd.Filter = dialogFilter;
+
+                        System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+                            if (sfd.ShowDialog() ?? false)
+                            {
+                                File.WriteAllText(sfd.FileName, output.ToString());
+                            }
+                        }));
+                        break;
+                    case SwagTableDestinationType.New_Window:
+                        Window window = new Window();
+                        TextBox textBox = new TextBox();
+                        textBox.AcceptsReturn = textBox.AcceptsTab = true;
+                        textBox.Text = output.ToString();
+                        window.Content = textBox;
+                        window.Show();
+                        break;
+                }
+            });
+            #endregion ExportCommand
+
+            #region ImportCommand
+            swagDataTable.ImportCommand = new RelayCommand(() =>
+            {
+                IDataTableConverter converter = null;
+                DataTableConvertParams cp = new DataTableConvertParams();
+
+                string dialogFilter = "";
+                String inputText = "";
+
+                switch (swagDataTable.Settings["Import"]["Type"].GetValue<SwagTableImportType>())
+                {
+                    case SwagTableImportType.Csv:
+                        converter = new DataTableCsvStringConverter();
+                        dialogFilter = "CSV files (*.csv)|*.csv";
+                        break;
+                    case SwagTableImportType.Tsv:
+                        converter = new DataTableCsvStringConverter();
+                        cp.FieldDelim = '\t';
+                        dialogFilter = "TSV files (*.tsv)|*.tsv";
+                        break;
+                }
+
+                switch (swagDataTable.Settings["Import"]["Source"].GetValue<SwagTableSourceType>())
+                {
+                    case SwagTableSourceType.File:
+                        OpenFileDialog ofd = new OpenFileDialog();
+                        ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                        ofd.Filter = dialogFilter;
+
+                        System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+                            if (ofd.ShowDialog() ?? false)
+                            {
+                                inputText = File.ReadAllText(ofd.FileName);
+                            }
+                            else
+                            {
+                                return;
+                            }
+                        }));
+                        break;
+                    case SwagTableSourceType.Clipboard:
+                        inputText = Clipboard.GetText();
+                        break;
+                }
+
+                DataTable dtInput = converter.ToDataTable(cp, inputText);
+                swagDataTable.DataTable = dtInput;
+            });
+            #endregion ImportCommand
+
+            #region ApplyColumnVisibilityFilterCommand
+            swagDataTable.ApplyColumnVisibilityFilterCommand =
+            new RelayCommand(() =>
+            {
+                columnsVisibilitySource.View.Filter = (itm) =>
+                {
+                    KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
+                    return SearchHelper.Evaluate(
+                        kvp.Key,
+                        swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"]["Text"].GetValue<string>(),
+                        false,
+                        swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"]["FilterMode"].GetValue<FilterMode>(),
+                        false);
+                };
+            });
+            #endregion ApplyColumnVisibilityFilterCommand
+
+            #region ApplyColumnFiltersFilterCommand
+            swagDataTable.ApplyColumnFiltersFilterCommand =
+            new RelayCommand(() =>
+            {
+                columnsFilterSource.View.Filter = (itm) =>
+                {
+                    KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
+                    return kvp.Value.HasAppliedFilter && (SearchHelper.Evaluate(
+                        kvp.Key,
+                        swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"]["Text"].GetValue<string>(),
+                        false,
+                        swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"]["FilterMode"].GetValue<FilterMode>(),
+                        false) || SearchHelper.Evaluate(
+                        kvp.Value.AppliedFilter,
+                        swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"]["Text"].GetValue<string>(),
+                        false,
+                        swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"]["FilterMode"].GetValue<FilterMode>(),
+                        false));
+                };
+            });
+            #endregion ApplyColumnFiltersFilterCommand
+
+            #region ResetColumnsCommand
+            swagDataTable.ResetColumnsCommand =
+            new RelayCommand(() =>
+            {
+                swagDataTable.DelaySave = true;
+                columnsVisibilitySource.Source = columnsFilterSource.Source = swagDataTable.Columns;
+                columnsVisibilitySource.View.Refresh();
+                columnsFilterSource.View.Refresh();
+                swagDataTable.OnPropertyChangedPublic("ColumnsView");
+                swagDataTable.OnPropertyChangedPublic("ColumnCount");
+                swagDataTable.DelaySave = false;
+                var tempCols = swagDataTable.Columns;
+                swagDataTable.Columns = null;
+                swagDataTable.Columns = tempCols;
+            });
+            #endregion ResetColumnsCommand
+
+            #region InitSettings
+            swagDataTable.Settings.TryAddChildSetting("ColumnEditor", new SwagSettingGroup() { Icon = PackIconCustomKind.TableColumnEdit });
+            swagDataTable.Settings["ColumnEditor"].TryAddChildSetting("Visibility", new SwagSettingGroup() { Icon = PackIconCustomKind.Eye });
+            swagDataTable.Settings["ColumnEditor"]["Visibility"].TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.Search });
+            swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"].TryAddChildSetting("Text", new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue });
+            swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
+            swagDataTable.Settings["ColumnEditor"].TryAddChildSetting("Filters", new SwagSettingGroup() { Icon = PackIconCustomKind.TableColumnFilter });
+            swagDataTable.Settings["ColumnEditor"]["Filters"].TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.Search });
+            swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"].TryAddChildSetting("Text", new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue });
+            swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
+            swagDataTable.Settings.TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.TableSearch });
+            swagDataTable.Settings["Search"].TryAddChildSetting("Text", new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue });
+            swagDataTable.Settings["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
+            swagDataTable.Settings.TryAddChildSetting("Export", new SwagSettingGroup() { Icon = PackIconCustomKind.Export });
+            swagDataTable.Settings["Export"].TryAddChildSetting("Type", new SwagSetting<SwagTableExportType>() { SettingType = SettingType.DropDown, Value = SwagTableExportType.Csv, Icon = PackIconCustomKind.ExportType, ItemsSource = (SwagTableExportType[])Enum.GetValues(typeof(SwagTableExportType)) });
+            swagDataTable.Settings["Export"].TryAddChildSetting("Destination", new SwagSetting<SwagTableDestinationType>() { SettingType = SettingType.DropDown, Value = SwagTableDestinationType.Clipboard, Icon = PackIconCustomKind.Destination, ItemsSource = (SwagTableDestinationType[])Enum.GetValues(typeof(SwagTableDestinationType)) });
+            swagDataTable.Settings.TryAddChildSetting("Import", new SwagSettingGroup() { Icon = PackIconCustomKind.Import });
+            swagDataTable.Settings["Import"].TryAddChildSetting("Type", new SwagSetting<SwagTableImportType>() { SettingType = SettingType.DropDown, Value = SwagTableImportType.Tsv, Icon = PackIconCustomKind.ExportType, ItemsSource = (SwagTableImportType[])Enum.GetValues(typeof(SwagTableImportType)) });
+            swagDataTable.Settings["Import"].TryAddChildSetting("Source", new SwagSetting<SwagTableSourceType>() { SettingType = SettingType.DropDown, Value = SwagTableSourceType.Clipboard, Icon = PackIconCustomKind.Destination, ItemsSource = (SwagTableSourceType[])Enum.GetValues(typeof(SwagTableSourceType)) });
+            #endregion InitSettings
+
+            #region InitTabs
+            SwagTabGroup tabs = new SwagTabGroup();
+            tabs["ColumnEditor"] = new SwagTabGroup() { Icon = PackIconCustomKind.TableColumnEdit, Display = "Column Editor" };
+            tabs["Search"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSearch };
+            tabs["Export"] = new SwagTabItem() { Icon = PackIconCustomKind.TableExport };
+            tabs["Import"] = new SwagTabItem() { Icon = PackIconCustomKind.TableImport };
+            tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSettings };
+            tabs["ColumnEditor"]["Visibility"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnVisibility };
+            tabs["ColumnEditor"]["Filters"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnFilter };
+            //tabs["ColumnEditor"]["Add"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnAdd };
+            //tabs["ColumnEditor"]["View"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnView };
+            swagDataTable.Tabs = tabs;
+            SwagItemPreOrderIterator<SwagTabItem> iterator = tabs.CreateIterator();
+            for (SwagTabItem tabItem = iterator.First(); !iterator.IsDone; tabItem = iterator.Next())
+            {
+                tabItem.ViewModel = swagDataTable;
+            }
+            //swagDataTable.Tabs.SwagItemChanged += _tabs_SwagItemChanged;
+            //swagDataTable.Tabs.PropertyChangedExtended += _tabs_PropertyChangedExtended;
+            #endregion InitTabs
+
+            swagDataTable.InitDataTable();
+            swagDataTable.IsInitialized = true;
+            //swagDataTable.Settings.SwagItemChanged += _settings_SwagItemChanged;
+        }
 
         public SwagDataTable SwagDataTable
         {
@@ -695,6 +701,10 @@ namespace SwagOverFlow.WPF.Controls
                 kvp.Value.IsSelected = false;
             }
             swagDataColumn.IsSelected = true;
+            Dispatcher.BeginInvoke(DispatcherPriority.Render, new Action(() =>
+            {
+                DataGrid.Focus();
+            }));
         }
 
         private void View(SwagDataRowResult rowResult)
@@ -713,6 +723,7 @@ namespace SwagOverFlow.WPF.Controls
                 DataGrid.SelectedCells.Clear();
                 DataGrid.SelectedCells.Add(cellInfo);
                 DataGrid.CurrentCell = cellInfo;
+                DataGrid.Focus();
             }));
         }
 

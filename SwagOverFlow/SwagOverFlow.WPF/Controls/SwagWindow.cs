@@ -81,6 +81,14 @@ namespace SwagOverFlow.WPF.Controls
         #endregion StatusMessage
 
         #region IsBusy
+        public static Boolean GlobalIsBusy
+        {
+            get { return GlobalSettings["Window"]["Status"]["IsBusy"].GetValue<Boolean>(); }
+            set { GlobalSettings["Window"]["Status"]["IsBusy"].SetValue(value); }
+        }
+        #endregion IsBusy
+
+        #region IsBusy
         public Boolean IsBusy
         {
             get { return Settings["Window"]["Status"]["IsBusy"].GetValue<Boolean>(); }

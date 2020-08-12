@@ -19,6 +19,7 @@ using SwagOverFlow.Commands;
 using SwagOverFlow.Iterator;
 using MahApps.Metro.IconPacks;
 using System.Windows.Input;
+using System.Threading.Tasks;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -242,10 +243,25 @@ namespace SwagOverFlow.WPF.Controls
         #endregion Drop
 
         #region Search
-        private void Search_OnSearch(object sender, RoutedEventArgs e)
+        private async void Search_OnSearch(object sender, RoutedEventArgs e)
         {
             SearchTextBox searchTextBox = (SearchTextBox)sender;
             SwagData swagData = (SwagData)((SwagTabItem)searchTextBox.DataContext).ViewModel;
+            SwagItemPreOrderIterator<SwagData> itrSwagData = SwagDataSet.CreateIterator();
+
+            SwagWindow.GlobalIsBusy = true;
+            await Task.Run(() =>
+            {
+                for (SwagData sd = itrSwagData.First(); !itrSwagData.IsDone; sd = itrSwagData.Next())
+                {
+                    if (sd is SwagDataTable sdg && !sdg.IsInitialized)
+                    {
+                        SwagDataGrid.InitSwagDataTable(sdg);
+                    }
+                }
+            });
+            SwagWindow.GlobalIsBusy = false;
+
             SwagDataResult swagDataResult = SwagDataSet.Search(searchTextBox.Text, searchTextBox.FilterMode,
                 (sdc, sdr, searchValue, filterMode) =>
                 {
