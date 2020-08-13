@@ -32,6 +32,7 @@ namespace SwagOverFlow.WPF.Controls
             String settingGoupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Settings";
             _settings = SwagWPFContainer.SettingsService.GetWindowSettingGroupByName(settingGoupName);
             _swagCommandManager = new SwagCommandManager();
+
         }
 
         #region Settings
