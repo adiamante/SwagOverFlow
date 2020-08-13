@@ -1,10 +1,8 @@
 ﻿using SwagOverFlow.WPF.Controls;
-using SwagOverFlow.WPF.ViewModels;
 using SwagOverFlow.ViewModels;
 using System.Windows;
 using SwagOverFlow.WPF.UI;
 using MahApps.Metro.IconPacks;
-using System.Windows.Media;
 
 namespace SwagOverFlow.WPF.SwagDataWindow
 {
@@ -29,7 +27,8 @@ namespace SwagOverFlow.WPF.SwagDataWindow
             InitializeComponent();
 
             SwagDataSet = new SwagDataSet();
-            Icon = UIHelper.GetImageSource(PackIconFontAwesomeKind.SearchDollarSolid, Brushes.White);
+            Icon = UIHelper.GetImageSource(PackIconOcticonsKind.Telescope, 2.0);
+            //UIHelper.CreateIcon(PackIconOcticonsKind.Telescope, 2.0);
         }
     }
 }
