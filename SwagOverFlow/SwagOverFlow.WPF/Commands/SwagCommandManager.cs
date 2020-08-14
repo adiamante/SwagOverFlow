@@ -1,24 +1,34 @@
 ﻿using SwagOverFlow.ViewModels;
 using SwagOverFlow.Utils;
-using SwagOverFlow.WPF.Collections;
 using System;
 using System.Windows.Input;
 using SwagOverFlow.Commands;
+using SwagOverFlow.Collections;
+using SwagOverFlow.WPF.UI;
+using System.ComponentModel;
 
 namespace SwagOverFlow.WPF.Commands
 {
     public class SwagCommandManager : ViewModelBase
     {
         #region Private Members
-        ConcurrentObservableSortedDictionary<Int32, SwagCommand> _commandHistory = new ConcurrentObservableSortedDictionary<Int32, SwagCommand>();
-        ConcurrentObservableSortedDictionary<Int32, SwagCommand> _undoHistory = new ConcurrentObservableSortedDictionary<Int32, SwagCommand>();
+        SwagObservableOrderedConcurrentDictionary<Int32, SwagCommand> _commandHistory = new SwagObservableOrderedConcurrentDictionary<Int32, SwagCommand>();
+        SwagObservableOrderedConcurrentDictionary<Int32, SwagCommand> _undoHistory = new SwagObservableOrderedConcurrentDictionary<Int32, SwagCommand>();
         ICommand _undoCommand, _redoCommand;
         Boolean _listening = true;
         #endregion Private Members
 
+        #region Initialization
+        public SwagCommandManager()
+        {
+            ICollectionView col = UIHelper.GetCollectionView(_undoHistory);
+            col.SortDescriptions.Add(new SortDescription("Key", ListSortDirection.Descending));
+        }
+        #endregion Initialization
+
         #region Properties
         #region CommandHistory
-        public ConcurrentObservableSortedDictionary<Int32, SwagCommand> CommandHistory
+        public SwagObservableOrderedConcurrentDictionary<Int32, SwagCommand> CommandHistory
         {
             get { return _commandHistory; }
             set { SetValue(ref _commandHistory, value); }
@@ -26,7 +36,7 @@ namespace SwagOverFlow.WPF.Commands
         #endregion CommandHistory
 
         #region UndoHistory
-        public ConcurrentObservableSortedDictionary<Int32, SwagCommand> UndoHistory
+        public SwagObservableOrderedConcurrentDictionary<Int32, SwagCommand> UndoHistory
         {
             get { return _undoHistory; }
             set { SetValue(ref _undoHistory, value); }
@@ -64,8 +74,8 @@ namespace SwagOverFlow.WPF.Commands
             if (_commandHistory.Count > 0)
             {
                 _listening = false;
-                SwagCommand cmd = _commandHistory[_commandHistory.Count - 1];
-                _undoHistory.Add(Int32.MaxValue - _undoHistory.Count, cmd);
+                SwagCommand cmd = _commandHistory.Get(_commandHistory.Count - 1);
+                _undoHistory.Add(_undoHistory.Count, cmd);
                 _commandHistory.Remove(_commandHistory.Count - 1);
                 cmd.Undo();
                 _listening = true;
@@ -77,9 +87,9 @@ namespace SwagOverFlow.WPF.Commands
             if (_undoHistory.Count > 0)
             {
                 _listening = false;
-                SwagCommand cmd = _undoHistory[Int32.MaxValue - _undoHistory.Count + 1];
+                SwagCommand cmd = _undoHistory.Get(_undoHistory.Count - 1);
                 _commandHistory.Add(_commandHistory.Count, cmd);
-                _undoHistory.Remove(Int32.MaxValue - _undoHistory.Count + 1);
+                _undoHistory.Remove(_undoHistory.Count - 1);
                 cmd.Execute();
                 _listening = true;
             }
