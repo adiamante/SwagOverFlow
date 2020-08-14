@@ -366,7 +366,7 @@ namespace SwagOverFlow.ViewModels
             _isColumnFilterOpen = false, _showAllDistinctValues = false, _listCheckAll = false,
             _isCheckedVisiblity, _isCheckedFilter;
         protected Decimal _total = 0.0m;
-        protected Int32 _colSeq;
+        protected Int32 _colSeq = -1;
         protected String _expression, _dataTemplate, _searchFilter, _listValuesFilter, _appliedFilter;
         protected FilterMode _searchFilterMode, _listValuesFilterMode;
         protected Type _dataType;
@@ -813,49 +813,41 @@ namespace SwagOverFlow.ViewModels
 
         public void SetSequence(Int32 ordinal)
         {
-            //FIX_THIS
-            //SwagDataTableWPF sdtWpf = (SwagDataTableWPF)SwagDataTable;
-            //sdtWpf.DataTable.Columns[ColumnName].SetOrdinal(ordinal);
-            //foreach (DataColumn dc in SwagDataTable.DataTable.Columns)
-            //{
-            //    sdtWpf.Columns[dc.ColumnName].ColSeq = dc.Ordinal;
-            //}
-            //sdtWpf.ResetColumns();
-            //sdtWpf.InvalidateColumns();
-            //sdtWpf.Save();
+            SwagDataTable sdt = SwagDataTable;
+            sdt.DataTable.Columns[ColumnName].SetOrdinal(ordinal);
+            foreach (DataColumn dc in SwagDataTable.DataTable.Columns)
+            {
+                sdt.Columns[dc.ColumnName].ColSeq = dc.Ordinal;
+            }
+            sdt.ResetColumnsCommand.Execute(null);
+            sdt.InvalidateColumns();
         }
 
         public void Rename(String newColName)
         {
-            //FIX_THIS
-            //SwagDataTableWPF sdtWpf = (SwagDataTableWPF)SwagDataTable;
-            //Int32 originalColSeq = ColSeq;
-            ////Update DataTable to have the new name
-            //sdtWpf.DataTable.Columns[ColumnName].ColumnName = newColName;
-            //sdtWpf.Columns.Remove(ColumnName);
-            //ColumnName = newColName;
-            //Binding = null;         //will need a new binding
-            //sdtWpf.Columns.Add(ColumnName, this);
-            //SetSequence(originalColSeq);        //When a column is added with 0 or lower sequence, it gets the value SwagDataTable.Columns.Count - 1
-            //sdtWpf.DelaySave = true;
-            //sdtWpf.ResetColumns();
-            //sdtWpf.InvalidateColumns();
-            //sdtWpf.InvalidateRows();
-            //sdtWpf.DelaySave = false;
-            //sdtWpf.Save();
+            SwagDataTable sdt = SwagDataTable;
+            Int32 originalColSeq = ColSeq;
+            //Update DataTable to have the new name
+            sdt.DataTable.Columns[ColumnName].ColumnName = newColName;
+            sdt.Columns.Remove(ColumnName);
+            ColumnName = newColName;
+            sdt.Columns.Add(ColumnName, this);
+            SetSequence(originalColSeq);        //When a column is added with 0 or lower sequence, it gets the value SwagDataTable.Columns.Count - 1
+            sdt.DelaySave = true;
+            sdt.InvalidateColumns();
+            sdt.InvalidateRows();
+            sdt.DelaySave = false;
         }
 
         public void Remove()
         {
-            //FIX_THIS
-            //SwagDataTableWPF sdtWpf = (SwagDataTableWPF)SwagDataTable;
-            //sdtWpf.Columns.Remove(ColumnName);
-            //foreach (DataColumn dc in sdtWpf.DataTable.Columns)
-            //{
-            //    sdtWpf.Columns[dc.ColumnName].ColSeq = dc.Ordinal;
-            //}
-            //sdtWpf.InvalidateColumns();
-            //sdtWpf.Save();
+            SwagDataTable sdt = SwagDataTable;
+            sdt.Columns.Remove(ColumnName);
+            foreach (DataColumn dc in sdt.DataTable.Columns)
+            {
+                sdt.Columns[dc.ColumnName].ColSeq = dc.Ordinal;
+            }
+            sdt.InvalidateColumns();
         }
 
         public void OnApplyDistinctValuesFilter()
@@ -865,6 +857,20 @@ namespace SwagOverFlow.ViewModels
             {
                 handler(this, null);
             }
+        }
+
+        public DataColumn DataColumn()
+        {
+            DataColumn dc = new DataColumn();
+            if (String.IsNullOrEmpty(Expression))
+            {
+                PropertyCopy.Copy(this, dc);
+            }
+            else
+            {
+                PropertyCopy.Copy(this, dc, new List<string>() { "ReadOnly" });
+            }
+            return dc;
         }
         #endregion Methods
     }
@@ -1279,10 +1285,9 @@ namespace SwagOverFlow.ViewModels
                     e.Message = $"{this.Name}.{sdc.ColumnName}({e.OldValue}) => {e.NewValue}";
                     switch (e.PropertyName)
                     {
-                        //FIX_THIS BY MOVING TO VIEW
-                        //case "IsVisible":
-                        //    _columnCollectionViewSource.View.Refresh();
-                        //    break;
+                        case "IsVisible":
+                            ResetColumnsCommand.Execute(null);
+                            break;
                         case "AppliedFilter":
                             FilterCommand.Execute(null);
                             break;
@@ -1300,6 +1305,11 @@ namespace SwagOverFlow.ViewModels
             base.OnSwagItemChanged(swagItem, e);
         }
 
+        public void InitColumns()
+        {
+            ((SwagObservableOrderedDictionary<String, SwagDataColumn>)_columns).CollectionChanged += viewModel_Columns_CollectionChanged;
+        }
+
         public void InitDataTable()
         {
             _dataTable.DefaultView.ListChanged += dataView_ListChanged;
@@ -1309,50 +1319,43 @@ namespace SwagOverFlow.ViewModels
         #region Column Events
         private void viewModel_Columns_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            //FIX_THIS
-            //switch (e.Action)
-            //{
-            //    case NotifyCollectionChangedAction.Add:
-            //        foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in e.NewItems)
-            //        {
-            //            if (!_dataTable.Columns.Contains(sdcKvp.Key))
-            //            {
-            //                _dataTable.Columns.Add(sdcKvp.Value.DataColumn());
-            //                _dataTable.Columns[sdcKvp.Key].SetOrdinal(e.NewStartingIndex);
-            //                this.Children.Add(sdcKvp.Value);
-            //            }
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in e.NewItems)
+                    {
+                        if (!_dataTable.Columns.Contains(sdcKvp.Key))
+                        {
+                            _dataTable.Columns.Add(sdcKvp.Value.DataColumn());
+                            _dataTable.Columns[sdcKvp.Key].SetOrdinal(e.NewStartingIndex);
+                            this.Children.Add(sdcKvp.Value);
+                        }
 
-            //            if (sdcKvp.Value.ColSeq <= 0)
-            //            {
-            //                sdcKvp.Value.ColSeq = _columns.Count - 1;
-            //            }
-            //            sdcKvp.Value.Parent = this;
-            //            InvalidateRows();
-            //        }
-            //        break;
-            //    case NotifyCollectionChangedAction.Remove:
-            //        foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in e.OldItems)
-            //        {
-            //            if (_dataTable.Columns.Contains(sdcKvp.Key))
-            //            {
-            //                _dataTable.Columns.Remove(sdcKvp.Key);
-            //                //This orphans the child
-            //                this.Children.Remove(sdcKvp.Value);
-            //                if (_context != null)
-            //                {
-            //                    SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
-            //                    work.Data.Delete(sdcKvp.Value);
-            //                    work.Complete();
-            //                }
-            //            }
-            //        }
-            //        InvalidateRows();
-            //        break;
-            //    case NotifyCollectionChangedAction.Reset:
-            //        break;
-            //}
-            //InvalidateColumns();
-            //OnPropertyChanged("ColumnCount");
+                        if (sdcKvp.Value.ColSeq < 0)
+                        {
+                            sdcKvp.Value.ColSeq = _columns.Count - 1;
+                        }
+                        sdcKvp.Value.Parent = this;
+                        InvalidateRows();
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in e.OldItems)
+                    {
+                        if (_dataTable.Columns.Contains(sdcKvp.Key))
+                        {
+                            _dataTable.Columns.Remove(sdcKvp.Key);
+                            //This orphans the child
+                            this.Children.Remove(sdcKvp.Value);
+                        }
+                    }
+                    InvalidateRows();
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    break;
+            }
+            InvalidateColumns();
+            OnPropertyChanged("ColumnCount");
         }
         #endregion Column Events
 
@@ -1374,7 +1377,7 @@ namespace SwagOverFlow.ViewModels
             //}
         }
 
-        private void dataView_ListChanged(object sender, ListChangedEventArgs e)
+        public void dataView_ListChanged(object sender, ListChangedEventArgs e)
         {
             foreach (KeyValuePair<String, SwagDataColumn> kvp in _columns)
             {
@@ -1546,11 +1549,65 @@ namespace SwagOverFlow.ViewModels
             return ds;
         }
 
+        public void InvalidateColumns()
+        {
+            DelaySave = true;
+            foreach (SwagData swagData in Children)
+            {
+                switch (swagData)
+                {
+                    case SwagDataColumn swagDataColumn:
+                        swagDataColumn.CanUndo = false;
+                        swagDataColumn.DataTypeString = swagDataColumn.DataTypeString;
+                        swagDataColumn.Value = swagDataColumn.Value;
+                        swagDataColumn.CanUndo = true;
+                        break;
+                }
+            }
+            DelaySave = false;
+        }
+
+        public void InvalidateRows()
+        {
+            DelaySave = true;
+            foreach (SwagData swagData in Children)
+            {
+                switch (swagData)
+                {
+                    case SwagDataRow swagDataRow:
+                        swagDataRow.CanUndo = false;
+                        swagDataRow.Value = swagDataRow.Value;
+                        swagDataRow.CanUndo = true;
+                        break;
+                }
+            }
+            DelaySave = false;
+        }
+
         public void OnPropertyChangedPublic(String propertyName)
         {
             OnPropertyChanged(propertyName);
         }
         #endregion Methods
+
+        public class FreezeList : IDisposable
+        {
+            SwagDataTable _swagDataTable;
+            public FreezeList(SwagDataTable swagDataTable)
+            {
+                swagDataTable.DataTable.DefaultView.ListChanged -= swagDataTable.dataView_ListChanged;
+                _swagDataTable = swagDataTable;
+            }
+
+            ~FreezeList() => Dispose();
+
+            public void Dispose()
+            {
+                _swagDataTable.DataTable.DefaultView.ListChanged += _swagDataTable.dataView_ListChanged;
+                _swagDataTable.dataView_ListChanged(null, new ListChangedEventArgs(ListChangedType.Reset, -1));
+            }
+        }
+
     }
     #endregion SwagDataTable
 
@@ -1812,4 +1869,6 @@ namespace SwagOverFlow.ViewModels
     {
     }
     #endregion SwagDataSetResultGroup
+
+
 }

@@ -22,6 +22,7 @@ using SwagOverFlow.Data.Converters;
 using Microsoft.Win32;
 using System.IO;
 using SwagOverFlow.Iterator;
+using System.Threading.Tasks;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -135,14 +136,14 @@ namespace SwagOverFlow.WPF.Controls
         public static void InitSwagDataTable(SwagDataTable swagDataTable)
         {
             //swagDataTable.PropertyChanged += SwagDataTable_PropertyChanged;
+
             #region Clear Columns and Rows for instance
             swagDataTable.Columns.Clear();
             swagDataTable.Children.Clear();
             #endregion Clear Columns and Rows for instance
 
             #region Add Columns and Rows for instance
-            //FIX_THIS
-            //Should be different depending on if swagDataTable is already initialized or not
+            swagDataTable.InitColumns();
             foreach (DataColumn dc in swagDataTable.DataTable.Columns)
             {
                 SwagDataColumn sdc = new SwagDataColumn() { ColumnName = dc.ColumnName, DataType = dc.DataType };
@@ -459,75 +460,85 @@ namespace SwagOverFlow.WPF.Controls
             SwagDataGrid fdgDataGrid = source as SwagDataGrid;
             DataGrid dataGrid = fdgDataGrid.DataGrid;
 
-            if (dataGrid != null && e.NewValue != null)
+            if (dataGrid != null)
             {
-                ICollectionView columns = UIHelper.GetCollectionView((IEnumerable)e.NewValue);
-                SortDescription sortDescription = new SortDescription("Value.ColSeq", ListSortDirection.Ascending);
-                if (!columns.SortDescriptions.Contains(sortDescription))
-                {
-                    columns.SortDescriptions.Add(sortDescription);
-                }
-                columns.Filter = (itm) =>
-                {
-                    KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
-                    return kvp.Value.IsVisible;
-                };
-
                 dataGrid.Dispatcher.Invoke(new Action(() =>
                 {
-                    dataGrid.Columns.Clear();
-                    if (columns == null)
+                    #region columnCollectionChanged
+                    Action<object, NotifyCollectionChangedEventArgs> columnCollectionChanged = (s, ne) =>
                     {
-                        return;
-                    }
+                        
+                    };
+                    #endregion columnCollectionChanged
 
-                    foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in columns)
+                    if (e.NewValue != null)
                     {
-                        dataGrid.Columns.Add(sdcKvp.Value.DataGridColumn());
-                        sdcKvp.Value.Init();
-                    }
-
-                    if (e.OldValue == null)
-                    {
-                        columns.CollectionChanged += (sender, e2) =>
+                        ICollectionView columns = UIHelper.GetCollectionView((IEnumerable)e.NewValue);
+                        SortDescription sortDescription = new SortDescription("Value.ColSeq", ListSortDirection.Ascending);
+                        if (!columns.SortDescriptions.Contains(sortDescription))
                         {
-                            NotifyCollectionChangedEventArgs ne = e2 as NotifyCollectionChangedEventArgs;
-
-                            switch (ne.Action)
-                            {
-                                case NotifyCollectionChangedAction.Reset:
-                                case NotifyCollectionChangedAction.Replace:
-                                    dataGrid.Columns.Clear();
-                                    foreach (KeyValuePair<String, SwagDataColumn> kvp in columns)
-                                    {
-                                        dataGrid.Columns.Add(kvp.Value.DataGridColumn());
-                                    }
-                                    break;
-                                case NotifyCollectionChangedAction.Add:
-                                    foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
-                                    {
-                                        kvp.Value.Init();
-                                        dataGrid.Columns.Add(kvp.Value.DataGridColumn());
-                                    }
-                                    break;
-                                case NotifyCollectionChangedAction.Move:
-                                    foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.NewItems)
-                                    {
-                                        dataGrid.Columns.RemoveAt(ne.OldStartingIndex);
-                                        dataGrid.Columns.Add(kvp.Value.DataGridColumn());
-                                    }
-                                    //dataGrid.Columns.Move(ne.OldStartingIndex, ne.NewStartingIndex);
-                                    break;
-                                case NotifyCollectionChangedAction.Remove:
-                                    foreach (KeyValuePair<String, SwagDataColumn> kvp in ne.OldItems)
-                                    {
-                                        dataGrid.Columns.RemoveAt(ne.OldStartingIndex);
-                                    }
-                                    break;
-                            }
+                            columns.SortDescriptions.Add(sortDescription);
+                        }
+                        columns.Filter = (itm) =>
+                        {
+                            KeyValuePair<String, SwagDataColumn> kvp = (KeyValuePair<String, SwagDataColumn>)itm;
+                            return kvp.Value.IsVisible;
                         };
+
+                        dataGrid.Columns.Clear();
+                        foreach (KeyValuePair<String, SwagDataColumn> sdcKvp in columns)
+                        {
+                            dataGrid.Columns.Add(sdcKvp.Value.DataGridColumn());
+                            sdcKvp.Value.Init();
+                        }
+
+                        columns.CollectionChanged += fdgDataGrid.Columns_CollectionChanged;
+                    }
+
+                    if (e.OldValue is IEnumerable oldCol)
+                    {
+                        ICollectionView columns = UIHelper.GetCollectionView(oldCol);
+                        columns.CollectionChanged -= fdgDataGrid.Columns_CollectionChanged;
                     }
                 }));
+            }
+        }
+
+        private void Columns_CollectionChanged(object s, NotifyCollectionChangedEventArgs e)
+        {
+            ICollectionView cols = (ICollectionView)s;
+            DataGrid dataGrid = DataGrid;   //This is kind of dirty but gotta get it working yo
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Reset:
+                case NotifyCollectionChangedAction.Replace:
+                    dataGrid.Columns.Clear();
+                    foreach (KeyValuePair<String, SwagDataColumn> kvp in cols)
+                    {
+                        dataGrid.Columns.Add(kvp.Value.DataGridColumn());
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Add:
+                    foreach (KeyValuePair<String, SwagDataColumn> kvp in e.NewItems)
+                    {
+                        kvp.Value.Init();
+                        dataGrid.Columns.Add(kvp.Value.DataGridColumn());
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    foreach (KeyValuePair<String, SwagDataColumn> kvp in e.NewItems)
+                    {
+                        dataGrid.Columns.RemoveAt(e.OldStartingIndex);
+                        dataGrid.Columns.Add(kvp.Value.DataGridColumn());
+                    }
+                    //dataGrid.Columns.Move(ne.OldStartingIndex, ne.NewStartingIndex);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (KeyValuePair<String, SwagDataColumn> kvp in e.OldItems)
+                    {
+                        dataGrid.Columns.RemoveAt(e.OldStartingIndex);
+                    }
+                    break;
             }
         }
 
@@ -754,7 +765,7 @@ namespace SwagOverFlow.WPF.Controls
             swagDataResult.IsSelected = true;
         }
 
-        private void SwagColumnHeader_ConvertClick(object sender, RoutedEventArgs e)
+        private async void SwagColumnHeader_ConvertClick(object sender, RoutedEventArgs e)
         {
             MenuItem menuItem = (MenuItem)sender;
             MenuItem miParent = (MenuItem)menuItem.Parent;
@@ -779,50 +790,76 @@ namespace SwagOverFlow.WPF.Controls
 
             SwagDataColumn newSwagDataColumn = new SwagDataColumn() { ColumnName = newColName, DataType = targetType };
             swagDataTable.Columns.Add(newSwagDataColumn.ColumnName, newSwagDataColumn);
-
-            #region Resolve defaultValue
-            Object defaultValue = DBNull.Value;
-            if (targetType.GetTypeCode() != TypeCode.String)
+            SwagWindow.GlobalIsBusy = true;
+            await Task.Run(() =>
             {
-                try
+                Func<Type, String, object, object> convert = (type, input, defaultOutput) =>
                 {
-                    defaultValue = Convert.ChangeType(defaultValueText, targetType);
-                }
-                catch
-                {
-                    defaultValue = DBNull.Value;
-                }
-            }
-            else
-            {
-                defaultValue = defaultValueText;
-            }
-            #endregion Resolve defaultValue
+                    switch (type.Name)
+                    {
+                        case "Int32":
+                            if (Int32.TryParse(input, out Int32 outInt32))
+                            {
+                                return outInt32;
+                            }
+                            break;
+                        case "Decimal":
+                            if (Decimal.TryParse(input, out Decimal outDecimal))
+                            {
+                                return outDecimal;
+                            }
+                            break;
+                        case "DateTime":
+                            if (DateTime.TryParse(input, out DateTime outDateTime))
+                            {
+                                return outDateTime;
+                            }
+                            break;
+                        case "TimeSpan":
+                            if (TimeSpan.TryParse(input, out TimeSpan outTimeSpan))
+                            {
+                                return outTimeSpan;
+                            }
+                            break;
+                        case "String":
+                        default:
+                            return input.ToString();
+                    }
+                    return defaultOutput;
+                };
 
-            #region Resolve Rows
-            swagDataTable.DelaySave = true;
-            foreach (DataRow dr in dt.Rows)
-            {
-                try
+                #region Resolve defaultValue
+                Object defaultValue = DBNull.Value;
+                if (targetType.GetTypeCode() != TypeCode.String)
                 {
-                    dr[newColName] = Convert.ChangeType(dr[$"{originalSwagDataColumn.ColumnName}"].ToString(), targetType);
+                    defaultValue = convert(targetType, defaultValueText, DBNull.Value);
                 }
-                catch
+                else
                 {
-                    dr[newColName] = defaultValue;
+                    defaultValue = defaultValueText;
                 }
-            }
-            swagDataTable.DelaySave = false;
-            #endregion Resolve Rows
+                #endregion Resolve defaultValue
 
+                #region Resolve Rows
+                swagDataTable.DelaySave = true;
+                using (SwagDataTable.FreezeList freeze = new SwagDataTable.FreezeList(swagDataTable))
+                {
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        dr[newColName] = convert(targetType, dr[$"{originalSwagDataColumn.ColumnName}"].ToString(), defaultValue);
+                    }
+                }
+                swagDataTable.DelaySave = false;
+                #endregion Resolve Rows
+            });
+
+            SwagWindow.GlobalIsBusy = false;
             if (!keepOriginal)
             {
                 newSwagDataColumn.SetSequence(originalSwagDataColumn.ColSeq);
                 originalSwagDataColumn.Remove();
                 newSwagDataColumn.Rename(originalSwagDataColumn.ColumnName);
             }
-            //FIX_THIS
-            //swagDataTable.Save();
 
             SwagLogger.LogEnd(this, "Convert Column |col={Column}|", originalSwagDataColumn.ColumnName);
         }
@@ -894,16 +931,17 @@ namespace SwagOverFlow.WPF.Controls
 
             SwagLogger.LogStart(this, "Fill Column with Default |col={Column}|", swagDataColumn.ColumnName);
             swagDataTable.DelaySave = true;
-            foreach (DataRowView drv in swagDataTable.DataTable.DefaultView)
+            using (SwagDataTable.FreezeList freeze = new SwagDataTable.FreezeList(swagDataTable))
             {
-                if (drv[colName] == null || drv[colName] == DBNull.Value || drv[colName].ToString() == "")
+                foreach (DataRowView drv in swagDataTable.DataTable.DefaultView)
                 {
-                    drv[colName] = Activator.CreateInstance(targetType);
+                    if (drv[colName] == null || drv[colName] == DBNull.Value || drv[colName].ToString() == "")
+                    {
+                        drv[colName] = Activator.CreateInstance(targetType);
+                    }
                 }
             }
             swagDataTable.DelaySave = false;
-            //FIX_THIS
-            //swagDataTable.Save();
         }
 
         private void SwagColumnHeader_FillEmptyInputClick(object sender, RoutedEventArgs e)
@@ -943,16 +981,17 @@ namespace SwagOverFlow.WPF.Controls
                 #endregion Resolve defaultValue
 
                 swagDataTable.DelaySave = true;
-                foreach (DataRowView drv in swagDataTable.DataTable.DefaultView)
+                using (SwagDataTable.FreezeList freeze = new SwagDataTable.FreezeList(swagDataTable))
                 {
-                    if (drv[colName] == null || drv[colName] == DBNull.Value || drv[colName].ToString() == "")
+                    foreach (DataRowView drv in swagDataTable.DataTable.DefaultView)
                     {
-                        drv[colName] = defaultValue;
+                        if (drv[colName] == null || drv[colName] == DBNull.Value || drv[colName].ToString() == "")
+                        {
+                            drv[colName] = defaultValue;
+                        }
                     }
                 }
                 swagDataTable.DelaySave = false;
-                //FIX_THIS
-                //swagDataTable.Save();
             }
 
             contextMenu.IsOpen = false;

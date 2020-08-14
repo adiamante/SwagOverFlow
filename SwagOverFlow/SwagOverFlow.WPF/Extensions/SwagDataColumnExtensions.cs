@@ -61,19 +61,5 @@ namespace SwagOverFlow.WPF.Extensions
 
             return dgc;
         }
-
-        public static DataColumn DataColumn(this SwagDataColumn sdc)
-        {
-            DataColumn dc = new DataColumn();
-            if (String.IsNullOrEmpty(sdc.Expression))
-            {
-                PropertyCopy.Copy(sdc, dc);
-            }
-            else
-            {
-                PropertyCopy.Copy(sdc, dc, new List<string>() { "ReadOnly" });
-            }
-            return dc;
-        }
     }
 }
