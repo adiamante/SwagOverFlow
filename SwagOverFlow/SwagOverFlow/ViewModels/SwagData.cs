@@ -1519,19 +1519,24 @@ namespace SwagOverFlow.ViewModels
         {
             OnPropertyChanged(propertyName);
         }
+
+        public FreezeListScope GetFreezeListScope()
+        {
+            return new FreezeListScope(this);
+        }
         #endregion Methods
 
         #region Scopes
-        public class FreezeList : IDisposable
+        public class FreezeListScope : IDisposable
         {
             SwagDataTable _swagDataTable;
-            public FreezeList(SwagDataTable swagDataTable)
+            public FreezeListScope(SwagDataTable swagDataTable)
             {
                 swagDataTable.DataTable.DefaultView.ListChanged -= swagDataTable.dataView_ListChanged;
                 _swagDataTable = swagDataTable;
             }
 
-            ~FreezeList() => Dispose();
+            ~FreezeListScope() => Dispose();
 
             public void Dispose()
             {

@@ -844,7 +844,7 @@ namespace SwagOverFlow.WPF.Controls
 
                 #region Resolve Rows
                 swagDataTable.DelaySave = true;
-                using (SwagDataTable.FreezeList freeze = new SwagDataTable.FreezeList(swagDataTable))
+                using (var scope = swagDataTable.GetFreezeListScope())
                 {
                     foreach (DataRow dr in dt.Rows)
                     {
@@ -933,7 +933,7 @@ namespace SwagOverFlow.WPF.Controls
 
             SwagLogger.LogStart(this, "Fill Column with Default |col={Column}|", swagDataColumn.ColumnName);
             swagDataTable.DelaySave = true;
-            using (SwagDataTable.FreezeList freeze = new SwagDataTable.FreezeList(swagDataTable))
+            using (var scope = swagDataTable.GetFreezeListScope())
             {
                 foreach (DataRowView drv in swagDataTable.DataTable.DefaultView)
                 {
@@ -983,7 +983,7 @@ namespace SwagOverFlow.WPF.Controls
                 #endregion Resolve defaultValue
 
                 swagDataTable.DelaySave = true;
-                using (SwagDataTable.FreezeList freeze = new SwagDataTable.FreezeList(swagDataTable))
+                using (var scope = swagDataTable.GetFreezeListScope())
                 {
                     foreach (DataRowView drv in swagDataTable.DataTable.DefaultView)
                     {
