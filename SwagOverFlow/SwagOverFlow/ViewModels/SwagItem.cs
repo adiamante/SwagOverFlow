@@ -92,13 +92,6 @@ namespace SwagOverFlow.ViewModels
             set { SetValue(ref _isSelected, value); }
         }
         #endregion IsSelected
-        #region CanUndo
-        public Boolean CanUndo
-        {
-            get { return _canUndo; }
-            set { SetValue(ref _canUndo, value); }
-        }
-        #endregion CanUndo
         #endregion Properties
     }
 

@@ -174,28 +174,25 @@ namespace TestWPF
             }
         }
 
-        private async void MapSimilar_Button_Click(object sender, RoutedEventArgs e)
+        private void MapSimilar_Button_Click(object sender, RoutedEventArgs e)
         {
             DataTable dt = Source.DataTable;
 
-            await this.RunInBackground(() =>
+            //FIX_THIS
+            //Source.SetContext(null);
+            for (int r = 0; r < dt.Rows.Count; r++)
             {
-                //FIX_THIS
-                //Source.SetContext(null);
-                for (int r = 0; r < dt.Rows.Count; r++)
-                {
-                    DataRow drSource = Source.DataTable.Rows[r];
-                    String description = drSource[descriptionField].ToString();
-                    DataRow[] drMatches = Dest.DataTable.Select($"[{descriptionField}] = '{description.Replace("'", "''")}'");
+                DataRow drSource = Source.DataTable.Rows[r];
+                String description = drSource[descriptionField].ToString();
+                DataRow[] drMatches = Dest.DataTable.Select($"[{descriptionField}] = '{description.Replace("'", "''")}'");
 
-                    if (drMatches.Length > 0)
-                    {
-                        DataRow drDest = drMatches[0];
-                        drSource["DestID"] = drDest["ItemID"];
-                        drSource["Mapping"] = drDest[descriptionField];
-                    }
+                if (drMatches.Length > 0)
+                {
+                    DataRow drDest = drMatches[0];
+                    drSource["DestID"] = drDest["ItemID"];
+                    drSource["Mapping"] = drDest[descriptionField];
                 }
-            });
+            }
 
             //FIX_THIS
             //Source.SetContext(SwagWPFContainer.Context);
@@ -266,7 +263,7 @@ namespace TestWPF
 
         private void SwagWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            SwagWindow.CommandManager.Attach(Source);
+            //SwagWindow.CommandManager.Attach(Source);
         }
 
     }

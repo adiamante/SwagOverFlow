@@ -197,7 +197,7 @@ namespace SwagOverFlow.WPF.Controls
                             swagDataSet.Children.CollectionChanged += Children_CollectionChanged;
                             break;
                         case SwagDataTable swagDataTable:
-                            SwagWindow.CommandManager.Attach(swagDataTable);
+                            //SwagWindow.CommandManager.Attach(swagDataTable);
                             break;
                     }
                 }
@@ -463,7 +463,6 @@ namespace SwagOverFlow.WPF.Controls
                 e.Handled = true;
             }
         }
-
         #endregion Paste
         #endregion Parse
 
@@ -473,7 +472,6 @@ namespace SwagOverFlow.WPF.Controls
             throw new Exception("Test Exception", new Exception("Inner Exception"));
         }
         #endregion Test
-
 
     }
 

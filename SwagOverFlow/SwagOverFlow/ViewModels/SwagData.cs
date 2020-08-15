@@ -95,13 +95,11 @@ namespace SwagOverFlow.ViewModels
             {
                 foreach (SwagData newItem in e.NewItems)
                 {
-                    newItem.CanUndo = false;
                     newItem.Parent = this;
                     if (newItem.Sequence < 0)
                     {
                         newItem.Sequence = this.Children.Count - 1;
                     }
-                    newItem.CanUndo = true;
                 }
             }
         }
@@ -1264,9 +1262,7 @@ namespace SwagOverFlow.ViewModels
             {
                 foreach (SwagData newItem in e.NewItems)
                 {
-                    newItem.CanUndo = false;
                     newItem.Parent = this;
-                    newItem.CanUndo = true;
                 }
             }
         }
@@ -1496,10 +1492,8 @@ namespace SwagOverFlow.ViewModels
                 switch (swagData)
                 {
                     case SwagDataColumn swagDataColumn:
-                        swagDataColumn.CanUndo = false;
                         swagDataColumn.DataTypeString = swagDataColumn.DataTypeString;
                         swagDataColumn.Value = swagDataColumn.Value;
-                        swagDataColumn.CanUndo = true;
                         break;
                 }
             }
@@ -1514,9 +1508,7 @@ namespace SwagOverFlow.ViewModels
                 switch (swagData)
                 {
                     case SwagDataRow swagDataRow:
-                        swagDataRow.CanUndo = false;
                         swagDataRow.Value = swagDataRow.Value;
-                        swagDataRow.CanUndo = true;
                         break;
                 }
             }

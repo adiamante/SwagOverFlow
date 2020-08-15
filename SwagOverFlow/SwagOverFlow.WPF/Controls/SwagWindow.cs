@@ -1,6 +1,7 @@
 ﻿using ControlzEx.Theming;
 using MahApps.Metro.Controls;
 using SwagOverFlow.Logger;
+using SwagOverFlow.ViewModels;
 using SwagOverFlow.WPF.Commands;
 using SwagOverFlow.WPF.Services;
 using SwagOverFlow.WPF.UI;
@@ -22,26 +23,19 @@ namespace SwagOverFlow.WPF.Controls
 {
     public class SwagWindow : MetroWindow, INotifyPropertyChanged
     {
+        #region Private Members
         static SwagWindowSettingGroup _settings;
         static SwagCommandManager _swagCommandManager;
-        static SwagWindow()
-        {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(SwagWindow), new FrameworkPropertyMetadata(typeof(SwagWindow)));
+        #endregion Private Members
 
-            SwagWPFContainer.Context.Database.EnsureCreated();
-            String settingGoupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Settings";
-            _settings = SwagWPFContainer.SettingsService.GetWindowSettingGroupByName(settingGoupName);
-            _swagCommandManager = new SwagCommandManager();
-
-        }
-
+        #region Properties
         #region Settings
         private static readonly DependencyProperty SettingsProperty =
             DependencyProperty.Register("Settings", typeof(SwagWindowSettingGroup), typeof(SwagWindow), new PropertyMetadata(_settings));
 
         public SwagWindowSettingGroup Settings
         {
-            get 
+            get
             {
                 SwagWindowSettingGroup settings = (SwagWindowSettingGroup)GetValue(SettingsProperty);
                 if (settings == null)
@@ -49,14 +43,13 @@ namespace SwagOverFlow.WPF.Controls
                     SetValue(SettingsProperty, _settings);
                     settings = _settings;
                 }
-                return settings; 
+                return settings;
             }
             set { SetValue(SettingsProperty, value); }
         }
 
         public static SwagWindowSettingGroup GlobalSettings => _settings;
         #endregion Settings
-
         #region SettingCustomTemplates
         public static readonly DependencyProperty SettingCustomTemplatesProperty =
             DependencyProperty.Register("SettingCustomTemplates", typeof(SwagTemplateCollection), typeof(SwagWindow),
@@ -68,27 +61,24 @@ namespace SwagOverFlow.WPF.Controls
             set { SetValue(SettingCustomTemplatesProperty, value); }
         }
         #endregion SettingCustomTemplates
-
         #region StatusMessage
         public String StatusMessage
         {
             get { return Settings["Window"]["Status"]["Message"].GetValue<String>(); }
-            set 
+            set
             {
                 Settings["Window"]["Status"]["Message"].SetValue(value);
                 OnPropertyChanged();
             }
         }
         #endregion StatusMessage
-
-        #region IsBusy
+        #region GlobalIsBusy
         public static Boolean GlobalIsBusy
         {
             get { return GlobalSettings["Window"]["Status"]["IsBusy"].GetValue<Boolean>(); }
             set { GlobalSettings["Window"]["Status"]["IsBusy"].SetValue(value); }
         }
-        #endregion IsBusy
-
+        #endregion GlobalIsBusy
         #region IsBusy
         public Boolean IsBusy
         {
@@ -100,19 +90,23 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion IsBusy
-
         #region CommandManager
         public static SwagCommandManager CommandManager => _swagCommandManager;
-        //private static readonly DependencyProperty CommandManagerProperty =
-        //    DependencyProperty.Register("CommandManager", typeof(SwagCommandManager), typeof(SwagWindow),
-        //        new PropertyMetadata(new SwagCommandManager()));
-
-        //public SwagCommandManager CommandManager
-        //{
-        //    get { return (SwagCommandManager)GetValue(CommandManagerProperty); }
-        //    set { SetValue(CommandManagerProperty, value); }
-        //}
         #endregion CommandManager
+        #endregion Properties
+
+        #region Initialization
+        static SwagWindow()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(SwagWindow), new FrameworkPropertyMetadata(typeof(SwagWindow)));
+
+            SwagWPFContainer.Context.Database.EnsureCreated();
+            String settingGoupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Settings";
+            _settings = SwagWPFContainer.SettingsService.GetWindowSettingGroupByName(settingGoupName);
+            _swagCommandManager = new SwagCommandManager();
+
+        }
+        #endregion Initialization
 
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -152,8 +146,6 @@ namespace SwagOverFlow.WPF.Controls
                 Settings["Window"]["Status"]["IsBusy"].PropertyChanged += WindowSettingCollection_StatusIsBusyPropertyChanged;
                 WindowSettingCollection_ThemePropertyChanged(this, new PropertyChangedEventArgs("Value"));
 
-                CommandManager.Attach(Settings);
-
                 InputBindings.Add(new KeyBinding() { Modifiers = ModifierKeys.Control, Key = Key.Z, Command = CommandManager.UndoCommand });
                 InputBindings.Add(new KeyBinding() { Modifiers = ModifierKeys.Control, Key = Key.Y, Command = CommandManager.RedoCommand });
 
@@ -161,10 +153,84 @@ namespace SwagOverFlow.WPF.Controls
                 {
                     Settings["Window"]["Status"]["Message"].SetValue(sse.Message);
                 };
+
+                Settings.SwagItemChanged += Settings_SwagItemChanged;
             }
 
             SettingsControl settingsControl = this.FindLogicalChild<SettingsControl>();
             settingsControl.Save += SwagWindowSettings_Save;
+        }
+
+        private void Settings_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
+        {
+            if (!CommandManager.IsFrozen)
+            {
+                Boolean canUndo = true;
+
+                if (e.PropertyChangedArgs.Object is SwagSettingBoolean boolSetting)
+                {
+                    switch (boolSetting.Path)
+                    {
+                        case "Window/Settings/IsOpen":
+                        case "Window/CommandHistory/IsOpen":
+                            canUndo = false;
+                            break;
+                    }
+                }
+
+                #region General
+                if (canUndo)
+                {
+                    switch (e.PropertyChangedArgs.Object)
+                    {
+                        case SwagSettingGroup swagSettingGroup:
+                            switch (e.PropertyChangedArgs.PropertyName)
+                            {
+                                case "Parent":
+                                case "ObjValue":
+                                case "ValueTypeString":
+                                    canUndo = false;
+                                    break;
+                                case "Sequence":
+                                    if ((Int32)e.PropertyChangedArgs.OldValue == -1)
+                                    {
+                                        canUndo = false;
+                                    }
+                                    break;
+                            }
+                            break;
+                        case SwagSetting swagSetting:
+                            switch (e.PropertyChangedArgs.PropertyName)
+                            {
+                                case "Parent":
+                                case "ObjValue":
+                                case "ValueTypeString":
+                                    canUndo = false;
+                                    break;
+                                case "Sequence":
+                                    if ((Int32)e.PropertyChangedArgs.OldValue == -1)
+                                    {
+                                        canUndo = false;
+                                    }
+                                    break;
+                            }
+                            break;
+                    }
+                }
+                #endregion General
+
+                if (canUndo)
+                {
+                    SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
+                    e.PropertyChangedArgs.PropertyName,
+                    e.PropertyChangedArgs.Object,
+                    e.PropertyChangedArgs.OldValue,
+                    e.PropertyChangedArgs.NewValue);
+                    cmd.Display = e.Message;
+
+                    CommandManager.AddCommand(cmd);
+                }
+            }
         }
 
         private void WindowSettingCollection_StatusIsBusyPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -241,13 +307,6 @@ namespace SwagOverFlow.WPF.Controls
                 //}
                 #endregion OLD - Theme switching is now handled in SwagControlBase.cs
             }
-        }
-
-        public async Task RunInBackground(Action action)
-        {
-            IsBusy = true;
-            await Task.Run(action);
-            IsBusy = false;
         }
         #endregion Events
     }

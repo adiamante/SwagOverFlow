@@ -15,7 +15,7 @@ namespace SwagOverFlow.WPF.Commands
         SwagObservableOrderedConcurrentDictionary<Int32, SwagCommand> _commandHistory = new SwagObservableOrderedConcurrentDictionary<Int32, SwagCommand>();
         SwagObservableOrderedConcurrentDictionary<Int32, SwagCommand> _undoHistory = new SwagObservableOrderedConcurrentDictionary<Int32, SwagCommand>();
         ICommand _undoCommand, _redoCommand;
-        Boolean _listening = true;
+        Boolean _isFrozen = false;
         #endregion Private Members
 
         #region Initialization
@@ -34,7 +34,6 @@ namespace SwagOverFlow.WPF.Commands
             set { SetValue(ref _commandHistory, value); }
         }
         #endregion CommandHistory
-
         #region UndoHistory
         public SwagObservableOrderedConcurrentDictionary<Int32, SwagCommand> UndoHistory
         {
@@ -42,7 +41,6 @@ namespace SwagOverFlow.WPF.Commands
             set { SetValue(ref _undoHistory, value); }
         }
         #endregion UndoHistory
-
         #region UndoCommand
         public ICommand UndoCommand
         {
@@ -54,7 +52,6 @@ namespace SwagOverFlow.WPF.Commands
             }
         }
         #endregion UndoCommand
-
         #region RedoCommand
         public ICommand RedoCommand
         {
@@ -66,6 +63,12 @@ namespace SwagOverFlow.WPF.Commands
             }
         }
         #endregion RedoCommand
+        #region IsFrozen
+        public Boolean IsFrozen
+        {
+            get { return _isFrozen; }
+        }
+        #endregion IsFrozen
         #endregion Properties
 
         #region Methods
@@ -73,12 +76,13 @@ namespace SwagOverFlow.WPF.Commands
         {
             if (_commandHistory.Count > 0)
             {
-                _listening = false;
-                SwagCommand cmd = _commandHistory.Get(_commandHistory.Count - 1);
-                _undoHistory.Add(_undoHistory.Count, cmd);
-                _commandHistory.Remove(_commandHistory.Count - 1);
-                cmd.Undo();
-                _listening = true;
+                using (var scope = GetFrozenScope())
+                {
+                    SwagCommand cmd = _commandHistory.Get(_commandHistory.Count - 1);
+                    _undoHistory.Add(_undoHistory.Count, cmd);
+                    _commandHistory.Remove(_commandHistory.Count - 1);
+                    cmd.Undo();
+                }
             }
         }
 
@@ -86,43 +90,48 @@ namespace SwagOverFlow.WPF.Commands
         {
             if (_undoHistory.Count > 0)
             {
-                _listening = false;
-                SwagCommand cmd = _undoHistory.Get(_undoHistory.Count - 1);
-                _commandHistory.Add(_commandHistory.Count, cmd);
-                _undoHistory.Remove(_undoHistory.Count - 1);
-                cmd.Execute();
-                _listening = true;
+                using (var scope = GetFrozenScope())
+                {
+                    SwagCommand cmd = _undoHistory.Get(_undoHistory.Count - 1);
+                    _commandHistory.Add(_commandHistory.Count, cmd);
+                    _undoHistory.Remove(_undoHistory.Count - 1);
+                    cmd.Execute();
+                }
             }
         }
 
-        public void Attach(ISwagItemChanged subject)
+        public void AddCommand(SwagPropertyChangedCommand cmd)
         {
-            subject.SwagItemChanged += Subject_SwagItemChanged;
+            if (!_isFrozen)
+            {
+                _commandHistory.Add(_commandHistory.Count, cmd);
+            }
         }
 
-        public void Detatch(ISwagItemChanged subject)
+        public FrozenScope GetFrozenScope()
         {
-            subject.SwagItemChanged -= Subject_SwagItemChanged;
+            return new FrozenScope(this);
         }
         #endregion Methods
 
-        #region Events
-        private void Subject_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
+        #region Scopes
+        public class FrozenScope : IDisposable
         {
-            //FIX_THIS Going to redesign the Command Manager, The View will be responsible for calling
-            //if (_listening && e.PropertyChangedArgs.PropertyName != "CanUndo" && e.SwagItem.CanUndo)
-            //{
-            //    SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
-            //        e.PropertyChangedArgs.PropertyName,
-            //        e.PropertyChangedArgs.Object,
-            //        e.PropertyChangedArgs.OldValue,
-            //        e.PropertyChangedArgs.NewValue);
-            //    cmd.Display = e.Message ?? $"{e.PropertyChangedArgs.PropertyName} ({e.PropertyChangedArgs.OldValue}) => {e.PropertyChangedArgs.NewValue}";
+            SwagCommandManager _commandManager;
+            public FrozenScope(SwagCommandManager commandManager)
+            {
+                _commandManager = commandManager;
+                _commandManager._isFrozen = true;
+            }
 
-            //    _commandHistory.Add(_commandHistory.Count, cmd);
-            //}
+            ~FrozenScope() => Dispose();
+
+            public void Dispose()
+            {
+                _commandManager._isFrozen = false;
+            }
         }
-        #endregion Events
+        #endregion Scopes
     }
 
     #region SwagCommand
