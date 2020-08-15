@@ -1,9 +1,0 @@
-﻿<Application x:Class="Dreamporter.WPF.Test.Instruction.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Dreamporter.WPF.Test.Instruction"
-             StartupUri="InstructionTestWindow.xaml">
-    <Application.Resources>
-         
-    </Application.Resources>
-</Application>
