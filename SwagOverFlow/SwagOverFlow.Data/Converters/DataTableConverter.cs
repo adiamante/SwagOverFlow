@@ -549,6 +549,12 @@ namespace SwagOverFlow.Data.Converters
                         DataTableConvertParams csvParams = new DataTableConvertParams();
                         _converters.TryAdd(extension.ToLower(), new DataTableConvertContext(csvConverter, csvParams));
                         break;
+                    case "tsv":
+                    case ".tsv":
+                        IDataTableConverter tsvConverter = new DataTableCsvFileConverter();
+                        DataTableConvertParams tsvParams = new DataTableConvertParams() { RecordDelim = '\t' };
+                        _converters.TryAdd(extension.ToLower(), new DataTableConvertContext(tsvConverter, tsvParams));
+                        break;
                     case "dbf":
                     case ".dbf":
                         IDataTableConverter dbfConverter = new DataTableDbfFileConverter();

@@ -1606,9 +1606,9 @@ namespace SwagOverFlow.ViewModels
             get
             {
                 return _addDataSetCommand ?? (_addDataSetCommand =
-                    new RelayCommand(() =>
+                    new RelayCommand<DataSet>((ds) =>
                     {
-                        SwagDataSet newDataSet = new SwagDataSet();
+                        SwagDataSet newDataSet = new SwagDataSet(ds);
                         newDataSet.Display = $"Set {this.Children.Count + 1}";
                         Children.Add(newDataSet);
                     }));
@@ -1652,9 +1652,12 @@ namespace SwagOverFlow.ViewModels
 
         public SwagDataSet(DataSet dataSet) : this()
         {
-            foreach (DataTable dt in dataSet.Tables)
+            if (dataSet != null)
             {
-                Children.Add(new SwagDataTable(dt) { Display = dt.TableName });
+                foreach (DataTable dt in dataSet.Tables)
+                {
+                    Children.Add(new SwagDataTable(dt) { Display = dt.TableName });
+                }
             }
         }
         #endregion Initialization

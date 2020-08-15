@@ -235,6 +235,24 @@
                             </DataTemplate>
                         </swui:SwagTemplate.DataTemplate>
                     </swui:SwagTemplate>
+                    <swui:SwagTemplate CompareValue="Parse/Paste/JSON">
+                        <swui:SwagTemplate.DataTemplate>
+                            <DataTemplate>
+                                <ContentControl Template="{StaticResource TabItemTemplate}">
+                                    <TextBox CommandManager.PreviewExecuted="Parse_Paste_JSON_txtPreviewExecuted" />
+                                </ContentControl>
+                            </DataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
+                    <swui:SwagTemplate CompareValue="Parse/Paste/XML">
+                        <swui:SwagTemplate.DataTemplate>
+                            <DataTemplate>
+                                <ContentControl Template="{StaticResource TabItemTemplate}">
+                                    <TextBox CommandManager.PreviewExecuted="Parse_Paste_XML_txtPreviewExecuted" />
+                                </ContentControl>
+                            </DataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
                     <swui:SwagTemplate CompareValue="Test">
                         <swui:SwagTemplate.DataTemplate>
                             <DataTemplate>

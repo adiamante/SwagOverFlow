@@ -93,6 +93,8 @@ namespace SwagOverFlow.WPF.Controls
                 tabs["Parse"] = new SwagTabGroup() { Icon = PackIconZondiconsKind.DocumentAdd };
                 tabs["Parse"]["Paste"] = new SwagTabGroup() { Icon = PackIconZondiconsKind.Paste };
                 tabs["Parse"]["Paste"]["TSV"] = new SwagTabItem() { Icon = PackIconMaterialKind.AlphaTBoxOutline };
+                tabs["Parse"]["Paste"]["JSON"] = new SwagTabItem() { Icon = PackIconMaterialKind.CodeJson };
+                tabs["Parse"]["Paste"]["XML"] = new SwagTabItem() { Icon = PackIconMaterialKind.Xml };
                 tabs["Search"] = new SwagTabItem() { Icon = PackIconCustomKind.GlobalSearch };
                 tabs["Test"] = new SwagTabItem() { Icon = PackIconCustomKind.ClipboardTest };
                 tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.Settings };
@@ -423,7 +425,6 @@ namespace SwagOverFlow.WPF.Controls
 
         #region Parse
         #region Paste
-        #region TSV
         private void Parse_Paste_TSV_txtPreviewExecuted(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
         {
             if (e.Command == ApplicationCommands.Paste)
@@ -436,7 +437,33 @@ namespace SwagOverFlow.WPF.Controls
                 e.Handled = true;
             }
         }
-        #endregion TSV
+
+        private void Parse_Paste_JSON_txtPreviewExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Command == ApplicationCommands.Paste)
+            {
+                String text = Clipboard.GetText();
+                DataSetConvertParams cp = new DataSetConvertParams();
+                IDataSetConverter converter = new DataSetJsonStringConverter();
+                DataSet ds = converter.ToDataSet(cp, text);
+                SwagDataSet.AddDataSetCommand.Execute(ds);
+                e.Handled = true;
+            }
+        }
+
+        private void Parse_Paste_XML_txtPreviewExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Command == ApplicationCommands.Paste)
+            {
+                String text = Clipboard.GetText();
+                DataSetConvertParams cp = new DataSetConvertParams();
+                IDataSetConverter converter = new DataSetXmlStringConverter();
+                DataSet ds = converter.ToDataSet(cp, text);
+                SwagDataSet.AddDataSetCommand.Execute(ds);
+                e.Handled = true;
+            }
+        }
+
         #endregion Paste
         #endregion Parse
 
@@ -446,6 +473,8 @@ namespace SwagOverFlow.WPF.Controls
             throw new Exception("Test Exception", new Exception("Inner Exception"));
         }
         #endregion Test
+
+
     }
 
     #region SwagDataHelper
