@@ -235,6 +235,17 @@
                             </DataTemplate>
                         </swui:SwagTemplate.DataTemplate>
                     </swui:SwagTemplate>
+                    <swui:SwagTemplate CompareValue="Test">
+                        <swui:SwagTemplate.DataTemplate>
+                            <DataTemplate>
+                                <ContentControl Template="{StaticResource TabItemTemplate}">
+                                    <DockPanel>
+                                        <Button Click="Test_ThrowError_Click">Throw Error</Button>
+                                    </DockPanel>
+                                </ContentControl>
+                            </DataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
                     <swui:SwagTemplate CompareValue="Settings">
                         <swui:SwagTemplate.DataTemplate>
                             <DataTemplate>

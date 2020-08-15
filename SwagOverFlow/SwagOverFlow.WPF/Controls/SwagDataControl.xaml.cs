@@ -94,6 +94,7 @@ namespace SwagOverFlow.WPF.Controls
                 tabs["Parse"]["Paste"] = new SwagTabGroup() { Icon = PackIconZondiconsKind.Paste };
                 tabs["Parse"]["Paste"]["TSV"] = new SwagTabItem() { Icon = PackIconMaterialKind.AlphaTBoxOutline };
                 tabs["Search"] = new SwagTabItem() { Icon = PackIconCustomKind.GlobalSearch };
+                tabs["Test"] = new SwagTabItem() { Icon = PackIconCustomKind.ClipboardTest };
                 tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.Settings };
                 swagDataSet.Tabs = tabs;
                 SwagItemPreOrderIterator<SwagTabItem> itrTabs = tabs.CreateIterator();
@@ -438,6 +439,13 @@ namespace SwagOverFlow.WPF.Controls
         #endregion TSV
         #endregion Paste
         #endregion Parse
+
+        #region Test
+        private void Test_ThrowError_Click(object sender, RoutedEventArgs e)
+        {
+            throw new Exception("Test Exception", new Exception("Inner Exception"));
+        }
+        #endregion Test
     }
 
     #region SwagDataHelper

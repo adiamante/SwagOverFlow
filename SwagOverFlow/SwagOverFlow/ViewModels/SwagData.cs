@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SwagOverFlow.ViewModels;
 using SwagOverFlow.Utils;
 using System;
 using System.Collections.Generic;
@@ -1810,6 +1809,5 @@ namespace SwagOverFlow.ViewModels
     {
     }
     #endregion SwagDataSetResultGroup
-
 
 }
