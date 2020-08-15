@@ -20,6 +20,8 @@ using SwagOverFlow.Iterator;
 using MahApps.Metro.IconPacks;
 using System.Windows.Input;
 using System.Threading.Tasks;
+using SwagOverFlow.WPF.Commands;
+using Newtonsoft.Json.Linq;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -182,6 +184,114 @@ namespace SwagOverFlow.WPF.Controls
             if (SwagDataSet != null)
             {
                 SwagDataSet.Children.CollectionChanged += Children_CollectionChanged;
+                SwagDataSet.SwagItemChanged += SwagDataSet_SwagItemChanged;
+            }
+        }
+
+        private void SwagDataSet_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
+        {
+            if (!SwagWindow.CommandManager.IsFrozen)
+            {
+                Boolean canUndo = true;
+                String message = e.Message;
+
+                switch (e.PropertyChangedArgs.Object)
+                {
+                    #region SwagDataTable
+                    case SwagDataTable swagDataTable:
+                        switch (e.PropertyChangedArgs.PropertyName)
+                        {
+                            case "Parent":
+                            case "ColumnsVisibilityView":
+                            case "ColumnsFilterView":
+                            case "FilterCommand":
+                            case "ImportCommand":
+                            case "ExportCommand":
+                            case "ApplyColumnVisibilityFilterCommand":
+                            case "ApplyColumnFiltersFilterCommand":
+                            case "ResetColumnsCommand":
+                            case "Tabs":
+                            case "Settings":
+                            case "IsInitialized":
+                                canUndo = false;
+                                break;
+                            case "Sequence":
+                                if ((Int32)e.PropertyChangedArgs.OldValue == -1)
+                                {
+                                    canUndo = false;
+                                }
+                                break;
+                        }
+                        break;
+                    #endregion SwagDataTable
+                    #region SwagDataColumn
+                    case SwagDataColumn swagDataColumn:
+                        switch (e.PropertyChangedArgs.PropertyName)
+                        {
+                            case "Parent":
+                            case "SwagDataTable":
+                                canUndo = false;
+                                break;
+                            case "ColSeq":
+                            case "Sequence":
+                                if ((Int32)e.PropertyChangedArgs.OldValue == -1)
+                                {
+                                    canUndo = false;
+                                }
+                                break;
+                            case "IsColumnFilterOpen":    //Popup StaysOpen="False" leads to wierd interactions
+                                canUndo = false;
+                                break;
+                        }
+                        break;
+                    #endregion SwagDataColumn
+                    #region SwagDataRow
+                    case SwagDataRow swagDataRow:
+                        switch (e.PropertyChangedArgs.PropertyName)
+                        {
+                            case "Parent":
+                                canUndo = false;
+                                break;
+                            case "ColSeq":
+                            case "Sequence":
+                                if ((Int32)e.PropertyChangedArgs.OldValue == -1)
+                                {
+                                    canUndo = false;
+                                }
+                                break;
+                            case "Value":
+                                JObject dif = JsonHelper.FindDiff((JObject)e.PropertyChangedArgs.NewValue, (JObject)e.PropertyChangedArgs.OldValue);
+                                if (dif.Count > 0)
+                                {
+
+                                    message = swagDataRow.Path;
+                                    foreach (KeyValuePair<String, JToken> kvp in dif)
+                                    {
+                                        JObject difLine = (JObject)kvp.Value;
+                                        message += $"\n\t[{kvp.Key}] {difLine["-"].ToString()} => {difLine["+"].ToString()}";
+                                    }
+                                }
+                                else
+                                {
+                                    canUndo = false;
+                                }
+                                break;
+                        }
+                        break;
+                    #endregion SwagDataRow
+                }
+
+                if (canUndo)
+                {
+                    SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
+                    e.PropertyChangedArgs.PropertyName,
+                    e.PropertyChangedArgs.Object,
+                    e.PropertyChangedArgs.OldValue,
+                    e.PropertyChangedArgs.NewValue);
+                    cmd.Display = message;
+
+                    SwagWindow.CommandManager.AddCommand(cmd);
+                }
             }
         }
 
@@ -195,9 +305,6 @@ namespace SwagOverFlow.WPF.Controls
                     {
                         case SwagDataSet swagDataSet:
                             swagDataSet.Children.CollectionChanged += Children_CollectionChanged;
-                            break;
-                        case SwagDataTable swagDataTable:
-                            //SwagWindow.CommandManager.Attach(swagDataTable);
                             break;
                     }
                 }

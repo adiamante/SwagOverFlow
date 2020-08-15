@@ -206,7 +206,7 @@ namespace SwagOverFlow.ViewModels
                 SwagItem = swagItem,
                 PropertyChangedArgs = e,
                 Message = $"{swagSetting.Path}({e.PropertyName})\n\t{e.OldValue} => {e.NewValue}"
-            }) ;
+            });
             Parent?.OnSwagItemChanged(swagItem, e);
         }
         #endregion Events

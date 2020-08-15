@@ -85,48 +85,10 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
 
-        //private void _tabs_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
-        //{
-        //    _tabs_PropertyChangedExtended(sender, e.PropertyChangedArgs);
-        //}
-
-        //private void _tabs_PropertyChangedExtended(object sender, PropertyChangedExtendedEventArgs e)
-        //{
-        //    switch (e.PropertyName)
-        //    {
-        //        case "SelectedIndex":
-        //            if (_context != null)
-        //            {
-        //                SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
-        //                this.Tabs = Tabs;
-        //                work.DataTables.Update(this);
-        //                work.Complete();
-        //            }
-        //            break;
-        //    }
-        //}
-
-        //private void _settings_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
-        //{
-        //    switch (e.PropertyChangedArgs.PropertyName)
-        //    {
-        //        case "Value":
-        //        case "IsExpanded":
-        //            if (_context != null)
-        //            {
-        //                SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
-        //                this.Settings = Settings;
-        //                work.DataTables.Update(this);
-        //                work.Complete();
-        //            }
-        //            break;
-        //    }
-        //}
-
         public static void InitSwagDataTable(SwagDataTable swagDataTable)
         {
             swagDataTable.PropertyChanged += SwagDataTable_PropertyChanged;
-
+            
             #region Clear Columns and Rows for instance
             swagDataTable.Columns.Clear();
             swagDataTable.Children.Clear();
@@ -425,7 +387,6 @@ namespace SwagOverFlow.WPF.Controls
 
             swagDataTable.InitDataTable();
             swagDataTable.IsInitialized = true;
-            //swagDataTable.Settings.SwagItemChanged += _settings_SwagItemChanged;
         }
 
         private static void SwagDataTable_PropertyChanged(object sender, PropertyChangedEventArgs e)

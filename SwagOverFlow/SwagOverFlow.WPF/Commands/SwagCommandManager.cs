@@ -6,6 +6,7 @@ using SwagOverFlow.Commands;
 using SwagOverFlow.Collections;
 using SwagOverFlow.WPF.UI;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace SwagOverFlow.WPF.Commands
 {

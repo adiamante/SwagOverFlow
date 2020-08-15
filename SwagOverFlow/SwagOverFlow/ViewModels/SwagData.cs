@@ -33,6 +33,22 @@ namespace SwagOverFlow.ViewModels
             set { SetValue(ref _swagDataResult, value); }
         }
         #endregion SwagDataResult
+        #region Path
+        public String Path
+        {
+            get
+            {
+                SwagData tempNode = this;
+                String path = "";
+                while (tempNode != null)
+                {
+                    path = $"{tempNode.Display ?? tempNode.Display}/{path}";
+                    tempNode = tempNode.Parent;
+                }
+                return path.Trim('/');
+            }
+        }
+        #endregion Path
         #endregion Properties
 
         #region Methods
@@ -61,7 +77,13 @@ namespace SwagOverFlow.ViewModels
 
         public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
         {
-            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e, Message = e.Message });
+            SwagData swagData = (SwagData)swagItem;
+            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
+            {
+                SwagItem = swagItem,
+                PropertyChangedArgs = e,
+                Message = $"{swagData.Path}({e.PropertyName})\n\t{e.OldValue} => {e.NewValue}"
+            });
             Parent?.OnSwagItemChanged(swagItem, e);
         }
         #endregion Events
@@ -766,18 +788,6 @@ namespace SwagOverFlow.ViewModels
         #region Initialization
         public SwagDataColumn()
         {
-            PropertyChangedExtended += SwagDataColumn_PropertyChangedExtended;
-        }
-
-        private void SwagDataColumn_PropertyChangedExtended(object sender, PropertyChangedExtendedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "AppliedFilter":
-                case "IsVisible":
-                    SwagDataTable?.OnSwagItemChanged(this, e);
-                    break;
-            }
         }
         #endregion Initialization
 
@@ -1277,7 +1287,7 @@ namespace SwagOverFlow.ViewModels
             switch (e.Object)
             {
                 case SwagDataColumn sdc:
-                    e.Message = $"{this.Name}.{sdc.ColumnName}({e.OldValue}) => {e.NewValue}";
+                    //e.Message = $"{this.Name}.{sdc.ColumnName}({e.OldValue}) => {e.NewValue}";
                     switch (e.PropertyName)
                     {
                         case "IsVisible":
@@ -1307,6 +1317,7 @@ namespace SwagOverFlow.ViewModels
 
         public void InitDataTable()
         {
+            _dataTable.RowChanged += dataTable_RowChanged;
             _dataTable.DefaultView.ListChanged += dataView_ListChanged;
         }
         #endregion Initialization
@@ -1357,19 +1368,8 @@ namespace SwagOverFlow.ViewModels
         #region RowEvents
         private void dataTable_RowChanged(object sender, DataRowChangeEventArgs e)
         {
-            //FIX_THIS
-            //if (!DelaySave)
-            //{
-            //    SwagDataRow row = _dictChildren[e.Row];
-            //    row.ObjValue = row.ObjValue;
-
-            //    if (_context != null)
-            //    {
-            //        SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
-            //        work.Data.Update(row);
-            //        work.Complete();
-            //    }
-            //}
+            SwagDataRow row = DictRows[e.Row];
+            row.ObjValue = row.ObjValue;
         }
 
         public void dataView_ListChanged(object sender, ListChangedEventArgs e)
