@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using SwagOverFlow.Logger;
+using SwagOverFlow.WPF.UI;
+using SwagOverFlow.Utils;
 using System.Windows;
 
 namespace DreamporterWPF
@@ -13,5 +10,15 @@ namespace DreamporterWPF
     /// </summary>
     public partial class App : Application
     {
+        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            SwagLogger.Log(e.Exception, e.Exception.Message);
+
+#if !DEBUG
+            UIHelper.StringInputDialog(e.Exception.DeepMessage());
+#endif
+
+            e.Handled = true;
+        }
     }
 }
