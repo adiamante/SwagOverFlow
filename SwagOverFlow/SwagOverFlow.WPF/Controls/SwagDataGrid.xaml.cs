@@ -85,16 +85,6 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
 
-        //private static void SwagDataTable_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        //{
-        //    SwagDataTable swagDataTable = (SwagDataTable)sender;
-        //    switch (e.PropertyName)
-        //    {
-        //        case "DataTable":
-        //            break;
-        //    }
-        //}
-
         //private void _tabs_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
         //{
         //    _tabs_PropertyChangedExtended(sender, e.PropertyChangedArgs);
@@ -135,7 +125,7 @@ namespace SwagOverFlow.WPF.Controls
 
         public static void InitSwagDataTable(SwagDataTable swagDataTable)
         {
-            //swagDataTable.PropertyChanged += SwagDataTable_PropertyChanged;
+            swagDataTable.PropertyChanged += SwagDataTable_PropertyChanged;
 
             #region Clear Columns and Rows for instance
             swagDataTable.Columns.Clear();
@@ -436,6 +426,18 @@ namespace SwagOverFlow.WPF.Controls
             swagDataTable.InitDataTable();
             swagDataTable.IsInitialized = true;
             //swagDataTable.Settings.SwagItemChanged += _settings_SwagItemChanged;
+        }
+
+        private static void SwagDataTable_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            SwagDataTable swagDataTable = (SwagDataTable)sender;
+            switch (e.PropertyName)
+            {
+                case "DataTable":
+                    swagDataTable.Columns.Clear();
+                    InitSwagDataTable(swagDataTable);
+                    break;
+            }
         }
 
         public SwagDataTable SwagDataTable

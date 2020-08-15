@@ -25,7 +25,7 @@ namespace SwagOverFlow.Collections
 
         void ICollection<KeyValuePair<TKey, TValue>>.Clear()
         {
-            ((ICollection<KeyValuePair<TKey, TValue>>)_list).Clear();
+            Clear();
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)

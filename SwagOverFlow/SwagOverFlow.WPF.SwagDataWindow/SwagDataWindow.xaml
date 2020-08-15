@@ -19,7 +19,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0">
+        <!--<Menu Grid.Row="0">
             <MenuItem Header="Swag">
                 <MenuItem Header="Add Set" Command="{Binding SwagDataSet.AddDataSetCommand}">
                     <MenuItem.Icon>
@@ -32,7 +32,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-        </Menu>
+        </Menu>-->
         <swag:SwagDataControl SwagDataSet="{Binding SwagDataSet, ElementName=SwagWindow}" Grid.Row="1" AllowDrop="True">
 
         </swag:SwagDataControl>

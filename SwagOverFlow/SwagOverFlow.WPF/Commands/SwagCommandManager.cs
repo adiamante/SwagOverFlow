@@ -109,17 +109,18 @@ namespace SwagOverFlow.WPF.Commands
         #region Events
         private void Subject_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
         {
-            if (_listening && e.PropertyChangedArgs.PropertyName != "CanUndo" && e.SwagItem.CanUndo)
-            {
-                SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
-                    e.PropertyChangedArgs.PropertyName,
-                    e.PropertyChangedArgs.Object,
-                    e.PropertyChangedArgs.OldValue,
-                    e.PropertyChangedArgs.NewValue);
-                cmd.Display = e.Message ?? $"{e.PropertyChangedArgs.PropertyName} ({e.PropertyChangedArgs.OldValue}) => {e.PropertyChangedArgs.NewValue}";
+            //FIX_THIS Going to redesign the Command Manager, The View will be responsible for calling
+            //if (_listening && e.PropertyChangedArgs.PropertyName != "CanUndo" && e.SwagItem.CanUndo)
+            //{
+            //    SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
+            //        e.PropertyChangedArgs.PropertyName,
+            //        e.PropertyChangedArgs.Object,
+            //        e.PropertyChangedArgs.OldValue,
+            //        e.PropertyChangedArgs.NewValue);
+            //    cmd.Display = e.Message ?? $"{e.PropertyChangedArgs.PropertyName} ({e.PropertyChangedArgs.OldValue}) => {e.PropertyChangedArgs.NewValue}";
 
-                _commandHistory.Add(_commandHistory.Count, cmd);
-            }
+            //    _commandHistory.Add(_commandHistory.Count, cmd);
+            //}
         }
         #endregion Events
     }

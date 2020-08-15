@@ -1481,66 +1481,6 @@ namespace SwagOverFlow.ViewModels
             return null;
         }
 
-        public void InitSettings()
-        {
-            //FIX_THIS
-            //Settings.SwagItemChanged += _settings_SwagItemChanged;
-        }
-
-        private void _settings_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
-        {
-            //FIX_THIS maybe fix this
-            //switch (e.PropertyChangedArgs.PropertyName)
-            //{
-            //    case "Value":
-            //    case "IsExpanded":
-            //        if (_context != null)
-            //        {
-            //            SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
-            //            this.Settings = Settings;
-            //            work.DataTables.Update(this);
-            //            work.Complete();
-            //        }
-            //        break;
-            //}
-        }
-
-        public void InitTabs()
-        {
-            if (_tabs != null)
-            {
-                SwagItemPreOrderIterator<SwagTabItem> iterator = _tabs.CreateIterator();
-                for (SwagTabItem tabItem = iterator.First(); !iterator.IsDone; tabItem = iterator.Next())
-                {
-                    tabItem.ViewModel = this;
-                }
-                _tabs.SwagItemChanged += _tabs_SwagItemChanged;
-                _tabs.PropertyChangedExtended += _tabs_PropertyChangedExtended;
-            }
-        }
-
-        private void _tabs_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
-        {
-            _tabs_PropertyChangedExtended(sender, e.PropertyChangedArgs);
-        }
-
-        private void _tabs_PropertyChangedExtended(object sender, PropertyChangedExtendedEventArgs e)
-        {
-            //FIX_THIS Maybe fix this
-            //switch (e.PropertyName)
-            //{
-            //    case "SelectedIndex":
-            //        if (_context != null)
-            //        {
-            //            SwagDataTableUnitOfWork work = new SwagDataTableUnitOfWork(_context);
-            //            this.Tabs = Tabs;
-            //            work.DataTables.Update(this);
-            //            work.Complete();
-            //        }
-            //        break;
-            //}
-        }
-
         public override DataSet GetDataSet()
         {
             DataSet ds = new DataSet();
@@ -1590,6 +1530,7 @@ namespace SwagOverFlow.ViewModels
         }
         #endregion Methods
 
+        #region Scopes
         public class FreezeList : IDisposable
         {
             SwagDataTable _swagDataTable;
@@ -1607,7 +1548,7 @@ namespace SwagOverFlow.ViewModels
                 _swagDataTable.dataView_ListChanged(null, new ListChangedEventArgs(ListChangedType.Reset, -1));
             }
         }
-
+        #endregion Scopes
     }
     #endregion SwagDataTable
 
