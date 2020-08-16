@@ -23,6 +23,7 @@ using Microsoft.Win32;
 using System.IO;
 using SwagOverFlow.Iterator;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -78,7 +79,7 @@ namespace SwagOverFlow.WPF.Controls
         private static void SwagDataTablePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             SwagDataGrid swagDataGrid = (SwagDataGrid)d;
-            if (swagDataGrid != null && swagDataGrid.SwagDataTable != null && !swagDataGrid.SwagDataTable.IsInitialized && swagDataGrid.SwagDataTable.DataTable != null)
+            if (swagDataGrid != null && swagDataGrid.SwagDataTable != null && !swagDataGrid.SwagDataTable.IsInitialized)
             {
                 SwagDataTable swagDataTable = swagDataGrid.SwagDataTable;
                 InitSwagDataTable(swagDataTable);
@@ -87,34 +88,63 @@ namespace SwagOverFlow.WPF.Controls
 
         public static void InitSwagDataTable(SwagDataTable swagDataTable)
         {
-            swagDataTable.PropertyChanged += SwagDataTable_PropertyChanged;
-            
-            #region Clear Columns and Rows for instance
-            swagDataTable.Columns.Clear();
-            swagDataTable.Children.Clear();
-            #endregion Clear Columns and Rows for instance
-
-            #region Add Columns and Rows for instance
-            swagDataTable.InitColumns();
-            foreach (DataColumn dc in swagDataTable.DataTable.Columns)
+            if (swagDataTable.DataTable == null) //Build DataTable
             {
-                SwagDataColumn sdc = new SwagDataColumn() { ColumnName = dc.ColumnName, DataType = dc.DataType };
-                sdc.SwagDataTable = swagDataTable;
-                sdc.DataTypeString = sdc.DataTypeString;
-                swagDataTable.Children.Add(sdc);
-                swagDataTable.Columns.Add(dc.ColumnName, sdc);
-            }
+                DataTable dt = new DataTable(swagDataTable.Display);
+                foreach (KeyValuePair<String, SwagDataColumn> kvpCol in swagDataTable.Columns)
+                {
+                    kvpCol.Value.SwagDataTable = swagDataTable;
+                    dt.Columns.Add(kvpCol.Value.DataColumn());
+                }
 
-            swagDataTable.DictRows.Clear();
-            foreach (DataRow dr in swagDataTable.DataTable.Rows)
-            {
-                SwagDataRow row = new SwagDataRow(dr);
-                row.Value = row.Value;
-                row.ValueTypeString = row.ValueTypeString;
-                swagDataTable.Children.Add(row);
-                swagDataTable.DictRows.Add(row.DataRow, row);
+                swagDataTable.DictRows.Clear();
+                foreach (SwagData swagData in swagDataTable.Children)
+                {
+                    if (swagData is SwagDataRow swagDataRow)
+                    {
+                        DataRow dr = dt.NewRow();
+                        foreach (KeyValuePair<String, JToken> kvpField in swagDataRow.Value)
+                        {
+                            dr[kvpField.Key] = ((JValue)kvpField.Value).Value;
+                        }
+                        swagDataTable.DictRows.Add(dr, swagDataRow);
+                        dt.Rows.Add(dr);
+                        swagDataRow.DataRow = dr;
+                    }
+                }
+
+                swagDataTable.DataTable = dt;
+                swagDataTable.InitColumns();
             }
-            #endregion Add Columns and Rows for instance
+            else //Build From DataTable
+            {
+                #region Clear Columns and Rows for instance
+                swagDataTable.Columns.Clear();
+                swagDataTable.Children.Clear();
+                #endregion Clear Columns and Rows for instance
+
+                #region Add Columns and Rows for instance
+                swagDataTable.InitColumns();
+                foreach (DataColumn dc in swagDataTable.DataTable.Columns)
+                {
+                    SwagDataColumn sdc = new SwagDataColumn() { ColumnName = dc.ColumnName, DataType = dc.DataType };
+                    sdc.SwagDataTable = swagDataTable;
+                    sdc.DataTypeString = sdc.DataTypeString;
+                    swagDataTable.Children.Add(sdc);
+                    swagDataTable.Columns.Add(dc.ColumnName, sdc);
+                }
+
+                swagDataTable.DictRows.Clear();
+                foreach (DataRow dr in swagDataTable.DataTable.Rows)
+                {
+                    SwagDataRow row = new SwagDataRow(dr);
+                    row.Value = row.Value;
+                    row.ValueTypeString = row.ValueTypeString;
+                    swagDataTable.Children.Add(row);
+                    swagDataTable.DictRows.Add(row.DataRow, row);
+                }
+                #endregion Add Columns and Rows for instance
+            }
 
             #region InitViews
             CollectionViewSource columnsVisibilitySource, columnsFilterSource;
@@ -385,6 +415,7 @@ namespace SwagOverFlow.WPF.Controls
             //swagDataTable.Tabs.PropertyChangedExtended += _tabs_PropertyChangedExtended;
             #endregion InitTabs
 
+            swagDataTable.PropertyChanged += SwagDataTable_PropertyChanged;
             swagDataTable.InitDataTable();
             swagDataTable.IsInitialized = true;
         }
@@ -594,13 +625,6 @@ namespace SwagOverFlow.WPF.Controls
             BindingOperations.SetBinding(this, SwagDataGrid.ColumnsProperty, new Binding("SwagDataTable.Columns") { RelativeSource = RelativeSource.Self });
             BindingOperations.SetBinding(this, SwagDataGrid.SelectedColumnProperty, new Binding("SwagDataTable.SelectedColumn") { RelativeSource = RelativeSource.Self });
             BindingOperations.SetBinding(this, SwagDataGrid.SelectedRowProperty, new Binding("SwagDataTable.SelectedRow") { RelativeSource = RelativeSource.Self });
-        }
-
-        private void SwagDataGridInstance_Loaded(object sender, RoutedEventArgs e)
-        {
-            //FIX_THIS
-            //SwagDataTable?.InitSettings();
-            //SwagDataTable?.InitTabs();
         }
         #endregion Initialization
 

@@ -164,5 +164,10 @@ namespace SwagOverFlow.Data.Persistence
         {
             context.Entry(entityToDetach).State = EntityState.Detached;
         }
+
+        public virtual void Save()
+        {
+            context.SaveChanges();
+        }
     }
 }

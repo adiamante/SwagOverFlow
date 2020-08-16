@@ -22,6 +22,7 @@ using System.Windows.Input;
 using System.Threading.Tasks;
 using SwagOverFlow.WPF.Commands;
 using Newtonsoft.Json.Linq;
+using SwagOverFlow.WPF.Services;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -98,6 +99,7 @@ namespace SwagOverFlow.WPF.Controls
                 tabs["Parse"]["Paste"]["JSON"] = new SwagTabItem() { Icon = PackIconMaterialKind.CodeJson };
                 tabs["Parse"]["Paste"]["XML"] = new SwagTabItem() { Icon = PackIconMaterialKind.Xml };
                 tabs["Search"] = new SwagTabItem() { Icon = PackIconCustomKind.GlobalSearch };
+                tabs["Session"] = new SwagTabItem() { Icon = PackIconMaterialKind.WindowRestore };
                 tabs["Test"] = new SwagTabItem() { Icon = PackIconCustomKind.ClipboardTest };
                 tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.Settings };
                 swagDataSet.Tabs = tabs;
@@ -141,6 +143,20 @@ namespace SwagOverFlow.WPF.Controls
             }
         }
         #endregion ParseMapper
+        #region SessionEnabled
+        public Boolean SessionEnabled
+        {
+            get { return SwagWindow.GlobalSettings["SwagData"]["Session"]["Enabled"].GetValue<Boolean>(); }
+            set { SwagWindow.GlobalSettings["SwagData"]["Session"]["Enabled"].SetValue(value); }
+        }
+        #endregion SessionEnabled
+        #region SessionName
+        public String SessionName
+        {
+            get { return SwagWindow.GlobalSettings["SwagData"]["Session"]["Name"].GetValue<String>(); }
+            set { SwagWindow.GlobalSettings["SwagData"]["Session"]["Name"].SetValue(value); }
+        }
+        #endregion SessionName
         #endregion Properties
 
         #region Initialization
@@ -172,6 +188,9 @@ namespace SwagOverFlow.WPF.Controls
                         Value = new List<KeyValuePairViewModel<string, ParseViewModel>>()
                     };
             SwagWindow.GlobalSettings["SwagData"].TryAddChildSetting("ParseMapper", ssParseMapper);
+            SwagWindow.GlobalSettings["SwagData"].TryAddChildSetting("Session", new SwagSettingGroup() { Icon = PackIconMaterialKind.WindowRestore });
+            SwagWindow.GlobalSettings["SwagData"]["Session"].TryAddChildSetting("Enabled", new SwagSettingBoolean { Icon = PackIconMaterialKind.AlphaEBoxOutline });
+            SwagWindow.GlobalSettings["SwagData"]["Session"].TryAddChildSetting("Name", new SwagSettingString { Icon = PackIconMaterialKind.AlphaNBoxOutline });
         }
 
         public void InitDataSet()
@@ -270,6 +289,12 @@ namespace SwagOverFlow.WPF.Controls
                                             }
                                         }
                                         else
+                                        {
+                                            canUndo = false;
+                                        }
+                                        break;
+                                    case "DataRow":
+                                        if (exArgs.OldValue == null)
                                         {
                                             canUndo = false;
                                         }
@@ -581,6 +606,67 @@ namespace SwagOverFlow.WPF.Controls
         }
         #endregion Test
 
+        #region Events
+        private async void Session_Save(object sender, RoutedEventArgs e)
+        {
+            SwagDataSet.Display = SessionName;
+            SwagItemPreOrderIterator<SwagData> itrSwagData = SwagDataSet.CreateIterator();
+            SwagWindow.GlobalIsBusy = true;
+
+            await Task.Run(() =>
+            {
+                for (SwagData sd = itrSwagData.First(); !itrSwagData.IsDone; sd = itrSwagData.Next())
+                {
+                    if (sd is SwagDataTable sdt && !sdt.IsInitialized)
+                    {
+                        SwagDataGrid.InitSwagDataTable(sdt);
+                    }
+                }
+            });
+
+            SwagDataSet sdsSession = SwagWPFContainer.SwagDataService.SwagDataSets.Where(sds => sds.Display == SessionName).FirstOrDefault();
+            if (sdsSession == SwagDataSet)
+            {
+                SwagWPFContainer.SwagDataService.SwagDataSets.Update(SwagDataSet);
+            }
+            else
+            {
+                SwagWPFContainer.SwagDataService.SwagDataSets.Add(SwagDataSet);
+            }
+            SwagWindow.GlobalIsBusy = false;
+            SwagWPFContainer.SwagDataService.Save();
+        }
+
+        private async void Session_Load(object sender, RoutedEventArgs e)
+        {
+            SwagDataSet sdsSession = null;
+
+            SwagWindow.GlobalIsBusy = true;
+            await Task.Run(() =>
+            {
+                sdsSession = SwagWPFContainer.SwagDataService.SwagDataSets.Where(sds => sds.Display == SessionName).FirstOrDefault();
+            });
+
+            if (sdsSession != null)
+            {
+                SwagWPFContainer.SwagDataService.Init(sdsSession);
+                SwagDataSet = sdsSession;
+                SwagItemPreOrderIterator<SwagData> itrSwagData = SwagDataSet.CreateIterator();
+                for (SwagData sd = itrSwagData.First(); !itrSwagData.IsDone; sd = itrSwagData.Next())
+                {
+                    if (sd is SwagDataTable sdt)
+                    {
+                        if (!sdt.IsInitialized)
+                        {
+                            SwagDataGrid.InitSwagDataTable(sdt);
+                        }
+                        sdt.FilterCommand.Execute(null);
+                    }
+                }
+            }
+            SwagWindow.GlobalIsBusy = false;
+        }
+        #endregion Events
     }
 
     #region SwagDataHelper

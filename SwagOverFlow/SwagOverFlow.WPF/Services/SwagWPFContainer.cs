@@ -21,9 +21,9 @@ namespace SwagOverFlow.WPF.Services
             get { return _serviceProvider.GetService<SwagWindowSettingService>(); }
         }
 
-        public static SwagDataTableService DataTableService
+        public static SwagDataService SwagDataService
         {
-            get { return _serviceProvider.GetService<SwagDataTableService>(); }
+            get { return _serviceProvider.GetService<SwagDataService>(); }
         }
 
         public static IServiceProvider ServiceProvider
@@ -51,7 +51,8 @@ namespace SwagOverFlow.WPF.Services
             services.AddTransient<SwagWindowSettingsGroupRepository>();
             services.AddTransient<SwagSettingGroupRepository>();
             services.AddSingleton<SwagWindowSettingService>();
-            //services.AddTransient<SwagDataTableService>();
+            services.AddTransient<ISwagDataRepository, SwagDataRepository>();
+            services.AddTransient<SwagDataService>();
             services.AddSingleton<IJsonConverterProviderService, JsonConverterProviderServiceWPF>();
             services.AddSingleton<IJObjectToIconEnumService, JObjectToIconEnumServiceWPF>();
             _serviceProvider = services.BuildServiceProvider();

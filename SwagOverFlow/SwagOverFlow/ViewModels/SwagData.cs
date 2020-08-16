@@ -192,6 +192,11 @@ namespace SwagOverFlow.ViewModels
                     _value = this.ToJObject();
                     _objValue = _value;
                 }
+
+                if (_value == null && _objValue != null && _objValue is JObject)
+                {
+                    _value = (JObject)_objValue;
+                }
                 return _value;
             }
             set
@@ -427,6 +432,7 @@ namespace SwagOverFlow.ViewModels
         #endregion ReadOnly
         #region IsCheckedVisibility
         [NotMapped]
+        [JsonIgnore]
         public Boolean IsCheckedVisibility
         {
             get { return _isCheckedVisiblity; }
@@ -435,6 +441,7 @@ namespace SwagOverFlow.ViewModels
         #endregion IsCheckedVisibility
         #region IsCheckedFilter
         [NotMapped]
+        [JsonIgnore]
         public Boolean IsCheckedFilter
         {
             get { return _isCheckedFilter; }
@@ -450,6 +457,7 @@ namespace SwagOverFlow.ViewModels
         #endregion IsVisible
         #region IsColumnFilterOpen
         [NotMapped]
+        [JsonIgnore]
         public Boolean IsColumnFilterOpen
         {
             get { return _isColumnFilterOpen; }
@@ -513,6 +521,7 @@ namespace SwagOverFlow.ViewModels
         #endregion AppliedFilter
         #region HasAppliedFilter
         [NotMapped]
+        [JsonIgnore]
         public Boolean HasAppliedFilter
         {
             get { return !String.IsNullOrEmpty(_appliedFilter); }
@@ -582,6 +591,7 @@ namespace SwagOverFlow.ViewModels
         #endregion DataTypeString
         #region Total
         [NotMapped]
+        [JsonIgnore]
         public Decimal Total
         {
             get { return _total; }
@@ -590,6 +600,7 @@ namespace SwagOverFlow.ViewModels
         #endregion Total
         #region ShowAllDistinctValues
         [NotMapped]
+        [JsonIgnore]
         public virtual Boolean ShowAllDistinctValues
         {
             get { return _showAllDistinctValues; }
@@ -616,6 +627,7 @@ namespace SwagOverFlow.ViewModels
         #endregion DataTemplate
         #region ApplySearchFilterCommand
         [NotMapped]
+        [JsonIgnore]
         public ICommand ApplySearchFilterCommand
         {
             get
@@ -650,6 +662,7 @@ namespace SwagOverFlow.ViewModels
         #endregion ApplySearchFilterCommand
         #region ApplyListValuesFilterCommand
         [NotMapped]
+        [JsonIgnore]
         public ICommand ApplyListValuesFilterCommand
         {
             get
@@ -664,6 +677,7 @@ namespace SwagOverFlow.ViewModels
         #endregion ApplyListValuesFilterCommand
         #region ApplyListFilterCommand
         [NotMapped]
+        [JsonIgnore]
         public ICommand ApplyListFilterCommand
         {
             get
@@ -692,6 +706,7 @@ namespace SwagOverFlow.ViewModels
         #endregion ApplyListFilterCommand
         #region ClearFilterCommand
         [NotMapped]
+        [JsonIgnore]
         public ICommand ClearFilterCommand
         {
             get
@@ -707,6 +722,7 @@ namespace SwagOverFlow.ViewModels
         #endregion ClearFilterCommand
         #region HideCommand
         [NotMapped]
+        [JsonIgnore]
         public ICommand HideCommand
         {
             get
@@ -721,6 +737,7 @@ namespace SwagOverFlow.ViewModels
         #endregion HideCommand
         #region RemoveCommand
         [NotMapped]
+        [JsonIgnore]
         public ICommand RemoveCommand
         {
             get
@@ -735,6 +752,7 @@ namespace SwagOverFlow.ViewModels
         #endregion RemoveCommand
         #region ToggleListCheckAllCommand
         [NotMapped]
+        [JsonIgnore]
         public ICommand ToggleListCheckAllCommand
         {
             get
@@ -756,6 +774,7 @@ namespace SwagOverFlow.ViewModels
         #endregion ToggleListCheckAllCommand  
         #region DistinctValues
         [NotMapped]
+        [JsonIgnore]
         public SwagColumnDistinctValues DistinctValues
         {
             get
@@ -771,6 +790,8 @@ namespace SwagOverFlow.ViewModels
         }
         #endregion DistinctValues
         #region HasApplyDistinctValuesFilterHandler
+        [NotMapped]
+        [JsonIgnore]
         public Boolean HasApplyDistinctValuesFilterHandler
         {
             get
@@ -783,6 +804,7 @@ namespace SwagOverFlow.ViewModels
         #endregion Properties
 
         #region Events
+
         public event EventHandler<EventArgs> ApplyDistinctValuesFilter;
         #endregion Events
 
@@ -921,6 +943,8 @@ namespace SwagOverFlow.ViewModels
         }
         #endregion Message
         #region IsInitialized
+        [JsonIgnore]
+        [NotMapped]
         public Boolean IsInitialized
         {
             get { return _isInitialized; }

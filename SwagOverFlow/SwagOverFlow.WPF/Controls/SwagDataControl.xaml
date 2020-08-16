@@ -8,6 +8,7 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:svm="clr-namespace:SwagOverFlow.ViewModels;assembly=SwagOverFlow"
+             xmlns:swcntl="clr-namespace:SwagOverFlow.WPF.Controls"
              xmlns:swvm="clr-namespace:SwagOverFlow.WPF.ViewModels"
              xmlns:cmd="clr-namespace:SwagOverFlow.WPF.Commands"
              mc:Ignorable="d" 
@@ -249,6 +250,29 @@
                             <DataTemplate>
                                 <ContentControl Template="{StaticResource TabItemTemplate}">
                                     <TextBox CommandManager.PreviewExecuted="Parse_Paste_XML_txtPreviewExecuted" />
+                                </ContentControl>
+                            </DataTemplate>
+                        </swui:SwagTemplate.DataTemplate>
+                    </swui:SwagTemplate>
+                    <swui:SwagTemplate CompareValue="Session">
+                        <swui:SwagTemplate.DataTemplate>
+                            <DataTemplate>
+                                <ContentControl Template="{StaticResource TabItemTemplate}">
+                                    <DockPanel>
+                                        <local:SettingsControl DockPanel.Dock="Top" Settings="{Binding Source={x:Static swcntl:SwagWindow.GlobalSettings}, Path=[SwagData][Session]}" />
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Button Grid.Column="0" Click="Session_Save">
+                                                <local:IconControl Text="Save" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ContentSave}}" />
+                                            </Button>
+                                            <Button Grid.Column="1" Click="Session_Load">
+                                                <local:IconControl Text="Load" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Restore}}" />
+                                            </Button>
+                                        </Grid>
+                                    </DockPanel>
                                 </ContentControl>
                             </DataTemplate>
                         </swui:SwagTemplate.DataTemplate>

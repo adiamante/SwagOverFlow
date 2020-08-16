@@ -226,6 +226,7 @@ namespace SwagOverFlow.ViewModels
         }
         #endregion ParentId
         #region Parent
+        [JsonIgnore]
         public virtual TParent Parent
         {
             get { return _parent; }

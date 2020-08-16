@@ -3,6 +3,8 @@ using SwagOverFlow.ViewModels;
 using System.Windows;
 using SwagOverFlow.WPF.UI;
 using MahApps.Metro.IconPacks;
+using SwagOverFlow.WPF.Services;
+using System.Linq;
 
 namespace SwagOverFlow.WPF.SwagDataWindow
 {
