@@ -6,6 +6,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using SwagOverFlow.ViewModels;
+using SwagOverFlow.WPF.Commands;
 using SwagOverFlow.WPF.UI;
 using SwagOverFlow.WPF.ViewModels;
 
@@ -62,7 +63,83 @@ namespace SwagOverFlow.WPF.Controls
             DependencyProperty.Register(
                 "ExpressionContainer",
                 typeof(ICollection<BooleanExpression>),
-                typeof(BooleanExpressionControl));
+                typeof(BooleanExpressionControl),
+                new FrameworkPropertyMetadata(null, ExpressionContainerProperty_Changed));
+
+        private static void ExpressionContainerProperty_Changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            BooleanExpressionControl bec = (BooleanExpressionControl)d;
+            
+            if (bec.ExpressionContainer is BooleanContainerExpression bcexp && !bcexp.IsInitialized)
+            {
+                bcexp.SwagItemChanged += ExpressionContainer_SwagItemChanged;
+                bcexp.IsInitialized = true;
+            }
+        }
+
+        private static void ExpressionContainer_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
+        {
+            if (!SwagWindow.CommandManager.IsFrozen)
+            {
+                Boolean canUndo = true;
+
+                switch (e.PropertyChangedArgs)
+                {
+                    case PropertyChangedExtendedEventArgs exArgs:
+                        #region General
+                        switch (exArgs.Object)
+                        {
+                            case BooleanExpression exp:
+                                switch (exArgs.PropertyName)
+                                {
+                                    case "Parent":
+                                    case "IsSelected":
+                                    case "IsExpanded":
+                                        canUndo = false;
+                                        break;
+                                    case "Sequence":
+                                        if ((Int32)exArgs.OldValue == -1)
+                                        {
+                                            canUndo = false;
+                                        }
+                                        break;
+                                }
+                                break;
+                        }
+                        #endregion General
+
+                        #region SwagPropertyChangedCommand
+                        if (canUndo)
+                        {
+                            SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
+                            exArgs.PropertyName,
+                            exArgs.Object,
+                            exArgs.OldValue,
+                            exArgs.NewValue);
+                            cmd.Display = e.Message;
+
+                            SwagWindow.CommandManager.AddCommand(cmd);
+                        }
+                        #endregion SwagPropertyChangedCommand
+                        break;
+                    case CollectionPropertyChangedEventArgs colArgs:
+                        #region SwagCollectionPropertyChangedCommand
+                        if (canUndo)
+                        {
+                            SwagCollectionPropertyChangedCommand cmd = new SwagCollectionPropertyChangedCommand(
+                                colArgs.PropertyName,
+                                colArgs.Object,
+                                colArgs.OldItems,
+                                colArgs.NewItems);
+                            cmd.Display = e.Message;
+
+                            SwagWindow.CommandManager.AddCommand(cmd);
+                        }
+                        #endregion SwagCollectionPropertyChangedCommand
+                        break;
+                }
+            }
+        }
 
         public ICollection<BooleanExpression> ExpressionContainer
         {
@@ -306,13 +383,13 @@ namespace SwagOverFlow.WPF.Controls
 
             switch (fe.DataContext)
             {
-                case BooleanGroupExpression grp:
-                    grp.Children.Add(newExp);
-                    CollectionViewSource.GetDefaultView(grp.Children).Refresh();
-                    break;
                 case BooleanContainerExpression cnt:
                     cnt.Root = newExp;
                     CollectionViewSource.GetDefaultView(cnt).Refresh();
+                    break;
+                case BooleanGroupExpression grp:
+                    grp.Children.Add(newExp);
+                    CollectionViewSource.GetDefaultView(grp.Children).Refresh();
                     break;
             }
         }

@@ -195,102 +195,109 @@ namespace SwagOverFlow.WPF.Controls
                 Boolean canUndo = true;
                 String message = e.Message;
 
-                switch (e.PropertyChangedArgs.Object)
+                switch (e.PropertyChangedArgs)
                 {
-                    #region SwagDataTable
-                    case SwagDataTable swagDataTable:
-                        switch (e.PropertyChangedArgs.PropertyName)
+                    case PropertyChangedExtendedEventArgs exArgs:
+                        switch (exArgs.Object)
                         {
-                            case "Parent":
-                            case "ColumnsVisibilityView":
-                            case "ColumnsFilterView":
-                            case "FilterCommand":
-                            case "ImportCommand":
-                            case "ExportCommand":
-                            case "ApplyColumnVisibilityFilterCommand":
-                            case "ApplyColumnFiltersFilterCommand":
-                            case "ResetColumnsCommand":
-                            case "Tabs":
-                            case "Settings":
-                            case "IsInitialized":
-                                canUndo = false;
-                                break;
-                            case "Sequence":
-                                if ((Int32)e.PropertyChangedArgs.OldValue == -1)
+                            #region SwagDataTable
+                            case SwagDataTable swagDataTable:
+                                switch (exArgs.PropertyName)
                                 {
-                                    canUndo = false;
+                                    case "Parent":
+                                    case "ColumnsVisibilityView":
+                                    case "ColumnsFilterView":
+                                    case "FilterCommand":
+                                    case "ImportCommand":
+                                    case "ExportCommand":
+                                    case "ApplyColumnVisibilityFilterCommand":
+                                    case "ApplyColumnFiltersFilterCommand":
+                                    case "ResetColumnsCommand":
+                                    case "Tabs":
+                                    case "Settings":
+                                    case "IsInitialized":
+                                        canUndo = false;
+                                        break;
+                                    case "Sequence":
+                                        if ((Int32)exArgs.OldValue == -1)
+                                        {
+                                            canUndo = false;
+                                        }
+                                        break;
                                 }
                                 break;
+                            #endregion SwagDataTable
+                            #region SwagDataColumn
+                            case SwagDataColumn swagDataColumn:
+                                switch (exArgs.PropertyName)
+                                {
+                                    case "Parent":
+                                    case "SwagDataTable":
+                                        canUndo = false;
+                                        break;
+                                    case "ColSeq":
+                                    case "Sequence":
+                                        if ((Int32)exArgs.OldValue == -1)
+                                        {
+                                            canUndo = false;
+                                        }
+                                        break;
+                                    case "IsColumnFilterOpen":    //Popup StaysOpen="False" leads to wierd interactions
+                                        canUndo = false;
+                                        break;
+                                }
+                                break;
+                            #endregion SwagDataColumn
+                            #region SwagDataRow
+                            case SwagDataRow swagDataRow:
+                                switch (e.PropertyChangedArgs.PropertyName)
+                                {
+                                    case "Parent":
+                                        canUndo = false;
+                                        break;
+                                    case "ColSeq":
+                                    case "Sequence":
+                                        if ((Int32)exArgs.OldValue == -1)
+                                        {
+                                            canUndo = false;
+                                        }
+                                        break;
+                                    case "Value":
+                                        JObject dif = JsonHelper.FindDiff((JObject)exArgs.NewValue, (JObject)exArgs.OldValue);
+                                        if (dif.Count > 0)
+                                        {
+
+                                            message = swagDataRow.Path;
+                                            foreach (KeyValuePair<String, JToken> kvp in dif)
+                                            {
+                                                JObject difLine = (JObject)kvp.Value;
+                                                message += $"\n\t[{kvp.Key}] {difLine["-"].ToString()} => {difLine["+"].ToString()}";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            canUndo = false;
+                                        }
+                                        break;
+                                }
+                                break;
+                                #endregion SwagDataRow
                         }
-                        break;
-                    #endregion SwagDataTable
-                    #region SwagDataColumn
-                    case SwagDataColumn swagDataColumn:
-                        switch (e.PropertyChangedArgs.PropertyName)
+
+                        #region SwagPropertyChangedCommand
+                        if (canUndo)
                         {
-                            case "Parent":
-                            case "SwagDataTable":
-                                canUndo = false;
-                                break;
-                            case "ColSeq":
-                            case "Sequence":
-                                if ((Int32)e.PropertyChangedArgs.OldValue == -1)
-                                {
-                                    canUndo = false;
-                                }
-                                break;
-                            case "IsColumnFilterOpen":    //Popup StaysOpen="False" leads to wierd interactions
-                                canUndo = false;
-                                break;
+                            SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
+                                exArgs.PropertyName,
+                                exArgs.Object,
+                                exArgs.OldValue,
+                                exArgs.NewValue);
+                            cmd.Display = message;
+
+                            SwagWindow.CommandManager.AddCommand(cmd);
                         }
+                        #endregion SwagPropertyChangedCommand
                         break;
-                    #endregion SwagDataColumn
-                    #region SwagDataRow
-                    case SwagDataRow swagDataRow:
-                        switch (e.PropertyChangedArgs.PropertyName)
-                        {
-                            case "Parent":
-                                canUndo = false;
-                                break;
-                            case "ColSeq":
-                            case "Sequence":
-                                if ((Int32)e.PropertyChangedArgs.OldValue == -1)
-                                {
-                                    canUndo = false;
-                                }
-                                break;
-                            case "Value":
-                                JObject dif = JsonHelper.FindDiff((JObject)e.PropertyChangedArgs.NewValue, (JObject)e.PropertyChangedArgs.OldValue);
-                                if (dif.Count > 0)
-                                {
-
-                                    message = swagDataRow.Path;
-                                    foreach (KeyValuePair<String, JToken> kvp in dif)
-                                    {
-                                        JObject difLine = (JObject)kvp.Value;
-                                        message += $"\n\t[{kvp.Key}] {difLine["-"].ToString()} => {difLine["+"].ToString()}";
-                                    }
-                                }
-                                else
-                                {
-                                    canUndo = false;
-                                }
-                                break;
-                        }
-                        break;
-                    #endregion SwagDataRow
-                }
-
-                if (canUndo)
-                {
-                    SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
-                    e.PropertyChangedArgs.PropertyName,
-                    e.PropertyChangedArgs.Object,
-                    e.PropertyChangedArgs.OldValue,
-                    e.PropertyChangedArgs.NewValue);
-                    cmd.Display = message;
-
-                    SwagWindow.CommandManager.AddCommand(cmd);
                 }
             }
         }

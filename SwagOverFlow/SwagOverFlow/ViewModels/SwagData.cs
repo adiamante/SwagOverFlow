@@ -75,14 +75,15 @@ namespace SwagOverFlow.ViewModels
         #region Events
         public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
 
-        public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e)
         {
             SwagData swagData = (SwagData)swagItem;
+            PropertyChangedExtendedEventArgs exArgs = (PropertyChangedExtendedEventArgs)e;
             SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
             {
                 SwagItem = swagItem,
                 PropertyChangedArgs = e,
-                Message = $"{swagData.Path}({e.PropertyName})\n\t{e.OldValue} => {e.NewValue}"
+                Message = $"{swagData.Path}({exArgs.PropertyName})\n\t{exArgs.OldValue} => {exArgs.NewValue}"
             });
             Parent?.OnSwagItemChanged(swagItem, e);
         }
@@ -1282,9 +1283,10 @@ namespace SwagOverFlow.ViewModels
             DataTable = dt;
         }
 
-        public override void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        public override void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e)
         {
-            switch (e.Object)
+            PropertyChangedExtendedEventArgs exArgs = (PropertyChangedExtendedEventArgs)e;
+            switch (exArgs.Object)
             {
                 case SwagDataColumn sdc:
                     //e.Message = $"{this.Name}.{sdc.ColumnName}({e.OldValue}) => {e.NewValue}";
@@ -1729,7 +1731,7 @@ namespace SwagOverFlow.ViewModels
 
         #region Events
         public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
-        public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e)
         {
             //Nothing to do here
         }

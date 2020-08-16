@@ -1,15 +1,10 @@
 ﻿using MahApps.Metro.IconPacks;
-using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
 using SwagOverFlow.WPF.Controls;
+using SwagOverFlow.WPF.Services;
 using SwagOverFlow.WPF.UI;
-using SwagOverFlow.WPF.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace SwagOverFlow.WPF.Test.BooleanExpression
@@ -36,8 +31,8 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
         #region Initialization
         public BooleanExpressionTestWindow()
         {
-            InitializeComponent();
             Initialize();
+            InitializeComponent();
         }
 
         public void Initialize()
@@ -86,11 +81,13 @@ namespace SwagOverFlow.WPF.Test.BooleanExpression
         private void BooleanExpressionControl_Save(object sender, RoutedEventArgs e)
         {
             SwagWindow.GlobalSettings["Test"]["Expression"].SetValue(Expression);
+            SwagWPFContainer.Context.SaveChanges();
         }
 
         private void SwagOptionControl_Save(object sender, RoutedEventArgs e)
         {
             SwagWindow.GlobalSettings["Test"]["Options"].SetValue(Options);
+            SwagWPFContainer.Context.SaveChanges();
         }
         #endregion Events
     }

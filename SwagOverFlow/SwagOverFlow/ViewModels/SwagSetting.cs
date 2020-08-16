@@ -198,14 +198,15 @@ namespace SwagOverFlow.ViewModels
         #region Events
         public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
 
-        public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e)
         {
             SwagSetting swagSetting = (SwagSetting)swagItem;
+            PropertyChangedExtendedEventArgs exArgs = (PropertyChangedExtendedEventArgs)e;
             SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
             {
                 SwagItem = swagItem,
                 PropertyChangedArgs = e,
-                Message = $"{swagSetting.Path}({e.PropertyName})\n\t{e.OldValue} => {e.NewValue}"
+                Message = $"{swagSetting.Path}({exArgs.PropertyName})\n\t{exArgs.OldValue} => {exArgs.NewValue}"
             });
             Parent?.OnSwagItemChanged(swagItem, e);
         }

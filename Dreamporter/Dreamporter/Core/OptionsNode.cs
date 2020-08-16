@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Text;
 
 namespace Dreamporter.Core
@@ -21,7 +22,7 @@ namespace Dreamporter.Core
         #region SwagItemChanged
         public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
 
-        public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e)
         {
 
         }

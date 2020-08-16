@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -124,18 +125,48 @@ namespace SwagOverFlow.ViewModels
     public class SwagOptionGroup : SwagOption, ISwagParent<SwagOption>, ICollection<SwagOption>
     {
         protected ObservableCollection<SwagOption> _children = new ObservableCollection<SwagOption>();
+        Boolean _isInitialized = false;
         public override string Value
         {
             get { return Dict.ToString(); }
         }
         public override Type Type { get { return typeof(SwagOptionGroup); } }
 
+        #region IsInitialized
+        public Boolean IsInitialized
+        {
+            get { return _isInitialized; }
+            set { SetValue(ref _isInitialized, value); }
+        }
+        #endregion IsInitialized
+
         #region SwagItemChanged
         public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
 
-        public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e)
         {
-            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+            SwagOption opt = (SwagOption)swagItem;
+
+            switch (e)
+            {
+                case PropertyChangedExtendedEventArgs exArgs:
+                    SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
+                    {
+                        SwagItem = swagItem,
+                        PropertyChangedArgs = e,
+                        Message = $"{opt.Name}({exArgs.PropertyName})\n\t{exArgs.OldValue} => {exArgs.NewValue}"
+                    });
+                    break;
+                case CollectionPropertyChangedEventArgs colArgs:
+                    SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
+                    {
+                        SwagItem = swagItem,
+                        PropertyChangedArgs = e,
+                        Message = $"{opt.Name}({colArgs.PropertyName})\n\t[OLD] => {colArgs.OldItems}\n\t[NEW] {colArgs.NewItems}"
+                    });
+                    break;
+            }
+
             Parent?.OnSwagItemChanged(swagItem, e);
         }
         #endregion SwagItemChanged
@@ -230,10 +261,8 @@ namespace SwagOverFlow.ViewModels
                 }
             }
 
+            OnSwagItemChanged(this, new CollectionPropertyChangedEventArgs(nameof(Children), this, e.Action, e.OldItems, e.NewItems));
             OnPropertyChanged("HasChildren");
-
-            //TODO: This probably get's called twice when adding so need to check on that sometime
-            OnSwagItemChanged(this, new PropertyChangedExtendedEventArgs("Children", Children, null, null));
         }
         #endregion Initialization
 

@@ -167,68 +167,77 @@ namespace SwagOverFlow.WPF.Controls
             {
                 Boolean canUndo = true;
 
-                if (e.PropertyChangedArgs.Object is SwagSettingBoolean boolSetting)
+                switch (e.PropertyChangedArgs)
                 {
-                    switch (boolSetting.Path)
-                    {
-                        case "Window/Settings/IsOpen":
-                        case "Window/CommandHistory/IsOpen":
-                            canUndo = false;
-                            break;
-                    }
-                }
-
-                #region General
-                if (canUndo)
-                {
-                    switch (e.PropertyChangedArgs.Object)
-                    {
-                        case SwagSettingGroup swagSettingGroup:
-                            switch (e.PropertyChangedArgs.PropertyName)
+                    case PropertyChangedExtendedEventArgs exArgs:
+                        #region SwagSettingBoolean
+                        if (exArgs.Object is SwagSettingBoolean boolSetting)
+                        {
+                            switch (boolSetting.Path)
                             {
-                                case "Parent":
-                                case "ObjValue":
-                                case "ValueTypeString":
+                                case "Window/Settings/IsOpen":
+                                case "Window/CommandHistory/IsOpen":
                                     canUndo = false;
                                     break;
-                                case "Sequence":
-                                    if ((Int32)e.PropertyChangedArgs.OldValue == -1)
+                            }
+                        }
+                        #endregion SwagSettingBoolean
+
+                        #region General
+                        if (canUndo)
+                        {
+                            switch (exArgs.Object)
+                            {
+                                case SwagSettingGroup swagSettingGroup:
+                                    switch (exArgs.PropertyName)
                                     {
-                                        canUndo = false;
+                                        case "Parent":
+                                        case "ObjValue":
+                                        case "ValueTypeString":
+                                            canUndo = false;
+                                            break;
+                                        case "Sequence":
+                                            if ((Int32)exArgs.OldValue == -1)
+                                            {
+                                                canUndo = false;
+                                            }
+                                            break;
+                                    }
+                                    break;
+                                case SwagSetting swagSetting:
+                                    switch (exArgs.PropertyName)
+                                    {
+                                        case "Parent":
+                                        case "ObjValue":
+                                        case "ValueTypeString":
+                                            canUndo = false;
+                                            break;
+                                        case "Sequence":
+                                            if ((Int32)exArgs.OldValue == -1)
+                                            {
+                                                canUndo = false;
+                                            }
+                                            break;
                                     }
                                     break;
                             }
-                            break;
-                        case SwagSetting swagSetting:
-                            switch (e.PropertyChangedArgs.PropertyName)
-                            {
-                                case "Parent":
-                                case "ObjValue":
-                                case "ValueTypeString":
-                                    canUndo = false;
-                                    break;
-                                case "Sequence":
-                                    if ((Int32)e.PropertyChangedArgs.OldValue == -1)
-                                    {
-                                        canUndo = false;
-                                    }
-                                    break;
-                            }
-                            break;
-                    }
-                }
-                #endregion General
+                        }
+                        #endregion General
 
-                if (canUndo)
-                {
-                    SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
-                    e.PropertyChangedArgs.PropertyName,
-                    e.PropertyChangedArgs.Object,
-                    e.PropertyChangedArgs.OldValue,
-                    e.PropertyChangedArgs.NewValue);
-                    cmd.Display = e.Message;
+                        #region SwagPropertyChangedCommand
+                        if (canUndo)
+                        {
+                            SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
+                            exArgs.PropertyName,
+                            exArgs.Object,
+                            exArgs.OldValue,
+                            exArgs.NewValue);
+                            cmd.Display = e.Message;
 
-                    CommandManager.AddCommand(cmd);
+                            CommandManager.AddCommand(cmd);
+                        }
+                        #endregion SwagPropertyChangedCommand
+                        break;
                 }
             }
         }

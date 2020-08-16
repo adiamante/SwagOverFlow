@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel;
 
 namespace SwagOverFlow.ViewModels
 {
@@ -24,7 +25,7 @@ namespace SwagOverFlow.ViewModels
     public interface ISwagItemChanged
     {
         event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
-        void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e);
+        void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e);
     }
     #endregion Interfaces
 
@@ -32,7 +33,7 @@ namespace SwagOverFlow.ViewModels
     public class SwagItemChangedEventArgs : EventArgs
     {
         public SwagItemBase SwagItem { get; set; }
-        public PropertyChangedExtendedEventArgs PropertyChangedArgs { get; set; }
+        public PropertyChangedEventArgs PropertyChangedArgs { get; set; }
         public String Message { get; set; }
         
     }
@@ -331,7 +332,7 @@ namespace SwagOverFlow.ViewModels
         #region Events
         public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
 
-        public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e)
         {
             SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
         }

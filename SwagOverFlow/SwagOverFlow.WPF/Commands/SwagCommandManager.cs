@@ -6,7 +6,7 @@ using SwagOverFlow.Commands;
 using SwagOverFlow.Collections;
 using SwagOverFlow.WPF.UI;
 using System.ComponentModel;
-using System.Threading.Tasks;
+using System.Collections;
 
 namespace SwagOverFlow.WPF.Commands
 {
@@ -101,7 +101,7 @@ namespace SwagOverFlow.WPF.Commands
             }
         }
 
-        public void AddCommand(SwagPropertyChangedCommand cmd)
+        public void AddCommand(SwagCommand cmd)
         {
             if (!_isFrozen)
             {
@@ -169,6 +169,66 @@ namespace SwagOverFlow.WPF.Commands
         public override void Undo()
         {
             ReflectionHelper.PropertyInfoCollection[Object.GetType()][Property].SetValue(Object, OldValue);
+        }
+    }
+    #endregion SwagPropertyChangedCommand
+
+    #region SwagPropertyChangedCommand
+    public class SwagCollectionPropertyChangedCommand : SwagCommand
+    {
+        public String Property { get; set; }
+        public object Object { get; set; }
+        public IList OldItems { get; set; }
+        public IList NewItems { get; set; }
+
+        public SwagCollectionPropertyChangedCommand(String property, object obj, IList oldItems, IList newItems)
+        {
+            Property = property;
+            Object = obj;
+            OldItems = oldItems;
+            NewItems = newItems;
+        }
+
+        public override void Execute()
+        {
+            var col = ReflectionHelper.PropertyInfoCollection[Object.GetType()][Property].GetValue(Object);
+            
+            if (OldItems != null)
+            {
+                foreach (var item in OldItems)
+                {
+                    ReflectionHelper.MethodInfoCollection[col.GetType()]["Remove"].Invoke(col, new Object[] { item });
+                }
+            }
+
+            if (NewItems != null)
+            {
+                foreach (var item in NewItems)
+                {
+                    ReflectionHelper.MethodInfoCollection[col.GetType()]["Add"].Invoke(col, new Object[] { item });
+                }
+            }
+        }
+
+        public override void Undo()
+        {
+            var col = ReflectionHelper.PropertyInfoCollection[Object.GetType()][Property].GetValue(Object);
+
+            if (OldItems != null)
+            {
+                foreach (var item in OldItems)
+                {
+                    ReflectionHelper.MethodInfoCollection[col.GetType()]["Add"].Invoke(col, new Object[] { item });
+                }
+            }
+            
+            if (NewItems != null)
+            {
+                foreach (var item in NewItems)
+                {
+                    ReflectionHelper.MethodInfoCollection[col.GetType()]["Remove"].Invoke(col, new Object[] { item });
+                }
+            }
         }
     }
     #endregion SwagPropertyChangedCommand

@@ -102,7 +102,7 @@
             </StackPanel>
         </ToolTip>
     </swctl:SwagControlBase.Resources>
-    <swctl:SwagItemsControl SwagItemsSource="{Binding OptionCollection, Converter={swui:CollectionToViewConverter Sort=Sequence}, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
+    <swctl:SwagItemsControl SwagItemsSource="{Binding OptionCollection.Children, Converter={swui:CollectionToViewConverter Sort=Sequence}, ElementName=ThisControl}" Tag="{Binding ElementName=ThisControl}"
                             AllowMove="{Binding AllowMove, ElementName=ThisControl}"
                             TreeViewItemDropPreview="SwagItemsControl_TreeViewItemDropPreview"
                             TreeViewItemLeavePreview="SwagItemsControl_TreeViewItemLeavePreview"

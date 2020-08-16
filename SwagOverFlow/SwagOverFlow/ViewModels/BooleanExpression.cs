@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SwagOverFlow.ViewModels
@@ -26,15 +27,36 @@ namespace SwagOverFlow.ViewModels
         #region SwagItemChanged
         public event EventHandler<SwagItemChangedEventArgs> SwagItemChanged;
 
-        public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedExtendedEventArgs e)
+        public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e)
         {
-            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+            BooleanExpression exp = (BooleanExpression)swagItem;
+
+            switch (e)
+            {
+                case PropertyChangedExtendedEventArgs exArgs:
+                    SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
+                    {
+                        SwagItem = swagItem,
+                        PropertyChangedArgs = e,
+                        Message = $"{exp.Display}({exArgs.PropertyName})\n\t{exArgs.OldValue} => {exArgs.NewValue}"
+                    });
+                    break;
+                case CollectionPropertyChangedEventArgs colArgs:
+                    SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
+                    {
+                        SwagItem = swagItem,
+                        PropertyChangedArgs = e,
+                        Message = $"{exp.Display}({colArgs.PropertyName})\n\t[OLD] => {colArgs.OldItems}\n\t[NEW] {colArgs.NewItems}"
+                    });
+                    break;
+            }
+            
             Parent?.OnSwagItemChanged(swagItem, e);
         }
         #endregion SwagItemChanged
 
         #region Children
-        public ObservableCollection<BooleanExpression> Children
+        public virtual ObservableCollection<BooleanExpression> Children
         {
             get { return _children; }
             set 
@@ -119,11 +141,9 @@ namespace SwagOverFlow.ViewModels
                     }
                 }
             }
-
+            
+            OnSwagItemChanged(this, new CollectionPropertyChangedEventArgs(nameof(Children), this, e.Action, e.OldItems, e.NewItems));
             OnPropertyChanged("HasChildren");
-
-            //TODO: This probably get's called twice when adding so need to check on that sometime
-            OnSwagItemChanged(this, new PropertyChangedExtendedEventArgs("Children", Children, null, null));
         }
         #endregion Initialization
     }
@@ -131,67 +151,47 @@ namespace SwagOverFlow.ViewModels
 
     #region BooleanContainerExpression
     [JsonObject]
-    public class BooleanContainerExpression : BooleanExpression, ICollection<BooleanExpression>
+    public class BooleanContainerExpression : BooleanGroupExpression
     {
         protected BooleanExpression _root;
+        Boolean _isInitialized = false;
+
         public override Type Type { get { return typeof(BooleanContainerExpression); } }
+
+        #region IsInitialized
+        public Boolean IsInitialized
+        {
+            get { return _isInitialized; }
+            set { SetValue(ref _isInitialized, value); }
+        }
+        #endregion IsInitialized
+
+        #region Children
+        [NotMapped]
+        [JsonIgnore]
+        public override ObservableCollection<BooleanExpression> Children
+        {
+            get { return _children; }
+            set
+            {
+                SetValue(ref _children, value);
+                OnPropertyChanged("HasChildren");
+            }
+        }
+        #endregion Children
 
         #region Root
         public BooleanExpression Root
         {
             get { return _root; }
-            set { SetValue(ref _root, value); }
+            set 
+            { 
+                SetValue(ref _root, value);
+                _children.Clear();
+                _children.Add(_root);
+            }
         }
         #endregion Root
-
-        #region ICollection
-        public int Count => _root == null ? 0 : 1;
-
-        public bool IsReadOnly => false;
-
-        public void Add(BooleanExpression item)
-        {
-            Root = item;
-        }
-
-        public void Clear()
-        {
-            Root = null;
-        }
-
-        public bool Contains(BooleanExpression item)
-        {
-            return Root == item;
-        }
-
-        public void CopyTo(BooleanExpression[] array, int arrayIndex)
-        {
-            array[arrayIndex] = Root;
-        }
-
-        public IEnumerator<BooleanExpression> GetEnumerator()
-        {
-            if (Root != null)
-            {
-                yield return Root;
-            }
-        }
-
-        public bool Remove(BooleanExpression item)
-        {
-            if (item == Root)
-            {
-                Root = null;
-                return true;
-            }
-            return false;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-        #endregion ICollection
 
         public override bool Evaluate(Dictionary<string, string> context)
         {
