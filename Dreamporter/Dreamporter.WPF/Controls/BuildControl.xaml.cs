@@ -1,20 +1,15 @@
 ﻿using Dreamporter.Core;
 using SwagOverFlow.Iterator;
+using SwagOverFlow.ViewModels;
+using SwagOverFlow.WPF.Commands;
 using SwagOverFlow.WPF.Controls;
 using SwagOverFlow.WPF.UI;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Dreamporter.WPF.Controls
 {
@@ -69,7 +64,82 @@ namespace Dreamporter.WPF.Controls
             DependencyProperty.Register(
                 "RootBuild",
                 typeof(GroupBuild),
-                typeof(BuildControl));
+                typeof(BuildControl),
+                new FrameworkPropertyMetadata(null, RootBuildProperty_Changed));
+
+        private static void RootBuildProperty_Changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            BuildControl bc = (BuildControl)d;
+
+            if (bc.RootBuild is GroupBuild grpBld && !grpBld.IsInitialized)
+            {
+                grpBld.SwagItemChanged += RootBuild_SwagItemChanged;
+                grpBld.IsInitialized = true;
+            }
+        }
+
+        private static void RootBuild_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
+        {
+            if (!SwagWindow.CommandManager.IsFrozen)
+            {
+                Boolean canUndo = true;
+
+                switch (e.PropertyChangedArgs)
+                {
+                    case PropertyChangedExtendedEventArgs exArgs:
+                        #region General
+                        switch (exArgs.Object)
+                        {
+                            case Build bld:
+                                switch (exArgs.PropertyName)
+                                {
+                                    case "Parent":
+                                    case "IsSelected":
+                                    case "IsExpanded":
+                                        canUndo = false;
+                                        break;
+                                    case "Sequence":
+                                        if ((Int32)exArgs.OldValue == -1)
+                                        {
+                                            canUndo = false;
+                                        }
+                                        break;
+                                }
+                                break;
+                        }
+                        #endregion General
+                        #region SwagPropertyChangedCommand
+                        if (canUndo)
+                        {
+                            SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
+                            exArgs.PropertyName,
+                            exArgs.Object,
+                            exArgs.OldValue,
+                            exArgs.NewValue);
+                            cmd.Display = e.Message;
+
+                            SwagWindow.CommandManager.AddCommand(cmd);
+                        }
+                        #endregion SwagPropertyChangedCommand
+                        break;
+                    case CollectionPropertyChangedEventArgs colArgs:
+                        #region SwagCollectionPropertyChangedCommand
+                        if (canUndo)
+                        {
+                            SwagCollectionPropertyChangedCommand cmd = new SwagCollectionPropertyChangedCommand(
+                                colArgs.PropertyName,
+                                colArgs.Object,
+                                colArgs.OldItems,
+                                colArgs.NewItems);
+                            cmd.Display = e.Message;
+
+                            SwagWindow.CommandManager.AddCommand(cmd);
+                        }
+                        #endregion SwagCollectionPropertyChangedCommand
+                        break;
+                }
+            }
+        }
 
         public GroupBuild RootBuild
         {

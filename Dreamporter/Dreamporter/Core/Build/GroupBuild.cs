@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace Dreamporter.Core
@@ -14,10 +15,20 @@ namespace Dreamporter.Core
     public class GroupBuild : Build, ISwagParent<Build>, ICollection<Build>
     {
         #region Private/Protected Members
+        Boolean _isInitialized = false;
         protected ObservableCollection<Build> _children = new ObservableCollection<Build>();
         #endregion Private/Protected Members
 
         #region Properties
+        #region IsInitialized
+        [NotMapped]
+        [JsonIgnore]
+        public Boolean IsInitialized
+        {
+            get { return _isInitialized; }
+            set { SetValue(ref _isInitialized, value); }
+        }
+        #endregion IsInitialized
         #region Type
         public override Type Type { get { return typeof(GroupBuild); } }
         #endregion Type
@@ -39,7 +50,28 @@ namespace Dreamporter.Core
 
         public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e)
         {
-            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs() { SwagItem = swagItem, PropertyChangedArgs = e });
+            Build bld = (Build)swagItem;
+
+            switch (e)
+            {
+                case PropertyChangedExtendedEventArgs exArgs:
+                    SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
+                    {
+                        SwagItem = swagItem,
+                        PropertyChangedArgs = e,
+                        Message = $"{bld.Path}({exArgs.PropertyName})\n\t{exArgs.OldValue} => {exArgs.NewValue}"
+                    });
+                    break;
+                case CollectionPropertyChangedEventArgs colArgs:
+                    SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
+                    {
+                        SwagItem = swagItem,
+                        PropertyChangedArgs = e,
+                        Message = $"{bld.Path}({colArgs.PropertyName})\n\t[OLD] => {colArgs.OldItems}\n\t[NEW] {colArgs.NewItems}"
+                    });
+                    break;
+            }
+
             Parent?.OnSwagItemChanged(swagItem, e);
         }
         #endregion SwagItemChanged
@@ -80,8 +112,8 @@ namespace Dreamporter.Core
 
             OnPropertyChanged("HasChildren");
 
-            //TODO: This probably get's called twice when adding so need to check on that sometime
-            OnSwagItemChanged(this, new PropertyChangedExtendedEventArgs("Children", Children, null, null));
+            OnSwagItemChanged(this, new CollectionPropertyChangedEventArgs(nameof(Children), this, e.Action, e.OldItems, e.NewItems));
+            OnPropertyChanged("HasChildren");
         }
         #endregion Initialization
 

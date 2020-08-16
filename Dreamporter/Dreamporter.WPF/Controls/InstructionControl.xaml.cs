@@ -3,6 +3,8 @@ using Dreamporter.Core;
 using Newtonsoft.Json.Linq;
 using SwagOverFlow.Clients;
 using SwagOverFlow.Utils;
+using SwagOverFlow.ViewModels;
+using SwagOverFlow.WPF.Commands;
 using SwagOverFlow.WPF.Controls;
 using SwagOverFlow.WPF.UI;
 using System;
@@ -68,7 +70,82 @@ namespace Dreamporter.WPF.Controls
             DependencyProperty.Register(
                 "InstructionCollection",
                 typeof(ICollection<Instruction>),
-                typeof(InstructionControl));
+                typeof(InstructionControl),
+                new FrameworkPropertyMetadata(null, InstructionCollectionProperty_Changed));
+
+        private static void InstructionCollectionProperty_Changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            InstructionControl ic = (InstructionControl)d;
+
+            if (ic.InstructionCollection is GroupInstruction grpIns && !grpIns.IsInitialized)
+            {
+                grpIns.SwagItemChanged += InstructionCollection_SwagItemChanged;
+                grpIns.IsInitialized = true;
+            }
+        }
+
+        private static void InstructionCollection_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
+        {
+            if (!SwagWindow.CommandManager.IsFrozen)
+            {
+                Boolean canUndo = true;
+
+                switch (e.PropertyChangedArgs)
+                {
+                    case PropertyChangedExtendedEventArgs exArgs:
+                        #region General
+                        switch (exArgs.Object)
+                        {
+                            case Instruction ix:
+                                switch (exArgs.PropertyName)
+                                {
+                                    case "Parent":
+                                    case "IsSelected":
+                                    case "IsExpanded":
+                                        canUndo = false;
+                                        break;
+                                    case "Sequence":
+                                        if ((Int32)exArgs.OldValue == -1)
+                                        {
+                                            canUndo = false;
+                                        }
+                                        break;
+                                }
+                                break;
+                        }
+                        #endregion General
+                        #region SwagPropertyChangedCommand
+                        if (canUndo)
+                        {
+                            SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
+                                exArgs.PropertyName,
+                                exArgs.Object,
+                                exArgs.OldValue,
+                                exArgs.NewValue);
+                            cmd.Display = e.Message;
+
+                            SwagWindow.CommandManager.AddCommand(cmd);
+                        }
+                        #endregion SwagPropertyChangedCommand
+                        break;
+                    case CollectionPropertyChangedEventArgs colArgs:
+                        #region SwagCollectionPropertyChangedCommand
+                        if (canUndo)
+                        {
+                            SwagCollectionPropertyChangedCommand cmd = new SwagCollectionPropertyChangedCommand(
+                                colArgs.PropertyName,
+                                colArgs.Object,
+                                colArgs.OldItems,
+                                colArgs.NewItems);
+                            cmd.Display = e.Message;
+
+                            SwagWindow.CommandManager.AddCommand(cmd);
+                        }
+                        #endregion SwagCollectionPropertyChangedCommand
+                        break;
+                }
+            }
+        }
 
         public ICollection<Instruction> InstructionCollection
         {

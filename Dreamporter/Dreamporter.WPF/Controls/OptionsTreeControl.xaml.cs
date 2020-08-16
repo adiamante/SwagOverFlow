@@ -1,4 +1,6 @@
 ﻿using Dreamporter.Core;
+using SwagOverFlow.ViewModels;
+using SwagOverFlow.WPF.Commands;
 using SwagOverFlow.WPF.Controls;
 using SwagOverFlow.WPF.UI;
 using System;
@@ -67,7 +69,82 @@ namespace Dreamporter.WPF.Controls
             DependencyProperty.Register(
                 "RootOptions",
                 typeof(OptionsNode),
-                typeof(OptionsTreeControl));
+                typeof(OptionsTreeControl),
+                new FrameworkPropertyMetadata(null, RootOptionsProperty_Changed));
+
+        private static void RootOptionsProperty_Changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            OptionsTreeControl otc = (OptionsTreeControl)d;
+
+            if (otc.RootOptions is OptionsNode node && !node.IsInitialized)
+            {
+                node.SwagItemChanged += RootOptions_SwagItemChanged;
+                node.IsInitialized = true;
+            }
+        }
+
+        private static void RootOptions_SwagItemChanged(object sender, SwagItemChangedEventArgs e)
+        {
+            if (!SwagWindow.CommandManager.IsFrozen)
+            {
+                Boolean canUndo = true;
+
+                switch (e.PropertyChangedArgs)
+                {
+                    case PropertyChangedExtendedEventArgs exArgs:
+                        #region General
+                        switch (exArgs.Object)
+                        {
+                            case OptionsNode node:
+                                switch (exArgs.PropertyName)
+                                {
+                                    case "Parent":
+                                    case "IsSelected":
+                                    case "IsExpanded":
+                                        canUndo = false;
+                                        break;
+                                    case "Sequence":
+                                        if ((Int32)exArgs.OldValue == -1)
+                                        {
+                                            canUndo = false;
+                                        }
+                                        break;
+                                }
+                                break;
+                        }
+                        #endregion General
+                        #region SwagPropertyChangedCommand
+                        if (canUndo)
+                        {
+                            SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
+                                exArgs.PropertyName,
+                                exArgs.Object,
+                                exArgs.OldValue,
+                                exArgs.NewValue);
+                            cmd.Display = e.Message;
+
+                            SwagWindow.CommandManager.AddCommand(cmd);
+                        }
+                        #endregion SwagPropertyChangedCommand
+                        break;
+                    case CollectionPropertyChangedEventArgs colArgs:
+                        #region SwagCollectionPropertyChangedCommand
+                        if (canUndo)
+                        {
+                            SwagCollectionPropertyChangedCommand cmd = new SwagCollectionPropertyChangedCommand(
+                                colArgs.PropertyName,
+                                colArgs.Object,
+                                colArgs.OldItems,
+                                colArgs.NewItems);
+                            cmd.Display = e.Message;
+
+                            SwagWindow.CommandManager.AddCommand(cmd);
+                        }
+                        #endregion SwagCollectionPropertyChangedCommand
+                        break;
+                }
+            }
+        }
 
         public OptionsNode RootOptions
         {

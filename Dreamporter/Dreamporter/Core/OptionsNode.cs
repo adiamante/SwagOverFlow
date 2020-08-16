@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Dreamporter.Core
@@ -15,6 +16,7 @@ namespace Dreamporter.Core
     {
         #region Private Members
         String _name;
+        Boolean _isInitialized = false;
         SwagOptionGroup _options = new SwagOptionGroup();
         ObservableCollection<OptionsNode> _children;
         #endregion Private Members
@@ -24,10 +26,41 @@ namespace Dreamporter.Core
 
         public void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e)
         {
+            OptionsNode node = (OptionsNode)swagItem;
 
+            switch (e)
+            {
+                case PropertyChangedExtendedEventArgs exArgs:
+                    SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
+                    {
+                        SwagItem = swagItem,
+                        PropertyChangedArgs = e,
+                        Message = $"{node.Name}({exArgs.PropertyName})\n\t{exArgs.OldValue} => {exArgs.NewValue}"
+                    });
+                    break;
+                case CollectionPropertyChangedEventArgs colArgs:
+                    SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
+                    {
+                        SwagItem = swagItem,
+                        PropertyChangedArgs = e,
+                        Message = $"{node.Name}({colArgs.PropertyName})\n\t[OLD] => {colArgs.OldItems}\n\t[NEW] {colArgs.NewItems}"
+                    });
+                    break;
+            }
+
+            Parent?.OnSwagItemChanged(swagItem, e);
         }
         #endregion SwagItemChanged
 
+        #region IsInitialized
+        [NotMapped]
+        [JsonIgnore]
+        public Boolean IsInitialized
+        {
+            get { return _isInitialized; }
+            set { SetValue(ref _isInitialized, value); }
+        }
+        #endregion IsInitialized
         #region Name
         public String Name
         {
@@ -122,6 +155,8 @@ namespace Dreamporter.Core
                     }
                 }
             }
+
+            OnSwagItemChanged(this, new CollectionPropertyChangedEventArgs(nameof(Children), this, e.Action, e.OldItems, e.NewItems));
         }
 
         public void Init()

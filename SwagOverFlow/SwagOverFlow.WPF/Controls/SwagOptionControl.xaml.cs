@@ -105,15 +105,14 @@ namespace SwagOverFlow.WPF.Controls
                                 break;
                         }
                         #endregion General
-
                         #region SwagPropertyChangedCommand
                         if (canUndo)
                         {
                             SwagPropertyChangedCommand cmd = new SwagPropertyChangedCommand(
-                            exArgs.PropertyName,
-                            exArgs.Object,
-                            exArgs.OldValue,
-                            exArgs.NewValue);
+                                exArgs.PropertyName,
+                                exArgs.Object,
+                                exArgs.OldValue,
+                                exArgs.NewValue);
                             cmd.Display = e.Message;
 
                             SwagWindow.CommandManager.AddCommand(cmd);
