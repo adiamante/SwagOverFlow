@@ -10,6 +10,7 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:col="clr-namespace:System.Collections.Generic;assembly=mscorlib"
              x:Name="ThisControl"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -106,7 +107,7 @@
                 </swui:SwagTemplate>
                 <swui:SwagTemplate TypePath="ValueType">
                     <swui:SwagTemplate.Type>
-                        <swui:GenericType BaseTypeName="swvm:SwagValueItemGroupWPF">
+                        <swui:GenericType BaseTypeName="col:List">
                             <swui:GenericType BaseTypeName="svm:KeyValuePairViewModel">
                                 <x:Type TypeName="sys:String"/>
                                 <x:Type TypeName="swvm:ParseViewModel"/>
@@ -129,16 +130,20 @@
                                         </swctl:IconControl.ContextMenu>
                                     </swctl:IconControl>
                                 </GroupBox.Header>
-                                <swctl:SwagItemsControl SwagItemsSource="{Binding ObjValue.Children, Converter={swui:CollectionToViewConverter Sort=Sequence}}" CustomDefaultItemTemplate="{StaticResource NonHierarchyHeaderTemplate}">
+                                <swctl:SwagItemsControl SwagItemsSource="{Binding ObjValue}"
+                                                        ShowAddContextMenuItem="True"
+                                                        ShowItemAddContextMenuItem="True"
+                                                        ShowItemRemoveContextMenuItem="True"
+                                                        UseDefaultAdd="True" 
+                                                        UseDefaultRemove="True"
+                                                        CustomDefaultItemTemplate="{StaticResource NonHierarchyHeaderTemplate}">
                                     <swctl:SwagItemsControl.ItemTemplates>
                                         <swui:SwagTemplateCollection>
                                             <swui:SwagTemplate>
                                                 <swui:SwagTemplate.Type>
-                                                    <swui:GenericType BaseTypeName="svm:SwagItem">
-                                                        <swui:GenericType BaseTypeName="svm:KeyValuePairViewModel">
-                                                            <x:Type TypeName="sys:String"/>
-                                                            <x:Type TypeName="swvm:ParseViewModel"/>
-                                                        </swui:GenericType>
+                                                    <swui:GenericType BaseTypeName="svm:KeyValuePairViewModel">
+                                                        <x:Type TypeName="sys:String"/>
+                                                        <x:Type TypeName="swvm:ParseViewModel"/>
                                                     </swui:GenericType>
                                                 </swui:SwagTemplate.Type>
                                                 <swui:SwagTemplate.DataTemplate>
@@ -146,8 +151,8 @@
                                                         <Expander ExpandDirection="Down">
                                                             <Expander.Header>
                                                                 <StackPanel Orientation="Horizontal">
-                                                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Puzzle}" Text="{Binding Value.Key}" />
-                                                                    <swctl:IconControl Margin="5,0,0,0" Kind="{x:Static iconPacks:PackIconMaterialKind.Strategy}" Text="{Binding Value.Value.ParseStrategy}" />
+                                                                    <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Puzzle}" Text="{Binding Key}" />
+                                                                    <swctl:IconControl Margin="5,0,0,0" Kind="{x:Static iconPacks:PackIconMaterialKind.Strategy}" Text="{Binding Value.ParseStrategy}" />
                                                                 </StackPanel>
                                                             </Expander.Header>
                                                             <Grid>
@@ -166,81 +171,18 @@
                                                                 </Grid.ColumnDefinitions>
                                                                 <GridSplitter Grid.Column="1" HorizontalAlignment="Right" Width="5" Background="Transparent" />
                                                                 <swctl:IconControl Grid.Row="0" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.Puzzle}" Text="Extension" />
-                                                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Value.Key, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Key, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
                                                                 <swctl:IconControl Grid.Row="1" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.Strategy}" Text="Strategy" />
-                                                                <ComboBox Grid.Row="1" Grid.Column="2" SelectedValue="{Binding Value.Value.ParseStrategy}"
+                                                                <ComboBox Grid.Row="1" Grid.Column="2" SelectedValue="{Binding Value.ParseStrategy}"
                                                                       ItemsSource="{Binding Source={StaticResource ParseStrategyEnumValues}}" />
                                                                 <swctl:IconControl Grid.Row="2" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaHBox}" Text="HasHeaders" />
-                                                                <CheckBox Grid.Row="2" Grid.Column="2" IsChecked="{Binding Value.Value.HasHeaders, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                                                                <CheckBox Grid.Row="2" Grid.Column="2" IsChecked="{Binding Value.HasHeaders, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
                                                                 <swctl:IconControl Grid.Row="3" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.TableRow}" Text="RecordDelim" />
-                                                                <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding Value.Value.RecordDelim, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" AcceptsReturn="True" AcceptsTab="True" />
+                                                                <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding Value.RecordDelim, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" AcceptsReturn="True" AcceptsTab="True" />
                                                                 <swctl:IconControl Grid.Row="4" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumn}" Text="FieldDelim" />
-                                                                <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding Value.Value.FieldDelim, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" AcceptsReturn="True" AcceptsTab="True" />
+                                                                <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding Value.FieldDelim, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" AcceptsReturn="True" AcceptsTab="True" />
                                                             </Grid>
                                                         </Expander>
-                                                    </DataTemplate>
-                                                </swui:SwagTemplate.DataTemplate>
-                                            </swui:SwagTemplate>
-                                        </swui:SwagTemplateCollection>
-                                    </swctl:SwagItemsControl.ItemTemplates>
-                                </swctl:SwagItemsControl>
-                            </GroupBox>
-                        </DataTemplate>
-                    </swui:SwagTemplate.DataTemplate>
-                </swui:SwagTemplate>
-                <swui:SwagTemplate TypePath="ValueType">
-                    <swui:SwagTemplate.Type>
-                        <swui:GenericType BaseTypeName="swvm:SwagValueItemGroupWPF">
-                            <swui:GenericType BaseTypeName="svm:KeyValuePairViewModel">
-                                <x:Type TypeName="sys:String"/>
-                                <x:Type TypeName="sys:String"/>
-                            </swui:GenericType>
-                        </swui:GenericType>
-                    </swui:SwagTemplate.Type>
-                    <swui:SwagTemplate.DataTemplate>
-                        <DataTemplate>
-                            <GroupBox>
-                                <GroupBox.Header>
-                                    <swctl:IconControl Text="{Binding Display}" Kind="{Binding Icon}">
-                                        <swctl:IconControl.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Add" Command="{Binding ObjValue.AddDefaultCommand}">
-                                                    <MenuItem.Icon>
-                                                        <swctl:IconControl Kind="{x:Static swui:PackIconCustomKind.Plus}" />
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                            </ContextMenu>
-                                        </swctl:IconControl.ContextMenu>
-                                    </swctl:IconControl>
-                                </GroupBox.Header>
-                                <swctl:SwagItemsControl SwagItemsSource="{Binding ObjValue.Children}" CustomDefaultItemTemplate="{StaticResource NonHierarchyHeaderTemplate}">
-                                    <swctl:SwagItemsControl.ItemTemplates>
-                                        <swui:SwagTemplateCollection>
-                                            <swui:SwagTemplate>
-                                                <swui:SwagTemplate.Type>
-                                                    <swui:GenericType BaseTypeName="svm:SwagItem">
-                                                        <swui:GenericType BaseTypeName="svm:KeyValuePairViewModel">
-                                                            <x:Type TypeName="sys:String"/>
-                                                            <x:Type TypeName="sys:String"/>
-                                                        </swui:GenericType>
-                                                    </swui:GenericType>
-                                                </swui:SwagTemplate.Type>
-                                                <swui:SwagTemplate.DataTemplate>
-                                                    <DataTemplate>
-                                                        <Grid>
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto" />
-                                                                <RowDefinition Height="Auto" />
-                                                            </Grid.RowDefinitions>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="Auto" />
-                                                                <ColumnDefinition Width="Auto" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <swctl:IconControl Grid.Row="0" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
-                                                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Value.Key, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
-                                                            <swctl:IconControl Grid.Row="1" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaX}" />
-                                                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Value.Value, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
-                                                        </Grid>
                                                     </DataTemplate>
                                                 </swui:SwagTemplate.DataTemplate>
                                             </swui:SwagTemplate>

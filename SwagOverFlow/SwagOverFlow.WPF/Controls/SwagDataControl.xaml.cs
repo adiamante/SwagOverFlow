@@ -133,11 +133,11 @@ namespace SwagOverFlow.WPF.Controls
         }
         #endregion DataTemplates
         #region ParseMapper
-        public SwagValueItemGroupWPF<KeyValuePairViewModel<String, ParseViewModel>> ParseMapper
+        public List<KeyValuePairViewModel<String, ParseViewModel>> ParseMapper
         {
             get
             {
-                return SwagWindow.GlobalSettings["SwagData"]["ParseMapper"].GetValue<SwagValueItemGroupWPF<KeyValuePairViewModel<String, ParseViewModel>>>();
+                return SwagWindow.GlobalSettings["SwagData"]["ParseMapper"].GetValue<List<KeyValuePairViewModel<String, ParseViewModel>>>();
             }
         }
         #endregion ParseMapper
@@ -165,18 +165,13 @@ namespace SwagOverFlow.WPF.Controls
             #endregion Prevents Designer Error
 
             SwagWindow.GlobalSettings.TryAddChildSetting("SwagData", new SwagSettingGroup() { Icon = PackIconCustomKind.Dataset });
-            SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>> ssParseMapper =
-                    new SwagSetting<SwagValueItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>>()
+            SwagSetting<List<KeyValuePairViewModel<string, ParseViewModel>>> ssParseMapper =
+                    new SwagSetting<List<KeyValuePairViewModel<string, ParseViewModel>>>()
                     {
                         Icon = PackIconCustomKind.ArrowMultipleSweepRight,
-                        Value = new SwagValueItemGroupWPF<KeyValuePairViewModel<string, ParseViewModel>>()
+                        Value = new List<KeyValuePairViewModel<string, ParseViewModel>>()
                     };
             SwagWindow.GlobalSettings["SwagData"].TryAddChildSetting("ParseMapper", ssParseMapper);
-
-            ParseMapper.SwagItemChanged += (s, e) =>
-            {
-               SwagWindow.GlobalSettings.OnSwagItemChanged(SwagWindow.GlobalSettings["SwagData"]["ParseMapper"], e.PropertyChangedArgs);
-            };
         }
 
         public void InitDataSet()
@@ -353,8 +348,7 @@ namespace SwagOverFlow.WPF.Controls
 
             if (allFiles.Count > 0)
             {
-                List<KeyValuePairViewModel<String, ParseViewModel>> parseMappers = ParseMapper.Children.Select(pm => pm.Value).ToList();
-                SwagDataSet.LoadFiles(allFiles, parseMappers);
+                SwagDataSet.LoadFiles(allFiles, ParseMapper);
             }
         }
         #endregion Drop
