@@ -1,0 +1,61 @@
+﻿<swctl:SwagWindow x:Class="SwagOverFlow.WPF.FTP.FTPWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SwagOverFlow.WPF.FTP"
+        xmlns:swctl="clr-namespace:SwagOverFlow.WPF.Controls;assembly=SwagOverFlow.WPF"
+        xmlns:sc="clr-namespace:SwagOverFlow.Clients;assembly=SwagOverFlow"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:swui="clr-namespace:SwagOverFlow.WPF.UI;assembly=SwagOverFlow.WPF"
+        mc:Ignorable="d"
+        x:Name="ThisFTPWindow"
+        Title="MainWindow" Height="450" Width="800">
+    <DockPanel>
+        <GroupBox DockPanel.Dock="Left">
+            <GroupBox.Header>
+                <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Security}" Text="Credentials" />
+            </GroupBox.Header>
+            <Grid DataContext="{Binding Credentials, ElementName=ThisFTPWindow}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <swctl:IconControl Grid.Row="0" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaHBox}" Text="Host" />
+                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Host, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                <swctl:IconControl Grid.Row="1" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaNBox}" Text="UserName" />
+                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding UserName, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                <swctl:IconControl Grid.Row="2" Grid.Column="0" Kind="{x:Static iconPacks:PackIconFontAwesomeKind.LockSolid}" Text="Password" />
+                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Password, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                <swctl:IconControl Grid.Row="3" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaDBox}" Text="Remote Dir" />
+                <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding RemoteDirectory, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
+                <swctl:IconControl Grid.Row="4" Grid.Column="0" Text="FTP Type" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaFBox}" />
+                <ComboBox Grid.Row="4" Grid.Column="2" SelectedValue="{Binding FtpType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:FtpType}}}" />
+                <swctl:IconControl Grid.Row="5" Grid.Column="0" Text="FTP EncMode" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaEBox}" />
+                <ComboBox Grid.Row="5" Grid.Column="2" SelectedValue="{Binding FtpEncryptionMode}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:FtpEncryptionMode}}}" />
+                <Button Grid.Row="6" Grid.Column="0"  x:Name="btnConnect" Click="Connect_Click">Connect</Button>
+                <TextBlock Grid.Row="6" Grid.Column="2" Foreground="Green" FontWeight="Bold" Visibility="{Binding IsConnected, Converter={swui:BoolToVisibilityConverter}}">Connected</TextBlock>
+                <Button Grid.Row="7" Grid.Column="0" Click="List_Click">List</Button>
+                <TextBox Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" x:Name="txtRemoteFile" MinWidth="100" />
+                <Button Grid.Row="9" Grid.Column="0" Click="Download_Click">Download</Button>
+            </Grid>
+        </GroupBox>
+        <TextBox x:Name="txtList" AcceptsReturn="True" AcceptsTab="True">
+            
+        </TextBox>
+    </DockPanel>
+</swctl:SwagWindow>
