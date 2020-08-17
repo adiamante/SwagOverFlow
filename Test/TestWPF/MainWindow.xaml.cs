@@ -60,7 +60,7 @@ namespace TestWPF
             InitializeComponent();
 
             String sourceTableGroupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Table_Source";
-            Source = SwagWPFContainer.DataTableService.GetDataTableByName(sourceTableGroupName);
+            //Source = SwagWPFContainer.DataTableService.GetDataTableByName(sourceTableGroupName);
             String destTableGroupName = $"{Assembly.GetEntryAssembly().GetName().Name}_Table_Dest";
             //Dest = SwagWPFServices.DataTableService.GetDataTableByName(destTableGroupName);
 
