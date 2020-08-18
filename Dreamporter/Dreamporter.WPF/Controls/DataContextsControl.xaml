@@ -14,7 +14,7 @@
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common"
-             xmlns:sc="clr-namespace:SwagOverFlow.Clients;assembly=SwagOverFlow"
+             xmlns:sdc="clr-namespace:SwagOverFlow.Data.Clients;assembly=SwagOverFlow.Data"
              x:Name="ThisControl"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">

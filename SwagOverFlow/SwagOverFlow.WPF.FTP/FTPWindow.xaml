@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SwagOverFlow.WPF.FTP"
         xmlns:swctl="clr-namespace:SwagOverFlow.WPF.Controls;assembly=SwagOverFlow.WPF"
-        xmlns:sc="clr-namespace:SwagOverFlow.Clients;assembly=SwagOverFlow"
+        xmlns:sdc="clr-namespace:SwagOverFlow.Data.Clients;assembly=SwagOverFlow.Data"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:swui="clr-namespace:SwagOverFlow.WPF.UI;assembly=SwagOverFlow.WPF"
         mc:Ignorable="d"
@@ -44,9 +44,9 @@
                 <swctl:IconControl Grid.Row="3" Grid.Column="0" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaDBox}" Text="Remote Dir" />
                 <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding RemoteDirectory, Delay=250, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" />
                 <swctl:IconControl Grid.Row="4" Grid.Column="0" Text="FTP Type" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaFBox}" />
-                <ComboBox Grid.Row="4" Grid.Column="2" SelectedValue="{Binding FtpType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:FtpType}}}" />
+                <ComboBox Grid.Row="4" Grid.Column="2" SelectedValue="{Binding FtpType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sdc:FtpType}}}" />
                 <swctl:IconControl Grid.Row="5" Grid.Column="0" Text="FTP EncMode" Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaEBox}" />
-                <ComboBox Grid.Row="5" Grid.Column="2" SelectedValue="{Binding FtpEncryptionMode}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:FtpEncryptionMode}}}" />
+                <ComboBox Grid.Row="5" Grid.Column="2" SelectedValue="{Binding FtpEncryptionMode}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sdc:FtpEncryptionMode}}}" />
                 <Button Grid.Row="6" Grid.Column="0"  x:Name="btnConnect" Click="Connect_Click">Connect</Button>
                 <TextBlock Grid.Row="6" Grid.Column="2" Foreground="Green" FontWeight="Bold" Visibility="{Binding IsConnected, Converter={swui:BoolToVisibilityConverter}}">Connected</TextBlock>
                 <Button Grid.Row="7" Grid.Column="0" Click="List_Click">List</Button>

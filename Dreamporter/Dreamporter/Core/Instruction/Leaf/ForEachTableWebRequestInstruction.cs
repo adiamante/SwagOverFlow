@@ -2,7 +2,7 @@
 using Dreamporter.Caching;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SwagOverFlow.Clients;
+using SwagOverFlow.Data.Clients;
 using SwagOverFlow.Parsing;
 using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;

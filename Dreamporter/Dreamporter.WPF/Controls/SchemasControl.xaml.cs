@@ -1,5 +1,5 @@
 ﻿using Dreamporter.Core;
-using SwagOverFlow.Clients;
+using SwagOverFlow.Data.Clients;
 using SwagOverFlow.WPF.Controls;
 using SwagOverFlow.WPF.UI;
 using System;

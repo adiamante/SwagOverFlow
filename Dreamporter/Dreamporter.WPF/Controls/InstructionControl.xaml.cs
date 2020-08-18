@@ -1,7 +1,7 @@
 ﻿using ControlzEx.Standard;
 using Dreamporter.Core;
 using Newtonsoft.Json.Linq;
-using SwagOverFlow.Clients;
+using SwagOverFlow.Data.Clients;
 using SwagOverFlow.Utils;
 using SwagOverFlow.ViewModels;
 using SwagOverFlow.WPF.Commands;

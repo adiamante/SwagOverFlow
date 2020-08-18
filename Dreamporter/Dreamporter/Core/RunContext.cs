@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SwagOverFlow.Utils;
-using SwagOverFlow.Clients;
+using SwagOverFlow.Data.Clients;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

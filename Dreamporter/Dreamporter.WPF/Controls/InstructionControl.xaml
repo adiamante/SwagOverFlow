@@ -13,7 +13,7 @@
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common"
-             xmlns:sc="clr-namespace:SwagOverFlow.Clients;assembly=SwagOverFlow"
+             xmlns:sdc="clr-namespace:SwagOverFlow.Data.Clients;assembly=SwagOverFlow.Data"
              mc:Ignorable="d" 
              x:Name="ThisControl"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -359,7 +359,7 @@
                 </TabControl>
             </ContentControl>
         </DataTemplate>
-        <DataTemplate x:Key="SqlParamDataTemplate" DataType="{x:Type sc:SqlParam}">
+        <DataTemplate x:Key="SqlParamDataTemplate" DataType="{x:Type sdc:SqlParam}">
             <StackPanel>
                 <swctl:IconControl Text="Key" Kind="{x:Static iconPacks:PackIconMaterialKind.Key}" />
                 <TextBox Text="{Binding Key, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
@@ -408,7 +408,7 @@
                                                     ShowItemRemoveContextMenuItem="True"
                                                     MinHeight="30">
                                 <swctl:SwagItemsControl.CustomDefaultItemTemplate>
-                                    <swui:SwagTemplate Type="{x:Type sc:SqlParam}" DataTemplate="{StaticResource SqlParamDataTemplate}" />
+                                    <swui:SwagTemplate Type="{x:Type sdc:SqlParam}" DataTemplate="{StaticResource SqlParamDataTemplate}" />
                                 </swctl:SwagItemsControl.CustomDefaultItemTemplate>
                             </swctl:SwagItemsControl>
                         </DockPanel>
@@ -440,7 +440,7 @@
                             <swctl:IconControl DockPanel.Dock="Top" Text="Request Path" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Path}" />
                             <TextBox DockPanel.Dock="Top" Text="{Binding RequestPath, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             <swctl:IconControl DockPanel.Dock="Top" Text="Request Type" Kind="{x:Static iconPacks:PackIconUniconsKind.CloudInfo}" />
-                            <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding RequestType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestType}}}" />
+                            <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding RequestType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sdc:WebRequestType}}}" />
                             <TabControl>
                                 <TabItem>
                                     <TabItem.HeaderTemplate>
@@ -510,7 +510,7 @@
                                     </TabItem.HeaderTemplate>
                                     <DockPanel>
                                         <swctl:IconControl DockPanel.Dock="Top" Text="Content Type" Kind="{x:Static iconPacks:PackIconFontAwesomeKind.MailBulkSolid}" />
-                                        <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding PostContentType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestPostContentType}}}" />
+                                        <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding PostContentType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sdc:WebRequestPostContentType}}}" />
                                         <TextBox Text="{Binding PostContent, UpdateSourceTrigger=PropertyChanged, Delay=250}" AcceptsReturn="True" AcceptsTab="True" />
                                     </DockPanel>
                                 </TabItem>
@@ -562,7 +562,7 @@
                             <swctl:IconControl DockPanel.Dock="Top" Text="Request Path" Kind="{x:Static iconPacks:PackIconPicolIconsKind.Path}" />
                             <TextBox DockPanel.Dock="Top" Text="{Binding RequestPath, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
                             <swctl:IconControl DockPanel.Dock="Top" Text="Request Type" Kind="{x:Static iconPacks:PackIconUniconsKind.CloudInfo}" />
-                            <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding RequestType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestType}}}" />
+                            <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding RequestType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sdc:WebRequestType}}}" />
                             <TabControl>
                                 <TabItem>
                                     <TabItem.HeaderTemplate>
@@ -632,7 +632,7 @@
                                     </TabItem.HeaderTemplate>
                                     <DockPanel>
                                         <swctl:IconControl DockPanel.Dock="Top" Text="Content Type" Kind="{x:Static iconPacks:PackIconFontAwesomeKind.MailBulkSolid}" />
-                                        <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding PostContentType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sc:WebRequestPostContentType}}}" />
+                                        <ComboBox DockPanel.Dock="Top" SelectedValue="{Binding PostContentType}" ItemsSource="{Binding Source={swui:EnumBindingSource {x:Type sdc:WebRequestPostContentType}}}" />
                                         <TextBox Text="{Binding PostContent, UpdateSourceTrigger=PropertyChanged, Delay=250}" AcceptsReturn="True" AcceptsTab="True" />
                                     </DockPanel>
                                 </TabItem>

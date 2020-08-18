@@ -8,7 +8,7 @@ using Newtonsoft.Json.Converters;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 
-namespace SwagOverFlow.Clients
+namespace SwagOverFlow.Data.Clients
 {
     public class SqlClient
     {

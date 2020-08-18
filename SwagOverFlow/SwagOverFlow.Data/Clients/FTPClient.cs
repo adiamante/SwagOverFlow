@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 
-namespace SwagOverFlow.Clients
+namespace SwagOverFlow.Data.Clients
 {
     #region FtpType
     public enum FtpType

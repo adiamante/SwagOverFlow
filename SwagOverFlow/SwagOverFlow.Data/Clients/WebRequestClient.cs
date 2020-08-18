@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace SwagOverFlow.Clients
+namespace SwagOverFlow.Data.Clients
 {
     #region WebRequestType
     public enum WebRequestType

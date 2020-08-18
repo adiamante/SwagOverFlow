@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 
-namespace SwagOverFlow.Clients
+namespace SwagOverFlow.Data.Clients
 {
     public class SftpClient : FtpClient
     {

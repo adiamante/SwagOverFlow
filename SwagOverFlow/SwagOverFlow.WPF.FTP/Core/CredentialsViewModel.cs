@@ -1,4 +1,4 @@
-﻿using SwagOverFlow.Clients;
+﻿using SwagOverFlow.Data.Clients;
 using SwagOverFlow.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -101,13 +101,13 @@ namespace SwagOverFlow.WPF.FTP.Core
             switch (FtpType)
             {
                 default:
-                case Clients.FtpType.PlainFtp:
+                case FtpType.PlainFtp:
                     var client = new PlainFtpClient(Host, UserName, Password);
                     FtpClient = client;
                     client.EncryptionMode = FtpEncryptionMode;
                     
                     break;
-                case Clients.FtpType.Sftp:
+                case FtpType.Sftp:
                     FtpClient = new SftpClient(Host, UserName, Password);
                     break;
             }

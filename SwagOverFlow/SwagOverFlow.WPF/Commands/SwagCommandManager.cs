@@ -68,6 +68,7 @@ namespace SwagOverFlow.WPF.Commands
         public Boolean IsFrozen
         {
             get { return _isFrozen; }
+            set { _isFrozen = value; }
         }
         #endregion IsFrozen
         #endregion Properties

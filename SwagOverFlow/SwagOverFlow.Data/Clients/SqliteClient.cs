@@ -8,7 +8,7 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 
-namespace SwagOverFlow.Clients
+namespace SwagOverFlow.Data.Clients
 {
     public class SqliteClient
     {

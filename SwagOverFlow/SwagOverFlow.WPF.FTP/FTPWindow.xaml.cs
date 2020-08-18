@@ -1,5 +1,5 @@
 ﻿using MahApps.Metro.IconPacks;
-using SwagOverFlow.Clients;
+using SwagOverFlow.Data.Clients;
 using SwagOverFlow.ViewModels;
 using SwagOverFlow.WPF.Controls;
 using SwagOverFlow.WPF.FTP.Core;
