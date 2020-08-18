@@ -2,6 +2,8 @@
 using Dreamporter.Core;
 using Dreamporter.WPF.Services;
 using MahApps.Metro.IconPacks;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using SwagOverFlow.Iterator;
 using SwagOverFlow.Logger;
 using SwagOverFlow.Utils;
@@ -18,7 +20,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
 
 namespace Dreamporter.WPF.Controls
 {
@@ -547,153 +548,172 @@ namespace Dreamporter.WPF.Controls
         {
             if (SelectedIntegration != null)
             {
-                SelectedIntegration.Build.TabIndex = 3;
-
-                #region Keep track of Selected Build and Instruction
-                Build selectedBuild = SelectedIntegration.SelectedBuild;
-                Instruction selectedInstruction = null;
-
-                if (selectedBuild is InstructionBuild insbldStart)
+                using (var scope = SwagWindow.CommandManager.GetFrozenScope())
                 {
-                    selectedInstruction = insbldStart.SelectedInstruction;
-                }
-                #endregion Keep track of Selected Build and Instruction
+                    SelectedIntegration.Build.TabIndex = 3;
 
-                IsBusy = true;
-                RunContext runContext = null;
-                runContext = await SelectedIntegration.RunAsync(inTestMode: InTestMode);
-                runContext.ExportDB($"Export\\{SelectedIntegration.Name}{(InTestMode ? "_Test" : "")}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.db");
+                    #region Keep track of Selected Build and Instruction
+                    Build selectedBuild = SelectedIntegration.SelectedBuild;
+                    Instruction selectedInstruction = null;
 
-                DataSet dsResult = runContext.GetDataSet();
-                runContext.Close();
-
-                #region Resolve DataSets
-                SwagDataSet data = new SwagDataSet() { Display = $"Export\\{SelectedIntegration.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}" };
-                Dictionary<String, DataSet> dictDataSets = new Dictionary<string, DataSet>();
-
-                foreach (DataTable dtbl in dsResult.Tables)
-                {
-                    String schemaName = "_____", tableName = "";
-                    String[] parts = dtbl.TableName.Split('.');   //period delimeter
-                    if (parts.Length > 2)
+                    if (selectedBuild is InstructionBuild insbldStart)
                     {
-                        tableName = parts[parts.Length - 1];
-                        schemaName = "";
-                        for (int i = 0; i < parts.Length - 1; i++)
-                        {
-                            schemaName += $"{parts[i]}.";
-                        }
-                        schemaName = schemaName.TrimEnd('.');
+                        selectedInstruction = insbldStart.SelectedInstruction;
                     }
-                    else if (parts.Length == 2)  //schema + table
-                    {
-                        schemaName = parts[0];
-                        tableName = parts[1];
-                    }
-                    else if (parts.Length == 1)     //just table
-                    {
-                        tableName = parts[0];
-                    }
+                    #endregion Keep track of Selected Build and Instruction
 
-                    if (dtbl.TableName.ToLower().StartsWith($"{schemaName.ToLower()}."))
-                    {
-                        if (!dictDataSets.ContainsKey(schemaName))
-                        {
-                            dictDataSets.Add(schemaName, new DataSet(schemaName));
-                        }
-
-                        DataTable dtblcopy = dtbl.Copy();
-                        DataTableHelper.AutoConvertColumns(dtblcopy);
-                        dictDataSets[schemaName].Tables.Add(dtblcopy);
-                    }
-                }
-
-                if (dictDataSets.ContainsKey("util"))
-                {
-                    DataSet dsUtil = dictDataSets["util"];
-                    if (dsUtil.Tables.Count > 0)
-                    {
-                        SwagDataSet util = new SwagDataSet(dsUtil) { Display = "util" };
-                        data.Children.Add(util);
-                    }
-                }
-
-                if (InTestMode)
-                {
-                    List<String> targetSchemas = new List<string>();
+                    IsBusy = true;
+                    RunContext runContext = null;
                     RunParams rp = SelectedIntegration.GenerateRunParams();
-                    if (rp.Params.ContainsKey("TestTargetSchemas"))
+                    if (File.Exists("dreamporterSettings.json"))
                     {
-                        String[] schemas = rp.Params["TestTargetSchemas"].Split(',');
-                        foreach (String schema in schemas)
+                        //https://stackoverflow.com/questions/31453495/how-to-read-appsettings-values-from-a-json-file-in-asp-net-core
+                        //https://stackoverflow.com/questions/27382481/why-does-visual-studio-tell-me-that-the-addjsonfile-method-is-not-defined
+                        var buider = new ConfigurationBuilder().AddJsonFile("dreamporterSettings.json");
+                        IConfiguration config = buider.Build();
+                        List<KeyValuePair<String, String>> kvps = config.AsEnumerable().ToList();
+                        foreach (KeyValuePair<String, String> kvp in kvps)
                         {
-                            targetSchemas.Add(schema.ToLower());
+                            if (!String.IsNullOrEmpty(kvp.Key) && kvp.Value != null)
+                            {
+                                rp.Params.SafeSet(kvp.Key, kvp.Value);
+                            }
+                        }
+                    }
+                    runContext = await SelectedIntegration.RunAsync(rp : rp, inTestMode: InTestMode);
+                    runContext.ExportDB($"Export\\{SelectedIntegration.Name}{(InTestMode ? "_Test" : "")}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.db");
+
+                    DataSet dsResult = runContext.GetDataSet();
+                    runContext.Close();
+
+                    #region Resolve DataSets
+                    SwagDataSet data = new SwagDataSet() { Display = $"Export\\{SelectedIntegration.Name}_{DateTime.Now.ToString("yyyyMMddHHmmss")}" };
+                    Dictionary<String, DataSet> dictDataSets = new Dictionary<string, DataSet>();
+
+                    foreach (DataTable dtbl in dsResult.Tables)
+                    {
+                        String schemaName = "_____", tableName = "";
+                        String[] parts = dtbl.TableName.Split('.');   //period delimeter
+                        if (parts.Length > 2)
+                        {
+                            tableName = parts[parts.Length - 1];
+                            schemaName = "";
+                            for (int i = 0; i < parts.Length - 1; i++)
+                            {
+                                schemaName += $"{parts[i]}.";
+                            }
+                            schemaName = schemaName.TrimEnd('.');
+                        }
+                        else if (parts.Length == 2)  //schema + table
+                        {
+                            schemaName = parts[0];
+                            tableName = parts[1];
+                        }
+                        else if (parts.Length == 1)     //just table
+                        {
+                            tableName = parts[0];
+                        }
+
+                        if (dtbl.TableName.ToLower().StartsWith($"{schemaName.ToLower()}."))
+                        {
+                            if (!dictDataSets.ContainsKey(schemaName))
+                            {
+                                dictDataSets.Add(schemaName, new DataSet(schemaName));
+                            }
+
+                            DataTable dtblcopy = dtbl.Copy();
+                            DataTableHelper.AutoConvertColumns(dtblcopy);
+                            dictDataSets[schemaName].Tables.Add(dtblcopy);
                         }
                     }
 
-                    foreach (KeyValuePair<string, DataSet> kvpDataSet in dictDataSets)
+                    if (dictDataSets.ContainsKey("util"))
                     {
-                        if (kvpDataSet.Key != "util" && (targetSchemas.Count == 0 || targetSchemas.Contains(kvpDataSet.Key.ToLower())))
+                        DataSet dsUtil = dictDataSets["util"];
+                        if (dsUtil.Tables.Count > 0)
                         {
-                            SwagDataSet sds = new SwagDataSet(kvpDataSet.Value) { Display = kvpDataSet.Key };
-                            data.Children.Add(sds);
+                            SwagDataSet util = new SwagDataSet(dsUtil) { Display = "util" };
+                            data.Children.Add(util);
                         }
                     }
-                }
-                else
-                {
-                    foreach (KeyValuePair<string, DataSet> kvpDataSet in dictDataSets)
+
+                    if (InTestMode)
                     {
-                        if (kvpDataSet.Key != "util")
+                        List<String> targetSchemas = new List<string>();
+                        rp = SelectedIntegration.GenerateRunParams();
+                        if (rp.Params.ContainsKey("TestTargetSchemas"))
                         {
-                            SwagDataSet sds = new SwagDataSet(kvpDataSet.Value) { Display = kvpDataSet.Key };
-                            data.Children.Add(sds);
+                            String[] schemas = rp.Params["TestTargetSchemas"].Split(',');
+                            foreach (String schema in schemas)
+                            {
+                                targetSchemas.Add(schema.ToLower());
+                            }
+                        }
+
+                        foreach (KeyValuePair<string, DataSet> kvpDataSet in dictDataSets)
+                        {
+                            if (kvpDataSet.Key != "util" && (targetSchemas.Count == 0 || targetSchemas.Contains(kvpDataSet.Key.ToLower())))
+                            {
+                                SwagDataSet sds = new SwagDataSet(kvpDataSet.Value) { Display = kvpDataSet.Key };
+                                data.Children.Add(sds);
+                            }
                         }
                     }
-                }
-                
-                #endregion Resolve DataSets
-
-                #region DataSets Window
-                SwagWindow swagWindow = new SwagWindow();
-                SwagDataControl swagDataControl = new SwagDataControl();
-                swagDataControl.SwagDataSet = data;
-                swagWindow.Content = swagDataControl;
-                swagWindow.Show();
-                #endregion DataSets Window
-
-                IsBusy = false;
-
-                #region Select last Build and Instruction
-                if (selectedBuild != null)
-                {
-                    GroupBuild parent = selectedBuild.Parent;
-                    while (parent != null)
+                    else
                     {
-                        parent.IsExpanded = true;
-                        parent = parent.Parent;
-                    }
-                    SelectedIntegration.SelectedBuild = selectedBuild;
-                    selectedBuild.IsSelected = true;
-                }
-
-                if (selectedBuild is InstructionBuild insbldEnd && selectedInstruction != null)
-                {
-                    GroupInstruction parent = selectedInstruction.Parent;
-                    while (parent != null)
-                    {
-                        parent.IsExpanded = true;
-                        parent = parent.Parent;
+                        foreach (KeyValuePair<string, DataSet> kvpDataSet in dictDataSets)
+                        {
+                            if (kvpDataSet.Key != "util")
+                            {
+                                SwagDataSet sds = new SwagDataSet(kvpDataSet.Value) { Display = kvpDataSet.Key };
+                                data.Children.Add(sds);
+                            }
+                        }
                     }
 
-                    Dispatcher.Invoke(() =>
+                    #endregion Resolve DataSets
+
+                    #region DataSets Window
+                    SwagWindow swagWindow = new SwagWindow();
+                    SwagDataControl swagDataControl = new SwagDataControl();
+                    swagDataControl.SwagDataSet = data;
+                    swagWindow.Content = swagDataControl;
+                    swagWindow.Show();
+                    #endregion DataSets Window
+
+                    IsBusy = false;
+
+                    #region Select last Build and Instruction
+                    if (selectedBuild != null)
                     {
+                        GroupBuild parent = selectedBuild.Parent;
+                        while (parent != null)
+                        {
+                            parent.IsExpanded = true;
+                            parent = parent.Parent;
+                        }
+                        SelectedIntegration.SelectedBuild = selectedBuild;
+                        selectedBuild.IsSelected = true;
+                    }
+
+                    if (selectedBuild is InstructionBuild insbldEnd && selectedInstruction != null)
+                    {
+                        GroupInstruction parent = selectedInstruction.Parent;
+                        while (parent != null)
+                        {
+                            parent.IsExpanded = true;
+                            parent = parent.Parent;
+                        }
+
+                        Dispatcher.Invoke(() =>
+                        {
                         //Delay selection because Instruction gets selected automatically upon creation (last child gets selected)
                         selectedInstruction.IsSelected = true;
-                        insbldEnd.SelectedInstruction = selectedInstruction;
-                    }, System.Windows.Threading.DispatcherPriority.Background);
+                            insbldEnd.SelectedInstruction = selectedInstruction;
+                        }, System.Windows.Threading.DispatcherPriority.Background);
+                    }
+                    #endregion Select last Build and Instruction
                 }
-                #endregion Select last Build and Instruction
             }
         }
         #endregion Events
