@@ -4,14 +4,16 @@ using Dreamporter.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Dreamporter.Migrations
 {
     [DbContext(typeof(DreamporterContext))]
-    partial class DreamporterContextModelSnapshot : ModelSnapshot
+    [Migration("20200818030958_M1")]
+    partial class M1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

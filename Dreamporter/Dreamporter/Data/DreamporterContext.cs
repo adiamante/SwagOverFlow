@@ -47,6 +47,7 @@ namespace Dreamporter.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string migrationConnectionString = $"Data Source = { _dataSource }; Initial Catalog = Dreamporter2; Integrated Security = True";
+            //string migrationConnectionString = $"Server=localhost,1434;Database=Dreamporter2;User Id=sa;Password=MyPass@word;";
             optionsBuilder.UseSqlServer(migrationConnectionString);
         }
         #endregion Initialization
