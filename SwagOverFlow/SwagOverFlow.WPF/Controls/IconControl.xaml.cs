@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -19,6 +21,17 @@ namespace SwagOverFlow.WPF.Controls
             set { SetValue(KindProperty, value); }
         }
         #endregion Kind
+
+        #region Kind2
+        private static readonly DependencyProperty Kind2Property =
+        DependencyProperty.Register("Kind2", typeof(Enum), typeof(IconControl));
+
+        public Enum Kind2
+        {
+            get { return (Enum)GetValue(Kind2Property); }
+            set { SetValue(Kind2Property, value); }
+        }
+        #endregion Kind2
 
         #region Text
         public static DependencyProperty TextProperty =
@@ -152,6 +165,20 @@ namespace SwagOverFlow.WPF.Controls
             set { SetValue(ShowIconProperty, value); }
         }
         #endregion ShowIcon
+
+        #region SecondaryIconBackground
+        public static DependencyProperty SecondaryIconBackgroundProperty =
+            DependencyProperty.Register(
+                "SecondaryIconBackground",
+                typeof(SolidColorBrush),
+                typeof(IconControl));
+
+        public SolidColorBrush SecondaryIconBackground
+        {
+            get { return (SolidColorBrush)GetValue(SecondaryIconBackgroundProperty); }
+            set { SetValue(SecondaryIconBackgroundProperty, value); }
+        }
+        #endregion SecondaryIconBackground
 
         public IconControl()
         {
