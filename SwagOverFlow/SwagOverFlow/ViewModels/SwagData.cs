@@ -78,13 +78,27 @@ namespace SwagOverFlow.ViewModels
         public virtual void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e)
         {
             SwagData swagData = (SwagData)swagItem;
-            PropertyChangedExtendedEventArgs exArgs = (PropertyChangedExtendedEventArgs)e;
-            SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
+
+            switch (e)
             {
-                SwagItem = swagItem,
-                PropertyChangedArgs = e,
-                Message = $"{swagData.Path}({exArgs.PropertyName})\n\t{exArgs.OldValue} => {exArgs.NewValue}"
-            });
+                case PropertyChangedExtendedEventArgs exArgs:
+                    SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
+                    {
+                        SwagItem = swagItem,
+                        PropertyChangedArgs = e,
+                        Message = $"{swagData.Path}({exArgs.PropertyName})\n\t{exArgs.OldValue} => {exArgs.NewValue}"
+                    });
+                    break;
+                case CollectionPropertyChangedEventArgs colArgs:
+                    SwagItemChanged?.Invoke(this, new SwagItemChangedEventArgs()
+                    {
+                        SwagItem = swagItem,
+                        PropertyChangedArgs = e,
+                        Message = $"{swagData.Path}({colArgs.PropertyName})\n\t[OLD] => {colArgs.OldItems}\n\t[NEW] {colArgs.NewItems}"
+                    });
+                    break;
+            }
+
             Parent?.OnSwagItemChanged(swagItem, e);
         }
         #endregion Events
@@ -125,6 +139,8 @@ namespace SwagOverFlow.ViewModels
                     }
                 }
             }
+
+            OnSwagItemChanged(this, new CollectionPropertyChangedEventArgs(nameof(Children), this, e.Action, e.OldItems, e.NewItems));
         }
         #endregion Initialization
 
@@ -1309,28 +1325,24 @@ namespace SwagOverFlow.ViewModels
 
         public override void OnSwagItemChanged(SwagItemBase swagItem, PropertyChangedEventArgs e)
         {
-            PropertyChangedExtendedEventArgs exArgs = (PropertyChangedExtendedEventArgs)e;
-            switch (exArgs.Object)
+            switch (e)
             {
-                case SwagDataColumn sdc:
-                    //e.Message = $"{this.Name}.{sdc.ColumnName}({e.OldValue}) => {e.NewValue}";
-                    switch (e.PropertyName)
+                case PropertyChangedExtendedEventArgs exArgs:
+                    switch (exArgs.Object)
                     {
-                        case "IsVisible":
-                            ResetColumnsCommand.Execute(null);
-                            break;
-                        case "AppliedFilter":
-                            FilterCommand.Execute(null);
+                        case SwagDataColumn sdc:
+                            switch (e.PropertyName)
+                            {
+                                case "IsVisible":
+                                    ResetColumnsCommand.Execute(null);
+                                    break;
+                                case "AppliedFilter":
+                                    FilterCommand.Execute(null);
+                                    break;
+                            }
                             break;
                     }
                     break;
-                    //case SwagDataRow sdr:
-                    //    switch (e.PropertyName)
-                    //    {
-                    //        case "Value":
-                    //            break;
-                    //    }
-                    //    break;
             }
 
             base.OnSwagItemChanged(swagItem, e);
