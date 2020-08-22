@@ -24,16 +24,16 @@
             <ContextMenu x:Key="SwagColumnHeaderContextMenu">
                 <MenuItem Header="Clear Filter" Command="{Binding ClearFilterCommand}">
                     <MenuItem.Icon>
-                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.FilterMinus}}" />
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.FilterMinus}" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Rename" StaysOpenOnClick="True">
                     <MenuItem.Icon>
-                        <local:IconControl Kind="{Binding Source={x:Static swui:PackIconCustomKind.Rename}}" />
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.RenameBox}" />
                     </MenuItem.Icon>
                     <MenuItem StaysOpenOnClick="True">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.KeyboardOutline}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.KeyboardOutline}" />
                         </MenuItem.Icon>
                         <MenuItem.Header>
                             <Grid x:Name="gridRename">
@@ -52,11 +52,11 @@
                 </MenuItem>
                 <MenuItem Header="Convert" StaysOpenOnClick="True">
                     <MenuItem.Icon>
-                        <local:IconControl Kind="{Binding Source={x:Static swui:PackIconCustomKind.Convert}}" />
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconFontAwesomeKind.ExchangeAltSolid}" />
                     </MenuItem.Icon>
                     <MenuItem StaysOpenOnClick="True">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Tune}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Tune}" />
                         </MenuItem.Icon>
                         <MenuItem.Header>
                             <Grid x:Name="gridConvertOptions">
@@ -76,67 +76,67 @@
                     </MenuItem>
                     <MenuItem Header="Integer" Tag="{x:Type sys:Int32}" Click="SwagColumnHeader_ConvertClick">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Numeric}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Numeric}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Decimal" Tag="{x:Type sys:Decimal}" Click="SwagColumnHeader_ConvertClick">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static swui:PackIconCustomKind.Decimal}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Decimal}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="DateTime" Tag="{x:Type sys:DateTime}" Click="SwagColumnHeader_ConvertClick">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Calendar}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Calendar}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="TimeSpan" Tag="{x:Type sys:TimeSpan}" Click="SwagColumnHeader_ConvertClick">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ClockOutline}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.ClockOutline}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="String" Tag="{x:Type sys:String}" Click="SwagColumnHeader_ConvertClick">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.AlphaSBoxOutline}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaSBoxOutline}" />
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Move">
                     <MenuItem.Icon>
-                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.DragVariant}}" />
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.DragVariant}" />
                     </MenuItem.Icon>
                     <MenuItem Header="Left 1" Tag="-1" Click="SwagColumnHeader_MoveClick">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ChevronLeft}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.ChevronLeft}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Right 1" Tag="1" Click="SwagColumnHeader_MoveClick">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ChevronRight}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.ChevronRight}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Left Edge" Tag="-1000000" Click="SwagColumnHeader_MoveClick">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ChevronTripleLeft}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.ChevronTripleLeft}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Right Edge" Tag="1000000" Click="SwagColumnHeader_MoveClick">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ChevronTripleRight}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.ChevronTripleRight}" />
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Fill Empty">
                     <MenuItem.Icon>
-                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ViewDashboard}}" />
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.ViewDashboard}" />
                     </MenuItem.Icon>
                     <MenuItem Header="Default" Tag="Default" Click="SwagColumnHeader_FillEmptyDefaultClick">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Origin}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Origin}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem StaysOpenOnClick="True">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.KeyboardOutline}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.KeyboardOutline}" />
                         </MenuItem.Icon>
                         <MenuItem.Header>
                             <Grid x:Name="gridFillEmptyInput">
@@ -155,44 +155,44 @@
                 </MenuItem>
                 <MenuItem Header="ShowTotals" IsChecked="{Binding SwagDataTable.ShowColumnTotals}" Command="{Binding SwagDataTable.ToggleShowColumnTotalsCommand}">
                     <MenuItem.Icon>
-                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Sigma}}" />
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Sigma}" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Options">
                     <MenuItem.Icon>
-                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Tools}}" />
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Tools}" />
                     </MenuItem.Icon>
                     <MenuItem Header="Select All Column Values" Click="SwagColumnHeader_SelectColumnValueClick">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.SelectGroup}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.SelectGroup}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Reset Columns" Command="{Binding SwagDataTable.ResetColumnsCommand}">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Refresh}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Refresh}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Debug" IsChecked="{Binding SwagDataTable.ShowDebug}" Command="{Binding SwagDataTable.ToggleShowDebugCommand}">
                         <MenuItem.Icon>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.AndroidDebugBridge}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.AndroidDebugBridge}" />
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Hide" Command="{Binding HideCommand}">
                     <MenuItem.Icon>
-                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.EyeOff}}" />
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.EyeOff}" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Remove" Command="{Binding RemoveCommand}">
                     <MenuItem.Icon>
-                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.TableColumnRemove}}" />
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumnRemove}" />
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>
             <ContextMenu x:Key="SwagDataColumnContextMenu">
                 <MenuItem Header="View" Click="SwagDataColumn_ViewClick">
                     <MenuItem.Icon>
-                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Eye}}" />
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Eye}" />
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>
@@ -286,7 +286,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </ToggleButton.Style>
-                                            <local:IconControl Padding="0,0,0,0" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Filter}}" />
+                                            <local:IconControl Padding="0,0,0,0" Kind="{x:Static iconPacks:PackIconMaterialKind.Filter}" />
                                         </ToggleButton>
                                         <Popup StaysOpen="False" IsOpen="{Binding IsColumnFilterOpen}"
                                             PlacementTarget="{Binding ElementName=tbColumnFilter}" PopupAnimation="Slide" 
@@ -303,7 +303,7 @@
                                                                     </MultiBinding>
                                                                 </DockPanel.DataContext>
                                                                 <Button DockPanel.Dock="Top" Margin="3" Padding="0" Height="20" Command="{Binding ClearFilterCommand}">
-                                                                    <local:IconControl Padding="0,0,0,0" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.FilterMinus}}" />
+                                                                    <local:IconControl Padding="0,0,0,0" Kind="{x:Static iconPacks:PackIconMaterialKind.FilterMinus}" />
                                                                 </Button>
                                                                 <local:SearchTextBox DockPanel.Dock="Top"
                                                                              LabelText="Search Column"
@@ -320,7 +320,7 @@
                                                                              cmd:CommandBehavior.Command="{Binding ApplyListValuesFilterCommand}"
                                                                              FilterMode="{Binding ListValuesFilterMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                                                                         <Button DockPanel.Dock="Top" Margin="3" Command="{Binding ApplyListFilterCommand}">
-                                                                            <local:IconControl Text="Apply" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Play}}" />
+                                                                            <local:IconControl Text="Apply" Kind="{x:Static iconPacks:PackIconMaterialKind.Play}" />
                                                                         </Button>
                                                                         <CheckBox DockPanel.Dock="Top" Padding="3" Margin="6,0,0,0" Content="Show All" IsChecked="{Binding ShowAllDistinctValues}" />
                                                                         <ListView DockPanel.Dock="Top" Padding="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
@@ -418,16 +418,16 @@
 
                                 </Grid>
                                 <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SwagDataTable.ShowColumnTotals, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}">
-                                    <local:IconControl Text="{Binding Total, StringFormat=N}" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Sigma}}" />
+                                    <local:IconControl Text="{Binding Total, StringFormat=N}" Kind="{x:Static iconPacks:PackIconMaterialKind.Sigma}" />
                                 </Grid>
                                 <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SwagDataTable.ShowDebug, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}">
                                     <GroupBox>
                                         <GroupBox.Header>
-                                            <local:IconControl Text="Debug" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.AndroidDebugBridge}}" />
+                                            <local:IconControl Text="Debug" Kind="{x:Static iconPacks:PackIconMaterialKind.AndroidDebugBridge}" />
                                         </GroupBox.Header>
                                         <StackPanel>
-                                            <local:IconControl Text="{Binding DataType}" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ShapeOutline}}" />
-                                            <local:IconControl Text="{Binding ColSeq}" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Numeric}}" />
+                                            <local:IconControl Text="{Binding DataType}" Kind="{x:Static iconPacks:PackIconMaterialKind.ShapeOutline}" />
+                                            <local:IconControl Text="{Binding ColSeq}" Kind="{x:Static iconPacks:PackIconMaterialKind.Numeric}" />
                                         </StackPanel>
                                     </GroupBox>
                                 </Grid>
@@ -473,7 +473,7 @@
             <ContextMenu x:Key="SwagDataResultContextMenu" Opened="Search_ResultGo_Opened">
                 <MenuItem Click="Search_ResultGo_Click" Header="View">
                     <MenuItem.Icon>
-                        <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Eye}}" />
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Eye}" />
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>
@@ -505,7 +505,7 @@
                                                                  cmd:CommandBehavior.Event="Search"
                                                                  cmd:CommandBehavior.Command="{Binding ViewModel.ApplyColumnVisibilityFilterCommand}"/>
                                             <Button DockPanel.Dock="Top" Command="{Binding ViewModel.ApplyColumnVisibilityCommand}">
-                                                <local:IconControl Text="Apply" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.PlayOutline}}" />
+                                                <local:IconControl Text="Apply" Kind="{x:Static iconPacks:PackIconMaterialKind.PlayOutline}" />
                                             </Button>
                                             <ListView DockPanel.Dock="Top" Padding="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                                                 <ListView.ItemContainerStyle>
@@ -536,7 +536,7 @@
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate>
                                                         <CheckBox IsChecked="{Binding Value.IsCheckedVisibility, Mode=TwoWay}">
-                                                            <local:IconControl Text="{Binding Key}" Kind="{Binding Source={x:Static swui:PackIconCustomKind.TableColumn}}" />
+                                                            <local:IconControl Text="{Binding Key}" Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumn}" />
                                                         </CheckBox>
                                                     </DataTemplate>
                                                 </ListView.ItemTemplate>
@@ -559,7 +559,7 @@
                                                                  cmd:CommandBehavior.Event="Search"
                                                                  cmd:CommandBehavior.Command="{Binding ViewModel.ApplyColumnFiltersFilterCommand}"/>
                                             <Button DockPanel.Dock="Top" Command="{Binding ViewModel.ClearColumnFiltersCommand}">
-                                                <local:IconControl Text="Clear" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Cancel}}" />
+                                                <local:IconControl Text="Clear" Kind="{x:Static iconPacks:PackIconMaterialKind.Cancel}" />
                                             </Button>
                                             <ListView DockPanel.Dock="Top" Padding="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                                                 <ListView.ItemContainerStyle>
@@ -590,7 +590,7 @@
                                                     <DataTemplate>
                                                         <CheckBox IsChecked="{Binding Value.IsCheckedFilter, Mode=TwoWay}">
                                                             <DockPanel>
-                                                                <local:IconControl DockPanel.Dock="Left" Text="{Binding Key, StringFormat={}{0}:}" Kind="{Binding Source={x:Static swui:PackIconCustomKind.Filter}}" />
+                                                                <local:IconControl DockPanel.Dock="Left" Text="{Binding Key, StringFormat={}{0}:}" Kind="{x:Static iconPacks:PackIconUniconsKind.Filter}" />
                                                                 <TextBlock Margin="4,0,0,0" VerticalAlignment="Center" Text="{Binding Value.AppliedFilter}" />
                                                             </DockPanel>
                                                         </CheckBox>
@@ -636,7 +636,7 @@
                                                     <swui:SwagTemplate>
                                                         <swui:SwagTemplate.DataTemplate>
                                                             <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
-                                                                <local:IconControl Kind="{Binding Source={x:Static swui:PackIconCustomKind.Dataset}}" Text="{Binding Display}" />
+                                                                <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TableMultiple}" Text="{Binding Display}" />
                                                             </HierarchicalDataTemplate>
                                                         </swui:SwagTemplate.DataTemplate>
                                                     </swui:SwagTemplate>
@@ -646,21 +646,21 @@
                                                         <swui:SwagTemplate Type="{x:Type svm:SwagDataTableResultGroup}">
                                                             <swui:SwagTemplate.DataTemplate>
                                                                 <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
-                                                                    <local:IconControl Kind="{Binding Source={x:Static swui:PackIconCustomKind.Table}}" Text="{Binding Display}" />
+                                                                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Table}" Text="{Binding Display}" />
                                                                 </HierarchicalDataTemplate>
                                                             </swui:SwagTemplate.DataTemplate>
                                                         </swui:SwagTemplate>
                                                         <swui:SwagTemplate Type="{x:Type svm:SwagDataColumnResultGroup}">
                                                             <swui:SwagTemplate.DataTemplate>
                                                                 <HierarchicalDataTemplate ItemsSource="{Binding ChildrenView}">
-                                                                    <local:IconControl Kind="{Binding Source={x:Static swui:PackIconCustomKind.TableColumn}}" Text="{Binding Display}" />
+                                                                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumn}" Text="{Binding Display}" />
                                                                 </HierarchicalDataTemplate>
                                                             </swui:SwagTemplate.DataTemplate>
                                                         </swui:SwagTemplate>
                                                         <swui:SwagTemplate Type="{x:Type svm:SwagDataRowResult}">
                                                             <swui:SwagTemplate.DataTemplate>
                                                                 <DataTemplate>
-                                                                    <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.TableRow}}" Text="{Binding Display}" />
+                                                                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TableRow}" Text="{Binding Display}" />
                                                                 </DataTemplate>
                                                             </swui:SwagTemplate.DataTemplate>
                                                         </swui:SwagTemplate>
@@ -694,7 +694,7 @@
                                                     <ContextMenu>
                                                         <MenuItem Click="Import_Paste_Click" Header="Paste">
                                                             <MenuItem.Icon>
-                                                                <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ContentPaste}}" />
+                                                                <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.ContentPaste}" />
                                                             </MenuItem.Icon>
                                                         </MenuItem>
                                                     </ContextMenu>
@@ -731,9 +731,9 @@
                 <local:SwagSidePanelControl.BottomContentTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.AlphaCBoxOutline}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaCBoxOutline}" />
                             <TextBlock Text="{Binding SwagDataTable.ColumnCount, RelativeSource={RelativeSource AncestorType={x:Type local:SwagDataGrid}, Mode=FindAncestor}}" />
-                            <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.AlphaRBoxOutline}}" />
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaRBoxOutline}" />
                             <TextBlock Text="{Binding SwagDataTable.RowCount, RelativeSource={RelativeSource AncestorType={x:Type local:SwagDataGrid}, Mode=FindAncestor}}" />
                         </StackPanel>
                     </DataTemplate>
@@ -777,9 +777,9 @@
                                 <ToolTip DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={x:Static RelativeSource.Self}}">
                                     <StackPanel>
                                         <local:IconControl Text="{Binding SelectedTotal, StringFormat=N}"
-                                                       Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Sigma}}" />
+                                                       Kind="{x:Static iconPacks:PackIconMaterialKind.Sigma}" />
                                         <local:IconControl Text="{Binding SelectedCount, StringFormat=D}"
-                                                       Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.AlphaNBoxOutline}}" />
+                                                       Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaNBoxOutline}" />
                                     </StackPanel>
                                 </ToolTip>
                             </Setter.Value>

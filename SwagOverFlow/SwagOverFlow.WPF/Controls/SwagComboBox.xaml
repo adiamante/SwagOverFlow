@@ -34,7 +34,7 @@
                  Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" 
                  Height="20" />
             <ToggleButton Visibility="Collapsed" Grid.Column="1" IsChecked="{Binding IsOpen}">
-                <ContentControl HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ArrowDown}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter}}" />
+                <ContentControl HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ArrowDown}, Converter={ui:PackIconKindToDataTemplateConverter}}" />
             </ToggleButton>
         </Grid>
         <Popup x:Name="popList" IsOpen="{Binding IsOpen}" StaysOpen="False" PopupAnimation="Slide" PlacementTarget="{Binding ElementName=txtInput}" >

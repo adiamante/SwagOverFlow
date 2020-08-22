@@ -47,7 +47,7 @@
         </swui:SwagTemplateSelector>
         <CollectionViewSource x:Key="TabItemCollection" Source="{Binding SwagSidePanel.Items, ElementName=ControlInstance}" />
         <DataTemplate x:Key="TabItemHeaderTemplate">
-            <local:IconControl HorizontalAlignment="Left" ShowText="{Binding ShowText}" Kind="{Binding Icon}" Text="{Binding Display}" />
+            <local:IconControl HorizontalAlignment="Left" ShowText="{Binding ShowText}" Kind="{Binding Icon}" Kind2="{Binding Icon2}" Text="{Binding Display}" />
         </DataTemplate>
         <ControlTemplate x:Key="TabControlTemplate" TargetType="{x:Type TabControl}">
             <Grid>

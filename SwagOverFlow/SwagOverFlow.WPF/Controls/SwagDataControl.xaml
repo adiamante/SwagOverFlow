@@ -57,12 +57,12 @@
         <ContextMenu x:Key="SwagDataSetHeaderContextMenu" Opened="SwagDataHeader_ContextMenuOpened">
             <MenuItem Header="Add Set" Command="{Binding AddDataSetCommand}">
                 <MenuItem.Icon>
-                    <local:IconControl Kind="{x:Static swui:PackIconCustomKind.DatasetAdd}" />
+                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TableMultiple}" Kind2="{x:Static iconPacks:PackIconMaterialKind.Plus}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Add Table" Command="{Binding AddDataTableCommand}">
                 <MenuItem.Icon>
-                    <local:IconControl Kind="{x:Static swui:PackIconCustomKind.TableAdd}" />
+                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TablePlus}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Export">
@@ -138,7 +138,7 @@
         <ContextMenu x:Key="SwagDataResultContextMenu" Opened="Search_ResultGo_Opened">
             <MenuItem Click="Search_ResultGo_Click" Header="View">
                 <MenuItem.Icon>
-                    <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Eye}}" />
+                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Eye}" />
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
@@ -180,7 +180,7 @@
                                                 <swui:SwagTemplate>
                                                     <swui:SwagTemplate.DataTemplate>
                                                         <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                                                            <local:IconControl Kind="{Binding Source={x:Static swui:PackIconCustomKind.Dataset}}" Text="{Binding Display}" />
+                                                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TableMultiple}" Text="{Binding Display}" />
                                                         </HierarchicalDataTemplate>
                                                     </swui:SwagTemplate.DataTemplate>
                                                 </swui:SwagTemplate>
@@ -190,21 +190,21 @@
                                                     <swui:SwagTemplate Type="{x:Type svm:SwagDataTableResultGroup}">
                                                         <swui:SwagTemplate.DataTemplate>
                                                             <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                                                                <local:IconControl Kind="{Binding Source={x:Static swui:PackIconCustomKind.Table}}" Text="{Binding Display}" />
+                                                                <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Table}" Text="{Binding Display}" />
                                                             </HierarchicalDataTemplate>
                                                         </swui:SwagTemplate.DataTemplate>
                                                     </swui:SwagTemplate>
                                                     <swui:SwagTemplate Type="{x:Type svm:SwagDataColumnResultGroup}">
                                                         <swui:SwagTemplate.DataTemplate>
                                                             <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                                                                <local:IconControl Kind="{Binding Source={x:Static swui:PackIconCustomKind.TableColumn}}" Text="{Binding Display}" />
+                                                                <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TableColumn}" Text="{Binding Display}" />
                                                             </HierarchicalDataTemplate>
                                                         </swui:SwagTemplate.DataTemplate>
                                                     </swui:SwagTemplate>
                                                     <swui:SwagTemplate Type="{x:Type svm:SwagDataRowResult}">
                                                         <swui:SwagTemplate.DataTemplate>
                                                             <DataTemplate>
-                                                                <local:IconControl Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.TableRow}}" Text="{Binding Display}" />
+                                                                <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TableRow}" Text="{Binding Display}" />
                                                             </DataTemplate>
                                                         </swui:SwagTemplate.DataTemplate>
                                                     </swui:SwagTemplate>
@@ -266,10 +266,10 @@
                                                 <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
                                             <Button Grid.Column="0" Click="Session_Save">
-                                                <local:IconControl Text="Save" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ContentSave}}" />
+                                                <local:IconControl Text="Save" Kind="{x:Static iconPacks:PackIconMaterialKind.ContentSave}" />
                                             </Button>
                                             <Button Grid.Column="1" Click="Session_Load">
-                                                <local:IconControl Text="Load" Kind="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Restore}}" />
+                                                <local:IconControl Text="Load" Kind="{x:Static iconPacks:PackIconMaterialKind.Restore}" />
                                             </Button>
                                         </Grid>
                                     </DockPanel>

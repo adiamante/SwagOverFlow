@@ -54,42 +54,42 @@
                                       Visibility="{Binding IsNonNumericOnly, Converter={StaticResource BoolToVisibilityConverterInverse}}"
                                 IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static util:FilterMode.BETWEEN_INCLUSIVE}}">
                                 <MenuItem.Icon>
-                                    <local:IconControl Height="20" Width="20" Kind="{x:Static ui:PackIconCustomKind.CompareBetweenInclusive}" />
+                                    <local:IconControl Height="20" Width="20" Kind="{x:Static iconPacks:PackIconMaterialKind.CodeBrackets}" Kind2="{x:Static iconPacks:PackIconMaterialKind.Plus}" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Between (Exclusive Delimeter ~)" Click="FilterModeMenuItem_Click" Tag="{x:Static util:FilterMode.BETWEEN_EXCLUSIVE}"
                                       Visibility="{Binding IsNonNumericOnly, Converter={StaticResource BoolToVisibilityConverterInverse}}"
                                       IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static util:FilterMode.BETWEEN_EXCLUSIVE}}">
                                 <MenuItem.Icon>
-                                    <local:IconControl Height="20" Width="20" Kind="{x:Static ui:PackIconCustomKind.CompareBetweenExclusive}" />
+                                    <local:IconControl Height="20" Width="20" Kind="{x:Static iconPacks:PackIconMaterialKind.CodeParentheses}" Kind2="{x:Static iconPacks:PackIconMaterialKind.Minus}" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Greater Than" Click="FilterModeMenuItem_Click" Tag="{x:Static util:FilterMode.GREATER_THAN}"
                                       Visibility="{Binding IsNonNumericOnly, Converter={StaticResource BoolToVisibilityConverterInverse}}"
                                       IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static util:FilterMode.GREATER_THAN}}">
                                 <MenuItem.Icon>
-                                    <local:IconControl Height="20" Width="20" Kind="{x:Static ui:PackIconCustomKind.CompareGreaterThan}" />
+                                    <local:IconControl Height="20" Width="20" Kind="{x:Static iconPacks:PackIconMaterialKind.GreaterThan}" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Greater Than Or Equal To" Click="FilterModeMenuItem_Click" Tag="{x:Static util:FilterMode.GREATER_THAN_OR_EQUAL_TO}"
                                       Visibility="{Binding IsNonNumericOnly, Converter={StaticResource BoolToVisibilityConverterInverse}}"
                                       IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static util:FilterMode.GREATER_THAN_OR_EQUAL_TO}}">
                                 <MenuItem.Icon>
-                                    <local:IconControl Height="20" Width="20" Kind="{x:Static ui:PackIconCustomKind.CompareGreaterThanOrEqual}" />
+                                    <local:IconControl Height="20" Width="20" Kind="{x:Static iconPacks:PackIconMaterialKind.GreaterThanOrEqual}" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Less Than" Click="FilterModeMenuItem_Click" Tag="{x:Static util:FilterMode.LESS_THAN}"
                                       Visibility="{Binding IsNonNumericOnly, Converter={StaticResource BoolToVisibilityConverterInverse}}"
                                       IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static util:FilterMode.LESS_THAN}}">
                                 <MenuItem.Icon>
-                                    <local:IconControl Height="20" Width="20" Kind="{x:Static ui:PackIconCustomKind.CompareLessThan}" />
+                                    <local:IconControl Height="20" Width="20" Kind="{x:Static iconPacks:PackIconMaterialKind.LessThan}" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Less Than Or Equal To" Click="FilterModeMenuItem_Click" Tag="{x:Static util:FilterMode.LESS_THAN_OR_EQUAL_TO}"
                                       Visibility="{Binding IsNonNumericOnly, Converter={StaticResource BoolToVisibilityConverterInverse}}"
                                       IsChecked="{Binding FilterMode, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static util:FilterMode.LESS_THAN_OR_EQUAL_TO}}">
                                 <MenuItem.Icon>
-                                    <local:IconControl Height="20" Width="20" Kind="{x:Static ui:PackIconCustomKind.CompareLessThanOrEqual}" />
+                                    <local:IconControl Height="20" Width="20" Kind="{x:Static iconPacks:PackIconMaterialKind.LessThanOrEqual}" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Regex" Click="FilterModeMenuItem_Click" Tag="{x:Static util:FilterMode.REGULAR_EXPRESSSION}"

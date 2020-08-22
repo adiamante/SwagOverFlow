@@ -31,14 +31,19 @@ namespace SwagOverFlow.ViewModels
     public class SwagSetting : SwagIndexedValueItem<SwagSettingGroup, SwagSetting>
     {
         #region Private/Protected Members
+        protected JObject _data = new JObject();
         SettingType _settingType;
-        Enum _icon;
-        protected String _iconString, _iconTypeString, _itemsSourceTypeString;
-        protected Object _objItemsSource;
-        JObject _data = new JObject();
+        Enum _icon, _icon2;
         #endregion Private/Protected Members
 
         #region Properties
+        #region Data
+        public JObject Data
+        {
+            get { return _data; }
+            set { SetValue(ref _data, value); }
+        }
+        #endregion Data
         #region Icon
         [JsonIgnore]
         public Enum Icon
@@ -59,6 +64,26 @@ namespace SwagOverFlow.ViewModels
             }
         }
         #endregion Icon
+        #region Icon2
+        [JsonIgnore]
+        public Enum Icon2
+        {
+            get
+            {
+                if (_icon2 == null)
+                {
+                    _icon2 = IconHelper.ToEnum(_data, "Icon2");
+                }
+                return _icon2;
+            }
+            set
+            {
+                SetValue(ref _icon2, value);
+                JObject iconData = IconHelper.ToObject(_icon2, "Icon2");
+                Data.Merge(iconData);
+            }
+        }
+        #endregion Icon2
         #region SettingType
         public SettingType SettingType
         {
@@ -66,27 +91,6 @@ namespace SwagOverFlow.ViewModels
             set { SetValue(ref _settingType, value); }
         }
         #endregion SettingType
-        #region ObjItemsSource
-        public virtual Object ObjItemsSource
-        {
-            get { return _objItemsSource; }
-            set { SetValue(ref _objItemsSource, value); }
-        }
-        #endregion ObjItemsSource
-        #region ItemsSourceTypeString
-        public virtual String ItemsSourceTypeString
-        {
-            get { return _itemsSourceTypeString; }
-            set { SetValue(ref _itemsSourceTypeString, value); }
-        }
-        #endregion ItemsSourceTypeString
-        #region Data
-        public JObject Data
-        {
-            get { return _data; }
-            set { SetValue(ref _data, value); }
-        }
-        #endregion Data
         #endregion Properties
 
         #region Initialization
@@ -156,28 +160,25 @@ namespace SwagOverFlow.ViewModels
         {
             get 
             {
-                if (_objItemsSource != null && _objItemsSource is JArray && !String.IsNullOrEmpty(_itemsSourceTypeString))
+                if (_itemsSource == null)
                 {
-                    Type itemsSourceType = JsonConvert.DeserializeObject<Type>(_itemsSourceTypeString);
-                    _objItemsSource = JsonConvert.DeserializeObject(_objItemsSource.ToString(), itemsSourceType);
-                    _itemsSource = (T[])_objItemsSource;
+                    Type itemsSourceType = JsonConvert.DeserializeObject<Type>(_data["ItemsSource"]["Type"].ToString());
+                    _itemsSource = (T[])JsonConvert.DeserializeObject(_data["ItemsSource"]["Items"].ToString(), itemsSourceType);
                 }
                 return _itemsSource; 
             }
             set 
             { 
                 SetValue(ref _itemsSource, value);
-                SetValue(ref _objItemsSource, value, "ObjItemsSource");
+                JObject jData = new JObject();
+                JObject jItemsSource = new JObject();
+                jItemsSource["Type"] = JsonHelper.ToJsonString(typeof(T[]));
+                jItemsSource["Items"] = JArray.Parse(JsonHelper.ToJsonString(_itemsSource));
+                jData["ItemsSource"] = jItemsSource;
+                _data.Merge(jData);
             }
         }
         #endregion ItemsSource
-        #region ItemsSourceTypeString
-        public override String ItemsSourceTypeString
-        {
-            get { return JsonHelper.ToJsonString(typeof(T[])); ; }
-            set { SetValue(ref _itemsSourceTypeString, value); }
-        }
-        #endregion ItemsSourceTypeString
         #endregion Properties
 
         #region Initialization
@@ -311,6 +312,11 @@ namespace SwagOverFlow.ViewModels
             return _dict.ContainsKey(key);
         }
         #endregion Methods
+    }
+
+    public class SwagSettingInt : SwagSetting<Int32>
+    {
+
     }
 
     public class SwagSettingString : SwagSetting<String>

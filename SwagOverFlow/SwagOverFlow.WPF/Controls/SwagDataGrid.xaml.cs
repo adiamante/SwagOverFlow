@@ -24,6 +24,7 @@ using System.IO;
 using SwagOverFlow.Iterator;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using MahApps.Metro.IconPacks;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -374,37 +375,37 @@ namespace SwagOverFlow.WPF.Controls
             #endregion ResetColumnsCommand
 
             #region InitSettings
-            swagDataTable.Settings.TryAddChildSetting("ColumnEditor", new SwagSettingGroup() { Icon = PackIconCustomKind.TableColumnEdit });
-            swagDataTable.Settings["ColumnEditor"].TryAddChildSetting("Visibility", new SwagSettingGroup() { Icon = PackIconCustomKind.Eye });
-            swagDataTable.Settings["ColumnEditor"]["Visibility"].TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.Search });
-            swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"].TryAddChildSetting("Text", new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue });
-            swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
-            swagDataTable.Settings["ColumnEditor"].TryAddChildSetting("Filters", new SwagSettingGroup() { Icon = PackIconCustomKind.TableColumnFilter });
-            swagDataTable.Settings["ColumnEditor"]["Filters"].TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.Search });
-            swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"].TryAddChildSetting("Text", new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue });
-            swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
-            swagDataTable.Settings.TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.TableSearch });
-            swagDataTable.Settings["Search"].TryAddChildSetting("Text", new SwagSetting<String>() { Icon = PackIconCustomKind.KeyValue });
-            swagDataTable.Settings["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
-            swagDataTable.Settings.TryAddChildSetting("Export", new SwagSettingGroup() { Icon = PackIconCustomKind.Export });
-            swagDataTable.Settings["Export"].TryAddChildSetting("Type", new SwagSetting<SwagTableExportType>() { SettingType = SettingType.DropDown, Value = SwagTableExportType.Csv, Icon = PackIconCustomKind.ExportType, ItemsSource = (SwagTableExportType[])Enum.GetValues(typeof(SwagTableExportType)) });
-            swagDataTable.Settings["Export"].TryAddChildSetting("Destination", new SwagSetting<SwagTableDestinationType>() { SettingType = SettingType.DropDown, Value = SwagTableDestinationType.Clipboard, Icon = PackIconCustomKind.Destination, ItemsSource = (SwagTableDestinationType[])Enum.GetValues(typeof(SwagTableDestinationType)) });
-            swagDataTable.Settings.TryAddChildSetting("Import", new SwagSettingGroup() { Icon = PackIconCustomKind.Import });
-            swagDataTable.Settings["Import"].TryAddChildSetting("Type", new SwagSetting<SwagTableImportType>() { SettingType = SettingType.DropDown, Value = SwagTableImportType.Tsv, Icon = PackIconCustomKind.ExportType, ItemsSource = (SwagTableImportType[])Enum.GetValues(typeof(SwagTableImportType)) });
-            swagDataTable.Settings["Import"].TryAddChildSetting("Source", new SwagSetting<SwagTableSourceType>() { SettingType = SettingType.DropDown, Value = SwagTableSourceType.Clipboard, Icon = PackIconCustomKind.Destination, ItemsSource = (SwagTableSourceType[])Enum.GetValues(typeof(SwagTableSourceType)) });
+            swagDataTable.Settings.TryAddChildSetting("ColumnEditor", new SwagSettingGroup() { Icon = PackIconMaterialKind.TableColumn, Icon2 = PackIconFontAwesomeKind.EditSolid });
+            swagDataTable.Settings["ColumnEditor"].TryAddChildSetting("Visibility", new SwagSettingGroup() { Icon = PackIconMaterialKind.TableColumn, Icon2 = PackIconMaterialKind.Eye });
+            swagDataTable.Settings["ColumnEditor"]["Visibility"].TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconMaterialKind.Magnify });
+            swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"].TryAddChildSetting("Text", new SwagSetting<String>() { Icon = PackIconBoxIconsKind.RegularText });
+            swagDataTable.Settings["ColumnEditor"]["Visibility"]["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconUniconsKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
+            swagDataTable.Settings["ColumnEditor"].TryAddChildSetting("Filters", new SwagSettingGroup() { Icon = PackIconMaterialKind.TableColumn, Icon2 = PackIconMaterialKind.Filter });
+            swagDataTable.Settings["ColumnEditor"]["Filters"].TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconMaterialKind.Magnify });
+            swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"].TryAddChildSetting("Text", new SwagSetting<String>() { Icon = PackIconBoxIconsKind.RegularText });
+            swagDataTable.Settings["ColumnEditor"]["Filters"]["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconUniconsKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
+            swagDataTable.Settings.TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconMaterialKind.Table, Icon2 = PackIconMaterialKind.Magnify });
+            swagDataTable.Settings["Search"].TryAddChildSetting("Text", new SwagSetting<String>() { Icon = PackIconBoxIconsKind.RegularText });
+            swagDataTable.Settings["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconUniconsKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
+            swagDataTable.Settings.TryAddChildSetting("Export", new SwagSettingGroup() { Icon = PackIconMaterialKind.Export });
+            swagDataTable.Settings["Export"].TryAddChildSetting("Type", new SwagSetting<SwagTableExportType>() { SettingType = SettingType.DropDown, Value = SwagTableExportType.Csv, Icon = PackIconMaterialKind.Export, Icon2 = PackIconFontAwesomeKind.ShapesSolid, ItemsSource = (SwagTableExportType[])Enum.GetValues(typeof(SwagTableExportType)) });
+            swagDataTable.Settings["Export"].TryAddChildSetting("Destination", new SwagSetting<SwagTableDestinationType>() { SettingType = SettingType.DropDown, Value = SwagTableDestinationType.Clipboard, Icon = PackIconMaterialKind.Target, ItemsSource = (SwagTableDestinationType[])Enum.GetValues(typeof(SwagTableDestinationType)) });
+            swagDataTable.Settings.TryAddChildSetting("Import", new SwagSettingGroup() { Icon = PackIconMaterialKind.Import });
+            swagDataTable.Settings["Import"].TryAddChildSetting("Type", new SwagSetting<SwagTableImportType>() { SettingType = SettingType.DropDown, Value = SwagTableImportType.Tsv, Icon = PackIconMaterialKind.Import, Icon2 = PackIconFontAwesomeKind.ShapesSolid, ItemsSource = (SwagTableImportType[])Enum.GetValues(typeof(SwagTableImportType)) });
+            swagDataTable.Settings["Import"].TryAddChildSetting("Source", new SwagSetting<SwagTableSourceType>() { SettingType = SettingType.DropDown, Value = SwagTableSourceType.Clipboard, Icon = PackIconMaterialKind.SourceCommitStart, ItemsSource = (SwagTableSourceType[])Enum.GetValues(typeof(SwagTableSourceType)) });
             #endregion InitSettings
 
             #region InitTabs
             SwagTabGroup tabs = new SwagTabGroup();
-            tabs["ColumnEditor"] = new SwagTabGroup() { Icon = PackIconCustomKind.TableColumnEdit, Display = "Column Editor" };
-            tabs["Search"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSearch };
-            tabs["Export"] = new SwagTabItem() { Icon = PackIconCustomKind.TableExport };
-            tabs["Import"] = new SwagTabItem() { Icon = PackIconCustomKind.TableImport };
-            tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSettings };
-            tabs["ColumnEditor"]["Visibility"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnVisibility };
-            tabs["ColumnEditor"]["Filters"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnFilter };
-            //tabs["ColumnEditor"]["Add"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnAdd };
-            //tabs["ColumnEditor"]["View"] = new SwagTabItem() { Icon = PackIconCustomKind.TableColumnView };
+            tabs["ColumnEditor"] = new SwagTabGroup() { Icon = PackIconMaterialKind.TableColumn, Icon2 = PackIconFontAwesomeKind.EditSolid, Display = "Column Editor" };
+            tabs["Search"] = new SwagTabItem() { Icon = PackIconMaterialKind.TextSearch };
+            tabs["Export"] = new SwagTabItem() { Icon = PackIconMaterialKind.Table, Icon2 = PackIconMaterialKind.ArrowRightThick };
+            tabs["Import"] = new SwagTabItem() { Icon = PackIconMaterialKind.Table, Icon2 = PackIconMaterialKind.ArrowLeftThick };
+            tabs["Settings"] = new SwagTabItem() { Icon = PackIconMaterialKind.Cog };
+            tabs["ColumnEditor"]["Visibility"] = new SwagTabItem() { Icon = PackIconMaterialKind.TableColumn, Icon2 = PackIconMaterialKind.Eye };
+            tabs["ColumnEditor"]["Filters"] = new SwagTabItem() { Icon = PackIconMaterialKind.TableColumn, Icon2 = PackIconMaterialKind.Filter };
+            //tabs["ColumnEditor"]["Add"] = new SwagTabItem() { Icon = PackIconMaterialKind.TableColumn, Icon2 = PackIconMaterialKind.Plus };
+            //tabs["ColumnEditor"]["View"] = new SwagTabItem() { Icon = PackIconMaterialKind.TableColumn, Icon2 = PackIconMaterialKind.Magnify };
             swagDataTable.Tabs = tabs;
             SwagItemPreOrderIterator<SwagTabItem> iterator = tabs.CreateIterator();
             for (SwagTabItem tabItem = iterator.First(); !iterator.IsDone; tabItem = iterator.Next())

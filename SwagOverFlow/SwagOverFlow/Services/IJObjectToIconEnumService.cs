@@ -7,7 +7,7 @@ namespace SwagOverFlow.Services
 {
     public interface IJObjectToIconEnumService
     {
-        Enum ToEnum(JObject data);
-        JObject ToJObject(Enum iconEnum);
+        Enum ToEnum(JObject data, params String [] keys);
+        JObject ToJObject(Enum iconEnum, params String[] keys);
     }
 }

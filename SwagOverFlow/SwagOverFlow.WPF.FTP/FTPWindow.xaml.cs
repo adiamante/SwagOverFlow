@@ -44,7 +44,7 @@ namespace SwagOverFlow.WPF.FTP
             SwagSetting<CredentialsViewModel> ssCredentials =
             new SwagSetting<CredentialsViewModel>()
             {
-                Icon = PackIconCustomKind.ArrowMultipleSweepRight,
+                Icon = PackIconOcticonsKind.Shield,
                 Value = new CredentialsViewModel()
             };
             SwagWindow.GlobalSettings["FTP"].TryAddChildSetting("Credentials", ssCredentials);

@@ -37,19 +37,19 @@
                     <StackPanel Orientation="Horizontal">
                         <Button Click="Load_Source_From_Clipboard_Button_Click">
                             <StackPanel Orientation="Horizontal">
-                                <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ClipboardText}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ClipboardText}, Converter={ui:PackIconKindToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
                                 <TextBlock Text="Load From Clipboard" />
                             </StackPanel>
                         </Button>
                         <Button Click="MapSimilar_Button_Click">
                             <StackPanel Orientation="Horizontal">
-                                <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Compare}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Compare}, Converter={ui:PackIconKindToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
                                 <TextBlock Text="Map Similar Descriptions" />
                             </StackPanel>
                         </Button>
                         <Button Click="Export_Mapppings_Button_Click">
                             <StackPanel Orientation="Horizontal">
-                                <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Export}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.Export}, Converter={ui:PackIconKindToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
                                 <TextBlock Text="Export Mappings" />
                             </StackPanel>
                         </Button>
@@ -76,7 +76,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Button Click="Load_Dest_From_Clipboard_Button_Click">
                             <StackPanel Orientation="Horizontal">
-                                <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ClipboardText}, Converter={ui:PackIconKindOrCustomToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
+                                <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Height="20" Width="20" ContentTemplate="{Binding Source={x:Static iconPacks:PackIconMaterialKind.ClipboardText}, Converter={ui:PackIconKindToDataTemplateConverter DynamicResourceBrush=MahApps.Brushes.AccentSelectedColor}}" />
                                 <TextBlock Text="Load From Clipboard" />
                             </StackPanel>
                         </Button>

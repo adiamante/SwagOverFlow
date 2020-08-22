@@ -1,9 +1,0 @@
-﻿<Application x:Class="SwagOverFlow.WPF.Test.BooleanExpression.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:SwagOverFlow.WPF.Test.BooleanExpression"
-             StartupUri="BooleanExpressionTestWindow.xaml">
-    <Application.Resources>
-         
-    </Application.Resources>
-</Application>

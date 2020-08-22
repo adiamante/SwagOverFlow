@@ -15,7 +15,7 @@ using System.Xml;
 
 namespace SwagOverFlow.WPF.UI
 {
-    public class PackIconKindOrCustomToDataTemplateConverter : MarkupConverter
+    public class PackIconKindToDataTemplateConverter : MarkupConverter
     {
         /// <summary>
         /// Gets or sets the brush to draw the icon.
@@ -173,39 +173,26 @@ namespace SwagOverFlow.WPF.UI
                 $"{{Binding RelativeSource={{RelativeSource AncestorType={{x:Type FrameworkElement}}}}, Path=(TextElement.Foreground)}}" :
                 $"{{DynamicResource {DynamicResourceBrush}}}";
 
-            StringReader stringReader = new StringReader("Nothing");    //should fail if this hits custom
-            switch (iconKind)
-            {
-                case PackIconCustomKind customKind:
-                    if (!UseForegroundBrush)
-                    {
-                        path = path.Replace($"{{Binding RelativeSource={{RelativeSource AncestorType={{x:Type FrameworkElement}}}}, Path=(TextElement.Foreground)}}", fill);
-                    }
-                    stringReader = new StringReader(path);
-                    break;
-                default:
-                    stringReader = new StringReader(
-                        $@"<DataTemplate 
-                            xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""> 
-                                <Viewbox xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" Stretch=""Uniform"">
-                                    <Canvas Width=""{baseWidth}"" Height=""{baseHeight}"">
-                                        <Path Fill=""{fill}"">
-                                            <Path.RenderTransform>
-                                                <TransformGroup>
-                                                    <ScaleTransform CenterX=""{centerX}"" CenterY=""{centerY}"" ScaleX=""{scaleX}"" ScaleY=""{scaleY}"" />
-                                                    <TranslateTransform X=""{translateX}"" Y=""{translateY}"" />
-                                                </TransformGroup>
-                                            </Path.RenderTransform>
-                                            <Path.Data>
-                                                <PathGeometry Figures=""{path}"" />
-                                            </Path.Data>
-                                        </Path>
-                                    </Canvas>
-                                </Viewbox>
-                            </DataTemplate>");
-                    break;
-            }
-            
+            StringReader stringReader = new StringReader(
+            $@"<DataTemplate 
+                xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""> 
+                    <Viewbox xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" Stretch=""Uniform"">
+                        <Canvas Width=""{baseWidth}"" Height=""{baseHeight}"">
+                            <Path Fill=""{fill}"">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform CenterX=""{centerX}"" CenterY=""{centerY}"" ScaleX=""{scaleX}"" ScaleY=""{scaleY}"" />
+                                        <TranslateTransform X=""{translateX}"" Y=""{translateY}"" />
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                                <Path.Data>
+                                    <PathGeometry Figures=""{path}"" />
+                                </Path.Data>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                </DataTemplate>");
+
             XmlReader xmlReader = XmlReader.Create(stringReader);
             DataTemplate dataTemplate = XamlReader.Load(xmlReader) as DataTemplate;
 
@@ -295,9 +282,6 @@ namespace SwagOverFlow.WPF.UI
                     return data;
                 case PackIconZondiconsKind zondiconsKind:
                     PackIconZondiconsDataFactory.DataIndex.Value?.TryGetValue(zondiconsKind, out data);
-                    return data;
-                case PackIconCustomKind customKind:
-                    PackIconCustomFactory.DataIndex.Value?.TryGetValue(customKind, out data);
                     return data;
                 default:
                     return null;

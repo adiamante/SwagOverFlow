@@ -11,7 +11,6 @@ using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using SwagOverFlow.Collections;
-using System.Collections.Generic;
 
 namespace SwagOverFlow.Data.Persistence
 {
@@ -24,6 +23,7 @@ namespace SwagOverFlow.Data.Persistence
         public DbSet<SwagSettingGroup> SwagSettingGroups { get; set; }
         public DbSet<SwagSettingString> SwagSettingStrings { get; set; }
         public DbSet<SwagSettingBoolean> SwagSettingBooleans { get; set; }
+        public DbSet<SwagSettingInt> SwagSettingInts { get; set; }
         public DbSet<SwagData> SwagData { get; set; }
         public DbSet<SwagDataGroup> SwagDataGroups { get; set; }
         public DbSet<SwagDataSet> SwagDataSets { get; set; }
@@ -42,6 +42,7 @@ namespace SwagOverFlow.Data.Persistence
             modelBuilder.ApplyConfiguration(new SwagSettingGroupEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingStringEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingBooleanEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagSettingIntEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataGroupEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataTableEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataColumnEntityConfiguration());
@@ -114,14 +115,9 @@ namespace SwagOverFlow.Data.Persistence
             EnumToStringConverter<SettingType> settingTypeconverter = new EnumToStringConverter<SettingType>();
             builder.Property(ss => ss.SettingType).HasConversion(settingTypeconverter);
 
-            //SwagSetting ObjItemsSource => Convert to String
-            builder.Property(ss => ss.ObjItemsSource)
-                .HasConversion(
-                    ss => JsonHelper.ToJsonString(ss),
-                    ss => JsonConvert.DeserializeObject<object>(ss));
-
             //SwagSetting Icon => Ignore
             builder.Ignore(ss => ss.Icon);
+            builder.Ignore(ss => ss.Icon2);
 
             //SwagSetting Data => Convert to String
             builder.Property(ss => ss.Data)
@@ -143,6 +139,7 @@ namespace SwagOverFlow.Data.Persistence
 
             //SwagSetting Icon => Ignore
             builder.Ignore(ss => ss.Icon);
+            builder.Ignore(ss => ss.Icon2);
         }
     }
 
@@ -234,8 +231,19 @@ namespace SwagOverFlow.Data.Persistence
             //SwagSettingBoolean Value => Ignore
             builder.Ignore(ss => ss.Value);
 
-
             //SwagSettingBoolean ItemsSource => Ignore
+            builder.Ignore(ss => ss.ItemsSource);
+        }
+    }
+
+    public class SwagSettingIntEntityConfiguration : IEntityTypeConfiguration<SwagSettingInt>
+    {
+        public void Configure(EntityTypeBuilder<SwagSettingInt> builder)
+        {
+            //SwagSettingInt Value => Ignore
+            builder.Ignore(ss => ss.Value);
+
+            //SwagSettingInt ItemsSource => Ignore
             builder.Ignore(ss => ss.ItemsSource);
         }
     }

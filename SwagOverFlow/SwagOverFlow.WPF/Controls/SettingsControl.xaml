@@ -44,7 +44,8 @@
                         <ColumnDefinition SharedSizeGroup="Value" Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Height="20" Width="20" ContentTemplate="{Binding Path=Icon, Converter={swui:PackIconKindOrCustomToDataTemplateConverter}}" />
+                    <swctl:IconControl Foreground="{DynamicResource MahApps.Brushes.AccentBase}" HorizontalAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Height="20" Width="20" Kind="{Binding Icon}" Kind2="{Binding Icon2}" />
+                    <ContentControl HorizontalAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Height="20" Width="20" ContentTemplate="{Binding Path=Icon, Converter={swui:PackIconKindToDataTemplateConverter}}" />
                     <TextBlock HorizontalAlignment="Left" Margin="0,0,10,0" Grid.Column="1" Text="{Binding Display}" FontWeight="Bold" Foreground="{DynamicResource MahApps.Brushes.AccentBase}" VerticalAlignment="Center" />
                     <ContentPresenter HorizontalAlignment="Left" Grid.Column="2" />
                 </Grid>
@@ -105,6 +106,15 @@
                         </DataTemplate>
                     </swui:SwagTemplate.DataTemplate>
                 </swui:SwagTemplate>
+                <swui:SwagTemplate TypePath="ValueType" Type="{x:Type sys:Int32}">
+                    <swui:SwagTemplate.DataTemplate>
+                        <DataTemplate>
+                            <ContentControl Template="{StaticResource SettingControlTemplate}">
+                                <metro:NumericUpDown Value="{Binding Value}" VerticalAlignment="Center" />
+                            </ContentControl>
+                        </DataTemplate>
+                    </swui:SwagTemplate.DataTemplate>
+                </swui:SwagTemplate>
                 <swui:SwagTemplate TypePath="ValueType">
                     <swui:SwagTemplate.Type>
                         <swui:GenericType BaseTypeName="col:List">
@@ -123,7 +133,7 @@
                                             <ContextMenu>
                                                 <MenuItem Header="Add" Command="{Binding ObjValue.AddDefaultCommand}">
                                                     <MenuItem.Icon>
-                                                        <swctl:IconControl Kind="{x:Static swui:PackIconCustomKind.Plus}" />
+                                                        <swctl:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Plus}" />
                                                     </MenuItem.Icon>
                                                 </MenuItem>
                                             </ContextMenu>

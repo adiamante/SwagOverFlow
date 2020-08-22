@@ -16,7 +16,7 @@ namespace SwagOverFlow.WPF.UI
 {
     public static class UIHelper
     {
-        static PackIconKindOrCustomToDataTemplateConverter _iconCnvtr = new PackIconKindOrCustomToDataTemplateConverter();
+        static PackIconKindToDataTemplateConverter _iconCnvtr = new PackIconKindToDataTemplateConverter();
 
         public static ImageSource GetImageSource(Enum iconEnum, double scale = 1.0, double width = 0.0, double height = 0.0, double margin = 0.0, System.Windows.Media.Brush brush = null)
         {

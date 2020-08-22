@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace SwagOverFlow.UITest.WPF
+namespace SwagOverFlow.WPF.Controls.Test
 {
     /// <summary>
     /// Interaction logic for App.xaml

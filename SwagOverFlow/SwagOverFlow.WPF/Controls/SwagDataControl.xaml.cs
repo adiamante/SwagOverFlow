@@ -81,27 +81,27 @@ namespace SwagOverFlow.WPF.Controls
                 #endregion FilterTabsCommand
 
                 #region InitSettings
-                swagDataSet.Settings.TryAddChildSetting("Tabs", new SwagSettingGroup() { Icon = PackIconCustomKind.TableSearch });
-                swagDataSet.Settings["Tabs"].TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.Search });
-                swagDataSet.Settings["Tabs"]["Search"].TryAddChildSetting("Text", new SwagSettingString() { Icon = PackIconCustomKind.KeyValue });
-                swagDataSet.Settings["Tabs"]["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
-                swagDataSet.Settings.TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconCustomKind.GlobalSearch });
-                swagDataSet.Settings["Search"].TryAddChildSetting("Text", new SwagSettingString { Icon = PackIconCustomKind.KeyValue });
-                swagDataSet.Settings["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconCustomKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
+                swagDataSet.Settings.TryAddChildSetting("Tabs", new SwagSettingGroup() { Icon = PackIconMaterialKind.TableSearch });
+                swagDataSet.Settings["Tabs"].TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconMaterialKind.Magnify });
+                swagDataSet.Settings["Tabs"]["Search"].TryAddChildSetting("Text", new SwagSettingString() { Icon = PackIconBoxIconsKind.RegularText });
+                swagDataSet.Settings["Tabs"]["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconUniconsKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
+                swagDataSet.Settings.TryAddChildSetting("Search", new SwagSettingGroup() { Icon = PackIconMaterialKind.TextSearch });
+                swagDataSet.Settings["Search"].TryAddChildSetting("Text", new SwagSettingString { Icon = PackIconBoxIconsKind.RegularText });
+                swagDataSet.Settings["Search"].TryAddChildSetting("FilterMode", new SwagSetting<FilterMode>() { SettingType = SettingType.DropDown, Value = FilterMode.CONTAINS, Icon = PackIconUniconsKind.Filter, ItemsSource = (FilterMode[])Enum.GetValues(typeof(FilterMode)) });
                 #endregion InitSettings
 
                 #region InitTabs
                 SwagTabGroup tabs = new SwagTabGroup();
-                tabs["Tabs"] = new SwagTabItem() { Icon = PackIconCustomKind.TableSearch };
+                tabs["Tabs"] = new SwagTabItem() { Icon = PackIconMaterialKind.TableSearch };
                 tabs["Parse"] = new SwagTabGroup() { Icon = PackIconZondiconsKind.DocumentAdd };
                 tabs["Parse"]["Paste"] = new SwagTabGroup() { Icon = PackIconZondiconsKind.Paste };
                 tabs["Parse"]["Paste"]["TSV"] = new SwagTabItem() { Icon = PackIconMaterialKind.AlphaTBoxOutline };
                 tabs["Parse"]["Paste"]["JSON"] = new SwagTabItem() { Icon = PackIconMaterialKind.CodeJson };
                 tabs["Parse"]["Paste"]["XML"] = new SwagTabItem() { Icon = PackIconMaterialKind.Xml };
-                tabs["Search"] = new SwagTabItem() { Icon = PackIconCustomKind.GlobalSearch };
+                tabs["Search"] = new SwagTabItem() { Icon = PackIconMaterialKind.TextSearch };
                 tabs["Session"] = new SwagTabItem() { Icon = PackIconMaterialKind.WindowRestore };
-                tabs["Test"] = new SwagTabItem() { Icon = PackIconCustomKind.ClipboardTest };
-                tabs["Settings"] = new SwagTabItem() { Icon = PackIconCustomKind.Settings };
+                tabs["Test"] = new SwagTabItem() { Icon = PackIconOcticonsKind.Beaker };
+                tabs["Settings"] = new SwagTabItem() { Icon = PackIconMaterialKind.Cog };
                 swagDataSet.Tabs = tabs;
                 SwagItemPreOrderIterator<SwagTabItem> itrTabs = tabs.CreateIterator();
                 for (SwagTabItem tabItem = itrTabs.First(); !itrTabs.IsDone; tabItem = itrTabs.Next())
@@ -180,13 +180,13 @@ namespace SwagOverFlow.WPF.Controls
             }
             #endregion Prevents Designer Error
 
-            SwagWindow.GlobalSettings.TryAddChildSetting("SwagData", new SwagSettingGroup() { Icon = PackIconCustomKind.Dataset });
+            SwagWindow.GlobalSettings.TryAddChildSetting("SwagData", new SwagSettingGroup() { Icon = PackIconMaterialKind.TableMultiple });
             SwagSetting<List<KeyValuePairViewModel<string, ParseViewModel>>> ssParseMapper =
-                    new SwagSetting<List<KeyValuePairViewModel<string, ParseViewModel>>>()
-                    {
-                        Icon = PackIconCustomKind.ArrowMultipleSweepRight,
-                        Value = new List<KeyValuePairViewModel<string, ParseViewModel>>()
-                    };
+            new SwagSetting<List<KeyValuePairViewModel<string, ParseViewModel>>>()
+            {
+                Icon = PackIconModernKind.ArrowLeftRight,
+                Value = new List<KeyValuePairViewModel<string, ParseViewModel>>()
+            };
             SwagWindow.GlobalSettings["SwagData"].TryAddChildSetting("ParseMapper", ssParseMapper);
             SwagWindow.GlobalSettings["SwagData"].TryAddChildSetting("Session", new SwagSettingGroup() { Icon = PackIconMaterialKind.WindowRestore });
             SwagWindow.GlobalSettings["SwagData"]["Session"].TryAddChildSetting("Enabled", new SwagSettingBoolean { Icon = PackIconMaterialKind.AlphaEBoxOutline });

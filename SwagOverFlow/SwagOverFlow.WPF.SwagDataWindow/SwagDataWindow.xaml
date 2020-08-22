@@ -23,12 +23,12 @@
             <MenuItem Header="Swag">
                 <MenuItem Header="Add Set" Command="{Binding SwagDataSet.AddDataSetCommand}">
                     <MenuItem.Icon>
-                        <swag:IconControl Kind="{x:Static swagui:PackIconCustomKind.DatasetAdd}" />
+                        <swag:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TableMultiple}" Kind2="{x:Static iconPacks:PackIconMaterialKind.Plus}" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Add Table" Command="{Binding SwagDataSet.AddDataTableCommand}">
                     <MenuItem.Icon>
-                        <swag:IconControl Kind="{x:Static swagui:PackIconCustomKind.TableAdd}" />
+                        <swag:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TablePlus}" />
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>

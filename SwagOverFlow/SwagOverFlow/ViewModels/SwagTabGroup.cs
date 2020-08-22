@@ -8,62 +8,66 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace SwagOverFlow.ViewModels
 {
     public class SwagTabItem : SwagIndexedItem<SwagTabGroup, SwagTabItem>
     {
         #region Private/Protected Members
-        Enum _icon;
+        JObject _data = new JObject();
+        Enum _icon, _icon2;
         INotifyPropertyChanged _viewModel;
-        protected String _iconString, _iconTypeString;
         #endregion Private/Protected Members
 
         #region Properties
+        #region Data
+        public JObject Data
+        {
+            get { return _data; }
+            set { SetValue(ref _data, value); }
+        }
+        #endregion Data
         #region Icon
         [JsonIgnore]
         public Enum Icon
         {
             get
             {
-                if (_icon == null && !String.IsNullOrEmpty(_iconTypeString) && !String.IsNullOrEmpty(_iconTypeString))
+                if (_icon == null)
                 {
-                    Type iconType = JsonConvert.DeserializeObject<Type>(_iconTypeString);
-                    _icon = (Enum)Enum.Parse(iconType, _iconString);
+                    _icon = IconHelper.ToEnum(_data);
                 }
                 return _icon;
             }
-            set { SetValue(ref _icon, value); }
+            set
+            {
+                SetValue(ref _icon, value);
+                JObject iconData = IconHelper.ToObject(_icon);
+                Data.Merge(iconData);
+            }
         }
         #endregion Icon
-        #region IconString
-        public String IconString
+        #region Icon2
+        [JsonIgnore]
+        public Enum Icon2
         {
             get
             {
-                if (_icon != null)
+                if (_icon2 == null)
                 {
-                    return _icon.ToString();
+                    _icon2 = IconHelper.ToEnum(_data, "Icon2");
                 }
-                return _iconString;
+                return _icon2;
             }
-            set { SetValue(ref _iconString, value); }
-        }
-        #endregion IconString
-        #region IconTypeString
-        public String IconTypeString
-        {
-            get
+            set
             {
-                if (_icon != null)
-                {
-                    return JsonHelper.ToJsonString(_icon.GetType());
-                }
-                return _iconTypeString;
+                SetValue(ref _icon2, value);
+                JObject iconData = IconHelper.ToObject(_icon2, "Icon2");
+                Data.Merge(iconData);
             }
-            set { SetValue(ref _iconTypeString, value); }
         }
-        #endregion IconTypeString
+        #endregion Icon2
         #region ShowText
         public bool ShowText
         {

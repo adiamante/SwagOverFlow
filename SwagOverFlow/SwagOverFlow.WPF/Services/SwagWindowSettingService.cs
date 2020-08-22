@@ -144,8 +144,6 @@ namespace SwagOverFlow.WPF.Services
                     //Mark these properites as modified to have them save properly
                     setting.ObjValue = setting.ObjValue;
                     setting.ValueTypeString = setting.ValueTypeString;
-                    setting.ObjItemsSource = setting.ObjItemsSource;
-                    setting.ItemsSourceTypeString = setting.ItemsSourceTypeString;
                     setting.Data = setting.Data;
                 }
 
