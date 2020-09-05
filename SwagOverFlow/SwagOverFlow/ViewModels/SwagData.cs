@@ -847,7 +847,9 @@ namespace SwagOverFlow.ViewModels
                 }
             }
 
-            if (lstCellResults.Count > 0)
+            Boolean colMatch = SearchHelper.Evaluate(_display, searchValue, false, filterMode, false);
+
+            if (colMatch || lstCellResults.Count > 0)
             {
                 SwagDataColumnResultGroup columnResultGroup = new SwagDataColumnResultGroup() { SwagData = this, Display = ColumnName };
                 columnResultGroup.Children = new ObservableCollection<SwagDataResult>(lstCellResults);
