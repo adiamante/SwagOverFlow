@@ -419,6 +419,18 @@ namespace SwagOverFlow.Data.Clients
             connection.BindFunction(attributes[0], function);
         }
         #endregion BindFunction
+
+        #region Standalone DataTable Query
+        public static DataTable ExecuteQuery(String query, params DataTable[] dataTables)
+        {
+            SqliteClient client = new SqliteClient();
+            client.OpenConnection();
+            client.AddTables(dataTables);
+            DataTable dtbl = client.ExecuteReader(query);
+            client.CloseConnection();
+            return dtbl;
+        }
+        #endregion Standalone DataTable Query
     }
 
     #region SQLiteFunctions
