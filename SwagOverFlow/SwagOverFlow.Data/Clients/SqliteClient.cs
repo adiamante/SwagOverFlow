@@ -404,7 +404,7 @@ namespace SwagOverFlow.Data.Clients
 
         public static String GenerateTableDrop(DataTable dt)
         {
-            return $"DROP TABLE IF EXISTS {dt.TableName};\n";
+            return $"DROP TABLE IF EXISTS [{dt.TableName}];\n";
         }
         #endregion Generate SQL Command Strings
 
