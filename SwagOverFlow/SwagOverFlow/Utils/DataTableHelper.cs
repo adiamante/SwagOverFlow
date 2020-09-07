@@ -76,7 +76,7 @@ namespace SwagOverFlow.Utils
                     //{
                     //    lstTimeSpans.Add(timeSpanVal);
                     //}
-                    if (lstDateTimes.Count == row && DateTime.TryParse(strVal, out DateTime dateTimeVal))
+                    if (lstDateTimes.Count == row && !Int32.TryParse(strVal, out intVal) && DateTime.TryParse(strVal, out DateTime dateTimeVal))
                     {
                         lstDateTimes.Add(dateTimeVal);
                     }
