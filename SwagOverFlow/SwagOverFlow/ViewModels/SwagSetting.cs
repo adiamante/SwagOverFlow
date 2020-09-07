@@ -329,6 +329,11 @@ namespace SwagOverFlow.ViewModels
 
     }
 
+    public class SwagSettingDateTime : SwagSetting<DateTime>
+    {
+
+    }
+
     public static class SwagSettingExtensions
     {
         public static void TryAddChildSetting(this SwagSetting setting, String key, SwagSetting child)

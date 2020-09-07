@@ -24,6 +24,7 @@ namespace SwagOverFlow.Data.Persistence
         public DbSet<SwagSettingString> SwagSettingStrings { get; set; }
         public DbSet<SwagSettingBoolean> SwagSettingBooleans { get; set; }
         public DbSet<SwagSettingInt> SwagSettingInts { get; set; }
+        public DbSet<SwagSettingDateTime> SwagSettingDateTimes { get; set; }
         public DbSet<SwagData> SwagData { get; set; }
         public DbSet<SwagDataGroup> SwagDataGroups { get; set; }
         public DbSet<SwagDataSet> SwagDataSets { get; set; }
@@ -43,6 +44,7 @@ namespace SwagOverFlow.Data.Persistence
             modelBuilder.ApplyConfiguration(new SwagSettingStringEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingBooleanEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagSettingIntEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new SwagSettingDateTimeEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataGroupEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataTableEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SwagDataColumnEntityConfiguration());
@@ -244,6 +246,18 @@ namespace SwagOverFlow.Data.Persistence
             builder.Ignore(ss => ss.Value);
 
             //SwagSettingInt ItemsSource => Ignore
+            builder.Ignore(ss => ss.ItemsSource);
+        }
+    }
+
+    public class SwagSettingDateTimeEntityConfiguration : IEntityTypeConfiguration<SwagSettingDateTime>
+    {
+        public void Configure(EntityTypeBuilder<SwagSettingDateTime> builder)
+        {
+            //SwagSettingDateTime Value => Ignore
+            builder.Ignore(ss => ss.Value);
+
+            //SwagSettingDateTime ItemsSource => Ignore
             builder.Ignore(ss => ss.ItemsSource);
         }
     }

@@ -115,6 +115,15 @@
                         </DataTemplate>
                     </swui:SwagTemplate.DataTemplate>
                 </swui:SwagTemplate>
+                <swui:SwagTemplate TypePath="ValueType" Type="{x:Type sys:DateTime}">
+                    <swui:SwagTemplate.DataTemplate>
+                        <DataTemplate>
+                            <ContentControl Template="{StaticResource SettingControlTemplate}">
+                                <metro:DateTimePicker SelectedDateTime="{Binding Value}" />
+                            </ContentControl>
+                        </DataTemplate>
+                    </swui:SwagTemplate.DataTemplate>
+                </swui:SwagTemplate>
                 <swui:SwagTemplate TypePath="ValueType">
                     <swui:SwagTemplate.Type>
                         <swui:GenericType BaseTypeName="col:List">
