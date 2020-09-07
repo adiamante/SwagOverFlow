@@ -1359,6 +1359,7 @@ namespace SwagOverFlow.ViewModels
         {
             _dataTable.RowChanged += dataTable_RowChanged;
             _dataTable.DefaultView.ListChanged += dataView_ListChanged;
+            dataView_ListChanged(null, null);
         }
         #endregion Initialization
 
