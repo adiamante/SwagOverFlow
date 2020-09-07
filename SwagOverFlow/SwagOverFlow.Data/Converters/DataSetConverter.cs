@@ -83,6 +83,44 @@ namespace SwagOverFlow.Data.Converters
     }
     #endregion DataSetConverter<T>
 
+    #region DataSetCsvFileConverter
+    public class DataSetCsvFileConverter : DataSetConverter<String>
+    {
+        #region Private Members
+        DataTableCsvFileConverter _dataTableCsvFileConverter = new DataTableCsvFileConverter();
+        #endregion Private Members
+
+        #region FromDataSet
+        public override string FromDataSet(DataSetConvertParams context, DataSet ds, params object[] args)
+        {
+            String destinationPath = args.Length > 0 ? args[0].ToString() : "";
+
+            if (destinationPath != "")
+            {
+                if (!Directory.Exists(destinationPath))
+                {
+                    Directory.CreateDirectory(destinationPath);
+                }
+
+                foreach (DataTable dtbl in ds.Tables)
+                {
+                    String strDtbl = _dataTableCsvFileConverter.FromDataTable(new DataTableConvertParams(), dtbl);
+                    File.WriteAllText(Path.Combine(destinationPath, $"{dtbl.TableName}.csv"), strDtbl);
+                }
+            }
+            return destinationPath;
+        }
+        #endregion FromDataSet
+
+        #region ToDataSet
+        public override DataSet ToDataSet(DataSetConvertParams context, string input)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion ToDataSet
+    }
+    #endregion DataSetCsvFileConverter
+
     #region DataSetXmlStreamConverter
     public class DataSetXmlStreamConverter : DataSetConverter<Stream>
     {

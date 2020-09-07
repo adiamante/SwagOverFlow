@@ -524,22 +524,55 @@ namespace SwagOverFlow.WPF.Controls
         {
             FrameworkElement fe = (FrameworkElement)sender;
             SwagDataSet swagDataSet = (SwagDataSet)fe.DataContext;
-            DataSet ds = swagDataSet.GetDataSet();
             ParseStrategy parseStrategy = (ParseStrategy)fe.Tag;
             
             switch (parseStrategy)
             {
                 case ParseStrategy.Sqlite:
-                    SaveFileDialog sfd = new SaveFileDialog();
-                    sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                    sfd.FileName = Path.ChangeExtension(swagDataSet.Display, null);
-                    sfd.Filter = "SQLite files (*.db;*.sqlite)|*.db;*.sqlite";
+                    SaveFileDialog sfdSqlite = new SaveFileDialog();
+                    sfdSqlite.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                    sfdSqlite.FileName = Path.ChangeExtension(swagDataSet.Display, null);
+                    sfdSqlite.Filter = "SQLite files (*.db;*.sqlite)|*.db;*.sqlite";
                     System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        if (sfd.ShowDialog() ?? false)
+                        if (sfdSqlite.ShowDialog() ?? false)
                         {
                             DataSetSqliteFileConverter dsConverter = new DataSetSqliteFileConverter();
-                            dsConverter.FromDataSet(null, ds, sfd.FileName);
+                            dsConverter.FromDataSet(null, swagDataSet.GetDataSet(), sfdSqlite.FileName);
+                        }
+                    }));
+                    break;
+                case ParseStrategy.Csv:
+                    System.Windows.Forms.FolderBrowserDialog fbdCsv = new System.Windows.Forms.FolderBrowserDialog();
+                    fbdCsv.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                    System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        if (fbdCsv.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        {
+                            DataSetCsvFileConverter dsConverter = new DataSetCsvFileConverter();
+
+                            SwagItemPreOrderIterator<SwagData> itrSwagData = swagDataSet.CreateIterator();
+                            swagDataSet.Display = swagDataSet.Display ?? "DataSet";
+                            for (SwagData sd = itrSwagData.First(); !itrSwagData.IsDone; sd = itrSwagData.Next())
+                            {
+                                if (sd is SwagDataSet sds)
+                                {
+                                    String destFolder = "";
+
+                                    //If exporting root and root has blank display, use DataSet
+                                    if (swagDataSet == SwagDataSet && string.IsNullOrEmpty(swagDataSet.Display))
+                                    {
+                                        destFolder = Path.Combine(fbdCsv.SelectedPath, "DataSet", sds.Path);
+                                    }
+                                    else
+                                    {
+                                        destFolder = Path.Combine(fbdCsv.SelectedPath, sds.Path);
+                                    }
+
+                                    //limit to depth of 1 when exporting DataSet
+                                    dsConverter.FromDataSet(null, sds.GetDataSet(1), destFolder);
+                                }
+                            }
                         }
                     }));
                     break;

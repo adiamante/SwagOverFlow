@@ -57,7 +57,7 @@ namespace SwagOverFlow.ViewModels
             return null;
         }
 
-        public virtual DataSet GetDataSet()
+        public virtual DataSet GetDataSet(Int32 depth = Int32.MaxValue)
         {
             return null;
         }
@@ -1517,7 +1517,7 @@ namespace SwagOverFlow.ViewModels
             return null;
         }
 
-        public override DataSet GetDataSet()
+        public override DataSet GetDataSet(Int32 depth = Int32.MaxValue)
         {
             DataSet ds = new DataSet();
             DataTable dt = _dataTable.Copy();
@@ -1701,22 +1701,27 @@ namespace SwagOverFlow.ViewModels
         #endregion Initialization
 
         #region Methods
-        public override DataSet GetDataSet()
+        public override DataSet GetDataSet(Int32 depth = Int32.MaxValue)
         {
+            if (depth <= 0)
+            {
+                return new DataSet();
+            }
+
             DataSet ds = new DataSet(Display ?? "Root Set");
             foreach (SwagData swagData in Children)
             {
                 switch (swagData)
                 {
                     case SwagDataTable swagDataTable:
-                        foreach (DataTable dt in swagDataTable.GetDataSet().Tables)
+                        foreach (DataTable dt in swagDataTable.GetDataSet(depth - 1).Tables)
                         {
                             DataTable dtCopy = dt.Copy();
                             ds.Tables.Add(dtCopy);
                         }
                         break;
                     case SwagDataSet swagDataSet:
-                        foreach (DataTable dt in swagDataSet.GetDataSet().Tables)
+                        foreach (DataTable dt in swagDataSet.GetDataSet(depth - 1).Tables)
                         {
                             DataTable dtCopy = dt.Copy();
                             dtCopy.TableName = $"{swagDataSet.Display}.{dt.TableName}";
