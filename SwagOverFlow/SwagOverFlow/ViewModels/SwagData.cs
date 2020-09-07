@@ -1702,7 +1702,7 @@ namespace SwagOverFlow.ViewModels
         #region Methods
         public override DataSet GetDataSet()
         {
-            DataSet ds = new DataSet(Display);
+            DataSet ds = new DataSet(Display ?? "Root Set");
             foreach (SwagData swagData in Children)
             {
                 switch (swagData)

@@ -145,6 +145,30 @@
     </local:SwagControlBase.Resources>
     <DockPanel DataContext="{Binding SwagDataSet, ElementName=ControlInstance}" Drop="SwagData_Drop">
         <local:SwagSidePanelControl DockPanel.Dock="Left" SwagTabCollection="{Binding SwagDataSet.Tabs, ElementName=ControlInstance}">
+            <local:SwagSidePanelControl.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add Set" Command="{Binding AddDataSetCommand}">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TableMultiple}" Kind2="{x:Static iconPacks:PackIconMaterialKind.Plus}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Add Table" Command="{Binding AddDataTableCommand}">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TablePlus}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Export">
+                        <MenuItem.Icon>
+                            <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Export}" />
+                        </MenuItem.Icon>
+                        <MenuItem Header="Sqlite" Click="SwagDataSetHeader_Export" Tag="{x:Static swvm:ParseStrategy.Sqlite}">
+                            <MenuItem.Icon>
+                                <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.AlphaSBox}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                </ContextMenu>
+            </local:SwagSidePanelControl.ContextMenu>
             <local:SwagSidePanelControl.TabItemTemplates>
                 <swui:SwagTemplateCollection>
                     <swui:SwagTemplate CompareValue="Tabs">
