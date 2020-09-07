@@ -21,7 +21,15 @@
     </swctl:SwagWindow.Resources>
     <TabControl SelectedIndex="{Binding TestTabIndex, ElementName=ThisWindow, Mode=TwoWay}">
         <TabItem Header="IconControl">
-            <swctl:IconControl HorizontalAlignment="Center" Text="Options" Kind="{x:Static iconPacks:PackIconMaterialKind.LightningBolt}" Kind2="{x:Static iconPacks:PackIconMaterialKind.Table}" />
+            <StackPanel HorizontalAlignment="Left" Grid.IsSharedSizeScope="True">
+                <swctl:IconControl HorizontalAlignment="Center" Text="Options" Kind="{x:Static iconPacks:PackIconMaterialKind.LightningBolt}" Kind2="{x:Static iconPacks:PackIconMaterialKind.Table}">
+                    <TextBox Height="25" Width="100" />
+                </swctl:IconControl>
+                <swctl:IconControl HorizontalAlignment="Center" Text="Optionssss" Kind="{x:Static iconPacks:PackIconMaterialKind.LightningBolt}" Kind2="{x:Static iconPacks:PackIconMaterialKind.Table}">
+                    <TextBox Height="25" Width="100" />
+                </swctl:IconControl>
+            </StackPanel>
+
         </TabItem>
         <TabItem Header="SearchTextBox">
             <swctl:SearchTextBox HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="200" />

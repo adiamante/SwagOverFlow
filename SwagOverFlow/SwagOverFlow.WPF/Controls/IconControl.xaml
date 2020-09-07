@@ -8,33 +8,45 @@
              mc:Ignorable="d" 
              x:Name="ThisControl"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid DataContext="{Binding ElementName=ThisControl}">
-        <!--The Rectangle below (that is above the Control layer wise) makes it so Tootip works even if it the mouse is in whitespace-->
-        <Rectangle Fill="Transparent" />
-        <DockPanel HorizontalAlignment="Left">
-            <TextBlock DockPanel.Dock="{Binding TextDock}" 
-                       MaxWidth="{Binding TextMaxWidth}" 
-                       TextWrapping="{Binding TextWrapping}" 
-                       Margin="{Binding TextMargin}" 
-                       VerticalAlignment="Center" 
-                       Text="{Binding Text}" 
-                       Visibility="{Binding ShowText, Converter={swui:BoolToVisibilityConverter}}" />
-            <Grid Height="{Binding IconHeight}" Width="{Binding IconWidth}">
-                <ContentControl Panel.ZIndex="-100"
+    <UserControl.Template>
+        <ControlTemplate TargetType="{x:Type swcntl:IconControl}">
+            <Grid DataContext="{Binding ElementName=ThisControl}">
+                <!--The Rectangle below (that is above the Control layer wise) makes it so Tootip works even if it the mouse is in whitespace-->
+                <Rectangle Fill="Transparent" />
+                <DockPanel>
+                    <Grid DockPanel.Dock="Left" HorizontalAlignment="Left">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="IconControlIcon" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="IconControlText" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                           Grid.Column="1"
+                           MaxWidth="{Binding TextMaxWidth}" 
+                           TextWrapping="{Binding TextWrapping}" 
+                           Margin="{Binding TextMargin}" 
+                           VerticalAlignment="Center" 
+                           Text="{Binding Text}" 
+                           Visibility="{Binding ShowText, Converter={swui:BoolToVisibilityConverter}}" />
+                        <Grid Grid.Column="0" Height="{Binding IconHeight}" Width="{Binding IconWidth}">
+                            <ContentControl Panel.ZIndex="-100"
                                 ContentTemplate="{Binding Kind, RelativeSource={RelativeSource AncestorType={x:Type swcntl:IconControl}}, Converter={swui:PackIconKindToDataTemplateConverter UseForegroundBrush=True}}" 
                                 Visibility="{Binding ShowIcon, Converter={swui:BoolToVisibilityConverter}}" />
-                <Grid Panel.ZIndex="100"
-                      Height="{Binding SecondaryIconHeight}"
-                      Width="{Binding SecondaryIconWidth}"
-                      VerticalAlignment="{Binding SecondaryIconVerticalAlignment}"
-                      HorizontalAlignment="{Binding SecondaryIconHorizontalAlignment}"
-                      Visibility="{Binding Kind2, Converter={swui:NullToVisibilityConverter TrueValue=Hidden,FalseValue=Visible}}">
-                    <Rectangle Fill="{Binding SecondaryIconBackground}" />
-                    <Rectangle Fill="{DynamicResource MahApps.Brushes.ThemeBackground}" Visibility="{Binding SecondaryIconBackground, Converter={swui:NullToVisibilityConverter}}" />
-                    <ContentControl ContentTemplate="{Binding Kind2, RelativeSource={RelativeSource AncestorType={x:Type swcntl:IconControl}}, Converter={swui:PackIconKindToDataTemplateConverter UseForegroundBrush=True}}" 
+                            <Grid Panel.ZIndex="100"
+                                  Height="{Binding SecondaryIconHeight}"
+                                  Width="{Binding SecondaryIconWidth}"
+                                  VerticalAlignment="{Binding SecondaryIconVerticalAlignment}"
+                                  HorizontalAlignment="{Binding SecondaryIconHorizontalAlignment}"
+                                  Visibility="{Binding Kind2, Converter={swui:NullToVisibilityConverter TrueValue=Hidden,FalseValue=Visible}}">
+                                <Rectangle Fill="{Binding SecondaryIconBackground}" />
+                                <Rectangle Fill="{DynamicResource MahApps.Brushes.ThemeBackground}" Visibility="{Binding SecondaryIconBackground, Converter={swui:NullToVisibilityConverter}}" />
+                                <ContentControl ContentTemplate="{Binding Kind2, RelativeSource={RelativeSource AncestorType={x:Type swcntl:IconControl}}, Converter={swui:PackIconKindToDataTemplateConverter UseForegroundBrush=True}}" 
                                 Visibility="{Binding ShowIcon, Converter={swui:BoolToVisibilityConverter}}" />
-                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <ContentPresenter Margin="{Binding ContentMargin}"  />
+                </DockPanel>
             </Grid>
-        </DockPanel>
-    </Grid>
+        </ControlTemplate>
+    </UserControl.Template>
 </UserControl>

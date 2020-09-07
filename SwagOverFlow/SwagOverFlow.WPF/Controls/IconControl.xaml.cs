@@ -64,19 +64,19 @@ namespace SwagOverFlow.WPF.Controls
             set { SetValue(TextWrappingProperty, value); }
         }
         #endregion TextWrapping
-        #region TextDock
-        public static DependencyProperty TextDockProperty =
-            DependencyProperty.Register(
-                "TextDock",
-                typeof(Dock),
-                typeof(IconControl),
-                new PropertyMetadata(Dock.Right));
+        #region TextDock (Lost this to enable Grid.SharedSizeScope)
+        //public static DependencyProperty TextDockProperty =
+        //    DependencyProperty.Register(
+        //        "TextDock",
+        //        typeof(Dock),
+        //        typeof(IconControl),
+        //        new PropertyMetadata(Dock.Right));
 
-        public Dock TextDock
-        {
-            get { return (Dock)GetValue(TextDockProperty); }
-            set { SetValue(TextDockProperty, value); }
-        }
+        //public Dock TextDock
+        //{
+        //    get { return (Dock)GetValue(TextDockProperty); }
+        //    set { SetValue(TextDockProperty, value); }
+        //}
         #endregion TextDock
         #region TextMargin
         public static DependencyProperty TextMarginProperty =
@@ -148,6 +148,20 @@ namespace SwagOverFlow.WPF.Controls
             set { SetValue(ShowIconProperty, value); }
         }
         #endregion ShowIcon
+        #region ContentMargin
+        public static DependencyProperty ContentMarginProperty =
+            DependencyProperty.Register(
+                "ContentMargin",
+                typeof(Thickness),
+                typeof(IconControl),
+                new PropertyMetadata(new Thickness(3, 0, 0, 0)));
+
+        public Thickness ContentMargin
+        {
+            get { return (Thickness)GetValue(ContentMarginProperty); }
+            set { SetValue(ContentMarginProperty, value); }
+        }
+        #endregion ContentMargin
 
         #region Kind2
         private static readonly DependencyProperty Kind2Property =
