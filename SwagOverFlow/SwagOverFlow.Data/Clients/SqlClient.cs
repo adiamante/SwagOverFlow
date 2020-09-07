@@ -156,12 +156,14 @@ namespace SwagOverFlow.Data.Clients
         #endregion IterateColumns
 
         #region Generate SQL Command Strings
-        public static String GenerateTable(DataTable dt)
+        public static String GenerateTable(DataTable dt, Boolean isTempTable = false)
         {
             if (dt.Columns.Count > 0)
             {
                 StringBuilder sb = new StringBuilder();
-                String tableName = dt.TableName == "" ? "Temp" : string.Format("{0}", dt.TableName);
+                String tableName = isTempTable ?
+                    (dt.TableName == "" ? "@Temp" : string.Format("@{0}", dt.TableName.Replace('.', '_').Replace(' ', '_'))) :
+                    (dt.TableName == "" ? "Temp" : string.Format("{0}", dt.TableName));
                 String columnsDeclare = "";
 
                 IterateColumns(dt, new Action<DataColumn, string>((dc, colType) =>
@@ -170,7 +172,8 @@ namespace SwagOverFlow.Data.Clients
                 }));
 
                 columnsDeclare = columnsDeclare.TrimStart(','); //remove beginning comma
-                sb.AppendFormat("CREATE TABLE [{0}] ({1});", tableName, columnsDeclare);
+                String createFormat = isTempTable ? "DECLARE {0} TABLE ({1})" : "CREATE TABLE [{0}] ({1});";
+                sb.AppendFormat(createFormat, tableName, columnsDeclare);
 
                 return sb.ToString();
             }
@@ -180,10 +183,12 @@ namespace SwagOverFlow.Data.Clients
             }
         }
 
-        public static String GenerateTableInsert(DataTable dt, Int32 RowsPerLine = Int32.MaxValue)
+        public static String GenerateTableInsert(DataTable dt, Boolean isTempTable = false, Int32 RowsPerLine = Int32.MaxValue)
         {
             StringBuilder sb = new StringBuilder();
-            String tableName = dt.TableName == "" ? "Temp" : string.Format("{0}", dt.TableName);
+            String tableName = isTempTable ?
+                    (dt.TableName == "" ? "@Temp" : string.Format("@{0}", dt.TableName.Replace('.', '_').Replace(' ', '_'))) :
+                    (dt.TableName == "" ? "Temp" : string.Format("{0}", dt.TableName));
             String columnsInsert = "", allRowInserts = "";
 
             IterateColumns(dt, new Action<DataColumn, string>((dc, colType) =>
@@ -205,7 +210,8 @@ namespace SwagOverFlow.Data.Clients
                             sb.Append(allRowInserts.TrimEnd(',') + ";");
                             allRowInserts = "";
                         }
-                        sb.AppendFormat("\r\nINSERT INTO [{0}] ({1}) VALUES\r\n\t", tableName, columnsInsert);
+                        String insertFormat = isTempTable ? "\r\nINSERT INTO {0} ({1}) VALUES\r\n\t" : "\r\nINSERT INTO [{0}] ({1}) VALUES\r\n\t";
+                        sb.AppendFormat(insertFormat, tableName, columnsInsert);
                     }
 
                     String rowInsert = "";
@@ -253,6 +259,22 @@ namespace SwagOverFlow.Data.Clients
             sb.Append(allRowInserts.TrimEnd(','));
 
             return sb.ToString();
+        }
+
+        public static String GenerateTableSelect(DataTable dt, Boolean isTempTable = false)
+        {
+            String tableName = isTempTable ?
+                    (dt.TableName == "" ? "@Temp" : string.Format("@{0}", dt.TableName.Replace('.', '_').Replace(' ', '_'))) :
+                    (dt.TableName == "" ? "Temp" : string.Format("{0}", dt.TableName));
+
+            if (isTempTable)
+            {
+                return $"SELECT * FROM {tableName}";
+            }
+            else
+            {
+                return $"SELECT * FROM [{tableName}]";
+            }
         }
 
         public static String GenerateTableTruncate(DataTable dt)

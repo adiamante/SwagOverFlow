@@ -497,7 +497,9 @@ namespace SwagOverFlow.Data.Converters
         #region FromDataTable
         public override string FromDataTable(DataTableConvertParams context, DataTable dt)
         {
-            return SqlHelper.GenerateTable(dt) + Environment.NewLine + SqlHelper.GenerateTableInsert(dt);
+            return SqlHelper.GenerateTable(dt, true) + Environment.NewLine +
+                SqlHelper.GenerateTableInsert(dt, true) + Environment.NewLine +
+                SqlHelper.GenerateTableSelect(dt, true);
         }
         #endregion FromDataTable
 
