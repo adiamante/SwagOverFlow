@@ -161,7 +161,7 @@ namespace SwagOverFlow.Data.Clients
             OnPropertyChanged("IsConnected");
         }
 
-        public override IEnumerable<string> GetFileList(string folder = "")
+        public override IEnumerable<string> GetFileListFullPath(string folder = "")
         {
             foreach (FluentFTP.FtpListItem item in _client.GetListing(folder))
             {
@@ -172,7 +172,18 @@ namespace SwagOverFlow.Data.Clients
             }
         }
 
-        public IEnumerable<string> GetDirectoryList(string folder = "")
+        public override IEnumerable<string> GetFileList(string folder = "")
+        {
+            foreach (FluentFTP.FtpListItem item in _client.GetListing(folder))
+            {
+                if (item.Type == FluentFTP.FtpFileSystemObjectType.File)
+                {
+                    yield return item.Name;
+                }
+            }
+        }
+
+        public IEnumerable<string> GetDirectoryListFullPath(string folder = "")
         {
             foreach (FluentFTP.FtpListItem item in _client.GetListing(folder))
             {
@@ -240,7 +251,7 @@ namespace SwagOverFlow.Data.Clients
 
         public bool FileExistsFromList(string remotePath)
         {
-            List<String> files = GetFileList(Path.GetDirectoryName(remotePath)).ToList();
+            List<String> files = GetFileListFullPath(Path.GetDirectoryName(remotePath)).ToList();
 
             if (files.Contains($"/{Path.GetFileName(remotePath)}"))
             {
@@ -264,7 +275,7 @@ namespace SwagOverFlow.Data.Clients
 
         public bool DirectoryExistsFromList(string remotePath)
         {
-            List<String> directories = GetDirectoryList(Path.GetDirectoryName(remotePath)).ToList();
+            List<String> directories = GetDirectoryListFullPath(Path.GetDirectoryName(remotePath)).ToList();
 
             if (directories.Contains($"/{remotePath}"))
             {

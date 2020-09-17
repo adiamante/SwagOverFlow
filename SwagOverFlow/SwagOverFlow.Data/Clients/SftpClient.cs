@@ -125,13 +125,34 @@ namespace SwagOverFlow.Data.Clients
             OnPropertyChanged("IsConnected");
         }
 
-        public override IEnumerable<string> GetFileList(string folder = "")
+        public override IEnumerable<string> GetFileListFullPath(string folder = "")
         {
+            if (!String.IsNullOrEmpty(RemoteDirectory))
+            {
+                folder = Path.Combine(RemoteDirectory, folder);
+            }
+
             foreach (Renci.SshNet.Sftp.SftpFile entry in _client.ListDirectory(folder))
             {
                 if (!entry.IsDirectory)
                 {
                     yield return entry.FullName;
+                }
+            }
+        }
+
+        public override IEnumerable<string> GetFileList(string folder = "")
+        {
+            if (!String.IsNullOrEmpty(RemoteDirectory))
+            {
+                folder = Path.Combine(RemoteDirectory, folder);
+            }
+
+            foreach (Renci.SshNet.Sftp.SftpFile entry in _client.ListDirectory(folder))
+            {
+                if (!entry.IsDirectory)
+                {
+                    yield return entry.Name;
                 }
             }
         }

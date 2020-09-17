@@ -50,6 +50,7 @@ namespace SwagOverFlow.Data.Clients
         #region Methods
         public abstract void Connect();
         public abstract void Disconnect();
+        public abstract IEnumerable<String> GetFileListFullPath(string folder = "");
         public abstract IEnumerable<String> GetFileList(string folder = "");
         public abstract Boolean UploadFile(String localPath, String remoteDest);
         public abstract Boolean RenameFile(String remotePath, String remoteNewPath);
