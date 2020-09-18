@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json.Linq;
-using SwagOverFlow.ViewModels;
+﻿
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 
-namespace SwagOverFlow.Data.Clients
+namespace SwagOverFlow.Data.Ftp
 {
     #region FtpType
     public enum FtpType
@@ -62,31 +61,32 @@ namespace SwagOverFlow.Data.Clients
         public abstract Boolean FileExists(String remotePath);
         public abstract Boolean DirectoryExists(String remotePath);
         public abstract DateTime GetModifiedDateTime(String remotePath);
-        public void ApplyJsonStringConfig(String json)
-        {
-            ApplyJsonConfig(JObject.Parse(json));
-        }
-        public void ApplyJsonConfig(JObject jApply)
-        {
-            Type classType = this.GetType();
-            foreach (KeyValuePair<String, JToken> kvpApply in jApply)
-            {
-                PropertyInfo prop = classType.GetProperty(kvpApply.Key);
-                Type destType = prop.PropertyType;
-                TypeConverter converter = TypeDescriptor.GetConverter(destType);
 
-                if (kvpApply.Value is JValue)
-                {
-                    JValue jVal = kvpApply.Value as JValue;
-                    Type sourceType = jVal.Value.GetType();
+        //public void ApplyJsonStringConfig(String json)
+        //{
+        //    ApplyJsonConfig(JObject.Parse(json));
+        //}
+        //public void ApplyJsonConfig(JObject jApply)
+        //{
+        //    Type classType = this.GetType();
+        //    foreach (KeyValuePair<String, JToken> kvpApply in jApply)
+        //    {
+        //        PropertyInfo prop = classType.GetProperty(kvpApply.Key);
+        //        Type destType = prop.PropertyType;
+        //        TypeConverter converter = TypeDescriptor.GetConverter(destType);
 
-                    if (converter.CanConvertFrom(sourceType))
-                    {
-                        prop.SetValue(this, converter.ConvertFrom(jVal.Value));
-                    }
-                }
-            }
-        }
+        //        if (kvpApply.Value is JValue)
+        //        {
+        //            JValue jVal = kvpApply.Value as JValue;
+        //            Type sourceType = jVal.Value.GetType();
+
+        //            if (converter.CanConvertFrom(sourceType))
+        //            {
+        //                prop.SetValue(this, converter.ConvertFrom(jVal.Value));
+        //            }
+        //        }
+        //    }
+        //}
         #endregion Methods
     }
 }

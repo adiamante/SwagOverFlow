@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 
-namespace SwagOverFlow.Data.Clients
+namespace SwagOverFlow.Data.Ftp
 {
     public class SftpClient : FtpClient
     {
