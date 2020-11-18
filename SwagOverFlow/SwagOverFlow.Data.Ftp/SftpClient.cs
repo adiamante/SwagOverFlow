@@ -25,7 +25,6 @@ namespace SwagOverFlow.Data.Ftp
             }
         }
         #endregion Host
-
         #region UserName
         public override String UserName
         {
@@ -37,7 +36,6 @@ namespace SwagOverFlow.Data.Ftp
             }
         }
         #endregion UserName
-
         #region Password
         public override String Password
         {
@@ -49,7 +47,6 @@ namespace SwagOverFlow.Data.Ftp
             }
         }
         #endregion Password
-
         #region RemoteDirectory
         public override string RemoteDirectory
         {
@@ -71,11 +68,9 @@ namespace SwagOverFlow.Data.Ftp
             }
         }
         #endregion RemoteDirectory
-
         #region IsConnected
         public override bool IsConnected { get { return _client.IsConnected; } }
         #endregion IsConnected
-
         #region Port
         public override Int32 Port
         {
@@ -87,6 +82,21 @@ namespace SwagOverFlow.Data.Ftp
             }
         }
         #endregion Port
+        #region RetryAttempts
+        public override Int32 RetryAttempts
+        {
+            get { return _client.ConnectionInfo.RetryAttempts; }
+            set { _client.ConnectionInfo.RetryAttempts = value; }
+        }
+        #endregion RetryAttempts
+        #region TimeOut
+        //In seconds
+        public override Int32 TimeOut
+        {
+            get { return _client.ConnectionInfo.Timeout.Seconds; }
+            set { _client.ConnectionInfo.Timeout = TimeSpan.FromSeconds(value); }
+        }
+        #endregion TimeOut
 
         #endregion Properties
 
