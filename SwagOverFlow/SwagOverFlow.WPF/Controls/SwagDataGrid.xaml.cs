@@ -234,7 +234,7 @@ namespace SwagOverFlow.WPF.Controls
                         break;
                 }
 
-                Object output = converter.FromDataTableToObject(new DataTableConvertParams(), swagDataTable.DataTable);
+                Object output = converter.FromDataTableToObject(new DataTableConvertParams(), swagDataTable.DataTable.DefaultView.ToTable());
 
                 switch (swagDataTable.Settings["Export"]["Destination"].GetValue<SwagTableDestinationType>())
                 {
