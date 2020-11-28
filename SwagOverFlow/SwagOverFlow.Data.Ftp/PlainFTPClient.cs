@@ -35,7 +35,6 @@ namespace SwagOverFlow.Data.Ftp
             }
         }
         #endregion Host
-
         #region UserName
         public override String UserName
         {
@@ -47,7 +46,6 @@ namespace SwagOverFlow.Data.Ftp
             }
         }
         #endregion UserName
-
         #region Password
         public override String Password
         {
@@ -59,7 +57,6 @@ namespace SwagOverFlow.Data.Ftp
             }
         }
         #endregion Password
-
         #region RemoteDirectory
         public override string RemoteDirectory
         {
@@ -81,11 +78,9 @@ namespace SwagOverFlow.Data.Ftp
             }
         }
         #endregion RemoteDirectory
-
         #region IsConnected
         public override bool IsConnected { get { return _client.IsConnected; } }
         #endregion IsConnected
-
         #region Port
         public override Int32 Port
         {
@@ -97,11 +92,9 @@ namespace SwagOverFlow.Data.Ftp
             }
         }
         #endregion Port
-
         #region ExistsUsesListing
         public bool ExistsUsesListing { get; set; } = false;
         #endregion ExistsUsesListing
-
         #region EncryptionMode
         public FtpEncryptionMode EncryptionMode
         {
@@ -113,7 +106,6 @@ namespace SwagOverFlow.Data.Ftp
             }
         }
         #endregion EncryptionMode
-
         #region SslProtocols
         public System.Security.Authentication.SslProtocols SslProtocols
         {
@@ -125,7 +117,21 @@ namespace SwagOverFlow.Data.Ftp
             }
         }
         #endregion SslProtocols
-
+        #region RetryAttempts
+        public override Int32 RetryAttempts
+        {
+            get { return _client.RetryAttempts; }
+            set { _client.RetryAttempts = value; }
+        }
+        #endregion RetryAttempts
+        #region RetryAttempts
+        //In seconds
+        public override Int32 TimeOut
+        {
+            get { return _client.ConnectTimeout / 1000; }
+            set { _client.ConnectTimeout = value * 1000; }
+        }
+        #endregion RetryAttempts
         #endregion Properties
 
         #region Initialization

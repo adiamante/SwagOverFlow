@@ -28,6 +28,8 @@ namespace SwagOverFlow.Data.Ftp
         public abstract String RemoteDirectory { get; set; }
         public abstract Boolean IsConnected { get; }
         public abstract Int32 Port { get; set; }
+        public abstract Int32 RetryAttempts { get; set; }
+        public abstract Int32 TimeOut { get; set; }     //In seconds
         #endregion Properties
 
         #region Initialization
