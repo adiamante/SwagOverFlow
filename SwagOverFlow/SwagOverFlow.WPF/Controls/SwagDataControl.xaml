@@ -65,6 +65,29 @@
                     <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.TablePlus}" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="Rename" StaysOpenOnClick="True">
+                <MenuItem.Icon>
+                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.RenameBox}" />
+                </MenuItem.Icon>
+                <MenuItem StaysOpenOnClick="True">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.KeyboardOutline}" />
+                    </MenuItem.Icon>
+                    <MenuItem.Header>
+                        <Grid Tag="gridRename">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Display, Mode=OneWay}" Loaded="SwagDataHeader_TextBoxLoad" KeyDown="SwagDataHeader_TextBoxKeyDown" MinWidth="100" />
+                            <Button Grid.Row="1" Grid.Column="0" Content="Rename" Click="SwagDataHeader_RenameClick" />
+                        </Grid>
+                    </MenuItem.Header>
+                </MenuItem>
+            </MenuItem>
             <MenuItem Header="Export">
                 <MenuItem.Icon>
                     <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Export}" />
@@ -97,6 +120,29 @@
             </MenuItem>
         </ContextMenu>
         <ContextMenu x:Key="SwagDataTableHeaderContextMenu" Opened="SwagDataHeader_ContextMenuOpened">
+            <MenuItem Header="Rename" StaysOpenOnClick="True">
+                <MenuItem.Icon>
+                    <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.RenameBox}" />
+                </MenuItem.Icon>
+                <MenuItem StaysOpenOnClick="True">
+                    <MenuItem.Icon>
+                        <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.KeyboardOutline}" />
+                    </MenuItem.Icon>
+                    <MenuItem.Header>
+                        <Grid Tag="gridRename">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Display, Mode=OneWay}" Loaded="SwagDataHeader_TextBoxLoad" KeyDown="SwagDataHeader_TextBoxKeyDown" MinWidth="100" />
+                            <Button Grid.Row="1" Grid.Column="0" Content="Rename" Click="SwagDataHeader_RenameClick" />
+                        </Grid>
+                    </MenuItem.Header>
+                </MenuItem>
+            </MenuItem>
             <MenuItem Header="Close" Click="SwagDataHeader_Close">
                 <MenuItem.Icon>
                     <local:IconControl Kind="{x:Static iconPacks:PackIconMaterialKind.Close}" />

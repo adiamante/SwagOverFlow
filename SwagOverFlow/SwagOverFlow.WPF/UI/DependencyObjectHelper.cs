@@ -253,7 +253,7 @@ namespace SwagOverFlow.WPF.UI
                 else if (!string.IsNullOrEmpty(childName))
                 {
                     FrameworkElement frameworkElement = child as FrameworkElement;
-                    if (frameworkElement != null && frameworkElement.Name == childName)
+                    if (frameworkElement != null && (frameworkElement.Name == childName || frameworkElement.Tag.ToString() == childName))
                     {
                         foundChild = (T)child;
                         break;
@@ -297,7 +297,7 @@ namespace SwagOverFlow.WPF.UI
                 else if (!string.IsNullOrEmpty(childName))
                 {
                     FrameworkElement frameworkElement = child as FrameworkElement;
-                    if (frameworkElement != null && frameworkElement.Name == childName)
+                    if (frameworkElement != null && (frameworkElement.Name == childName || frameworkElement.Tag.ToString() == childName))
                     {
                         foundChild = (T)child;
                         break;

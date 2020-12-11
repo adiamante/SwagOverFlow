@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using SwagOverFlow.WPF.Commands;
 using Newtonsoft.Json.Linq;
 using SwagOverFlow.WPF.Services;
+using System.Windows.Controls.Primitives;
 
 namespace SwagOverFlow.WPF.Controls
 {
@@ -584,6 +585,40 @@ namespace SwagOverFlow.WPF.Controls
             FrameworkElement fe = (FrameworkElement)sender;
             SwagDataResult swagResult = (SwagDataResult)fe.DataContext;
             swagResult.IsSelected = true;
+        }
+
+        private void SwagDataHeader_TextBoxLoad(object sender, RoutedEventArgs e)
+        {
+            TextBox txtText = (TextBox)sender;
+            txtText.SelectAll();
+            txtText.Focus();
+        }
+
+        private void SwagDataHeader_TextBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox txtText = (TextBox)sender;
+                MenuItem menuItem = (MenuItem)DependencyObjectHelper.TryFindParent<MenuItem>(txtText);
+                Button btn = menuItem.FindLogicalChild<Button>();
+                btn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            }
+        }
+
+        private void SwagDataHeader_RenameClick(object sender, RoutedEventArgs e)
+        {
+            Button btnRename = (Button)sender;
+            MenuItem miParent = (MenuItem)((MenuItem)((Grid)btnRename.Parent).Parent).Parent;
+            SwagData swagData = (SwagData)btnRename.DataContext;
+            ContextMenu contextMenu = DependencyObjectHelper.TryFindParent<ContextMenu>(btnRename);
+
+            Grid grid = miParent.FindLogicalChild<Grid>("gridRename");
+            String newColName = grid.FindVisualChild<TextBox>().Text;
+            String originalName = swagData.Display;
+            SwagLogger.LogStart(this, "SwagData Rename |orig={Column}|new={NewColName}|", originalName, newColName);
+            swagData.Rename(newColName);
+            contextMenu.IsOpen = false;
+            SwagLogger.LogEnd(this, "SwagData Rename |orig={Column}|new={NewColName}|", originalName, newColName);
         }
 
         #endregion SwagDataHeader ContextMenu

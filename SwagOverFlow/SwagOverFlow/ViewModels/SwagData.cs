@@ -61,6 +61,11 @@ namespace SwagOverFlow.ViewModels
         {
             return null;
         }
+
+        public virtual void Rename(String newName)
+        {
+            Display = newName;
+        }
         #endregion Methods
     }
     #endregion SwagData
@@ -871,9 +876,10 @@ namespace SwagOverFlow.ViewModels
             sdt.InvalidateColumns();
         }
 
-        public void Rename(String newColName)
+        public override void Rename(String newColName)
         {
             SwagDataTable sdt = SwagDataTable;
+            
             Int32 originalColSeq = ColSeq;
             //Update DataTable to have the new name
             sdt.DataTable.Columns[ColumnName].ColumnName = newColName;
@@ -1564,6 +1570,13 @@ namespace SwagOverFlow.ViewModels
         public FreezeListScope GetFreezeListScope()
         {
             return new FreezeListScope(this);
+        }
+
+        public override void Rename(string newName)
+        {
+            Name = newName;
+            DataTable.TableName = newName;
+            base.Rename(newName);
         }
         #endregion Methods
 
